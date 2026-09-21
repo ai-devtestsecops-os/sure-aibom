@@ -1,0 +1,4 @@
+FROM llama3.2:1b
+PARAMETER temperature 0.7
+SYSTEM "reviewer"
+LICENSE MIT
