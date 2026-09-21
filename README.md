@@ -39,13 +39,18 @@ aibom-cli scan alpine:latest --cdx out/alpine.cdx.json --no-enrich
 aibom-cli scan ./project --keep-intermediate out/raw      # 도구별 원본 출력 보존
 ```
 
-| 옵션                            | 뜻                                                                            |
-| ------------------------------- | ----------------------------------------------------------------------------- |
-| `--no-syft` / `--no-cdxgen` | 해당 생산자 생략                                                              |
-| `--no-enrich`                 | aibom-generator 보강 생략                                                     |
-| `--no-validate`               | 스키마 검증 생략                                                              |
-| `--install-deps`              | cdxgen 이 락파일 없는 하위 프로젝트에서 설치 명령을 돌리도록 허용 (기본 금지) |
-| `--strict`                    | 도구 실패·검증 실패를 종료 코드로 반영                                       |
+| 옵션 | 뜻 |
+|---|---|
+| `--cdx PATH` | CycloneDX 1.7 JSON 출력 경로 |
+| `--spdx PATH` | SPDX 3.0.1 JSON-LD 출력 경로 (CycloneDX 결과를 변환) |
+| `--keep-intermediate DIR` | syft·cdxgen·owasp 원본 출력을 이 디렉터리에 남긴다 |
+| `--no-syft` / `--no-cdxgen` | 해당 생산자 생략 |
+| `--no-enrich` | aibom-generator 보강 생략 |
+| `--no-validate` | 스키마 검증 생략 |
+| `--install-deps` | cdxgen 이 락파일 없는 하위 프로젝트에서 설치 명령을 돌리도록 허용 (기본 금지) |
+| `--strict` | 도구 실패·검증 실패를 종료 코드로 반영 |
+
+`--cdx` 와 `--spdx` 를 둘 다 생략하면 CycloneDX 를 표준출력으로 낸다.
 
 ## 구조
 
