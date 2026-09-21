@@ -1,8 +1,6 @@
 # aibom-cli
 
 syft, cdxgen, OWASP aibom-generator 를 묶어 데이터셋·모델·소프트웨어를 한 AI-BOM 에 담는다.
-출력은 CycloneDX 1.7 과 SPDX 3.0.1. 설계 배경은 `ai-bom/docs/aibom_cli_plan.md`,
-도구별 스캔 대상·필드는 `ai-bom/docs/aibom_tool_scan_fields.md`.
 
 ## 파이프라인
 
@@ -15,29 +13,29 @@ syft, cdxgen, OWASP aibom-generator 를 묶어 데이터셋·모델·소프트�
 병합 → aibom-v0.6 스키마 검증 → CycloneDX 1.7 → (자체 변환) SPDX 3.0.1
 ```
 
-| 도구 | 역할 | 실행 경로 환경변수 |
-|---|---|---|
-| syft | 소프트웨어 생산자 | `SYFT_BIN` (기본 `syft`) |
-| cdxgen | 모델·데이터셋 생산자 | `CDXGEN_BIN` (기본 `cdxgen`; `.js` 면 `node` 로 실행) |
-| aibom-generator | 모델 보강자 | `AIBOM_GENERATOR_DIR` (클론 경로, 필수), `AIBOM_GENERATOR_PYTHON` |
+| 도구            | 역할                  | 실행 경로 환경변수                                                    |
+| --------------- | --------------------- | --------------------------------------------------------------------- |
+| syft            | 소프트웨어 생산자     | `SYFT_BIN` (기본 `syft`)                                          |
+| cdxgen          | 모델·데이터셋 생산자 | `CDXGEN_BIN` (기본 `cdxgen`; `.js` 면 `node` 로 실행)         |
+| aibom-generator | 모델 보강자           | `AIBOM_GENERATOR_DIR` (클론 경로, 필수), `AIBOM_GENERATOR_PYTHON` |
 
 ## 설치
 
 ```bash
-pip install -e '.[dev]'
+# conda 환경
+conda env create -f environment.yml && conda activate aibom-cli
 
-# 도구
-curl -sSfL https://get.anchore.io/syft | sh -s -- -b /usr/local/bin      # syft
-npm install -g @cyclonedx/cdxgen                                        # cdxgen
-git clone https://github.com/GenAI-Security-Project/aibom-generator     # owasp — PyPI 에 없어 클론
-pip install -r aibom-generator/requirements.txt                          #   파이썬 의존성 (huggingface_hub, cyclonedx-python-lib …)
-export AIBOM_GENERATOR_DIR=$PWD/aibom-generator
+# syft
+curl -sSfL https://get.anchore.io/syft | sh -s -- -b /usr/local/bin
+
+# cdxgen
+npm install -g @cyclonedx/cdxgen
+
+# owasp
+git clone https://github.com/GenAI-Security-Project/aibom-generator
+pip install -r aibom-generator/requirements.txt
+conda env config vars set AIBOM_GENERATOR_DIR=$PWD/aibom-generator && conda activate aibom-cli
 ```
-
-syft 는 정적 바이너리라 따로 깔 의존성이 없다. cdxgen 은 `npm install -g` 가 자체 `node_modules` 를 함께 설치한다.
-aibom-generator 만 의존성을 직접 깔아야 한다.
-
-클론한 cdxgen 저장소를 바로 쓰려면 `CDXGEN_BIN=/path/to/cdxgen/bin/cdxgen.js`.
 
 ## 사용
 
@@ -47,13 +45,13 @@ aibom-cli scan alpine:latest --cdx out/alpine.cdx.json --no-enrich
 aibom-cli scan ./project --keep-intermediate out/raw      # 도구별 원본 출력 보존
 ```
 
-| 옵션 | 뜻 |
-|---|---|
-| `--no-syft` / `--no-cdxgen` | 해당 생산자 생략 |
-| `--no-enrich` | aibom-generator 보강 생략 |
-| `--no-validate` | 스키마 검증 생략 |
-| `--install-deps` | cdxgen 이 락파일 없는 하위 프로젝트에서 설치 명령을 돌리도록 허용 (기본 금지) |
-| `--strict` | 도구 실패·검증 실패를 종료 코드로 반영 |
+| 옵션                            | 뜻                                                                            |
+| ------------------------------- | ----------------------------------------------------------------------------- |
+| `--no-syft` / `--no-cdxgen` | 해당 생산자 생략                                                              |
+| `--no-enrich`                 | aibom-generator 보강 생략                                                     |
+| `--no-validate`               | 스키마 검증 생략                                                              |
+| `--install-deps`              | cdxgen 이 락파일 없는 하위 프로젝트에서 설치 명령을 돌리도록 허용 (기본 금지) |
+| `--strict`                    | 도구 실패·검증 실패를 종료 코드로 반영                                       |
 
 ## 구조
 
@@ -73,9 +71,9 @@ data/cdx_spdx_mapping.json   ai-bom 의 CDX↔SPDX 매핑표 — SPDX 변환기�
 
 ## 단계
 
-| 단계 | 상태 |
-|---|---|
-| 1. syft + cdxgen 병합 → CycloneDX 1.7 | 골격 완료 |
-| 2. aibom-generator 보강 | 골격 완료 |
-| 3. CycloneDX → SPDX 3.0.1 변환기 | 원소 종류·이름·버전·purl·관계만. `modelCard → ai_*` 세부 매핑은 TODO |
-| 4. 규제 모듈 | 미착수 |
+| 단계                                   | 상태                                                                       |
+| -------------------------------------- | -------------------------------------------------------------------------- |
+| 1. syft + cdxgen 병합 → CycloneDX 1.7 | 골격 완료                                                                  |
+| 2. aibom-generator 보강                | 골격 완료                                                                  |
+| 3. CycloneDX → SPDX 3.0.1 변환기      | 원소 종류·이름·버전·purl·관계만.`modelCard → ai_*` 세부 매핑은 TODO |
+| 4. 규제 모듈                           | 미착수                                                                     |
