@@ -1,0 +1,76 @@
+"""OWASP aibom-generator 결과로 병합 문서의 HF 모델 컴포넌트를 보강한다.
+
+가져오는 것: modelCard.properties[genai:aibom:modelcard:*], modelCard.considerations,
+             metadata.properties[] 의 완전성 점수.
+유지하는 것: cdxgen 이 준 component.name / version / purl.
+매칭 키:    purl 의 pkg:huggingface/<ns>/<name> (리비전 제외 — 두 도구가 버전 표기를 달리 한다)
+"""
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+from .runners import run_aibom_generator
+from .runners._proc import RunnerError
+
+_HF_PURL = re.compile(r"^pkg:huggingface/(?P<ns>[^/@]+)/(?P<name>[^/@]+)(?:@[^?#]+)?")
+
+
+def hf_id_of(component: dict) -> str | None:
+    m = _HF_PURL.match(component.get("purl") or "")
+    if not m or component.get("type") != "machine-learning-model":
+        return None
+    return f"{m['ns']}/{m['name']}"
+
+
+def enrich(merged: dict, workdir: Path, log=print) -> dict:
+    targets = {hf: c for c in merged.get("components", []) if (hf := hf_id_of(c))}
+    if not targets:
+        log("[enrich] pkg:huggingface 모델 컴포넌트가 없어 보강을 건너뛴다")
+        return merged
+
+    for hf_id, comp in targets.items():
+        try:
+            owasp = run_aibom_generator(hf_id, workdir)
+        except RunnerError as e:
+            log(f"[enrich] {hf_id}: {e}")
+            continue
+        src = next((c for c in owasp.get("components", []) if c.get("type") == "machine-learning-model"), None)
+        if not src:
+            continue
+        _apply(comp, src, owasp.get("metadata") or {})
+        log(f"[enrich] {hf_id}: 보강 완료")
+    return merged
+
+
+def _apply(dst: dict, src: dict, src_metadata: dict) -> None:
+    dst_card = dst.setdefault("modelCard", {})
+    src_card = src.get("modelCard") or {}
+
+    # properties: genai:aibom:* / owasp:aibom:* 만 가져온다
+    keep = [p for p in (src_card.get("properties") or []) if p.get("name", "").startswith(("genai:aibom:", "owasp:aibom:"))]
+    if keep:
+        seen = {(p.get("name"), p.get("value")) for p in dst_card.get("properties", [])}
+        dst_card["properties"] = dst_card.get("properties", []) + [p for p in keep if (p.get("name"), p.get("value")) not in seen]
+
+    # considerations: 없는 하위 키만
+    if src_card.get("considerations"):
+        dst_c = dst_card.setdefault("considerations", {})
+        for k, v in src_card["considerations"].items():
+            dst_c.setdefault(k, v)
+
+    # modelParameters: 없는 하위 키만 (task, modelArchitecture 는 cdxgen 것 유지)
+    if src_card.get("modelParameters"):
+        dst_p = dst_card.setdefault("modelParameters", {})
+        for k, v in src_card["modelParameters"].items():
+            dst_p.setdefault(k, v)
+
+    # 완전성 점수 등 문서 단위 프로퍼티 → 컴포넌트 프로퍼티로 옮기며 접두어를 붙인다
+    score_props = [p for p in (src_metadata.get("properties") or []) if "score" in p.get("name", "").lower()]
+    if score_props:
+        dst.setdefault("properties", []).extend(
+            {"name": f"owasp:aibom:{p['name']}", "value": p.get("value")} for p in score_props
+        )
+
+    if not dst.get("description") and src.get("description"):
+        dst["description"] = src["description"]

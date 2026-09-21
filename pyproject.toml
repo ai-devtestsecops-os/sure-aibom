@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "aibom-cli"
+version = "0.1.0"
+description = "Generate an AI-BOM (CycloneDX 1.7 / SPDX 3.0.1) by orchestrating syft, cdxgen and the OWASP aibom-generator"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+validate = ["jsonschema>=4.20", "referencing>=0.30"]
+dev = ["pytest>=7", "jsonschema>=4.20", "referencing>=0.30"]
+
+[project.scripts]
+aibom-cli = "aibom_cli.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
