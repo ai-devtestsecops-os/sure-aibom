@@ -13,12 +13,6 @@ syft, cdxgen, OWASP aibom-generator 를 묶어 데이터셋·모델·소프트�
 병합 → aibom-v0.6 스키마 검증 → CycloneDX 1.7 → (자체 변환) SPDX 3.0.1
 ```
 
-| 도구            | 역할                  | 실행 경로 환경변수                                                    |
-| --------------- | --------------------- | --------------------------------------------------------------------- |
-| syft            | 소프트웨어 생산자     | `SYFT_BIN` (기본 `syft`)                                          |
-| cdxgen          | 모델·데이터셋 생산자 | `CDXGEN_BIN` (기본 `cdxgen`; `.js` 면 `node` 로 실행)         |
-| aibom-generator | 모델 보강자           | `AIBOM_GENERATOR_DIR` (클론 경로, 필수), `AIBOM_GENERATOR_PYTHON` |
-
 ## 설치
 
 ```bash

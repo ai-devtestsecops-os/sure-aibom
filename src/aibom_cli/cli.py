@@ -78,7 +78,11 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--version", action="version", version=f"aibom-cli {__version__}")
     sub = p.add_subparsers(dest="command", required=True)
 
-    s = sub.add_parser("scan", help="디렉터리 또는 컨테이너 이미지를 스캔해 AI-BOM 을 만든다")
+    s = sub.add_parser(
+        "scan",
+        help="디렉터리 또는 컨테이너 이미지를 스캔해 AI-BOM 을 만든다",
+        epilog="환경변수: AIBOM_GENERATOR_DIR (owasp 클론 경로, 필수) · SYFT_BIN, CDXGEN_BIN (PATH 에 없을 때만)",
+    )
     s.add_argument("target", help="디렉터리 경로 또는 이미지 참조")
     s.add_argument("--cdx", metavar="PATH", help="CycloneDX 1.7 JSON 출력 경로")
     s.add_argument("--spdx", metavar="PATH", help="SPDX 3.0.1 JSON-LD 출력 경로")
