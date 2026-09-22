@@ -25,13 +25,16 @@ pytestmark = pytest.mark.skipif(
 )
 
 
-def test_mixed_fixture_yields_all_three_domains(tmp_path):
+def test_mixed_fixture_yields_all_three_domains(tmp_path, monkeypatch):
+    monkeypatch.setenv("AIBOM_OFFLINE", "1")                                # 보강은 네트워크가 필요해 강제 생략
     cdx = tmp_path / "bom.cdx.json"
     spdx = tmp_path / "bom.spdx.json"
-    assert main(["scan", str(FIXTURE), "-o", str(cdx), "--no-enrich"]) == 0
+    assert main(["scan", str(FIXTURE), "-o", str(cdx)]) == 0
     assert main(["validate", str(cdx)]) == 0
-    assert main(["convert", str(cdx), "-o", str(spdx)]) == 0
-    assert main(["validate", str(spdx)]) == 0
+    # 변환기는 CLI 에 아직 노출하지 않으므로 함수를 직접 부른다
+    doc0 = json.loads(cdx.read_text())
+    spdx.write_text(json.dumps(cdx_to_spdx(doc0, log=lambda m: None), ensure_ascii=False, indent=2) + "\n")
+    assert validate_spdx(json.loads(spdx.read_text()), log=print)      # SPDX 검증은 CLI 미노출, 함수로
 
     doc = json.loads(cdx.read_text())
     by_type = {}

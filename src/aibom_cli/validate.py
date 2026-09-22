@@ -12,6 +12,7 @@ from pathlib import Path
 
 SCHEMA_DIR = Path(__file__).resolve().parents[2] / "schemas"
 CDX_SCHEMA = SCHEMA_DIR / "aibom-v0.6-cyclonedx.schema.json"
+CDX_OFFICIAL = SCHEMA_DIR / "bom-1.7.schema.json"
 SPDX_SCHEMA = SCHEMA_DIR / "aibom-v0.6-spdx.schema.json"
 SPDX_OFFICIAL_SCHEMA = SCHEMA_DIR / "spdx-schema-3-0-1.json"
 
@@ -46,25 +47,42 @@ def _spdx_node_validator(path: Path, node_type: str):
     return jsonschema.Draft202012Validator(wrapper)
 
 
-def validate_cdx(doc: dict, log=print) -> bool:
+def _cdx_errors(doc: dict, schema_path: Path) -> list[str] | None:
+    """None 이면 jsonschema 미설치."""
     try:
         import jsonschema
         from referencing import Registry, Resource
     except ImportError:
-        log("[validate] jsonschema/referencing 미설치 — 검증 생략 (pip install 'aibom-cli[validate]')")
-        return True
-
+        return None
     registry = Registry()
     for f in SCHEMA_DIR.glob("*.json"):
         schema = _load(f)
         uri = schema.get("$id") or f.name
         registry = registry.with_resource(uri, Resource.from_contents(schema))
         registry = registry.with_resource(f.name, Resource.from_contents(schema))
-
-    validator = jsonschema.Draft7Validator(_load(CDX_SCHEMA), registry=registry)
+    validator = jsonschema.Draft7Validator(_load(schema_path), registry=registry)
     errors = sorted(validator.iter_errors(doc), key=lambda e: list(e.path))
-    _report([f"{'/'.join(str(p) for p in e.path)}: {e.message}" for e in errors], log)
-    return not errors
+    return [f"{'/'.join(str(p) for p in e.path)}: {e.message}" for e in errors]
+
+
+def validate_cdx(doc: dict, log=print) -> str | None:
+    """공식 CycloneDX 1.7 로 먼저 검사하고, 실패하면 v0.6 스키마로 다시 검사한다.
+
+    돌려주는 값은 통과한 수준 — "1.7" (properties 형, 표준 소비자가 읽음), "v0.6" (typed 형,
+    v0.6 를 아는 소비자만 읽음), None (둘 다 실패). jsonschema 가 없으면 경고 후 "1.7" 로 본다.
+    """
+    errors = _cdx_errors(doc, CDX_OFFICIAL)
+    if errors is None:
+        log("[validate] jsonschema/referencing 미설치 — 검증 생략 (pip install 'aibom-cli[validate]')")
+        return "1.7"
+    if not errors:
+        return "1.7"
+    errors_v06 = _cdx_errors(doc, CDX_SCHEMA)
+    if not errors_v06:
+        log(f"[validate] 공식 1.7 에는 맞지 않는 항목 {len(errors)}건 — v0.6 typed 필드로 보임")
+        return "v0.6"
+    _report(errors_v06, log)
+    return None
 
 
 def validate_spdx(doc: dict, strict: bool = False, log=print) -> bool:

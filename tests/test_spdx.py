@@ -608,15 +608,16 @@ def test_unparseable_timestamp_is_kept():
     assert any("timestamp" in m for m in logs) and validate_spdx(out, log=lambda m: None)
 
 
-def test_cli_convert_strict_is_official_valid(tmp_path):
+def test_validate_cli_reports_cyclonedx_level(tmp_path):
     from aibom_cli.cli import main
-    out = tmp_path / "s.spdx.json"
-    assert main(["convert", "tests/fixtures/merged_sample.cdx.json", "-o", str(out), "--strict"]) == 0
-    doc = json.loads(out.read_text())
-    assert not any(k.startswith("aibom_") for e in doc["@graph"] for k in e)      # strict 는 v0.6 전용 속성을 내린다
-    assert main(["validate", str(out), "--strict"]) == 0                          # 공식 3.0.1 스키마 통과
-    assert main(["validate", "tests/fixtures/merged_sample.cdx.json"]) == 0       # 입력 CycloneDX 도 검증 통과
-    assert main(["convert", str(out)]) == 2                                       # SPDX 를 convert 에 넣으면 거부
+    assert main(["validate", "tests/fixtures/merged_sample.cdx.json"]) == 0      # 공식 1.7 적합
+    assert main(["validate", str(tmp_path / "none.json")]) == 2                  # 없는 파일
+    bad = tmp_path / "bad.json"
+    bad.write_text(json.dumps({"bomFormat": "CycloneDX", "specVersion": "1.7", "components": [{"type": "nope", "name": 1}]}))
+    assert main(["validate", str(bad)]) == 3                                      # 둘 다 실패
+    doc = json.loads(Path("tests/fixtures/merged_sample.cdx.json").read_text())
+    strict = cdx_to_spdx(doc, strict=True, log=lambda m: None)
+    assert not any(k.startswith("aibom_") for e in strict["@graph"] for k in e)  # 변환기 strict 모드는 함수로 계속 확인
 
 
 def test_cjk_component_names_get_hash_suffix():

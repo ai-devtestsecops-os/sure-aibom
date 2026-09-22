@@ -7,8 +7,11 @@
 """
 from __future__ import annotations
 
+import os
 import re
+import socket
 from pathlib import Path
+from urllib.parse import urlparse
 
 from .runners import run_aibom_generator
 from .runners._proc import RunnerError
@@ -23,10 +26,35 @@ def hf_id_of(component: dict) -> str | None:
     return f"{m['ns']}/{m['name']}"
 
 
+def _hf_reachable(timeout: float = 3.0) -> bool:
+    """huggingface.co(또는 HF_ENDPOINT 의 호스트) 443 포트에 TCP 로 닿는지만 본다."""
+    host = urlparse(os.environ.get("HF_ENDPOINT") or "https://huggingface.co").hostname or "huggingface.co"
+    try:
+        with socket.create_connection((host, 443), timeout=timeout):
+            return True
+    except OSError:
+        return False
+
+
+def skip_reason() -> str | None:
+    """보강을 건너뛰어야 하면 그 이유를, 해도 되면 None 을 돌려준다."""
+    if os.environ.get("AIBOM_OFFLINE") == "1":
+        return "AIBOM_OFFLINE=1"
+    if not os.environ.get("AIBOM_GENERATOR_DIR"):
+        return "AIBOM_GENERATOR_DIR 미설정"
+    if not _hf_reachable():
+        return "huggingface.co 에 닿지 않음"
+    return None
+
+
 def enrich(merged: dict, workdir: Path, log=print) -> dict:
     targets = {hf: c for c in merged.get("components", []) if (hf := hf_id_of(c))}
     if not targets:
         log("[enrich] pkg:huggingface 모델 컴포넌트가 없어 보강을 건너뛴다")
+        return merged
+    reason = skip_reason()
+    if reason:
+        log(f"[enrich] {reason} — 보강을 건너뛴다 ({len(targets)}개 모델)")
         return merged
 
     for hf_id, comp in targets.items():
