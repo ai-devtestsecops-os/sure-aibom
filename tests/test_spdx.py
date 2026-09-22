@@ -608,11 +608,15 @@ def test_unparseable_timestamp_is_kept():
     assert any("timestamp" in m for m in logs) and validate_spdx(out, log=lambda m: None)
 
 
-def test_cli_spdx_strict_requires_spdx(capsys):
+def test_cli_convert_strict_is_official_valid(tmp_path):
     from aibom_cli.cli import main
-    with pytest.raises(SystemExit) as e:
-        main(["scan", "tests/fixtures/mixed", "--spdx-strict"])
-    assert e.value.code == 2 and "--spdx-strict" in capsys.readouterr().err
+    out = tmp_path / "s.spdx.json"
+    assert main(["convert", "tests/fixtures/merged_sample.cdx.json", "-o", str(out), "--strict"]) == 0
+    doc = json.loads(out.read_text())
+    assert not any(k.startswith("aibom_") for e in doc["@graph"] for k in e)      # strict 는 v0.6 전용 속성을 내린다
+    assert main(["validate", str(out), "--strict"]) == 0                          # 공식 3.0.1 스키마 통과
+    assert main(["validate", "tests/fixtures/merged_sample.cdx.json"]) == 0       # 입력 CycloneDX 도 검증 통과
+    assert main(["convert", str(out)]) == 2                                       # SPDX 를 convert 에 넣으면 거부
 
 
 def test_cjk_component_names_get_hash_suffix():

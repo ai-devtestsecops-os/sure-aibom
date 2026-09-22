@@ -10,7 +10,7 @@ syft, cdxgen, OWASP aibom-generator 를 묶어 데이터셋·모델·소프트�
   └─ cdxgen -t ai --include-formulation        → 모델 · 데이터셋 · 관계
         │  pkg:huggingface/… purl 추출
         └─ aibom-generator (HF ID 별)          → 모델 컴포넌트 보강
-병합 → aibom-v0.6 스키마 검증 → CycloneDX 1.7 → (자체 변환) SPDX 3.0.1
+병합 → CycloneDX 1.7      (검증·SPDX 변환은 별도 서브커맨드)
 ```
 
 ## 설치
@@ -34,30 +34,29 @@ conda env config vars set AIBOM_GENERATOR_DIR=$PWD/aibom-generator && conda acti
 ## 사용
 
 ```bash
-aibom-cli scan ./project --cdx out/bom.cdx.json --spdx out/bom.spdx.json
-aibom-cli scan alpine:latest --cdx out/alpine.cdx.json --no-enrich
-aibom-cli scan ./project --keep-intermediate out/raw      # 도구별 원본 출력 보존
+aibom-cli scan ./project -o out/bom.cdx.json            # 생성 — CycloneDX 1.7
+aibom-cli scan alpine:latest -o out/alpine.cdx.json --no-enrich
+aibom-cli validate out/bom.cdx.json                     # 검증 — aibom-v0.6 스키마
+aibom-cli convert out/bom.cdx.json -o out/bom.spdx.json # SPDX 3.0.1 (실험 단계)
+aibom-cli validate out/bom.spdx.json --strict           # 공식 3.0.1 스키마로 검증
 ```
 
-| 옵션 | 뜻 |
-|---|---|
-| `--cdx PATH` | CycloneDX 1.7 JSON 출력 경로 |
-| `--spdx PATH` | SPDX 3.0.1 JSON-LD 출력 경로 (CycloneDX 결과를 변환) |
-| `--spdx-strict` | SPDX 출력에서 v0.6 전용 `aibom_*` 속성을 확장 항목으로 내려 공식 3.0.1 스키마에 맞춘다 |
-| `--keep-intermediate DIR` | syft·cdxgen·owasp 원본 출력을 이 디렉터리에 남긴다 |
-| `--no-syft` / `--no-cdxgen` | 해당 생산자 생략 |
-| `--no-enrich` | aibom-generator 보강 생략 |
-| `--no-validate` | 스키마 검증 생략 (CycloneDX·SPDX 모두) |
-| `--install-deps` | cdxgen 이 락파일 없는 하위 프로젝트에서 설치 명령을 돌리도록 허용 (기본 금지) |
-| `--strict` | 도구 실패·검증 실패를 종료 코드로 반영 |
+| 서브커맨드 | 옵션 | 뜻 |
+|---|---|---|
+| `scan <target>` | `-o PATH` | CycloneDX 1.7 출력 경로. 없으면 표준출력 |
+| | `--no-enrich` | aibom-generator 보강 생략 (HF 네트워크가 없을 때) |
+| `validate <bom>` | `--strict` | SPDX 를 v0.6 대신 공식 3.0.1 스키마로. CycloneDX/SPDX 는 내용으로 판별 |
+| `convert <bom>` | `-o PATH` | SPDX 3.0.1 JSON-LD 출력 경로. 없으면 표준출력 |
+| | `--strict` | v0.6 전용 `aibom_*` 속성을 확장 항목으로 내려 공식 3.0.1 에 맞춘다 |
 
-`--cdx` 와 `--spdx` 를 둘 다 생략하면 CycloneDX 를 표준출력으로 낸다.
+종료 코드: 0 성공 · 2 도구·입력 문제 · 3 검증 실패.
+`scan` 은 대상 코드를 실행하지 않는다 (cdxgen 은 `--no-install-deps` 고정).
 
 ## 구조
 
 ```
 src/aibom_cli/
-  cli.py              진입점
+  cli.py              진입점 — scan · validate · convert
   runners/            syft.py · cdxgen.py · aibom_generator.py (서브프로세스)
   merge.py            CycloneDX 병합 — 키는 purl → hashes → (type,name,version)
   enrich.py           owasp 결과를 HF 모델 컴포넌트에 덧붙임
@@ -75,5 +74,5 @@ data/cdx_spdx_mapping.json   ai-bom 의 CDX↔SPDX 매핑표 — SPDX 변환기�
 | -------------------------------------- | -------------------------------------------------------------------------- |
 | 1. syft + cdxgen 병합 → CycloneDX 1.7 | 골격 완료                                                                  |
 | 2. aibom-generator 보강                | 골격 완료                                                                  |
-| 3. CycloneDX → SPDX 3.0.1 변환기      | 핵심 완료 — 골격·컴포넌트·modelCard→ai_*/aibom_*·데이터셋·관계·확장·strict 모드. formulation·annotations·services·evidence(hasEvidence) 는 보류 |
+| 3. CycloneDX → SPDX 3.0.1 변환기 (`convert`) | **실험 단계** — 구현 완료, 3라운드 재검증 대기. formulation·annotations·services·evidence 는 보류 |
 | 4. 규제 모듈                           | 미착수                                                                     |

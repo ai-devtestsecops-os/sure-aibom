@@ -28,8 +28,10 @@ pytestmark = pytest.mark.skipif(
 def test_mixed_fixture_yields_all_three_domains(tmp_path):
     cdx = tmp_path / "bom.cdx.json"
     spdx = tmp_path / "bom.spdx.json"
-    rc = main(["scan", str(FIXTURE), "--cdx", str(cdx), "--spdx", str(spdx), "--no-enrich", "--strict"])
-    assert rc == 0
+    assert main(["scan", str(FIXTURE), "-o", str(cdx), "--no-enrich"]) == 0
+    assert main(["validate", str(cdx)]) == 0
+    assert main(["convert", str(cdx), "-o", str(spdx)]) == 0
+    assert main(["validate", str(spdx)]) == 0
 
     doc = json.loads(cdx.read_text())
     by_type = {}
