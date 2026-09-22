@@ -8,6 +8,8 @@ from pathlib import Path
 import pytest
 
 from aibom_cli.cli import main
+from aibom_cli.spdx import cdx_to_spdx
+from aibom_cli.validate import validate_spdx
 
 FIXTURE = Path(__file__).parent / "fixtures" / "mixed"
 
@@ -25,7 +27,7 @@ pytestmark = pytest.mark.skipif(
 
 def test_mixed_fixture_yields_all_three_domains(tmp_path):
     cdx = tmp_path / "bom.cdx.json"
-    spdx = tmp_path / "bom.spdx.jsonld"
+    spdx = tmp_path / "bom.spdx.json"
     rc = main(["scan", str(FIXTURE), "--cdx", str(cdx), "--spdx", str(spdx), "--no-enrich", "--strict"])
     assert rc == 0
 
@@ -47,6 +49,16 @@ def test_mixed_fixture_yields_all_three_domains(tmp_path):
     assert len(refs) == len(doc["components"])                              # bom-ref 중복 없음
     assert {t["name"] for t in doc["metadata"]["tools"]["components"]} >= {"syft", "cdxgen", "aibom-cli"}
 
-    graph = json.loads(spdx.read_text())["@graph"]
-    types = {e["type"] for e in graph}
-    assert {"ai_AIPackage", "dataset_DatasetPackage", "software_Package"} <= types
+    assert doc["metadata"]["component"] == {"type": "application", "name": "mixed", "bom-ref": "application:/mixed@"}
+
+    spdx_doc = json.loads(spdx.read_text())
+    types = {e["type"] for e in spdx_doc["@graph"]}
+    assert {"SpdxDocument", "software_Sbom", "CreationInfo", "SoftwareAgent", "Tool", "software_Package", "software_File",
+            "ai_AIPackage", "dataset_DatasetPackage", "simplelicensing_LicenseExpression", "Relationship"} <= types
+    assert {r["relationshipType"] for r in spdx_doc["@graph"] if r["type"] == "Relationship"} >= {"trainedOn", "hasDeclaredLicense", "dependsOn"}
+    assert validate_spdx(spdx_doc, log=print)
+    root = next(n for n in spdx_doc["@graph"] if n["type"] == "software_Sbom")["rootElement"]
+    assert root == [f"{doc['serialNumber']}#SPDXRef-application-mixed"]
+    # 같은 CycloneDX 를 다시 변환하면 바이트 단위로 같다
+    again = json.dumps(cdx_to_spdx(doc, log=lambda m: None), ensure_ascii=False, indent=2) + "\n"
+    assert again == spdx.read_text()

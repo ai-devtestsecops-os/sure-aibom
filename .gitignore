@@ -6,4 +6,4 @@ dist/
 out/
 *.cdx.json
 *.spdx.json
-*.spdx.jsonld
+!tests/fixtures/*.cdx.json

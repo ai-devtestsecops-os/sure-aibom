@@ -1,0 +1,709 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:4cdb0fa1-98df-46de-aec5-e2f5de6c392e",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-09-21T06:51:20Z",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "author": "anchore",
+          "name": "syft",
+          "version": "1.52.0"
+        },
+        {
+          "group": "@cyclonedx",
+          "name": "cdxgen",
+          "version": "12.8.3",
+          "purl": "pkg:npm/%40cyclonedx/cdxgen@12.8.3",
+          "type": "application",
+          "bom-ref": "pkg:npm/@cyclonedx/cdxgen@12.8.3",
+          "publisher": "OWASP Foundation",
+          "authors": [
+            {
+              "name": "OWASP Foundation"
+            }
+          ]
+        },
+        {
+          "type": "application",
+          "name": "aibom-cli",
+          "version": "0.1.0"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:pypi/numpy@2.5.1",
+      "type": "library",
+      "name": "numpy",
+      "version": "2.5.1",
+      "cpe": "cpe:2.3:a:python-numpy:python-numpy:2.5.1:*:*:*:*:*:*:*",
+      "purl": "pkg:pypi/numpy@2.5.1",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "python-package-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "python-pip-requirements-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-numpy:python_numpy:2.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_numpy:python-numpy:2.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_numpy:python_numpy:2.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python-numpy:2.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:python_numpy:2.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:numpy:python-numpy:2.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:numpy:python_numpy:2.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python-numpy:numpy:2.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python_numpy:numpy:2.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:python:numpy:2.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:numpy:numpy:2.5.1:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/requirements.txt"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:pypi/requests@2.34.2",
+      "type": "library",
+      "name": "requests",
+      "version": "2.34.2",
+      "cpe": "cpe:2.3:a:python:requests:2.34.2:*:*:*:*:*:*:*",
+      "purl": "pkg:pypi/requests@2.34.2",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "python-package-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "python"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "python-pip-requirements-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/requirements.txt"
+        }
+      ]
+    },
+    {
+      "bom-ref": "hash:SHA-1:923ca73ff01cf8895691e71833605bac717e6670",
+      "type": "file",
+      "name": "/requirements.txt",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "923ca73ff01cf8895691e71833605bac717e6670"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "2e975904a12d15cfbe6a2436b4971f1d112c7cc5a742abc2b58430d5a7443160"
+        }
+      ]
+    },
+    {
+      "group": "",
+      "name": "Modelfile",
+      "version": "",
+      "type": "file",
+      "bom-ref": "file:/Modelfile@",
+      "tags": [
+        "ai",
+        "model-config-file",
+        "modelfile",
+        "ollama"
+      ],
+      "properties": [
+        {
+          "name": "cdx:file:kind",
+          "value": "model-config-file"
+        },
+        {
+          "name": "cdx:ai:kind",
+          "value": "model-config-file"
+        },
+        {
+          "name": "cdx:ai:source",
+          "value": "source-code-analysis"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "Modelfile"
+          }
+        ]
+      }
+    },
+    {
+      "group": "ollama",
+      "name": "llama3.2:1b",
+      "version": "",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT",
+            "url": "https://opensource.org/licenses/MIT",
+            "properties": [
+              {
+                "name": "cdx:license:category",
+                "value": "Permissive"
+              },
+              {
+                "name": "cdx:license:foss",
+                "value": "true"
+              },
+              {
+                "name": "cdx:license:osiApproved",
+                "value": "true"
+              },
+              {
+                "name": "cdx:license:fsfLibre",
+                "value": "true"
+              },
+              {
+                "name": "cdx:license:deprecated",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      ],
+      "purl": "pkg:generic/ollama/llama3.2:1b",
+      "type": "machine-learning-model",
+      "bom-ref": "pkg:generic/ollama/llama3.2:1b",
+      "tags": [
+        "ai",
+        "machine-learning-model",
+        "modelfile",
+        "ollama"
+      ],
+      "properties": [
+        {
+          "name": "cdx:ai:provider",
+          "value": "ollama"
+        },
+        {
+          "name": "cdx:ai:kind",
+          "value": "model"
+        },
+        {
+          "name": "cdx:ai:modelFamily",
+          "value": "llama"
+        },
+        {
+          "name": "cdx:ai:artifactFormat",
+          "value": "modelfile"
+        },
+        {
+          "name": "cdx:ai:runtime",
+          "value": "ollama"
+        },
+        {
+          "name": "cdx:ai:source",
+          "value": "local-config"
+        },
+        {
+          "name": "cdx:ai:confidence",
+          "value": "high"
+        },
+        {
+          "name": "cdx:ai:reviewNeeded",
+          "value": "true"
+        },
+        {
+          "name": "cdx:license:category",
+          "value": "Permissive"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "Modelfile"
+          }
+        ]
+      }
+    },
+    {
+      "group": "datasets",
+      "name": "bookcorpus",
+      "version": "",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://huggingface.co/datasets/datasets/bookcorpus"
+        }
+      ],
+      "data": [
+        {
+          "type": "dataset",
+          "name": "datasets/bookcorpus",
+          "contents": {
+            "url": "https://huggingface.co/datasets/datasets/bookcorpus"
+          }
+        }
+      ],
+      "type": "data",
+      "bom-ref": "data:datasets/bookcorpus@",
+      "tags": [
+        "ai",
+        "data",
+        "dataset",
+        "huggingface"
+      ],
+      "properties": [
+        {
+          "name": "cdx:ai:provider",
+          "value": "huggingface"
+        },
+        {
+          "name": "cdx:ai:kind",
+          "value": "dataset"
+        },
+        {
+          "name": "cdx:ai:source",
+          "value": "local-huggingface-metadata"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "models/README.md"
+          }
+        ]
+      }
+    },
+    {
+      "group": "google-bert",
+      "name": "bert-base-uncased",
+      "version": "",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0",
+            "url": "https://opensource.org/licenses/Apache-2.0",
+            "properties": [
+              {
+                "name": "cdx:license:category",
+                "value": "Permissive"
+              },
+              {
+                "name": "cdx:license:foss",
+                "value": "true"
+              },
+              {
+                "name": "cdx:license:osiApproved",
+                "value": "true"
+              },
+              {
+                "name": "cdx:license:fsfLibre",
+                "value": "true"
+              },
+              {
+                "name": "cdx:license:deprecated",
+                "value": "false"
+              }
+            ]
+          }
+        }
+      ],
+      "purl": "pkg:huggingface/google-bert/bert-base-uncased",
+      "externalReferences": [
+        {
+          "type": "distribution",
+          "url": "https://huggingface.co/google-bert/bert-base-uncased"
+        }
+      ],
+      "pedigree": {
+        "ancestors": [
+          {
+            "bom-ref": "pkg:huggingface/google-bert/bert-base-uncased",
+            "type": "machine-learning-model",
+            "group": "google-bert",
+            "name": "bert-base-uncased",
+            "purl": "pkg:huggingface/google-bert/bert-base-uncased"
+          }
+        ]
+      },
+      "modelCard": {
+        "modelParameters": {
+          "task": "fill-mask",
+          "architectureFamily": "bert",
+          "modelArchitecture": "BertForMaskedLM",
+          "datasets": [
+            {
+              "ref": "pkg:huggingface/datasets/bookcorpus?repository_url=https%3A%2F%2Fhuggingface.co%2Fdatasets"
+            }
+          ],
+          "inputs": [
+            {
+              "format": "text"
+            }
+          ],
+          "outputs": [
+            {
+              "format": "text"
+            }
+          ]
+        },
+        "considerations": {
+          "useCases": [
+            "fill-mask"
+          ],
+          "technicalLimitations": [
+            "You can use the raw model for either masked language modeling or next sentence prediction, but it's mostly intended to be fine-tuned on a downstream task"
+          ]
+        },
+        "properties": [
+          {
+            "name": "genai:aibom:modelcard:hyperparameter",
+            "value": "{\"context_length\": 512, \"embedding_length\": 768, \"block_count\": 12, \"attention_head_count\": 12, \"feed_forward_length\": 3072}"
+          },
+          {
+            "name": "genai:aibom:modelcard:vocabSize",
+            "value": "30522"
+          },
+          {
+            "name": "genai:aibom:modelcard:contextLength",
+            "value": "512"
+          },
+          {
+            "name": "genai:aibom:trainingDataAvailable",
+            "value": "true"
+          },
+          {
+            "name": "genai:aibom:trainingDataStatus",
+            "value": "Training datasets verified: Dataset(s) exist and are accessible on Hugging Face Hub."
+          },
+          {
+            "name": "owasp:aibom:distribution:modelFileSize",
+            "value": "2918975670"
+          },
+          {
+            "name": "owasp:aibom:distribution:runtimeRequirement",
+            "value": "python"
+          }
+        ]
+      },
+      "type": "machine-learning-model",
+      "bom-ref": "pkg:huggingface/google-bert/bert-base-uncased",
+      "tags": [
+        "ai",
+        "huggingface",
+        "machine-learning-model",
+        "model-repo"
+      ],
+      "properties": [
+        {
+          "name": "cdx:ai:provider",
+          "value": "huggingface"
+        },
+        {
+          "name": "cdx:ai:kind",
+          "value": "model"
+        },
+        {
+          "name": "cdx:ai:modelFamily",
+          "value": "google"
+        },
+        {
+          "name": "cdx:ai:runtime",
+          "value": "transformers"
+        },
+        {
+          "name": "cdx:ai:contextWindow",
+          "value": "512"
+        },
+        {
+          "name": "cdx:ai:source",
+          "value": "local-huggingface-metadata"
+        },
+        {
+          "name": "cdx:ai:confidence",
+          "value": "high"
+        },
+        {
+          "name": "cdx:license:category",
+          "value": "Permissive"
+        }
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "models/README.md"
+          },
+          {
+            "location": "models/config.json"
+          }
+        ]
+      },
+      "description": "No description available"
+    }
+  ],
+  "services": [
+    {
+      "bom-ref": "urn:service:ai:ollama:ollama-service",
+      "group": "ollama",
+      "name": "ollama-service",
+      "provider": {
+        "name": "ollama"
+      },
+      "version": "observed",
+      "endpoints": [],
+      "properties": [
+        {
+          "name": "cdx:ai:kind",
+          "value": "inference-service"
+        },
+        {
+          "name": "cdx:ai:source",
+          "value": "source-code-analysis"
+        },
+        {
+          "name": "cdx:ai:modelId",
+          "value": "llama3.2:1b"
+        },
+        {
+          "name": "cdx:ai:modelFamily",
+          "value": "llama"
+        },
+        {
+          "name": "cdx:ai:modelCount",
+          "value": "1"
+        },
+        {
+          "name": "cdx:ai:modelSelection",
+          "value": "explicit"
+        },
+        {
+          "name": "cdx:ai:deployment",
+          "value": "implicit"
+        },
+        {
+          "name": "cdx:ai:transportSecurity",
+          "value": "unknown"
+        },
+        {
+          "name": "cdx:ai:runtime",
+          "value": "ollama"
+        },
+        {
+          "name": "cdx:ai:confidence",
+          "value": "high"
+        },
+        {
+          "name": "cdx:ai:reviewNeeded",
+          "value": "true"
+        }
+      ],
+      "tags": [
+        "ai"
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "file:/Modelfile@",
+      "dependsOn": [
+        "pkg:generic/ollama/llama3.2:1b"
+      ]
+    },
+    {
+      "ref": "urn:service:ai:ollama:ollama-service",
+      "dependsOn": [
+        "file:/Modelfile@",
+        "pkg:generic/ollama/llama3.2:1b"
+      ]
+    },
+    {
+      "ref": "pkg:huggingface/google-bert/bert-base-uncased",
+      "dependsOn": [
+        "data:datasets/bookcorpus@"
+      ]
+    }
+  ],
+  "formulation": [
+    {
+      "bom-ref": "410e1f6b-beb0-400b-a807-1a5427e20071",
+      "components": [
+        {
+          "type": "file",
+          "name": ".git",
+          "version": "a",
+          "bom-ref": "gitoid:blob:sha1:a",
+          "omniborId": [
+            "gitoid:blob:sha1:a"
+          ],
+          "swhid": [
+            "swh:1:rev:a"
+          ]
+        },
+        {
+          "type": "platform",
+          "name": "java",
+          "version": "openjdk 11.0.29 2025-10-21",
+          "description": "openjdk 11.0.29 2025-10-21\nOpenJDK Runtime Environment (build 11.0.29+7-post-Ubuntu-1ubuntu122.04)\nOpenJDK 64-Bit Server VM (build 11.0.29+7-post-Ubuntu-1ubuntu122.04, mixed mode, sharing)",
+          "properties": [
+            {
+              "name": "java:modules",
+              "value": "java.base@11.0.29, java.compiler@11.0.29, java.datatransfer@11.0.29, java.desktop@11.0.29, java.instrument@11.0.29, java.logging@11.0.29, java.management@11.0.29, java.management.rmi@11.0.29, java.naming@11.0.29, java.net.http@11.0.29, java.prefs@11.0.29, java.rmi@11.0.29, java.scripting@11.0.29, java.se@11.0.29, java.security.jgss@11.0.29, java.security.sasl@11.0.29, java.smartcardio@11.0.29, java.sql@11.0.29, java.sql.rowset@11.0.29, java.transaction.xa@11.0.29, java.xml@11.0.29, java.xml.crypto@11.0.29, jdk.accessibility@11.0.29, jdk.aot@11.0.29, jdk.attach@11.0.29, jdk.charsets@11.0.29, jdk.compiler@11.0.29, jdk.crypto.cryptoki@11.0.29, jdk.crypto.ec@11.0.29, jdk.dynalink@11.0.29, jdk.editpad@11.0.29, jdk.hotspot.agent@11.0.29, jdk.httpserver@11.0.29, jdk.internal.ed@11.0.29, jdk.internal.jvmstat@11.0.29, jdk.internal.le@11.0.29, jdk.internal.opt@11.0.29, jdk.internal.vm.ci@11.0.29, jdk.internal.vm.compiler@11.0.29, jdk.internal.vm.compiler.management@11.0.29, jdk.jartool@11.0.29, jdk.javadoc@11.0.29, jdk.jcmd@11.0.29, jdk.jconsole@11.0.29, jdk.jdeps@11.0.29, jdk.jdi@11.0.29, jdk.jdwp.agent@11.0.29, jdk.jfr@11.0.29, jdk.jlink@11.0.29, jdk.jshell@11.0.29, jdk.jsobject@11.0.29, jdk.jstatd@11.0.29, jdk.localedata@11.0.29, jdk.management@11.0.29, jdk.management.agent@11.0.29, jdk.management.jfr@11.0.29, jdk.naming.dns@11.0.29, jdk.naming.ldap@11.0.29, jdk.naming.rmi@11.0.29, jdk.net@11.0.29, jdk.pack@11.0.29, jdk.rmic@11.0.29, jdk.scripting.nashorn@11.0.29, jdk.scripting.nashorn.shell@11.0.29, jdk.sctp@11.0.29, jdk.security.auth@11.0.29, jdk.security.jgss@11.0.29, jdk.unsupported@11.0.29, jdk.unsupported.desktop@11.0.29, jdk.xml.dom@11.0.29, jdk.zipfs@11.0.29"
+            }
+          ]
+        },
+        {
+          "type": "platform",
+          "name": "python",
+          "version": "3.13.9",
+          "description": "pip 25.3 from /opt/conda/lib/python3.13/site-packages/pip (python 3.13)"
+        },
+        {
+          "type": "platform",
+          "name": "Node.js",
+          "version": "20.19.6",
+          "components": [
+            {
+              "name": "linux-vdso.so.1",
+              "type": "library",
+              "scope": "excluded",
+              "purl": "pkg:generic/linux-vdso.so.1#linux-vdso.so.1",
+              "bom-ref": "pkg:generic/linux-vdso.so.1"
+            },
+            {
+              "name": "libdl.so.2",
+              "type": "library",
+              "scope": "excluded",
+              "purl": "pkg:generic/libdl.so.2#/usr/lib/x86_64-linux-gnu/libdl.so.2",
+              "bom-ref": "pkg:generic/libdl.so.2"
+            },
+            {
+              "name": "libstdc++.so.6",
+              "type": "library",
+              "scope": "excluded",
+              "purl": "pkg:generic/libstdc++.so.6#/usr/lib/x86_64-linux-gnu/libstdc++.so.6",
+              "bom-ref": "pkg:generic/libstdc++.so.6"
+            },
+            {
+              "name": "libm.so.6",
+              "type": "library",
+              "scope": "excluded",
+              "purl": "pkg:generic/libm.so.6#/usr/lib/x86_64-linux-gnu/libm.so.6",
+              "bom-ref": "pkg:generic/libm.so.6"
+            },
+            {
+              "name": "libgcc_s.so.1",
+              "type": "library",
+              "scope": "excluded",
+              "purl": "pkg:generic/libgcc_s.so.1#/usr/lib/x86_64-linux-gnu/libgcc_s.so.1",
+              "bom-ref": "pkg:generic/libgcc_s.so.1"
+            },
+            {
+              "name": "libpthread.so.0",
+              "type": "library",
+              "scope": "excluded",
+              "purl": "pkg:generic/libpthread.so.0#/usr/lib/x86_64-linux-gnu/libpthread.so.0",
+              "bom-ref": "pkg:generic/libpthread.so.0"
+            },
+            {
+              "name": "libc.so.6",
+              "type": "library",
+              "scope": "excluded",
+              "purl": "pkg:generic/libc.so.6#/usr/lib/x86_64-linux-gnu/libc.so.6",
+              "bom-ref": "pkg:generic/libc.so.6"
+            },
+            {
+              "name": "ld-linux-x86-64.so.2",
+              "type": "library",
+              "scope": "excluded",
+              "purl": "pkg:generic/ld-linux-x86-64.so.2#/lib64/ld-linux-x86-64.so.2",
+              "bom-ref": "pkg:generic/ld-linux-x86-64.so.2"
+            }
+          ],
+          "description": "npm: 10.8.2"
+        },
+        {
+          "type": "platform",
+          "name": "gcc",
+          "version": "gcc (Ubuntu 11.4.0-1ubuntu1~22.04) 11.4.0",
+          "description": "install: /usr/lib/gcc/x86_64-linux-gnu/11/\\nprograms: =/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/bin/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/bin/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/bin/\\nlibraries: =/usr/lib/gcc/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/lib/x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/lib/x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/11/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../x86_64-linux-gnu/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../lib/:/lib/x86_64-linux-gnu/11/:/lib/x86_64-linux-gnu/:/lib/../lib/:/usr/lib/x86_64-linux-gnu/11/:/usr/lib/x86_64-linux-gnu/:/usr/lib/../lib/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../../x86_64-linux-gnu/lib/:/usr/lib/gcc/x86_64-linux-gnu/11/../../../:/lib/:/usr/lib/"
+        }
+      ],
+      "workflows": [
+        {
+          "bom-ref": "2e6f8433-9c85-476e-be3a-de3f0ce259b6",
+          "uid": "2f2b7f0f-0922-4c54-b797-3d15f6583a05",
+          "taskTypes": [
+            "build"
+          ],
+          "inputs": [
+            {
+              "environmentVars": [
+                {
+                  "name": "GIT_EDITOR",
+                  "value": "true"
+                },
+                {
+                  "name": "CONDA_DEFAULT_ENV",
+                  "value": "aibom-cli"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
