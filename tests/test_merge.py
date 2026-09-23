@@ -40,3 +40,41 @@ def test_model_and_software_do_not_collide():
     ai = _doc([{"bom-ref": "m", "type": "machine-learning-model", "name": "bert", "purl": "pkg:huggingface/google-bert/bert-base-uncased@abc"}])
     out = merge([sw, ai])
     assert {c["type"] for c in out["components"]} == {"library", "machine-learning-model"}
+
+
+def test_modelcard_dataset_refs_follow_rekeyed_bom_refs():
+    """데이터셋 컴포넌트의 bom-ref 가 병합 키로 바뀌면 모델카드의 ref 도 같이 바뀌어야 한다 (끊긴 참조 방지)."""
+    ai = _doc([
+        {"bom-ref": "pkg:huggingface/datasets/bookcorpus?x=1", "type": "data", "group": "datasets", "name": "bookcorpus"},
+        {"bom-ref": "m", "type": "machine-learning-model", "name": "bert", "purl": "pkg:huggingface/google-bert/bert-base-uncased",
+         "modelCard": {"modelParameters": {"datasets": [{"ref": "pkg:huggingface/datasets/bookcorpus?x=1"}]}}},
+    ], [{"ref": "m", "dependsOn": ["pkg:huggingface/datasets/bookcorpus?x=1"]}])
+    out = merge([ai])
+    data = next(c for c in out["components"] if c["type"] == "data")
+    model = next(c for c in out["components"] if c["type"] == "machine-learning-model")
+    ref = model["modelCard"]["modelParameters"]["datasets"][0]["ref"]
+    assert ref == data["bom-ref"] == "data:datasets/bookcorpus@"
+    assert out["dependencies"] == [{"ref": model["bom-ref"], "dependsOn": [data["bom-ref"]]}]
+
+
+def test_cdxgen_purl_style_dataset_ref_is_linked_to_the_data_component():
+    """cdxgen 은 modelCard datasets[].ref 를 데이터셋 컴포넌트의 bom-ref 가 아닌 purl 로 쓴다 (원본부터 끊김).
+    이름·URL 또는 의존성 엣지로 데이터셋 컴포넌트에 이어야 한다."""
+    ai = _doc([
+        {"bom-ref": "cdxgen:ai:dataset:huggingface:datasets-bookcorpus", "type": "data", "group": "datasets", "name": "bookcorpus",
+         "data": [{"type": "dataset", "name": "datasets/bookcorpus", "contents": {"url": "https://huggingface.co/datasets/datasets/bookcorpus"}}]},
+        {"bom-ref": "pkg:huggingface/google-bert/bert-base-uncased", "type": "machine-learning-model", "name": "bert-base-uncased",
+         "purl": "pkg:huggingface/google-bert/bert-base-uncased",
+         "modelCard": {"modelParameters": {"datasets": [{"ref": "pkg:huggingface/datasets/bookcorpus?repository_url=https%3A%2F%2Fhuggingface.co%2Fdatasets"}]}}},
+    ], [{"ref": "pkg:huggingface/google-bert/bert-base-uncased", "dependsOn": ["cdxgen:ai:dataset:huggingface:datasets-bookcorpus"]}])
+    out = merge([ai])
+    data = next(c for c in out["components"] if c["type"] == "data")
+    model = next(c for c in out["components"] if c["type"] == "machine-learning-model")
+    assert model["modelCard"]["modelParameters"]["datasets"][0]["ref"] == data["bom-ref"]
+    # 이름으로 못 맞춰도 의존성 엣지 하나면 잇는다
+    ai["components"][0]["data"] = []; ai["components"][0]["name"] = "corpus-x"; ai["components"][0].pop("group")
+    ai["components"][1]["modelCard"]["modelParameters"]["datasets"][0]["ref"] = "pkg:huggingface/datasets/something-else"
+    out2 = merge([ai])
+    m2 = next(c for c in out2["components"] if c["type"] == "machine-learning-model")
+    d2 = next(c for c in out2["components"] if c["type"] == "data")
+    assert m2["modelCard"]["modelParameters"]["datasets"][0]["ref"] == d2["bom-ref"]

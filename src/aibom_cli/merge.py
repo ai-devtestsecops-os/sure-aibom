@@ -36,6 +36,27 @@ def identity(component: dict) -> str:
     return f"{component.get('type', 'component')}:{component.get('group', '')}/{component.get('name', '')}@{component.get('version', '')}"
 
 
+def _resolve_dataset_ref(ref: str, model_key: str, components: dict[str, dict], deps: dict[str, set[str]]) -> str | None:
+    """끊긴 modelCard datasets[].ref 를 데이터셋 컴포넌트에 잇는다.
+
+    1) ref 의 경로 끝(`datasets/bookcorpus`, `bookcorpus`)이 type=data 컴포넌트의 group/name, data[].name,
+       contents.url 과 맞으면 그것. 2) 없으면 그 모델이 dependsOn 하는 data 컴포넌트가 하나뿐일 때 그것.
+    """
+    path = ref.split("?", 1)[0].split("pkg:huggingface/", 1)[-1].strip("/")
+    tails = {path, path.rsplit("/", 1)[-1]}
+    datasets = {k: c for k, c in components.items() if c.get("type") == "data"}
+    for key, c in datasets.items():
+        names = {f"{c.get('group', '')}/{c.get('name', '')}".strip("/"), c.get("name", "")}
+        for d in c.get("data") or []:
+            names.add(d.get("name", ""))
+            url = (d.get("contents") or {}).get("url") or ""
+            names.add(url.rstrip("/").rsplit("/datasets/", 1)[-1] if "/datasets/" in url else url)
+        if tails & names:
+            return key
+    linked = [t for t in deps.get(model_key, set()) if t in datasets]
+    return linked[0] if len(linked) == 1 else None
+
+
 def _fill_missing(base: dict, extra: dict) -> None:
     """base 에 없는 키만 extra 에서 채운다. properties/externalReferences 는 합친다."""
     for k, v in extra.items():
@@ -112,6 +133,20 @@ def merge(docs: list[dict], root: tuple[str, str] | None = None) -> dict:
 
     def remap(ref: str) -> str:
         return ref_map.get(ref, ref)
+
+    # bom-ref 를 병합 키로 다시 매겼으니, 컴포넌트 안에서 다른 컴포넌트를 가리키는 참조도 따라 바꾼다.
+    # 지금은 modelCard.modelParameters.datasets[].ref (모델 → 데이터셋) 하나다.
+    # cdxgen 은 이 ref 를 데이터셋 컴포넌트의 bom-ref 가 아닌 purl 문자열로 써서 원본부터 끊겨 있으므로,
+    # 재매핑으로 안 풀리면 이름·URL·의존성 엣지로 데이터셋 컴포넌트를 찾아 잇는다.
+    merged_deps_preview = {remap(r): {remap(t) for t in ts} for r, ts in dependencies.items()}
+    for comp in components.values():
+        for entry in ((comp.get("modelCard") or {}).get("modelParameters") or {}).get("datasets") or []:
+            if not (isinstance(entry, dict) and entry.get("ref")):
+                continue
+            ref = remap(entry["ref"])
+            if ref not in components:
+                ref = _resolve_dataset_ref(entry["ref"], comp["bom-ref"], components, merged_deps_preview) or ref
+            entry["ref"] = ref
 
     merged_deps: dict[str, set[str]] = {}
     for ref, targets in dependencies.items():
