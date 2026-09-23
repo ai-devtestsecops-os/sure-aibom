@@ -1,8 +1,7 @@
 """tests/fixtures/mixed 를 실제 syft·cdxgen 으로 스캔해 병합 결과를 확인한다.
-두 도구가 없으면 건너뛴다. owasp 보강은 네트워크가 필요해 AIBOM_OFFLINE=1 로 뺀다 — regulation 은 cdxgen 의
+두 도구가 없으면 건너뛴다. owasp 보강은 네트워크가 필요해 skip_reason 을 패치해=1 로 뺀다 — regulation 은 cdxgen 의
 cdx:ai:runtime / cdx:ai:contextWindow 만으로 technicalRequirements 와 inputs[0].maxSize 를 채운다."""
 import json
-import os
 import shutil
 from pathlib import Path
 
@@ -15,19 +14,14 @@ from aibom_cli.validate import validate_spdx
 FIXTURE = Path(__file__).parent / "fixtures" / "mixed"
 
 
-def _cdxgen_available() -> bool:
-    b = os.environ.get("CDXGEN_BIN")
-    return bool(shutil.which("cdxgen") or (b and Path(b).exists()))
-
-
 pytestmark = pytest.mark.skipif(
-    not (shutil.which(os.environ.get("SYFT_BIN", "syft")) and _cdxgen_available()),
+    not (shutil.which("syft") and shutil.which("cdxgen")),
     reason="syft 와 cdxgen 이 모두 있어야 한다",
 )
 
 
 def test_mixed_fixture_yields_all_three_domains(tmp_path, monkeypatch):
-    monkeypatch.setenv("AIBOM_OFFLINE", "1")                                # 보강은 네트워크가 필요해 강제 생략
+    monkeypatch.setattr("aibom_cli.enrich.skip_reason", lambda: "테스트")                                # 보강은 네트워크가 필요해 강제 생략
     cdx = tmp_path / "bom.cdx.json"
     spdx = tmp_path / "bom.spdx.json"
     assert main(["scan", str(FIXTURE), "-o", str(cdx)]) == 0                       # 기본 --form properties
@@ -76,7 +70,7 @@ def test_mixed_fixture_yields_all_three_domains(tmp_path, monkeypatch):
 
 
 def test_typed_form_scan_validates_against_v06_only(tmp_path, monkeypatch):
-    monkeypatch.setenv("AIBOM_OFFLINE", "1")
+    monkeypatch.setattr("aibom_cli.enrich.skip_reason", lambda: "테스트")
     cdx = tmp_path / "typed.cdx.json"
     assert main(["scan", str(FIXTURE), "--form", "typed", "-o", str(cdx)]) == 0
     assert main(["validate", str(cdx), "--spec", "v0.6"]) == 0
@@ -86,3 +80,17 @@ def test_typed_form_scan_validates_against_v06_only(tmp_path, monkeypatch):
     assert bert["modelCard"]["considerations"]["technicalRequirements"] == ["transformers"]
     assert bert["modelCard"]["modelParameters"]["inputs"][0]["maxSize"] == "512"
     assert not any(p["name"].startswith("aibom:model:") for p in bert["modelCard"].get("properties", []))
+
+
+def test_image_target_with_empty_cdxgen_result_warns(tmp_path, monkeypatch, capsys):
+    """이미지 입력에서 cdxgen 이 빈 결과를 내면(데몬 없음) 경고가 남아야 한다. 디렉터리 입력에서는 조용하다."""
+    import aibom_cli.cli as cli
+    monkeypatch.setattr("aibom_cli.enrich.skip_reason", lambda: "테스트")
+    empty = {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []}
+    monkeypatch.setattr(cli, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7",
+                        "components": [{"bom-ref": "a", "type": "library", "name": "a", "version": "1", "purl": "pkg:pypi/a@1"}]})
+    monkeypatch.setattr(cli, "run_cdxgen", lambda target, workdir: dict(empty))
+    assert cli.main(["scan", "some-image:latest", "-o", str(tmp_path / "i.json")]) == 0
+    assert "데몬" in capsys.readouterr().err
+    assert cli.main(["scan", str(FIXTURE), "-o", str(tmp_path / "d.json")]) == 0
+    assert "데몬" not in capsys.readouterr().err

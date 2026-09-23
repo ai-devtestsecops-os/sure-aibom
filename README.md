@@ -1,6 +1,8 @@
 # aibom-cli
 
-syft, cdxgen, OWASP aibom-generator 를 묶어 데이터셋·모델·소프트웨어를 한 AI-BOM 에 담는다.
+오픈소스 세 개(syft, cdxgen, OWASP aibom-generator)를 활용해 데이터셋·모델·소프트웨어 BOM(D/M/S-BOM)을 생성하고,
+그 위에 규제(EU AI Act, ISO/IEC 42001, NIST AI RMF)가 요구하는 필드를 더해 CycloneDX 1.7 한 문서로 합친다.
+세 도구가 못 채우는 데이터셋 BOM 생성기는 별도로 만들어 붙일 예정이다.
 
 ## 파이프라인
 
@@ -33,23 +35,32 @@ conda env config vars set AIBOM_GENERATOR_DIR=$PWD/aibom-generator && conda acti
 
 ## 사용
 
-```bash
-aibom-cli scan ./project -o out/bom.cdx.json                 # 생성 — CycloneDX 1.7, 규제 필드는 aibom:model:* 프로퍼티로
-aibom-cli scan ./project --form typed -o out/bom.v06.cdx.json  # 규제 필드를 v0.6 타입 있는 필드로
-aibom-cli scan alpine:latest -o out/alpine.cdx.json
-aibom-cli validate out/bom.cdx.json --spec 1.7               # 공식 CycloneDX 1.7 스키마로
-aibom-cli validate out/bom.v06.cdx.json --spec v0.6          # aibom-v0.6 CycloneDX 스키마로
 ```
+Usage:
+  aibom-cli scan     <TARGET> [flags]
+  aibom-cli validate <BOM> --spec {1.7,v0.6}
 
-| 서브커맨드 | 옵션 | 뜻 |
-|---|---|---|
-| `scan <target>` | `-o PATH` | CycloneDX 1.7 출력 경로. 없으면 표준출력 |
-| | `--form properties\|typed` | 규제 필드를 싣는 형태. `properties`(기본) 는 `modelCard.properties` 의 `aibom:model:*` 키 — 공식 1.7 에 적합. `typed` 는 v0.6 스키마의 타입 있는 필드 — v0.6 를 아는 소비자용 |
-| `validate <bom>` | `--spec 1.7\|v0.6` (필수) | `1.7` 은 `schemas/bom-1.7.schema.json`, `v0.6` 은 `schemas/aibom-v0.6-cyclonedx.schema.json` 으로 검사한다. 다른 쪽으로 자동 전환하지 않는다 — `typed` 출력은 `--spec 1.7` 에서 실패한다 |
+Examples:
+  aibom-cli scan ./project -o bom.cdx.json                    디렉터리를 스캔하여 규제 필드를 properties로 넣음
+  aibom-cli scan ./project -o bom.cdx.json --form typed       디렉터리를 스캔하여 규제 필드를 v0.6 필드로 넣음
+  aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔
+  aibom-cli scan image.tar -o image.cdx.json                  컨테이너 이미지를 스캔 (Docker/Podman 데몬이 없는 경우)
+  aibom-cli scan ./project                                    표준출력으로 출력
+  aibom-cli validate bom.cdx.json --spec 1.7                  CycloneDX 1.7 스키마로 검증
+  aibom-cli validate bom.cdx.json --spec v0.6                 AI-BOM v0.6 스키마로 검증
 
-종료 코드: 0 성공 · 2 도구·입력 문제 · 3 검증 실패.
-`scan` 은 대상 코드를 실행하지 않는다 (cdxgen 은 `--no-install-deps` 고정).
-aibom-generator 보강은 `huggingface.co` 에 닿을 때만 자동으로 하고, `AIBOM_OFFLINE=1` 이면 강제로 생략한다.
+Flags (scan):
+  -o, --output PATH               출력 경로. 없으면 표준출력
+      --form {properties,typed}   규제 필드를 내보내는 형태 (default: properties)
+                                    properties  CycloneDX의 properties로 내보냄
+                                    typed       AI-BOM v0.6 스키마의 필드로 내보냄
+
+Flags (validate):
+      --spec {1.7,v0.6}           검증할 스키마 (필수). 1.7 = CycloneDX 1.7, v0.6 = AI-BOM v0.6
+
+Exit codes:
+  0  성공        2  도구·입력 문제        3  검증 실패
+```
 
 ## 규제 필드
 
@@ -93,3 +104,9 @@ data/cdx_spdx_mapping.json   ai-bom 의 CDX↔SPDX 매핑표 — SPDX 변환기�
 | 2. aibom-generator 보강                | 골격 완료                                                                  |
 | 3. CycloneDX → SPDX 3.0.1 변환기 | 미착수 (초안 코드만 `spdx/` 에 있음, 미검증·CLI 미노출) |
 | 4. 규제 모듈 (`regulation`) | 일부 — 4개 필드 정규화 |
+
+## 출처
+
+- syft — https://github.com/anchore/syft
+- cdxgen — https://github.com/CycloneDX/cdxgen
+- OWASP aibom-generator — https://github.com/GenAI-Security-Project/aibom-generator

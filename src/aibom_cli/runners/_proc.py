@@ -1,7 +1,5 @@
 """서브프로세스 공통 처리."""
 import json
-import os
-import shutil
 import subprocess
 import sys
 from pathlib import Path
@@ -11,9 +9,6 @@ class RunnerError(RuntimeError):
     pass
 
 
-def which_or_env(env_name: str, default: str) -> str:
-    """환경변수 우선, 없으면 PATH 에서 찾는다. 둘 다 없으면 default 를 그대로 돌려준다(에러는 실행 시)."""
-    return os.environ.get(env_name) or shutil.which(default) or default
 
 
 def run(cmd: list[str], cwd: str | None = None, timeout: int = 1800) -> subprocess.CompletedProcess:

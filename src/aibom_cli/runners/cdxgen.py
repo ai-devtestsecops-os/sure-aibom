@@ -5,27 +5,18 @@
 
 --include-formulation 은 쓰지 않는다. 모델·데이터셋 컴포넌트에는 영향이 없고, cdxgen 실행 환경
 (git 트리 전체, CONDA_PREFIX 같은 환경변수)을 formulation[] 에 실어 스캔 머신 정보가 새기 때문이다.
-
-CDXGEN_BIN 이 .js 파일이면 node 로 실행한다(클론한 저장소를 바로 쓰는 경우).
 """
-import os
 from pathlib import Path
 
-from ._proc import RunnerError, load_json_file, run, which_or_env
+from ._proc import RunnerError, load_json_file, run
 
 SPEC_VERSION = "1.7"
 
 
-def _command() -> list[str]:
-    binary = which_or_env("CDXGEN_BIN", "cdxgen")
-    if binary.endswith(".js"):
-        return [os.environ.get("NODE_BIN", "node"), binary]
-    return [binary]
-
-
 def run_cdxgen(target: str, workdir: Path, install_deps: bool = False) -> dict:
     out = workdir / "cdxgen.cdx.json"
-    cmd = _command() + [
+    cmd = [
+        "cdxgen",
         target,
         "-t", "ai",
         "--spec-version", SPEC_VERSION,

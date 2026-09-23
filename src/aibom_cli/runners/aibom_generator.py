@@ -17,7 +17,7 @@ def run_aibom_generator(hf_id: str, workdir: Path) -> dict:
     repo = os.environ.get("AIBOM_GENERATOR_DIR")
     if not repo:
         raise RunnerError("AIBOM_GENERATOR_DIR 환경변수가 없다 (aibom-generator 클론 경로)")
-    python = os.environ.get("AIBOM_GENERATOR_PYTHON", sys.executable)
+    python = sys.executable
     safe = hf_id.replace("/", "__")
     out = workdir / f"owasp.{safe}.cdx.json"
     cmd = [python, "-m", "src.cli", hf_id, "-o", str(out)]

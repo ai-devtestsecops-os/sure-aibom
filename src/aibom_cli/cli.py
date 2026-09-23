@@ -1,15 +1,4 @@
-"""aibom-cli — 서브커맨드 셋.
-
-    scan     <target> [-o bom.json] [--form properties|typed]   디렉터리·이미지를 스캔해 CycloneDX 1.7 을 만든다 (생성만)
-    validate <bom> --spec 1.7|v0.6                              CycloneDX 문서를 고른 스키마 하나로 검증한다
-
-scan 은 syft(소프트웨어) + cdxgen(모델·데이터셋) 을 돌려 병합하고 aibom-generator 로 보강한 뒤,
-regulation 이 모델 컴포넌트의 v0.6 규제 필드를 정규화한다 — --form properties(기본) 는 aibom:model:* 프로퍼티로
-(공식 1.7 소비자용), --form typed 는 v0.6 스키마의 타입 있는 필드로.
-보강은 huggingface.co 에 닿을 때만 한다 (AIBOM_OFFLINE=1 이면 강제 생략).
-검증은 scan 안에서 하지 않고 파일을 받아 따로 한다. --spec 은 필수이고 다른 쪽으로 자동 전환하지 않는다.
-SPDX 3.0.1 변환기(spdx/)는 재검증이 끝날 때까지 CLI 에 노출하지 않는다.
-"""
+"""aibom-cli 진입점 — scan(생성) · validate(검증). 사용법은 README 또는 `aibom-cli --help`."""
 from __future__ import annotations
 
 import argparse
@@ -69,9 +58,15 @@ def cmd_scan(args: argparse.Namespace) -> int:
         ("cdxgen", lambda: run_cdxgen(args.target, workdir)),
     ):
         try:
-            docs.append(runner())
+            doc = runner()
         except RunnerError as e:
             _log(f"[aibom-cli] {name}: {e}")
+            continue
+        if name == "cdxgen" and not Path(args.target).is_dir() and not doc.get("components"):
+            # cdxgen 은 레지스트리에서 이미지를 직접 받지 못한다. 데몬이 없으면 조용히 빈 결과를 내므로 여기서 알린다.
+            _log("[aibom-cli] cdxgen 이 이미지에서 아무것도 읽지 못했다 — Docker/Podman 데몬이 없으면 모델·데이터셋이 빠진다. "
+                 "이미지를 .tar 로 내보내 넘기면 데몬 없이도 읽는다")
+        docs.append(doc)
 
     if not docs:
         _log("[aibom-cli] 생산자 결과가 하나도 없다")
@@ -112,28 +107,64 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
 # ── parser ──────────────────────────────────────────────────────────────────
 
+EXAMPLES = """\
+examples:
+  aibom-cli scan ./project -o bom.cdx.json                    디렉터리를 스캔하여 규제 필드를 properties로 넣음
+  aibom-cli scan ./project -o bom.cdx.json --form typed       디렉터리를 스캔하여 규제 필드를 v0.6 필드로 넣음
+  aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔
+  aibom-cli scan image.tar -o image.cdx.json                  컨테이너 이미지를 스캔 (Docker/Podman 데몬이 없는 경우)
+  aibom-cli scan ./project                                    표준출력으로 출력
+  aibom-cli validate bom.cdx.json --spec 1.7                  CycloneDX 1.7 스키마로 검증
+  aibom-cli validate bom.cdx.json --spec v0.6                 AI-BOM v0.6 스키마로 검증
+
+exit codes:
+  0  성공        2  도구·입력 문제        3  검증 실패
+"""
+
+
+def _formatter(prog: str) -> argparse.HelpFormatter:
+    """옵션 이름과 설명을 한 줄에 놓고(max_help_position), 설명 안의 줄바꿈은 그대로 둔다."""
+    return argparse.RawTextHelpFormatter(prog, max_help_position=32, width=110)
+
+
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="aibom-cli", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(
+        prog="aibom-cli",
+        usage="aibom-cli <command> [flags]",
+        description="syft·cdxgen·OWASP aibom-generator 로 데이터셋·모델·소프트웨어 BOM 을 만들고 규제 필드를 더해 CycloneDX 1.7 로 낸다.",
+        epilog=EXAMPLES,
+        formatter_class=_formatter,
+    )
     p.add_argument("--version", action="version", version=f"aibom-cli {__version__}")
-    sub = p.add_subparsers(dest="command", required=True)
+    sub = p.add_subparsers(dest="command", required=True, title="commands", metavar="<command>")
 
     s = sub.add_parser(
         "scan",
         help="디렉터리 또는 컨테이너 이미지를 스캔해 CycloneDX 1.7 AI-BOM 을 만든다",
-        epilog="환경변수: AIBOM_GENERATOR_DIR (owasp 클론 경로) · AIBOM_OFFLINE=1 (보강 강제 생략) · SYFT_BIN, CDXGEN_BIN (PATH 에 없을 때만)",
+        usage="aibom-cli scan <TARGET> [-o PATH] [--form {properties,typed}]",
+        epilog="environment:\n  AIBOM_GENERATOR_DIR           aibom-generator 클론 경로 (설치 절에서 설정)",
+        formatter_class=_formatter,
     )
-    s.add_argument("target", help="디렉터리 경로 또는 이미지 참조")
-    s.add_argument("-o", "--output", metavar="PATH", help="CycloneDX 1.7 JSON 출력 경로 (없으면 표준출력)")
-    s.add_argument("--form", choices=FORMS, default="properties",
-                   help="규제 필드를 싣는 형태 — properties: aibom:model:* 프로퍼티 (기본, 공식 1.7 적합) · typed: v0.6 타입 있는 필드")
+    s.add_argument("target", metavar="TARGET", help="디렉터리 경로, 컨테이너 이미지 참조, 또는 이미지 .tar")
+    s.add_argument("-o", "--output", metavar="PATH", help="출력 경로. 없으면 표준출력")
+    s.add_argument("--form", choices=FORMS, default="properties", metavar="{properties,typed}",
+                   help="규제 필드를 내보내는 형태 (default: properties)\n"
+                        "  properties  CycloneDX의 properties로 내보냄\n"
+                        "  typed       AI-BOM v0.6 스키마의 필드로 내보냄")
     s.set_defaults(func=cmd_scan)
 
-    v = sub.add_parser("validate", help="CycloneDX 문서를 --spec 이 고른 스키마 하나로 검증한다")
-    v.add_argument("bom", help="검증할 CycloneDX JSON 파일")
-    v.add_argument("--spec", choices=tuple(CDX_SCHEMA_BY_SPEC), required=True,
-                   help="1.7: 공식 CycloneDX 1.7 (properties 형) · v0.6: aibom-v0.6 CycloneDX 스키마 (typed 형)")
+    v = sub.add_parser(
+        "validate",
+        help="CycloneDX 문서를 --spec 이 고른 스키마로 검증한다",
+        usage="aibom-cli validate <BOM> --spec {1.7,v0.6}",
+        formatter_class=_formatter,
+    )
+    v.add_argument("bom", metavar="BOM", help="검증할 CycloneDX JSON 파일")
+    v.add_argument("--spec", choices=tuple(CDX_SCHEMA_BY_SPEC), required=True, metavar="{1.7,v0.6}",
+                   help="검증할 스키마 (필수)\n"
+                        "  1.7   CycloneDX 1.7\n"
+                        "  v0.6  AI-BOM v0.6")
     v.set_defaults(func=cmd_validate)
-
     return p
 
 

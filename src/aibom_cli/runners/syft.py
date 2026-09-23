@@ -5,16 +5,15 @@
 """
 from pathlib import Path
 
-from ._proc import RunnerError, load_json_file, run, which_or_env
+from ._proc import RunnerError, load_json_file, run
 
 SPEC_VERSION = "1.7"
 
 
 def run_syft(target: str, workdir: Path) -> dict:
-    binary = which_or_env("SYFT_BIN", "syft")
     out = workdir / "syft.cdx.json"
     cmd = [
-        binary,
+        "syft",
         target,
         "--select-catalogers", "-ai",
         "-o", f"cyclonedx-json@{SPEC_VERSION}={out}",

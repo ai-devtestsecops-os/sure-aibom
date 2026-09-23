@@ -40,8 +40,6 @@ def _hf_reachable(timeout: float = 3.0) -> bool:
 
 def skip_reason() -> str | None:
     """보강을 건너뛰어야 하면 그 이유를, 해도 되면 None 을 돌려준다."""
-    if os.environ.get("AIBOM_OFFLINE") == "1":
-        return "AIBOM_OFFLINE=1"
     if not os.environ.get("AIBOM_GENERATOR_DIR"):
         return "AIBOM_GENERATOR_DIR 미설정"
     if not _hf_reachable():
