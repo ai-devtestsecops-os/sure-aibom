@@ -1,4 +1,4 @@
-"""aibom-cli 진입점 — scan(생성) · validate(검증). 사용법은 README 또는 `aibom-cli --help`."""
+"""aibom-cli 진입점 (scan(생성) · validate(검증). 사용법은 README 또는 `aibom-cli --help`."""
 from __future__ import annotations
 
 import argparse
@@ -19,8 +19,8 @@ from .validate import CDX_SCHEMA_BY_SPEC, validate_cdx
 EXIT_TOOL = 2      # 생산자·입력 문제
 EXIT_INVALID = 3   # 검증 실패
 
-SPEC_NOTE = {"1.7": "공식 CycloneDX 1.7 — properties 형, 표준 소비자가 읽을 수 있다",
-             "v0.6": "aibom-v0.6 CycloneDX 스키마 — typed 형, v0.6 를 아는 소비자만 읽을 수 있다"}
+SPEC_NOTE = {"1.7": "공식 CycloneDX 1.7 (properties 형, 표준 소비자가 읽을 수 있다)",
+             "v0.6": "aibom-v0.6 CycloneDX 스키마 (typed 형, v0.6 를 아는 소비자만 읽을 수 있다)"}
 
 
 def _log(msg: str) -> None:
@@ -64,7 +64,7 @@ def cmd_scan(args: argparse.Namespace) -> int:
             continue
         if name == "cdxgen" and not Path(args.target).is_dir() and not doc.get("components"):
             # cdxgen 은 레지스트리에서 이미지를 직접 받지 못한다. 데몬이 없으면 조용히 빈 결과를 내므로 여기서 알린다.
-            _log("[aibom-cli] cdxgen 이 이미지에서 아무것도 읽지 못했다 — Docker/Podman 데몬이 없으면 모델·데이터셋이 빠진다. "
+            _log("[aibom-cli] cdxgen 이 이미지에서 아무것도 읽지 못했다 (Docker/Podman 데몬이 없으면 모델·데이터셋이 빠진다. "
                  "이미지를 .tar 로 내보내 넘기면 데몬 없이도 읽는다")
         docs.append(doc)
 

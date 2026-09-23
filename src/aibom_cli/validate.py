@@ -8,9 +8,10 @@ from __future__ import annotations
 import json
 import re
 from functools import lru_cache
+from importlib.resources import files
 from pathlib import Path
 
-SCHEMA_DIR = Path(__file__).resolve().parents[2] / "schemas"
+SCHEMA_DIR = Path(str(files("aibom_cli") / "schemas"))   # 패키지 안. 편집 설치·wheel 설치 어디서든 같은 위치
 CDX_SCHEMA = SCHEMA_DIR / "aibom-v0.6-cyclonedx.schema.json"
 CDX_OFFICIAL = SCHEMA_DIR / "bom-1.7.schema.json"
 SPDX_SCHEMA = SCHEMA_DIR / "aibom-v0.6-spdx.schema.json"

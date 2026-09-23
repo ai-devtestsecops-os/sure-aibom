@@ -19,5 +19,8 @@ aibom-cli = "aibom_cli.cli:main"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+aibom_cli = ["schemas/*.json"]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
