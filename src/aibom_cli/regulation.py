@@ -1,13 +1,23 @@
-"""병합 문서에 이미 들어 있는 값으로 aibom-v0.6 규제 필드 네 개를 정규화한다.
+"""병합 문서에 이미 들어 있는 값으로 aibom-v0.6 규제 필드를 정규화한다. --form 스위치는 여기 하나다.
 
-대상은 type=machine-learning-model 컴포넌트만. 가져오는 값은 전부 component.properties /
-component.modelCard.properties 에 있는 것이다 — 조회·추론·본문 해석은 하지 않는다.
+모델(type=machine-learning-model): 가져오는 값은 전부 component.properties / component.modelCard.properties 에 있는
+것이다 — 조회·추론·본문 해석은 하지 않는다.
 
     v0.6 필드                 typed 형 (modelCard.…)                         properties 형 (modelCard.properties)
     hyperparameters           modelParameters.hyperparameters[]{name,value}  aibom:model:hyperparameters:<i>:name / :value
     parameterCount            modelParameters.parameterCount (integer)       aibom:model:parameterCount
     inputs maxSize            modelParameters.inputs[0].maxSize (string)     aibom:model:inputs:0:maxSize
     technicalRequirements     considerations.technicalRequirements[]         aibom:model:technicalRequirements:<i>
+
+데이터셋(type=data): dataset.py 가 컴포넌트에 둔 aibom-internal:dataset:* 프로퍼티가 원본이다. 내부 키는 이기든 지든
+전부 지운다 — 출력에 남지 않는다.
+
+    v0.6 필드                 typed 형 (data[0].…)                           properties 형 (component.properties)
+    size                      size (integer)                                 aibom:dataset:size
+    modality                  modality[] (enum)                              aibom:dataset:modality:<i>
+    availability              contents.availability (enum)                   aibom:dataset:availability
+    provenance                provenance[]                                   aibom:dataset:provenance:<i>
+    statistics                statistics[]{type,value}                       aibom:dataset:statistics:<i>:type / :value
 
 승격하면 소비한다: 값이 목표에 쓰인 원본 프로퍼티는 두 목록에서 모두 지운다 — 한 값이 출력에 두 번 나오지 않는다.
 쓰지 않은 프로퍼티는 그대로 둔다. 원본끼리 값이 다르면 우선순위 앞의 것을 쓰고, 진 쪽은 남기고 로그에 적는다.
@@ -24,7 +34,13 @@ from typing import Iterable
 
 FORMS = ("properties", "typed")
 MODEL_TYPE = "machine-learning-model"
+DATA_TYPE = "data"
 PREFIX = "aibom:model:"
+DATASET_PREFIX = "aibom:dataset:"
+INTERNAL_PREFIX = "aibom-internal:dataset:"                       # dataset.py 가 두는 원본 키 (정의서 키에서 접두어만 다르다)
+MODALITIES = frozenset({"image", "text", "audio", "video", "sensor", "timeseries", "timestamp", "structured", "categorical",
+                        "graph", "syntactic", "numeric", "other"})
+AVAILABILITIES = frozenset({"clickthrough", "direct-download", "query", "registration", "scraping-script"})
 
 # 하이퍼파라미터 — JSON 객체 문자열(키마다 한 항목) 다음에, 키가 아직 없을 때만 개별 프로퍼티
 HYPERPARAMETER_JSON = "genai:aibom:modelcard:hyperparameter"
@@ -55,6 +71,8 @@ def apply(doc: dict, form: str = "properties", log=print) -> dict:
     for comp in _walk(doc.get("components") or []):
         if comp.get("type") == MODEL_TYPE:
             _apply_component(comp, form, log)
+        elif comp.get("type") == DATA_TYPE:
+            _apply_dataset(comp, form, log)
     return doc
 
 
@@ -196,6 +214,89 @@ def _technical_requirements(comp: dict, target: "_Target", label: str, log) -> l
     return consumed
 
 
+# ── 데이터셋 ─────────────────────────────────────────────────────────────────
+
+def _apply_dataset(comp: dict, form: str, log) -> None:
+    """aibom-internal:dataset:* 를 form 의 자리로 옮기고 지운다. 내부 키가 없는 컴포넌트는 손대지 않는다."""
+    internal = [p for p in comp.get("properties") or [] if isinstance(p.get("name"), str) and p["name"].startswith(INTERNAL_PREFIX)
+                and isinstance(p.get("value"), str)]
+    if not internal:
+        return
+    label = comp.get("bom-ref") or comp.get("name") or "?"
+    facts = _DatasetBag(internal)
+    target = (_DatasetTypedTarget if form == "typed" else _DatasetPropertiesTarget)(comp)
+
+    for field, valid in (("size", None), ("availability", AVAILABILITIES)):
+        value = facts.scalar(field)
+        if value is None:
+            continue
+        if field == "size":
+            value = _non_negative_int(value)
+            if value is None:
+                log(f"[regulation] {label}: size={facts.scalar(field)!r} 는 음이 아닌 정수가 아니어서 승격하지 않는다")
+                continue
+        elif value not in valid:
+            log(f"[regulation] {label}: {field}={value!r} 는 허용값이 아니어서 승격하지 않는다")
+            continue
+        existing = target.get_scalar(field)
+        if existing is None:
+            target.set_scalar(field, value)
+        elif existing != value:
+            log(f"[regulation] {label}: {field} 에 이미 {existing!r} 가 있어 {value!r} 를 버린다")
+
+    for field in ("modality", "provenance"):
+        have = target.get_list(field)
+        new: list[str] = []
+        for value in facts.indexed(field):
+            if field == "modality" and value not in MODALITIES:
+                log(f"[regulation] {label}: modality={value!r} 는 허용값이 아니어서 승격하지 않는다")
+            elif value not in have and value not in new:
+                new.append(value)
+        if new:
+            target.add_list(field, new)
+
+    have_stats = dict(target.get_statistics())
+    new_stats: list[tuple[str, str]] = []
+    for kind, value in facts.statistics():
+        if kind in have_stats:
+            if have_stats[kind] != value:
+                log(f"[regulation] {label}: statistics[{kind}] 에 이미 {have_stats[kind]!r} 가 있어 {value!r} 를 버린다")
+        elif kind not in dict(new_stats):
+            new_stats.append((kind, value))
+    if new_stats:
+        target.add_statistics(new_stats)
+
+    _remove_from(comp, {id(p) for p in internal})                 # 내부 키는 이기든 지든 전부 지운다
+
+
+class _DatasetBag:
+    """aibom-internal:dataset:* 프로퍼티 목록을 사실로 읽는다."""
+
+    def __init__(self, props: list[dict]) -> None:
+        self.values = {p["name"][len(INTERNAL_PREFIX):]: p["value"] for p in props}
+
+    def scalar(self, field: str) -> str | None:
+        return self.values.get(field)
+
+    def indexed(self, field: str, leaf: str | None = None) -> list[str]:
+        return [v for _, v in self._indexed_pairs(field, leaf)]
+
+    def statistics(self) -> list[tuple[str, str]]:
+        types = dict(self._indexed_pairs("statistics", "type"))
+        values = dict(self._indexed_pairs("statistics", "value"))
+        return [(types[i], values[i]) for i in sorted(types) if i in values]
+
+    def _indexed_pairs(self, field: str, leaf: str | None = None) -> list[tuple[int, str]]:
+        """field:<i>[:leaf] → (i, value) 인덱스 순."""
+        pattern = re.compile(rf"^{re.escape(field)}:(\d+){':' + re.escape(leaf) if leaf else ''}$")
+        found = []
+        for key, value in self.values.items():
+            m = pattern.match(key)
+            if m:
+                found.append((int(m[1]), value))
+        return sorted(found)
+
+
 # ── 값 변환 ──────────────────────────────────────────────────────────────────
 
 def _json_object(raw: str) -> dict | None:
@@ -287,11 +388,14 @@ class _TypedTarget(_Target):
         self._considerations(True).setdefault("technicalRequirements", []).extend(values)
 
 
-class _PropertiesTarget(_Target):
-    """정의서(aibom-v0.6-properties.md)의 aibom:model:* 키 — modelCard.properties 에 싣는다."""
+class _PropertyBag:
+    """properties 목록을 정의서 키로 읽고 쓰는 공통 코드. 목록의 자리(_props / _append)는 하위 클래스가 정한다."""
 
-    def _props(self) -> list[dict]:
-        return (self.comp.get("modelCard") or {}).get("properties") or []
+    def __init__(self, comp: dict) -> None:
+        self.comp = comp
+
+    def _props(self) -> list[dict]: ...
+    def _append(self, new: list[dict]) -> None: ...
 
     def _value(self, name: str) -> object | None:
         return next((p.get("value") for p in self._props() if p.get("name") == name), None)
@@ -308,6 +412,13 @@ class _PropertiesTarget(_Target):
         pattern = re.compile(rf"^{re.escape(prefix)}:(\d+)(?::|$)")
         used = [int(m[1]) for p in self._props() if (m := pattern.match(p.get("name") or ""))]
         return max(used) + 1 if used else 0
+
+
+class _PropertiesTarget(_PropertyBag, _Target):
+    """정의서(aibom-v0.6-properties.md)의 aibom:model:* 키 — modelCard.properties 에 싣는다."""
+
+    def _props(self) -> list[dict]:
+        return (self.comp.get("modelCard") or {}).get("properties") or []
 
     def _append(self, new: list[dict]) -> None:
         self.comp.setdefault("modelCard", {}).setdefault("properties", []).extend(new)
@@ -347,3 +458,94 @@ class _PropertiesTarget(_Target):
     def add_technical_requirements(self, values: list[str]) -> None:
         start = self._next_index(PREFIX + "technicalRequirements")
         self._append([{"name": f"{PREFIX}technicalRequirements:{i}", "value": v} for i, v in enumerate(values, start)])
+
+
+# ── 데이터셋 목표 — 두 형태를 같은 인터페이스로 ───────────────────────────────
+
+class _DatasetTarget:
+    """스칼라(size, availability)는 비어 있을 때만, 목록(modality, provenance, statistics)은 뒤에 덧붙인다."""
+
+    def get_scalar(self, field: str) -> object | None: ...
+    def set_scalar(self, field: str, value) -> None: ...
+    def get_list(self, field: str) -> list[str]: ...
+    def add_list(self, field: str, values: list[str]) -> None: ...
+    def get_statistics(self) -> list[tuple[str, str]]: ...
+    def add_statistics(self, entries: list[tuple[str, str]]) -> None: ...
+
+
+class _DatasetTypedTarget(_DatasetTarget):
+    """v0.6 componentData 필드 — data[0] 에 싣는다 (SPDX 변환기도 data[0] 을 컴포넌트에 접는다). data[] 가 없으면 만든다."""
+
+    def __init__(self, comp: dict) -> None:
+        self.comp = comp
+
+    def _entry(self, create: bool) -> dict:
+        data = self.comp.get("data") or []
+        if not data:
+            if not create:
+                return {}
+            data = self.comp["data"] = [{"type": "dataset", "name": self.comp.get("name", "")}]
+        return data[0]
+
+    def get_scalar(self, field: str) -> object | None:
+        entry = self._entry(False)
+        return (entry.get("contents") or {}).get("availability") if field == "availability" else entry.get(field)
+
+    def set_scalar(self, field: str, value) -> None:
+        entry = self._entry(True)
+        if field == "availability":
+            entry.setdefault("contents", {})["availability"] = value
+        else:
+            entry[field] = value
+
+    def get_list(self, field: str) -> list[str]:
+        return [v for v in self._entry(False).get(field) or [] if isinstance(v, str)]
+
+    def add_list(self, field: str, values: list[str]) -> None:
+        self._entry(True).setdefault(field, []).extend(values)
+
+    def get_statistics(self) -> list[tuple[str, str]]:
+        return [(s["type"], s.get("value", "")) for s in self._entry(False).get("statistics") or []
+                if isinstance(s, dict) and isinstance(s.get("type"), str)]
+
+    def add_statistics(self, entries: list[tuple[str, str]]) -> None:
+        self._entry(True).setdefault("statistics", []).extend({"type": t, "value": v} for t, v in entries)
+
+
+class _DatasetPropertiesTarget(_PropertyBag, _DatasetTarget):
+    """정의서의 aibom:dataset:* 키 — component.properties 에 싣는다 (componentData 에는 properties 슬롯이 없다)."""
+
+    def _props(self) -> list[dict]:
+        return self.comp.get("properties") or []
+
+    def _append(self, new: list[dict]) -> None:
+        self.comp.setdefault("properties", []).extend(new)
+
+    def get_scalar(self, field: str) -> object | None:
+        v = self._value(DATASET_PREFIX + field)
+        if field == "size" and isinstance(v, str):
+            n = _non_negative_int(v)
+            return v if n is None else n
+        return v
+
+    def set_scalar(self, field: str, value) -> None:
+        self._append([{"name": DATASET_PREFIX + field, "value": str(value)}])
+
+    def get_list(self, field: str) -> list[str]:
+        return [v for _, v in self._indexed(DATASET_PREFIX + field)]
+
+    def add_list(self, field: str, values: list[str]) -> None:
+        start = self._next_index(DATASET_PREFIX + field)
+        self._append([{"name": f"{DATASET_PREFIX}{field}:{i}", "value": v} for i, v in enumerate(values, start)])
+
+    def get_statistics(self) -> list[tuple[str, str]]:
+        types = dict(self._indexed(DATASET_PREFIX + "statistics", "type"))
+        values = dict(self._indexed(DATASET_PREFIX + "statistics", "value"))
+        return [(types[i], values.get(i, "")) for i in sorted(types)]
+
+    def add_statistics(self, entries: list[tuple[str, str]]) -> None:
+        start = self._next_index(DATASET_PREFIX + "statistics")
+        new = []
+        for i, (t, v) in enumerate(entries, start):
+            new += [{"name": f"{DATASET_PREFIX}statistics:{i}:type", "value": t}, {"name": f"{DATASET_PREFIX}statistics:{i}:value", "value": v}]
+        self._append(new)

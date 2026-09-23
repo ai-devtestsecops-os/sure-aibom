@@ -8,6 +8,7 @@ import tempfile
 from pathlib import Path
 
 from . import __version__
+from .dataset import discover as discover_datasets
 from .enrich import enrich
 from .merge import merge
 from .regulation import FORMS
@@ -73,6 +74,7 @@ def cmd_scan(args: argparse.Namespace) -> int:
         return EXIT_TOOL
 
     merged = merge(docs, root=scan_root(args.target))
+    merged = discover_datasets(merged, args.target, log=_log)
     merged = enrich(merged, workdir, log=_log)
     merged = regulate(merged, form=args.form, log=_log)
 

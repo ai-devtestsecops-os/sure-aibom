@@ -28,7 +28,7 @@ def hf_id_of(component: dict) -> str | None:
     return f"{m['ns']}/{m['name']}"
 
 
-def _hf_reachable(timeout: float = 3.0) -> bool:
+def hf_reachable(timeout: float = 3.0) -> bool:
     """huggingface.co(또는 HF_ENDPOINT 의 호스트) 443 포트에 TCP 로 닿는지만 본다."""
     host = urlparse(os.environ.get("HF_ENDPOINT") or "https://huggingface.co").hostname or "huggingface.co"
     try:
@@ -42,7 +42,7 @@ def skip_reason() -> str | None:
     """보강을 건너뛰어야 하면 그 이유를, 해도 되면 None 을 돌려준다."""
     if not os.environ.get("AIBOM_GENERATOR_DIR"):
         return "AIBOM_GENERATOR_DIR 미설정"
-    if not _hf_reachable():
+    if not hf_reachable():
         return "huggingface.co 에 닿지 않음"
     return None
 
