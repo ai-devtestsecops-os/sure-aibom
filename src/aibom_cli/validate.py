@@ -1,4 +1,4 @@
-"""aibom-v0.6 스키마로 출력을 검증한다. jsonschema 가 없으면 건너뛴다.
+"""CycloneDX 는 고른 스키마(공식 1.7 또는 aibom-v0.6)로, SPDX 는 v0.6 스키마로 출력을 검증한다. jsonschema 가 없으면 건너뛴다.
 
 CycloneDX 는 draft-07, SPDX 는 draft 2020-12 (unevaluatedProperties 를 알아야 해서 Draft202012Validator 필수).
 SPDX 는 스키마가 못 보는 참조 무결성(id 중복, 끊긴 참조, createdBy 가 Tool 인 경우 등)도 함께 본다.
@@ -14,6 +14,7 @@ SCHEMA_DIR = Path(__file__).resolve().parents[2] / "schemas"
 CDX_SCHEMA = SCHEMA_DIR / "aibom-v0.6-cyclonedx.schema.json"
 CDX_OFFICIAL = SCHEMA_DIR / "bom-1.7.schema.json"
 SPDX_SCHEMA = SCHEMA_DIR / "aibom-v0.6-spdx.schema.json"
+CDX_SCHEMA_BY_SPEC = {"1.7": CDX_OFFICIAL, "v0.6": CDX_SCHEMA}     # validate --spec 의 선택지
 SPDX_OFFICIAL_SCHEMA = SCHEMA_DIR / "spdx-schema-3-0-1.json"
 
 _IRI = re.compile(r"^(?!_:).+:.+")
@@ -65,24 +66,18 @@ def _cdx_errors(doc: dict, schema_path: Path) -> list[str] | None:
     return [f"{'/'.join(str(p) for p in e.path)}: {e.message}" for e in errors]
 
 
-def validate_cdx(doc: dict, log=print) -> str | None:
-    """공식 CycloneDX 1.7 로 먼저 검사하고, 실패하면 v0.6 스키마로 다시 검사한다.
-
-    돌려주는 값은 통과한 수준 — "1.7" (properties 형, 표준 소비자가 읽음), "v0.6" (typed 형,
-    v0.6 를 아는 소비자만 읽음), None (둘 다 실패). jsonschema 가 없으면 경고 후 "1.7" 로 본다.
-    """
-    errors = _cdx_errors(doc, CDX_OFFICIAL)
+def validate_cdx(doc: dict, spec: str, log=print) -> bool:
+    """CycloneDX 문서를 spec 이 고른 스키마 하나로만 검사한다 — "1.7" 은 공식 CycloneDX 1.7 (properties 형),
+    "v0.6" 은 aibom-v0.6 CycloneDX 스키마 (typed 형). 자동으로 다른 쪽을 시도하지 않는다.
+    jsonschema 가 없으면 경고 후 통과로 본다."""
+    if spec not in CDX_SCHEMA_BY_SPEC:
+        raise ValueError(f"spec 은 {tuple(CDX_SCHEMA_BY_SPEC)} 중 하나여야 한다: {spec!r}")
+    errors = _cdx_errors(doc, CDX_SCHEMA_BY_SPEC[spec])
     if errors is None:
         log("[validate] jsonschema/referencing 미설치 — 검증 생략 (pip install 'aibom-cli[validate]')")
-        return "1.7"
-    if not errors:
-        return "1.7"
-    errors_v06 = _cdx_errors(doc, CDX_SCHEMA)
-    if not errors_v06:
-        log(f"[validate] 공식 1.7 에는 맞지 않는 항목 {len(errors)}건 — v0.6 typed 필드로 보임")
-        return "v0.6"
-    _report(errors_v06, log)
-    return None
+        return True
+    _report(errors, log)
+    return not errors
 
 
 def validate_spdx(doc: dict, strict: bool = False, log=print) -> bool:

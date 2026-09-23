@@ -7,7 +7,7 @@ from __future__ import annotations
 import re
 
 from ._ctx import Ctx, ExtBuffer
-from ._props import add_external_identifier, append_unique, entry, route_modelcard_properties, route_typed_fields
+from ._props import add_external_identifier, append_unique, entry, route_modelcard_properties, route_typed_fields, typed_index_keys
 from ._tables import (
     CONSIDERATION_EXT_ONLY, CONSIDERATION_LIST, CONSIDERATION_SCALAR, ENERGY_SLOT_BY_ACTIVITY, ENERGY_UNIT,
     MODEL_PARAM_EXT_ONLY, MODEL_PARAM_LIST, MODEL_PARAM_SCALAR,
@@ -22,7 +22,7 @@ def apply_modelcard(ctx: Ctx, node: dict, ext: ExtBuffer, card: dict, owner_key:
     _parameters(node, ext, card.get("modelParameters") or {})
     _quantitative(node, ext, card.get("quantitativeAnalysis") or {})
     _considerations(node, ext, card.get("considerations") or {})
-    route_modelcard_properties(ctx, node, ext, card.get("properties") or [], owner_key)
+    route_modelcard_properties(ctx, node, ext, card.get("properties") or [], owner_key, typed_index_keys(card))
 
 
 def _parameters(node: dict, ext: ExtBuffer, params: dict) -> None:
@@ -31,11 +31,13 @@ def _parameters(node: dict, ext: ExtBuffer, params: dict) -> None:
     for value in (params.get("modelArchitecture"), params.get("architectureFamily"), approach):
         if value:
             append_unique(node, "ai_typeOfModel", value)
-    for field, prop in (("inputs", "aibom_inputs"), ("outputs", "aibom_outputs")):
+    for field, prop, max_prop in (("inputs", "aibom_inputs", "aibom_inputMaxSize"), ("outputs", "aibom_outputs", "aibom_outputMaxSize")):
         for i, io in enumerate(params.get(field) or []):
             for key, value in io.items():
                 if key == "format":
                     append_unique(node, prop, value)
+                elif key == "maxSize" and isinstance(io.get("format"), str):        # format 을 키로 하는 DictionaryEntry
+                    node.setdefault(max_prop, []).append(entry(io["format"], value))
                 else:
                     ext.fix(f"modelCard:{field}:{i}:{key}", value)
     route_typed_fields(node, ext, params, "modelCard:modelParameters", typed=True, scalars=MODEL_PARAM_SCALAR,

@@ -5,6 +5,8 @@
   safetensors_total_parameters → aibom_parameterCount, safetyRiskAssessment → ai_safetyRiskAssessment(enum 일 때만)
 - aibom:model:* 는 ai_AIPackage 에서만, aibom:dataset:* 는 dataset_DatasetPackage 에서만 슬롯으로 간다 (AIBOM_CLASS_BY_PREFIX).
   다른 클래스에는 그 속성이 정의돼 있지 않아 원문으로 남긴다.
+- dict 형 항목(aibom:model:inputs:<i>:maxSize …)의 키는 같은 인덱스의 키 leaf 프로퍼티다. 그 프로퍼티가 없으면 타입 있는
+  필드(modelParameters.inputs[i].format)를 키로 쓴다 — regulation 이 maxSize 만 프로퍼티로 승격하고 format 은 타입 필드에 두기 때문.
 - v0.6 타입 있는 JSON 필드(componentData.size, modelParameters.parameterCount …)는 route_typed_fields 가 같은 규칙으로 옮긴다.
   스칼라 슬롯은 먼저 채운 쪽이 이기고 나중 값은 aibom:cdx:<경로> 로 남는다 (아무것도 조용히 버리지 않는다).
 - strict 모드: aibom_* 를 properties.md 키 이름의 확장 항목으로 내린다 (공식 스키마는 aibom_* 를 거부한다).
@@ -113,7 +115,22 @@ def _typed_here(node: dict, name: str) -> bool:
     return AIBOM_CLASS_BY_PREFIX.get(prefix) == node["type"]
 
 
-def route_aibom(ctx: Ctx, node: dict, ext: ExtBuffer, props: list[tuple[str, str | None]], owner_key: str) -> None:
+KeyFallback = dict[tuple[str, str], dict[str, str]]                # (prefix, i) → {키 leaf: 타입 있는 필드의 값}
+
+
+def typed_index_keys(card: dict | None) -> KeyFallback:
+    """modelCard 의 타입 있는 inputs/outputs[i].format 을 dict 형 aibom:* 항목의 키 대체값으로."""
+    params = (card or {}).get("modelParameters") or {}
+    fallback: KeyFallback = {}
+    for field in ("inputs", "outputs"):
+        for i, io in enumerate(params.get(field) or []):
+            if isinstance(io, dict) and isinstance(io.get("format"), str):
+                fallback[(f"aibom:model:{field}", str(i))] = {"format": io["format"]}
+    return fallback
+
+
+def route_aibom(ctx: Ctx, node: dict, ext: ExtBuffer, props: list[tuple[str, str | None]], owner_key: str,
+                key_fallback: KeyFallback | None = None) -> None:
     """aibom:model:* / aibom:dataset:* 항목을 타입 있는 슬롯으로. 검사에 실패한 값·슬롯 없는 클래스는 원문으로 남긴다."""
     groups: dict[tuple[str, str], dict[str | None, str]] = {}
     for name, value in props:
@@ -147,11 +164,14 @@ def route_aibom(ctx: Ctx, node: dict, ext: ExtBuffer, props: list[tuple[str, str
                     ext.prop(_name(prefix, i, leaf), value)
             elif rule[0] == "dict":
                 key_value = leaves.get(rule[2])
+                if key_value is None:                            # 같은 인덱스의 키 프로퍼티가 없으면 타입 있는 필드의 키로
+                    key_value = (key_fallback or {}).get((prefix, i), {}).get(rule[2])
+                else:
+                    used_keys.add(rule[2])
                 if key_value is None:
                     ext.prop(_name(prefix, i, leaf), value)
                 else:
                     node.setdefault(rule[1], []).append(entry(key_value, value))
-                    used_keys.add(rule[2])
             elif rule[0] == "usage":
                 ctx.usage[(owner_key, int(i))] = value.strip().lower()
         for leaf, value in leaves.items():
@@ -164,7 +184,8 @@ def _name(prefix: str, i: str, leaf: str | None) -> str:
     return f"{prefix}:{i}" + (f":{leaf}" if leaf else "")
 
 
-def route_component_properties(ctx: Ctx, node: dict, ext: ExtBuffer, props: list[dict], owner_key: str) -> None:
+def route_component_properties(ctx: Ctx, node: dict, ext: ExtBuffer, props: list[dict], owner_key: str,
+                               key_fallback: KeyFallback | None = None) -> None:
     aibom: list[tuple[str, str | None]] = []
     for p in props or []:
         name = p.get("name") or ""
@@ -177,10 +198,11 @@ def route_component_properties(ctx: Ctx, node: dict, ext: ExtBuffer, props: list
             aibom.append((name, value))
         else:
             ext.prop(name, value)
-    route_aibom(ctx, node, ext, aibom, owner_key)
+    route_aibom(ctx, node, ext, aibom, owner_key, key_fallback)
 
 
-def route_modelcard_properties(ctx: Ctx, node: dict, ext: ExtBuffer, props: list[dict], owner_key: str) -> None:
+def route_modelcard_properties(ctx: Ctx, node: dict, ext: ExtBuffer, props: list[dict], owner_key: str,
+                               key_fallback: KeyFallback | None = None) -> None:
     aibom: list[tuple[str, str | None]] = []
     training: list[str] = []
     for p in props or []:
@@ -204,7 +226,7 @@ def route_modelcard_properties(ctx: Ctx, node: dict, ext: ExtBuffer, props: list
             ext.prop(name, value)
     if training:
         node["ai_informationAboutTraining"] = "\n".join(training)
-    route_aibom(ctx, node, ext, aibom, owner_key)
+    route_aibom(ctx, node, ext, aibom, owner_key, key_fallback)
 
 
 def _hyperparameters(raw: str) -> list[dict]:

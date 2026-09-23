@@ -11,6 +11,7 @@ from aibom_cli.cli import scan_root
 from aibom_cli.merge import merge
 from aibom_cli.spdx import cdx_to_spdx
 from aibom_cli.spdx._ids import IdRegistry, enc, iso_z, license_ref
+from aibom_cli.regulation import apply as regulate
 from aibom_cli.validate import spdx_integrity_findings, validate_cdx, validate_spdx
 
 SAMPLE = Path(__file__).parent / "fixtures" / "merged_sample.cdx.json"
@@ -188,7 +189,7 @@ def test_declared_license_pooling(out, nodes):
         {"bom-ref": "d", "type": "library", "name": "d", "licenses": [{"expression": "MIT", "acknowledgement": "concluded"}]},                        # expression 형
         {"bom-ref": "e", "type": "library", "name": "e", "licenses": [{"license": {"id": "MIT", "acknowledgement": "declared"}}]},
     ])
-    assert validate_cdx(two_mit, log=lambda m: None)                                # 스키마에 맞는 CycloneDX 로 검사한다
+    assert validate_cdx(two_mit, "1.7", log=lambda m: None)                             # 스키마에 맞는 CycloneDX 로 검사한다
     doc, _ = convert(two_mit)
     licenses = [n for n in doc["@graph"] if n["type"] == "simplelicensing_LicenseExpression"]
     assert [n["simplelicensing_licenseExpression"] for n in licenses] == ["MIT", "MIT OR Apache-2.0", "LicenseRef-Acme-Proprietary"]
@@ -610,11 +611,12 @@ def test_unparseable_timestamp_is_kept():
 
 def test_validate_cli_reports_cyclonedx_level(tmp_path):
     from aibom_cli.cli import main
-    assert main(["validate", "tests/fixtures/merged_sample.cdx.json"]) == 0      # 공식 1.7 적합
-    assert main(["validate", str(tmp_path / "none.json")]) == 2                  # 없는 파일
+    assert main(["validate", "tests/fixtures/merged_sample.cdx.json", "--spec", "1.7"]) == 0      # 공식 1.7 적합
+    assert main(["validate", str(tmp_path / "none.json"), "--spec", "1.7"]) == 2                  # 없는 파일
     bad = tmp_path / "bad.json"
     bad.write_text(json.dumps({"bomFormat": "CycloneDX", "specVersion": "1.7", "components": [{"type": "nope", "name": 1}]}))
-    assert main(["validate", str(bad)]) == 3                                      # 둘 다 실패
+    assert main(["validate", str(bad), "--spec", "1.7"]) == 3                                      # 검증 실패
+    assert main(["validate", str(bad), "--spec", "v0.6"]) == 3
     doc = json.loads(Path("tests/fixtures/merged_sample.cdx.json").read_text())
     strict = cdx_to_spdx(doc, strict=True, log=lambda m: None)
     assert not any(k.startswith("aibom_") for e in strict["@graph"] for k in e)  # 변환기 strict 모드는 함수로 계속 확인
@@ -689,7 +691,7 @@ V06_TYPED = [
 
 def test_v06_typed_fields_are_not_lost():
     cdx = synthetic(copy.deepcopy(V06_TYPED), [{"ref": "model", "dependsOn": ["ds-data0"]}])
-    assert validate_cdx(cdx, log=lambda m: None)
+    assert validate_cdx(cdx, "v0.6", log=lambda m: None)
     doc, logs = convert(cdx)
     nodes = by_id(doc)
     ds, model = nodes[iri("ds")], nodes[iri("model")]
@@ -732,7 +734,7 @@ def test_v06_typed_fields_are_not_lost():
 def test_nameless_metadata_manufacturer_is_omitted_from_created_by():
     for manufacturer in ({"url": ["https://example.org"]}, {"name": ""}):
         cdx = synthetic([{"bom-ref": "a", "type": "library", "name": "a"}], metadata_extra={"manufacturer": manufacturer})
-        assert validate_cdx(copy.deepcopy(cdx), log=lambda m: None)
+        assert validate_cdx(copy.deepcopy(cdx), "1.7", log=lambda m: None)
         doc, _ = convert(cdx)
         assert doc["@graph"][0]["createdBy"] == [iri("Agent-aibom-cli")] and validate_spdx(doc, log=lambda m: None)
         assert validate_spdx(convert(cdx, strict=True)[0], strict=True, log=lambda m: None)
@@ -842,3 +844,33 @@ def test_merge_remaps_producer_root_dependency_row_to_new_root():
     # 도구 루트 행의 대상만 '의존받음'으로 치던 결함: 서비스 행의 대상은 루트가 직접 의존한다
     only_svc = {**syft, "metadata": {}, "dependencies": [{"ref": "svc", "dependsOn": ["s1", "s2", "s3"]}]}
     assert merge([only_svc], root=("mixed", "directory"))["dependencies"][0]["dependsOn"] == ["pkg:pypi/numpy@1", "pkg:pypi/requests@2", "pkg:pypi/urllib3@3"]
+
+
+@pytest.mark.parametrize("form", ["properties", "typed"])
+def test_regulated_max_size_reaches_typed_slot_keyed_by_typed_format(sample, form):
+    """regulation 은 maxSize 만 승격하고 format 은 타입 필드에 둔다 — 같은 인덱스의 :format 프로퍼티가 없어도
+    modelParameters.inputs[0].format 을 키로 aibom_inputMaxSize 에 들어가고, strict 는 :format/:maxSize 로 되돌린다."""
+    cdx = copy.deepcopy(sample)
+    bert_cdx = next(c for c in cdx["components"] if c["bom-ref"] == "pkg:huggingface/google-bert/bert-base-uncased")
+    bert_cdx["modelCard"]["properties"].append({"name": "safetensors_total_parameters", "value": "110106428"})
+    regulated = regulate(cdx, form=form, log=lambda m: None)
+    doc, _ = convert(regulated)
+    bert = by_id(doc)[iri("pkg-huggingface-google-bert-bert-base-uncased")]
+    assert bert["aibom_inputs"] == ["text"]
+    assert bert["aibom_inputMaxSize"] == [{"type": "DictionaryEntry", "key": "text", "value": "512"}]
+    assert bert["aibom_parameterCount"] == 110106428 and len(bert["ai_hyperparameter"]) == 6
+    assert not [k for k in ext(bert) if "maxSize" in k or "contextWindow" in k or "contextLength" in k]
+    assert validate_spdx(doc, log=lambda m: None)
+    strict, _ = convert(regulated, strict=True)
+    se = ext(by_id(strict)[iri("pkg-huggingface-google-bert-bert-base-uncased")])
+    assert se["aibom:model:inputs:0:format"] == "text" and se["aibom:model:inputs:0:maxSize"] == "512"
+    assert validate_spdx(strict, strict=True, log=lambda m: None)
+
+
+def test_max_size_without_any_format_stays_in_extension():
+    model = {"bom-ref": "m", "type": "machine-learning-model", "name": "m",
+             "modelCard": {"properties": [{"name": "aibom:model:inputs:0:maxSize", "value": "512"}]}}
+    doc, _ = convert(synthetic([model]))
+    m = by_id(doc)[iri("m")]
+    assert "aibom_inputMaxSize" not in m and ext(m)["aibom:model:inputs:0:maxSize"] == "512"
+

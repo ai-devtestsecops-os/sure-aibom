@@ -50,7 +50,7 @@ from ._fields import (
 )
 from ._ids import BOM_LINK, bomlink_iri, enc, iso_z, key_of, namespace, tool_key
 from ._modelcard import apply_modelcard
-from ._props import add_external_identifier, demote_aibom, route_component_properties
+from ._props import add_external_identifier, demote_aibom, route_component_properties, typed_index_keys
 from ._tables import (
     CLASS_BY_TYPE, CONTEXT, CREATION_INFO_ID, NON_ROOT_RELATIONSHIPS, PACKAGE_CLASSES, PROFILE_ORDER, PURPOSE_BY_TYPE,
     RELATIONSHIP_ORDER, SBOM_TYPE_BY_PHASE, SPEC_VERSION,
@@ -203,7 +203,8 @@ def convert_component(ctx: Ctx, comp: dict, category: str) -> str:
     _basics(node, ext, comp)
     apply_identifiers(node, ext, comp)
     apply_hashes(node, comp.get("hashes"))
-    route_component_properties(ctx, node, ext, comp.get("properties") or [], key)   # 컴포넌트 값이 data[] 값보다 먼저
+    route_component_properties(ctx, node, ext, comp.get("properties") or [], key,       # 컴포넌트 값이 data[] 값보다 먼저
+                               typed_index_keys(comp.get("modelCard")))
     _component_data(ctx, node, ext, comp, key, iri)                     # contents.url 이 distribution 승격보다 먼저
     apply_external_references(node, ext, comp.get("externalReferences"), promote=cls in PACKAGE_CLASSES)
     apply_parties(ctx, node, comp, iri)

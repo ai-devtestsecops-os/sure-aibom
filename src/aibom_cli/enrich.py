@@ -1,7 +1,7 @@
 """OWASP aibom-generator 결과로 병합 문서의 HF 모델 컴포넌트를 보강한다.
 
-가져오는 것: modelCard.properties[genai:aibom:modelcard:*], modelCard.considerations,
-             metadata.properties[] 의 완전성 점수.
+가져오는 것: modelCard.properties[genai:aibom:* / owasp:aibom:* 와 접두어 없는 safetensors_total_parameters],
+             modelCard.considerations, metadata.properties[] 의 완전성 점수.
 유지하는 것: cdxgen 이 준 component.name / version / purl.
 매칭 키:    purl 의 pkg:huggingface/<ns>/<name> (리비전 제외 — 두 도구가 버전 표기를 달리 한다)
 """
@@ -17,6 +17,8 @@ from .runners import run_aibom_generator
 from .runners._proc import RunnerError
 
 _HF_PURL = re.compile(r"^pkg:huggingface/(?P<ns>[^/@]+)/(?P<name>[^/@]+)(?:@[^?#]+)?")
+_KEEP_PREFIXES = ("genai:aibom:", "owasp:aibom:")
+_KEEP_UNPREFIXED = frozenset({"safetensors_total_parameters"})     # regulation 의 parameterCount 원본 — 접두어 없는 키는 이것만
 
 
 def hf_id_of(component: dict) -> str | None:
@@ -71,12 +73,16 @@ def enrich(merged: dict, workdir: Path, log=print) -> dict:
     return merged
 
 
+def _keep_property(name: str) -> bool:
+    return name.startswith(_KEEP_PREFIXES) or name in _KEEP_UNPREFIXED
+
+
 def _apply(dst: dict, src: dict, src_metadata: dict) -> None:
     dst_card = dst.setdefault("modelCard", {})
     src_card = src.get("modelCard") or {}
 
-    # properties: genai:aibom:* / owasp:aibom:* 만 가져온다
-    keep = [p for p in (src_card.get("properties") or []) if p.get("name", "").startswith(("genai:aibom:", "owasp:aibom:"))]
+    # properties: genai:aibom:* / owasp:aibom:* 와 safetensors_total_parameters 만 가져온다
+    keep = [p for p in (src_card.get("properties") or []) if _keep_property(p.get("name", ""))]
     if keep:
         seen = {(p.get("name"), p.get("value")) for p in dst_card.get("properties", [])}
         dst_card["properties"] = dst_card.get("properties", []) + [p for p in keep if (p.get("name"), p.get("value")) not in seen]
