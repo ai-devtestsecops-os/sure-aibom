@@ -1,7 +1,10 @@
 """cdxgen — 모델·데이터셋 생산자.
 
 -t ai 로 소프트웨어 분기를 끄고 AI 인벤토리만 훑는다.
-    cdxgen <target> -t ai --include-formulation --spec-version 1.7 --no-install-deps -o <out>
+    cdxgen <target> -t ai --spec-version 1.7 --no-install-deps -o <out>
+
+--include-formulation 은 쓰지 않는다. 모델·데이터셋 컴포넌트에는 영향이 없고, cdxgen 실행 환경
+(git 트리 전체, CONDA_PREFIX 같은 환경변수)을 formulation[] 에 실어 스캔 머신 정보가 새기 때문이다.
 
 CDXGEN_BIN 이 .js 파일이면 node 로 실행한다(클론한 저장소를 바로 쓰는 경우).
 """
@@ -25,7 +28,6 @@ def run_cdxgen(target: str, workdir: Path, install_deps: bool = False) -> dict:
     cmd = _command() + [
         target,
         "-t", "ai",
-        "--include-formulation",
         "--spec-version", SPEC_VERSION,
         "-o", str(out),
     ]

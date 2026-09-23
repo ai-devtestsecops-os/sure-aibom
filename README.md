@@ -7,7 +7,7 @@ syft, cdxgen, OWASP aibom-generator 를 묶어 데이터셋·모델·소프트�
 ```
 입력 (디렉터리 / 이미지)
   ├─ syft   --select-catalogers -ai            → 소프트웨어
-  └─ cdxgen -t ai --include-formulation        → 모델 · 데이터셋 · 관계
+  └─ cdxgen -t ai                              → 모델 · 데이터셋 · 관계
         │  pkg:huggingface/… purl 추출
         └─ aibom-generator (HF ID 별)          → 모델 컴포넌트 보강
 병합 → CycloneDX 1.7      (검증은 validate 서브커맨드)
