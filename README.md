@@ -7,15 +7,15 @@
 
 ## 파이프라인
 
-| 단계    | 작업                      | 도구                | 커맨드                                                      |
-| ------- | ------------------------- | ------------------- | ----------------------------------------------------------- |
-| 1. 스캔 | S-BOM 생성                | syft                | `syft <target> --select-catalogers -ai -o cyclonedx-json` |
-|         | M-BOM · D-BOM 생성       | cdxgen              | `cdxgen <target> -t ai --no-install-deps`                 |
-| 2. 병합 | 하나의 json 파일로 병합   | **aibom-cli** |                                                             |
-| 3. 보강 | D-BOM 보강                | **aibom-cli** |                                                             |
-|         | M-BOM 보강                | OWASP aibom-generator | `python -m src.cli <owner/model>`                         |
-|         | 규제 필드 추가            | **aibom-cli** | `aibom-cli scan --form properties \| typed`                |
-| 4. 검증 | CycloneDX 1.7/AI-BOM v0.6 | **aibom-cli** | `aibom-cli validate --spec 1.7 \| v0.6`                    |
+| 단계    | 작업                        | 도구                  | 커맨드                                                      |
+| ------- | --------------------------- | --------------------- | ----------------------------------------------------------- |
+| 1. 스캔 | S-BOM 생성                  | syft                  | `syft <target> --select-catalogers -ai -o cyclonedx-json` |
+|         | M-BOM · D-BOM 생성         | cdxgen                | `cdxgen <target> -t ai --no-install-deps`                 |
+| 2. 병합 | 하나의 json 파일로 병합     | **aibom-cli**   |                                                             |
+| 3. 보강 | D-BOM 보강                  | **aibom-cli**   |                                                             |
+|         | M-BOM 보강                  | OWASP aibom-generator | `python -m src.cli <owner/model>`                         |
+|         | 규제 필드 추가              | **aibom-cli**   | `aibom-cli scan --form properties \| typed`                |
+| 4. 검증 | CycloneDX 1.7 / AI-BOM v0.6 | **aibom-cli**   | `aibom-cli validate --spec 1.7 \| v0.6`                    |
 
 ## 설치
 
@@ -68,37 +68,15 @@ Exit codes:
   0  성공        2  도구·입력 문제        3  검증 실패
 ```
 
-## 규제 필드
-
-`machine-learning-model` 과 `data` 컴포넌트에 AI-BOM v0.6 필드를 채운다. 값은 스캔 결과에 이미 있는 것만 쓰고,
-쓴 원본 프로퍼티는 지워 한 값이 두 곳에 나오지 않게 한다. 모델의 properties 형은 `modelCard.properties`,
-데이터셋의 properties 형은 `component.properties`, typed 형은 `data[0]` 에 들어간다.
-
-| 필드                  | properties (`--form properties`)                    | typed (`--form typed`)                   |
-| --------------------- | ----------------------------------------------------- | ------------------------------------------ |
-| hyperparameters       | `aibom:model:hyperparameters:<i>:name` / `:value` | `modelParameters.hyperparameters[]`      |
-| parameterCount        | `aibom:model:parameterCount`                        | `modelParameters.parameterCount`         |
-| inputs maxSize        | `aibom:model:inputs:0:maxSize`                      | `modelParameters.inputs[0].maxSize`      |
-| technicalRequirements | `aibom:model:technicalRequirements:<i>`             | `considerations.technicalRequirements[]` |
-| dataset size          | `aibom:dataset:size`                                | `data[0].size`                           |
-| dataset modality      | `aibom:dataset:modality:<i>`                        | `data[0].modality[]`                     |
-| dataset availability  | `aibom:dataset:availability`                        | `data[0].contents.availability`          |
-| dataset provenance    | `aibom:dataset:provenance:<i>`                      | `data[0].provenance[]`                   |
-| dataset statistics    | `aibom:dataset:statistics:<i>:type` / `:value`    | `data[0].statistics[]`                   |
-
-데이터셋 값의 출처: HF 데이터셋은 허브 API 의 `dataset_info`(크기, split 별 행 수, feature 수, config 수), `modality:*` 태그(모달리티,
-없으면 `task_categories` 로 추론), `gated`(가용성). 로컬 데이터 파일은 파일 크기 합, 확장자(모달리티), 디렉터리 경로(출처), 파일 수·행 수·열 수.
-HF 데이터셋의 이름은 허브가 돌려준 정식 id 로 맞추고(`imdb` → `stanfordnlp/imdb`), 같은 데이터셋을 다른 이름으로 부른 참조는 컴포넌트 하나로 모은다.
-파일마다 크기, sha256, 형식, 행 수, 열 이름을 `data[].contents.properties` 의 `aibom-cli:file:*` 로 적는다.
-
 ## Updates
 
 ### 0.1.0
 
 - syft, cdxgen, OWASP aibom-generator 결과를 병합해 CycloneDX 1.7 로 출력
-- 모델 규제 필드 4개: hyperparameters, parameterCount, inputs maxSize, technicalRequirements
-- 데이터셋 BOM 생성 (HuggingFace 참조 · 로컬 데이터 파일)
-- 데이터셋 규제 필드 5개: size, modality, availability, provenance, statistics
+- D-BOM 생성기 추가 (HuggingFace 데이터셋 · 로컬 데이터 폴더)
+- 규제 필드 9개 추가 (properties 또는 v0.6 필드)
+  - M-BOM: hyperparameters, parameterCount, inputs maxSize, technicalRequirements
+  - D-BOM: size, modality, availability, provenance, statistics
 - CycloneDX 1.7 / AI-BOM v0.6 스키마 검증
 
 ## 출처

@@ -11,6 +11,7 @@ from . import __version__
 from .dataset import discover as discover_datasets
 from .enrich import enrich
 from .merge import merge
+from .model import discover as discover_models
 from .regulation import FORMS
 from .regulation import apply as regulate
 from .runners import run_cdxgen, run_syft
@@ -75,6 +76,7 @@ def cmd_scan(args: argparse.Namespace) -> int:
 
     merged = merge(docs, root=scan_root(args.target))
     merged = discover_datasets(merged, args.target, log=_log)
+    merged = discover_models(merged, args.target, log=_log)
     merged = enrich(merged, workdir, log=_log)
     merged = regulate(merged, form=args.form, log=_log)
 

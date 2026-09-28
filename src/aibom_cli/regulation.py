@@ -1,7 +1,8 @@
 """병합 문서에 이미 들어 있는 값으로 aibom-v0.6 규제 필드를 정규화한다. --form 스위치는 여기 하나다.
 
 모델(type=machine-learning-model): 가져오는 값은 전부 component.properties / component.modelCard.properties 에 있는
-것이다 — 조회·추론·본문 해석은 하지 않는다.
+것이다 — 조회·추론·본문 해석은 하지 않는다. hyperparameters 와 parameterCount 는 model.py 가 대상 안의 모델 파일에서
+읽어 둔 aibom-internal:model:* 도 원본으로 쓴다 (도구가 준 값이 먼저이고, 내부 키는 이기든 지든 전부 지운다).
 
     v0.6 필드                 typed 형 (modelCard.…)                         properties 형 (modelCard.properties)
     hyperparameters           modelParameters.hyperparameters[]{name,value}  aibom:model:hyperparameters:<i>:name / :value
@@ -38,6 +39,7 @@ DATA_TYPE = "data"
 PREFIX = "aibom:model:"
 DATASET_PREFIX = "aibom:dataset:"
 INTERNAL_PREFIX = "aibom-internal:dataset:"                       # dataset.py 가 두는 원본 키 (정의서 키에서 접두어만 다르다)
+INTERNAL_MODEL_PREFIX = "aibom-internal:model:"                   # model.py 가 두는 원본 키
 MODALITIES = frozenset({"image", "text", "audio", "video", "sensor", "timeseries", "timestamp", "structured", "categorical",
                         "graph", "syntactic", "numeric", "other"})
 AVAILABILITIES = frozenset({"clickthrough", "direct-download", "query", "registration", "scraping-script"})
@@ -90,6 +92,7 @@ def _apply_component(comp: dict, form: str, log) -> None:
     consumed += _parameter_count(comp, target, label, log)
     consumed += _max_size(comp, target, label, log)
     consumed += _technical_requirements(comp, target, label, log)
+    consumed += _internal(comp)                                   # 내부 키는 이기든 지든 전부 지운다
     if consumed:                                                  # 아무것도 소비하지 않았으면 컴포넌트에 손대지 않는다
         _remove(comp, consumed)
         target.finish()
@@ -101,6 +104,13 @@ def _sources(comp: dict, name: str) -> list[dict]:
     """component.properties 와 modelCard.properties 양쪽에서 이름이 같은 프로퍼티(원본 객체)를 찾는다."""
     lists = (comp.get("properties") or [], (comp.get("modelCard") or {}).get("properties") or [])
     return [p for props in lists for p in props if p.get("name") == name and isinstance(p.get("value"), str)]
+
+
+def _internal(comp: dict) -> list[dict]:
+    """model.py 가 둔 aibom-internal:model:* 프로퍼티 (원본 객체)."""
+    return [p for p in comp.get("properties") or []
+            if isinstance(p.get("name"), str) and p["name"].startswith(INTERNAL_MODEL_PREFIX)
+            and isinstance(p.get("value"), str)]
 
 
 def _remove(comp: dict, consumed: list[dict]) -> None:
@@ -129,7 +139,8 @@ def _resolve(existing, candidates: list[tuple[object, dict]], field: str, label:
         if value == winner:
             consumed.append(prop)
         else:
-            log(f"[regulation] {label}: {field} 에 {prop['name']}={prop['value']!r} 는 {winner!r} 와 달라 남긴다")
+            verb = "버린다" if prop["name"].startswith(INTERNAL_MODEL_PREFIX) else "남긴다"
+            log(f"[regulation] {label}: {field} 에 {prop['name']}={prop['value']!r} 는 {winner!r} 와 달라 {verb}")
     return winner, consumed
 
 
@@ -167,6 +178,9 @@ def _hyperparameters(comp: dict, target: "_Target", label: str, log) -> list[dic
                 consumed.append(prop)
             else:
                 log(f"[regulation] {label}: hyperparameters[{name}]={prop['value']!r} 는 {by_name[name]!r} 와 달라 {source} 를 남긴다")
+    for name, value in _Bag(_internal(comp), INTERNAL_MODEL_PREFIX).named_pairs("hyperparameters"):
+        if not take(name, value):                                 # 내부 키는 뒤에 본다 — 도구가 준 값이 먼저다
+            log(f"[regulation] {label}: hyperparameters[{name}]={value!r} 는 {by_name[name]!r} 와 달라 버린다")
     if added:
         target.add_hyperparameters(added)
     return consumed
@@ -174,13 +188,13 @@ def _hyperparameters(comp: dict, target: "_Target", label: str, log) -> list[dic
 
 def _parameter_count(comp: dict, target: "_Target", label: str, log) -> list[dict]:
     candidates: list[tuple[object, dict]] = []
-    for source in PARAMETER_COUNT_SOURCES:
-        for prop in _sources(comp, source):
-            n = _non_negative_int(prop["value"])
-            if n is None:
-                log(f"[regulation] {label}: {source}={prop['value']!r} 는 음이 아닌 정수가 아니어서 승격하지 않는다")
-            else:
-                candidates.append((n, prop))
+    internal = [p for p in _internal(comp) if p["name"] == INTERNAL_MODEL_PREFIX + "parameterCount"]
+    for prop in [p for source in PARAMETER_COUNT_SOURCES for p in _sources(comp, source)] + internal:
+        n = _non_negative_int(prop["value"])
+        if n is None:
+            log(f"[regulation] {label}: {prop['name']}={prop['value']!r} 는 음이 아닌 정수가 아니어서 승격하지 않는다")
+        else:
+            candidates.append((n, prop))
     existing = target.get_parameter_count()
     if existing is not None and not isinstance(existing, int) and candidates:
         log(f"[regulation] {label}: 이미 있는 parameterCount={existing!r} 는 음이 아닌 정수가 아니지만 그대로 두고 원본을 남긴다")
@@ -223,7 +237,7 @@ def _apply_dataset(comp: dict, form: str, log) -> None:
     if not internal:
         return
     label = comp.get("bom-ref") or comp.get("name") or "?"
-    facts = _DatasetBag(internal)
+    facts = _Bag(internal, INTERNAL_PREFIX)
     target = (_DatasetTypedTarget if form == "typed" else _DatasetPropertiesTarget)(comp)
 
     for field, valid in (("size", None), ("availability", AVAILABILITIES)):
@@ -269,11 +283,11 @@ def _apply_dataset(comp: dict, form: str, log) -> None:
     _remove_from(comp, {id(p) for p in internal})                 # 내부 키는 이기든 지든 전부 지운다
 
 
-class _DatasetBag:
-    """aibom-internal:dataset:* 프로퍼티 목록을 사실로 읽는다."""
+class _Bag:
+    """aibom-internal:* 프로퍼티 목록을 사실로 읽는다."""
 
-    def __init__(self, props: list[dict]) -> None:
-        self.values = {p["name"][len(INTERNAL_PREFIX):]: p["value"] for p in props}
+    def __init__(self, props: list[dict], prefix: str) -> None:
+        self.values = {p["name"][len(prefix):]: p["value"] for p in props}
 
     def scalar(self, field: str) -> str | None:
         return self.values.get(field)
@@ -282,9 +296,13 @@ class _DatasetBag:
         return [v for _, v in self._indexed_pairs(field, leaf)]
 
     def statistics(self) -> list[tuple[str, str]]:
-        types = dict(self._indexed_pairs("statistics", "type"))
-        values = dict(self._indexed_pairs("statistics", "value"))
-        return [(types[i], values[i]) for i in sorted(types) if i in values]
+        return self.named_pairs("statistics", "type")
+
+    def named_pairs(self, field: str, key_leaf: str = "name") -> list[tuple[str, str]]:
+        """field:<i>:<key_leaf> 와 field:<i>:value 를 짝지어 (키, 값) 목록으로. 인덱스 순, 짝이 없는 것은 버린다."""
+        keys = dict(self._indexed_pairs(field, key_leaf))
+        values = dict(self._indexed_pairs(field, "value"))
+        return [(keys[i], values[i]) for i in sorted(keys) if i in values]
 
     def _indexed_pairs(self, field: str, leaf: str | None = None) -> list[tuple[int, str]]:
         """field:<i>[:leaf] → (i, value) 인덱스 순."""

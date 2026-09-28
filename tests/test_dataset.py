@@ -28,9 +28,34 @@ def imdb() -> dict:
     return json.loads(IMDB_FIXTURE.read_text(encoding="utf-8"))
 
 
+def hub_fixture(name: str) -> dict:
+    return json.loads((Path(__file__).parent / "fixtures" / "bom" / name).read_text(encoding="utf-8"))
+
+
+def imdb_size() -> dict:
+    return hub_fixture("hf_size_stanfordnlp_imdb.json")
+
+
+def imdb_statistics(config: str, split: str) -> dict | None:
+    try:
+        return hub_fixture(f"hf_statistics_stanfordnlp_imdb_{config}_{split}.json")
+    except FileNotFoundError:
+        return None
+
+
+REAL_FETCH_SIZE, REAL_FETCH_STATISTICS = ds.fetch_dataset_size, ds.fetch_dataset_statistics     # 실제 허브를 치는 테스트가 되돌려 쓴다
+
+
+@pytest.fixture(autouse=True)
+def no_datasets_server(monkeypatch):
+    """datasets-server 조회는 기본으로 실패(None)로 친다. 필요한 테스트가 다시 끼운다."""
+    monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: None)
+    monkeypatch.setattr(ds, "fetch_dataset_statistics", lambda hf_id, config, split, log=print: None)
+
+
 @pytest.fixture
 def online(monkeypatch, imdb):
-    """허브에 닿는 것으로 치고, imdb 만 픽스처로 답한다. 다른 id 는 None (조회 실패)."""
+    """허브에 닿는 것으로 치고, imdb 만 픽스처(허브 정보 · /size · split 별 /statistics)로 답한다. 다른 id 는 None (조회 실패)."""
     monkeypatch.setattr(ds, "hf_reachable", lambda: True)
     calls: list[str] = []
 
@@ -38,6 +63,9 @@ def online(monkeypatch, imdb):
         calls.append(hf_id)
         return copy.deepcopy(imdb) if hf_id == IMDB else None
     monkeypatch.setattr(ds, "fetch_dataset_info", fetch)
+    monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: imdb_size() if hf_id == IMDB else None)
+    monkeypatch.setattr(ds, "fetch_dataset_statistics",
+                        lambda hf_id, config, split, log=print: imdb_statistics(config, split) if hf_id == IMDB else None)
     return calls
 
 
@@ -62,6 +90,19 @@ def props(comp: dict) -> dict[str, str]:
 
 def internal(comp: dict) -> dict[str, str]:
     return {k[len(INTERNAL_PREFIX):]: v for k, v in props(comp).items() if k.startswith(INTERNAL_PREFIX)}
+
+
+def stats_props(pairs: list[tuple[str, str]]) -> dict[str, str]:
+    """(종류, 값) 목록 → internal() 이 돌려주는 statistics:<i>:type / :value 키."""
+    out: dict[str, str] = {}
+    for i, (kind, value) in enumerate(pairs):
+        out[f"statistics:{i}:type"], out[f"statistics:{i}:value"] = kind, value
+    return out
+
+
+IMDB_TRAIN_STATS = [("train:label:n_unique", "2"), ("train:label:frequencies", "neg=12500,pos=12500"),      # 동률이라 mode 없음
+                    ("train:text:length:min", "52"), ("train:text:length:max", "13704"), ("train:text:length:mean", "1325.06964"),
+                    ("train:text:length:median", "979"), ("train:text:length:std", "1003.13367")]
 
 
 def write(root: Path, rel: str, text: str) -> Path:
@@ -190,9 +231,15 @@ def test_discover_builds_one_component_per_directory_and_links_from_root(tmp_pat
     assert local["name"] == "data" and [d["name"] for d in local["data"]] == ["data/labels.jsonl", "data/train.csv"]
     train = {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]}
     assert train["aibom-cli:file:rows"] == "5" and train["aibom-cli:file:columns"] == "id,text,label" and train["aibom-cli:file:format"] == "csv"
+    # 열 통계: 파일이 둘이라 파일 이름이 앞에 붙는다. labels.jsonl 의 label 은 범주(pos 2, neg 1), train.csv 의 text 는 글(길이 통계), label 0/1 은 숫자로 읽힌다
     assert internal(local) == {"size": str(80 + 69), "modality:0": "text", "modality:1": "structured", "availability": "direct-download",
-                               "provenance:0": "data", "statistics:0:type": "files", "statistics:0:value": "2",
-                               "statistics:1:type": "rows", "statistics:1:value": "8", "statistics:2:type": "columns", "statistics:2:value": "3"}
+                               "provenance:0": "data", **stats_props([
+                                   ("labels:id:min", "1"), ("labels:id:max", "3"), ("labels:id:mean", "2"), ("labels:id:median", "2"), ("labels:id:std", "1"),
+                                   ("labels:label:n_unique", "2"), ("labels:label:mode", "pos"), ("labels:label:frequencies", "pos=2,neg=1"),
+                                   ("train:id:min", "1"), ("train:id:max", "5"), ("train:id:mean", "3"), ("train:id:median", "3"), ("train:id:std", "1.58114"),
+                                   ("train:text:length:min", "3"), ("train:text:length:max", "10"), ("train:text:length:mean", "6.2"),
+                                   ("train:text:length:median", "5"), ("train:text:length:std", "3.11448"),
+                                   ("train:label:min", "0"), ("train:label:max", "1"), ("train:label:mean", "0.6"), ("train:label:median", "1"), ("train:label:std", "0.54772")])}
 
     hf = found[IMDB_REF]
     assert hf["group"] == "stanfordnlp" and hf["name"] == "imdb" and hf["purl"] == IMDB_REF
@@ -242,12 +289,11 @@ def test_hub_info_fills_component_and_facts(imdb):
     assert comp["externalReferences"] == [{"type": "distribution", "url": "https://huggingface.co/datasets/stanfordnlp/imdb"},
                                           {"type": "website", "url": "https://paperswithcode.com/dataset/imdb-movie-reviews"}]
     assert internal(comp) == {"size": "133190302", "modality:0": "text", "availability": "direct-download",
-                              "provenance:0": "https://huggingface.co/datasets/stanfordnlp/imdb",
-                              "statistics:0:type": "rows:train", "statistics:0:value": "25000",
-                              "statistics:1:type": "rows:test", "statistics:1:value": "25000",
-                              "statistics:2:type": "rows:unsupervised", "statistics:2:value": "50000",
-                              "statistics:3:type": "features", "statistics:3:value": "2",
-                              "statistics:4:type": "configs", "statistics:4:value": "1"}
+                              "provenance:0": "https://huggingface.co/datasets/stanfordnlp/imdb"}          # 통계 응답이 없으면 statistics 도 없다
+    # datasets-server 통계를 주면 split:열:통계 로 들어간다. 라벨 열은 n_unique·frequencies, 글 열은 길이의 min·max·mean·median·std
+    comp = ds._new_hf_component(IMDB)
+    ds.apply_hub_info(comp, IMDB, imdb, imdb_size(), [("plain_text", "train", imdb_statistics("plain_text", "train"))])
+    assert {k: v for k, v in internal(comp).items() if k.startswith("statistics")} == stats_props(IMDB_TRAIN_STATS)
 
 
 def test_hub_facts_variants():
@@ -255,9 +301,13 @@ def test_hub_facts_variants():
                                                               "dataset_info": [{"config_name": "x", "download_size": 10, "splits": [{"name": "train", "num_examples": 3}], "features": [{}]},
                                                                                {"config_name": "y", "dataset_size": 5}]}})
     assert gated["availability"] == "registration" and gated["size"] == 15 and gated["modality"] == ["image", "audio", "structured", "other"]
-    assert gated["statistics"] == [("rows:x:train", "3"), ("features:x", "1"), ("configs", "2")]
+    assert gated["statistics"] == []                                                       # 행 수·feature 수·config 수는 통계가 아니다
     empty = ds.hub_facts("a/b", {"id": "a/b"})
     assert empty["size"] is None and empty["modality"] == [] and empty["statistics"] == [] and empty["availability"] == "direct-download"
+    # README 앞머리에 크기가 없으면 datasets-server /size 의 원본 파일 바이트. 앞머리에 있으면 그것이 이긴다
+    assert ds.hub_facts("a/b", {"id": "a/b"}, imdb_size())["size"] == 83446840
+    assert ds.hub_facts("a/b", {"id": "a/b", "cardData": {"dataset_info": {"dataset_size": 7}}}, imdb_size())["size"] == 7
+    assert ds.hub_facts("a/b", {"id": "a/b"}, {"size": {}})["size"] is None
     # 허브의 modality: 태그가 있으면 task_categories 보다 먼저다. 모르는 태그 값은 other, 태그 값은 v0.6 허용값으로 옮긴다
     tagged = ds.hub_facts("a/b", {"tags": ["modality:tabular", "modality:text", "modality:3d", "format:parquet", "modality:text"],
                                   "cardData": {"task_categories": ["image-classification"]}})
@@ -395,6 +445,85 @@ def test_alias_whose_lookup_fails_stays_a_separate_component(tmp_path, monkeypat
     assert "properties" not in found["pkg:huggingface/datasets/imdb"]
 
 
+# -- 통계 (datasets-server · 로컬 열) ------------------------------------------------------
+def test_statistics_requests_follow_dataset_info_then_size_and_are_capped(monkeypatch):
+    info_with_splits = {"id": "a/b", "cardData": {"dataset_info": [{"config_name": "x", "splits": [{"name": "train"}, {"name": "test"}]},
+                                                                    {"config_name": "y", "splits": [{"name": "train"}]}]}}
+    assert ds._config_splits(info_with_splits, imdb_size()) == [("x", "train"), ("x", "test"), ("y", "train")]       # 앞머리가 있으면 /size 는 안 본다
+    assert ds._config_splits({"id": "a/b"}, imdb_size()) == [("plain_text", "train"), ("plain_text", "test"), ("plain_text", "unsupervised")]
+    assert ds._config_splits({"id": "a/b"}, None) == [] and ds._config_splits({"id": "a/b"}, {"size": {"splits": [{"config": "c"}]}}) == []
+    calls: list[tuple[str, str]] = []
+    def fetch(hf_id, config, split, log=print):
+        calls.append((config, split))
+        return {"statistics": [], "partial": config == "c3"} if config != "c5" else None
+    monkeypatch.setattr(ds, "fetch_dataset_statistics", fetch)
+    many = {"id": "a/b", "cardData": {"dataset_info": [{"config_name": f"c{i}", "splits": [{"name": "train"}, {"name": "test"}]} for i in range(8)]}}
+    logs: list[str] = []
+    got = ds._fetch_statistics("a/b", many, None, logs.append)
+    assert len(calls) == ds.STATISTICS_REQUEST_LIMIT == 12 and calls[0] == ("c0", "train") and calls[-1] == ("c5", "test")
+    assert [c for c, _, _ in got] == ["c0", "c0", "c1", "c1", "c2", "c2", "c3", "c3", "c4", "c4"]                    # c5 는 조회 실패
+    assert any("16개 중 앞 12개만" in m for m in logs) and sum("partial" in m for m in logs) == 2
+
+
+def test_hub_column_statistics_by_column_type():
+    resp = {"statistics": [
+        {"column_name": "y", "column_type": "class_label", "column_statistics": {"n_unique": 12, "frequencies": {str(i): 1 for i in range(12)}}},   # 범주 11개 이상 → n_unique 만
+        {"column_name": "img", "column_type": "image", "column_statistics": {"min": 32, "max": 32.0, "mean": 32.0, "median": 32.0, "std": 0.0, "nan_count": 0}},
+        {"column_name": "dur", "column_type": "audio", "column_statistics": {"mean": 6.589523, "histogram": {}}},
+        {"column_name": "flag", "column_type": "bool", "column_statistics": {"n_unique": 2, "frequencies": {"True": 3, "False": 3}}},
+        {"column_name": "sp", "column_type": "string_label", "column_statistics": {"n_unique": 3, "frequencies": {"b": 1, "a": 5, "c": 2}}},
+        {"column_name": "n", "column_type": "float", "column_statistics": {"min": "bad", "max": True, "mean": 1.5}},
+        {"column_name": "", "column_type": "int", "column_statistics": {"min": 1}}, "garbage", {"column_name": "z", "column_statistics": None}]}
+    single = ds._hub_statistics([("only", "train", resp)])
+    assert single == [("train:y:n_unique", "12"),
+                      ("train:img:width:min", "32"), ("train:img:width:max", "32"), ("train:img:width:mean", "32"), ("train:img:width:median", "32"), ("train:img:width:std", "0"),
+                      ("train:dur:duration:mean", "6.58952"),
+                      ("train:flag:n_unique", "2"), ("train:flag:frequencies", "False=3,True=3"),                  # 동률 → mode 없음, 이름순
+                      ("train:sp:n_unique", "3"), ("train:sp:mode", "a"), ("train:sp:frequencies", "a=5,c=2,b=1"),
+                      ("train:n:mean", "1.5")]
+    multi = ds._hub_statistics([("c1", "train", resp), ("c2", "test", {"statistics": []})])
+    assert multi[0] == ("c1:train:y:n_unique", "12") and len(multi) == len(single)
+
+
+@pytest.mark.parametrize("values, expected", [
+    (["1", "2", "3", ""], [("min", "1"), ("max", "3"), ("mean", "2"), ("median", "2"), ("std", "1")]),                 # 빈 칸은 뺀다
+    ([1.5, 2, None], [("min", "1.5"), ("max", "2"), ("mean", "1.75"), ("median", "1.75"), ("std", "0.35355")]),
+    (["7"], [("min", "7"), ("max", "7"), ("mean", "7"), ("median", "7")]),                                         # 하나면 std 없음
+    (["1", "inf", "2"], [("length:min", "1"), ("length:max", "3"), ("length:mean", "1.66667"), ("length:median", "1"), ("length:std", "1.1547")]),   # inf 는 수가 아니다 → 글
+    ([True, False, True], [("n_unique", "2"), ("mode", "true"), ("frequencies", "true=2,false=1")]),
+    (["cat", "dog", "cat", "cat"], [("n_unique", "2"), ("mode", "cat"), ("frequencies", "cat=3,dog=1")]),
+    (["a", "b", "c"], [("length:min", "1"), ("length:max", "1"), ("length:mean", "1"), ("length:median", "1"), ("length:std", "0")]),   # 전부 달라 범주가 아니다
+    ([f"w{i}" for i in range(11)] * 2, [("length:min", "2"), ("length:max", "3"), ("length:mean", "2.09091"), ("length:median", "2"), ("length:std", "0.29424")]),  # 범주 11개 → 글
+    ([None, ""], []),
+    ([{"nested": 1}, "x"], [("length:min", "1"), ("length:max", "13"), ("length:mean", "7"), ("length:median", "7"), ("length:std", "8.48528")]),
+])
+def test_local_values_statistics_rules(values, expected):
+    assert ds._values_statistics(values) == expected
+
+
+def test_local_file_statistics_for_jsonl_json_tsv_and_limits(tmp_path, monkeypatch):
+    write(tmp_path, "a.jsonl", '{"x": 1, "tags": ["p"], "y": "u"}\n{"x": 3, "tags": [], "y": "u"}\n{"x": 2, "y": "v"}\n')
+    assert ds._file_statistics(tmp_path / "a.jsonl", "jsonl") == [("x:min", "1"), ("x:max", "3"), ("x:mean", "2"), ("x:median", "2"), ("x:std", "1"),
+                                                                   ("y:n_unique", "2"), ("y:mode", "u"), ("y:frequencies", "u=2,v=1")]   # tags 는 중첩 값이라 뺀다
+    write(tmp_path, "b.json", '[{"k": 2}, {"k": 4}, 5, {"k": null}]')
+    assert ds._file_statistics(tmp_path / "b.json", "json") == [("k:min", "2"), ("k:max", "4"), ("k:mean", "3"), ("k:median", "3"), ("k:std", "1.41421")]
+    write(tmp_path, "c.tsv", "h1\t\th3\n1\tx\ta\n2\ty\tb\n")
+    assert ds._file_statistics(tmp_path / "c.tsv", "tsv") == [("h1:min", "1"), ("h1:max", "2"), ("h1:mean", "1.5"), ("h1:median", "1.5"), ("h1:std", "0.70711"),
+                                                              ("h3:length:min", "1"), ("h3:length:max", "1"), ("h3:length:mean", "1"), ("h3:length:median", "1"), ("h3:length:std", "0")]   # 이름 없는 열은 뺀다
+    assert ds._file_statistics(tmp_path / "c.tsv", "png") == [] and ds._file_statistics(write(tmp_path, "e.csv", ""), "csv") == []
+    write(tmp_path, "bad.json", "{not json")
+    assert "statistics" not in ds._analyze_file(tmp_path / "bad.json", "bad.json", log=lambda m: None)             # 파싱 실패 → 크기·해시만
+    monkeypatch.setattr(ds, "STATISTICS_FILE_LIMIT", 10)
+    a = ds._analyze_file(tmp_path / "a.jsonl", "a.jsonl", log=lambda m: None)
+    assert a["rows"] == 3 and "statistics" not in a                                                                 # 상한을 넘으면 통계는 건너뛴다
+
+
+def test_local_statistics_prefix_only_when_a_directory_has_several_files(tmp_path):
+    write(tmp_path, "data/only.csv", "v\n1\n2\n")
+    facts = internal(datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))["data:local/data@"])
+    assert facts["statistics:0:type"] == "v:min" and facts["statistics:2:value"] == "1.5"                           # 파일 하나면 파일 이름을 붙이지 않는다
+
+
 def test_offline_keeps_name_and_purl_and_logs_once(tmp_path, monkeypatch):
     monkeypatch.setattr(ds, "hf_reachable", lambda: False)
     monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: pytest.fail("offline 인데 조회했다"))
@@ -449,11 +578,12 @@ def test_properties_form_moves_facts_to_aibom_dataset_keys(discovered):
     p = props(hf)
     assert p["aibom:dataset:size"] == "133190302" and p["aibom:dataset:modality:0"] == "text"
     assert p["aibom:dataset:availability"] == "direct-download" and p["aibom:dataset:provenance:0"] == "https://huggingface.co/datasets/stanfordnlp/imdb"
-    assert (p["aibom:dataset:statistics:0:type"], p["aibom:dataset:statistics:0:value"]) == ("rows:train", "25000")
+    assert (p["aibom:dataset:statistics:0:type"], p["aibom:dataset:statistics:0:value"]) == ("train:label:n_unique", "2")
+    assert p["aibom:dataset:statistics:20:type"] == "unsupervised:text:length:std" and "aibom:dataset:statistics:21:type" not in p   # split 3개 × 7개
     assert not any(k.startswith(INTERNAL_PREFIX) for k in p) and "aibom-internal" not in json.dumps(out)
     assert "size" not in hf["data"][0] and "availability" not in hf["data"][0]["contents"]                  # typed 필드는 건드리지 않는다
     local = datasets(out)["data:local/data@"]
-    assert props(local)["aibom:dataset:size"] == "149" and props(local)["aibom:dataset:statistics:2:type"] == "columns"
+    assert props(local)["aibom:dataset:size"] == "149" and props(local)["aibom:dataset:statistics:6:value"] == "pos"          # labels:label:mode
     assert validate_cdx(out, "1.7", log=print) and validate_cdx(out, "v0.6", log=print)
 
 
@@ -464,7 +594,7 @@ def test_typed_form_fills_componentdata_fields_on_data0(discovered):
     assert entry["size"] == 133190302 and isinstance(entry["size"], int) and entry["modality"] == ["text"]
     assert entry["contents"] == {"url": "https://huggingface.co/datasets/stanfordnlp/imdb", "availability": "direct-download"}
     assert entry["provenance"] == ["https://huggingface.co/datasets/stanfordnlp/imdb"]
-    assert entry["statistics"][0] == {"type": "rows:train", "value": "25000"} and len(entry["statistics"]) == 5
+    assert entry["statistics"][:7] == [{"type": t, "value": v} for t, v in IMDB_TRAIN_STATS] and len(entry["statistics"]) == 21
     assert "properties" not in hf                                                     # 내부 키만 있었으니 목록째 사라진다
     local = datasets(out)["data:local/data@"]
     assert local["data"][0]["size"] == 149 and local["data"][0]["modality"] == ["text", "structured"] and "size" not in local["data"][1]
@@ -709,8 +839,16 @@ def test_well_known_manifests_are_not_promoted_by_a_neighbouring_data_file(tmp_p
 
 # -- 실제 허브 (하나뿐) ------------------------------------------------------------------
 @pytest.mark.skipif(skip_reason() is not None, reason=skip_reason() or "")
-def test_live_hub_returns_size_and_modality_for_imdb():
+def test_live_hub_returns_size_and_modality_for_imdb(monkeypatch):
+    monkeypatch.setattr(ds, "fetch_dataset_size", REAL_FETCH_SIZE)
+    monkeypatch.setattr(ds, "fetch_dataset_statistics", REAL_FETCH_STATISTICS)
     info = ds.fetch_dataset_info(IMDB, log=print)
     assert info and info["id"] == IMDB
-    facts = ds.hub_facts(IMDB, info)
+    size = ds.fetch_dataset_size(IMDB, log=print)
+    assert size and size["size"]["dataset"]["num_bytes_original_files"] > 0
+    statistics = ds._fetch_statistics(IMDB, info, size, log=print)
+    assert [(c, s) for c, s, _ in statistics] == [("plain_text", "train"), ("plain_text", "test"), ("plain_text", "unsupervised")]
+    facts = ds.hub_facts(IMDB, info, size, statistics)
     assert facts["size"] and facts["size"] > 0 and facts["modality"] == ["text"] and facts["availability"] == "direct-download"
+    kinds = dict(facts["statistics"])
+    assert kinds["train:label:n_unique"] == "2" and float(kinds["train:text:length:mean"]) > 0

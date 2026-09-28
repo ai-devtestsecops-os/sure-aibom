@@ -6,6 +6,7 @@
        - 파이썬 소스의 load_dataset("owner/name") — 첫 위치 인자가 허브 id 모양일 때만.
          load_dataset("csv", data_files=…) 같은 로컬 빌더는 data_files 경로를 출처 2 로 보낸다.
        네트워크가 닿으면 GET {HF_ENDPOINT}/api/datasets/<id> 로 채우고, 닿지 않으면 이름·purl 만 두고 한 번 알린다.
+       datasets-server 의 /size(README 앞머리에 크기가 없을 때의 바이트 크기)와 /statistics(config·split 별 열 통계)도 본다.
        컴포넌트가 없으면 만들고(bom-ref = purl pkg:huggingface/datasets/<id>), 있으면 제자리에서 채운다.
        허브가 돌려준 id 가 정식 id 다: 옛 이름(imdb → stanfordnlp/imdb)이나 두 이름(bookcorpus, bookcorpus/bookcorpus)으로 부른
        같은 데이터셋은 정식 id 의 컴포넌트 하나로 모으고 (purl·bom-ref 를 바꾸고, 가리키던 관계·modelCard ref 도 따라간다) 한 번만 조회한다.
@@ -15,7 +16,9 @@
        (역슬래시 구분자는 / 로 읽고, .. 은 정리해 한 파일이 두 번 들어가지 않게 한다). 대상 밖으로 나가는 심볼릭 링크는 건너뛴다.
        json·txt 는 어디에나 있는 확장자라, 코드가 가리키거나 같은 디렉터리에 다른 데이터 파일이 있을 때만 데이터로 치고,
        requirements*.txt · README* · package.json · *config.json 같은 잘 알려진 비데이터 이름은 코드가 가리킬 때만 친다.
-       분석은 표준 라이브러리만 쓴다 (parquet·arrow·feather 행 수는 pyarrow 가 있을 때만). pickle 은 절대 읽지 않는다.
+       분석은 표준 라이브러리만 쓴다 (parquet·arrow·feather 는 pyarrow 가 있을 때만). pickle 은 절대 읽지 않는다.
+       열 통계(숫자 열은 min·max·mean·median·std, 글 열은 길이의 그 통계, 라벨 열은 n_unique·mode·frequencies)는
+       csv·tsv·jsonl·json·parquet·arrow 에서 64 MB 까지만 낸다. 허브 datasets-server 가 주는 것과 같은 종류다.
 
 데이터셋 사실(size, modality, availability, provenance, statistics)은 aibom-internal:dataset:* 프로퍼티로 컴포넌트에 두고,
 regulation 이 --form 에 맞는 자리로 옮기며 지운다 — 출력에는 남지 않는다.
@@ -29,10 +32,13 @@ import ast
 import csv
 import hashlib
 import json
+import math
 import os
 import re
 import zipfile
+from collections import Counter
 from io import BufferedIOBase
+from statistics import fmean, median, stdev
 from pathlib import Path, PurePosixPath
 from typing import Iterable
 from urllib.error import HTTPError, URLError
@@ -97,6 +103,14 @@ NPY_HEADER_LIMIT = 1024 ** 2                    # 이보다 긴 npy 헤더는 �
 # 파일 하나를 읽다 나는 예외 — 크기·해시만 적고 계속 간다
 _READ_ERRORS = (OSError, ValueError, UnicodeDecodeError, zipfile.BadZipFile, csv.Error, SyntaxError, TypeError, AttributeError)
 FETCH_TIMEOUT = 15.0
+
+DATASETS_SERVER = "https://datasets-server.huggingface.co"
+STATISTIC_KEYS = ("min", "max", "mean", "median", "std")      # datasets-server 가 숫자형 열에 주는 통계. v0.6 의 예시(mean, median, range …)와 같은 계열
+MEASURE_BY_COLUMN_TYPE = {"string_text": "length", "list": "length", "image": "width", "audio": "duration"}   # 숫자가 아닌 열은 무엇의 통계인지
+LABEL_COLUMN_TYPES = frozenset({"class_label", "string_label", "bool"})
+FREQUENCIES_LIMIT = 10                                        # 범주가 이보다 많으면 frequencies·mode 는 적지 않는다 (n_unique 만)
+STATISTICS_REQUEST_LIMIT = 12                                 # 데이터셋 하나에 config×split 통계 조회 상한
+STATISTICS_FILE_LIMIT = JSON_PARSE_LIMIT                      # 로컬 파일 열 통계는 이 크기까지만 (값을 메모리에 올린다)
 
 
 # ── 진입점 ──────────────────────────────────────────────────────────────────
@@ -354,14 +368,13 @@ def _component_data(a: dict) -> dict:
 
 
 def _local_statistics(analyses: list[dict]) -> list[tuple[str, str]]:
-    stats = [("files", str(len(analyses)))]
-    rows = [a["rows"] for a in analyses if a.get("rows") is not None]
-    if rows:
-        stats.append(("rows", str(sum(rows))))
-    widths = {len(a["columns"]) for a in analyses if a.get("columns")}
-    if len(widths) == 1:                                          # 표 파일들의 열 수가 하나로 맞을 때만
-        stats.append(("columns", str(widths.pop())))
-    return stats
+    """파일별 열 통계를 모은다. 파일이 둘 이상이면 파일 이름(확장자 뺀)을 앞에 붙여 허브의 split 자리처럼 쓴다."""
+    many = len(analyses) > 1
+    out: list[tuple[str, str]] = []
+    for a in analyses:
+        stem = PurePosixPath(a["path"]).stem
+        out += [(f"{stem}:{kind}" if many else kind, value) for kind, value in a.get("statistics") or []]
+    return out
 
 
 def _analyze_file(path: Path, rel: str, log) -> dict:
@@ -378,6 +391,8 @@ def _analyze_file(path: Path, rel: str, log) -> dict:
         return out
     try:
         out.update(_shape(path, ext))
+        if out["size"] <= STATISTICS_FILE_LIMIT:
+            out["statistics"] = _file_statistics(path, ext)
     except _READ_ERRORS as e:
         log(f"[dataset] {rel}: 내용을 읽지 못해 크기·해시만 적는다 ({e.__class__.__name__})")
     return out
@@ -476,6 +491,156 @@ def _arrow_shape(path: Path) -> dict:
         return {"rows": table.num_rows, "columns": list(table.schema.names)}
 
 
+def _file_statistics(path: Path, ext: str) -> list[tuple[str, str]]:
+    """표 형식 파일의 열마다 통계 (종류, 값). 열 이름이 앞에 붙는다. 모르는 형식은 빈 목록."""
+    out: list[tuple[str, str]] = []
+    for name, values in _columns_of(path, ext).items():
+        out += [(f"{name}:{kind}", value) for kind, value in _values_statistics(values)]
+    return out
+
+
+def _columns_of(path: Path, ext: str) -> dict[str, list]:
+    """열 이름 → 값 목록. 값은 스칼라(문자열·숫자·bool·None)만, 중첩 값이 있는 열은 뺀다."""
+    if ext in ("csv", "tsv"):
+        csv.field_size_limit(max(csv.field_size_limit(), CSV_FIELD_LIMIT))
+        with path.open(encoding="utf-8", errors="replace", newline="") as fh:
+            reader = csv.reader(fh, delimiter="\t" if ext == "tsv" else ",")
+            header = [h.strip() for h in (next(reader, None) or [])]
+            columns: dict[str, list] = {h: [] for h in header if h}
+            for row in reader:
+                if not row:
+                    continue
+                for h, v in zip(header, row):
+                    if h:
+                        columns[h].append(v.strip() if isinstance(v, str) else v)
+            return columns
+    if ext in ("jsonl", "ndjson"):
+        with path.open(encoding="utf-8", errors="replace") as fh:
+            records = [json.loads(line) for line in fh if line.strip()]
+        return _columns_of_records(records)
+    if ext == "json":
+        with path.open(encoding="utf-8", errors="replace") as fh:
+            parsed = json.load(fh)
+        return _columns_of_records(parsed) if isinstance(parsed, list) else {}
+    if ext in ("parquet", "arrow", "feather"):
+        return _columns_of_table(path, ext)
+    return {}
+
+
+def _columns_of_records(records: list) -> dict[str, list]:
+    columns: dict[str, list] = {}
+    nested: set[str] = set()
+    dicts = [r for r in records if isinstance(r, dict)]
+    for r in dicts:
+        for k in r:
+            columns.setdefault(str(k), [])
+    for r in dicts:
+        for k in columns:
+            v = r.get(k)
+            if isinstance(v, (dict, list, tuple)):
+                nested.add(k)
+            columns[k].append(v)
+    return {k: v for k, v in columns.items() if k not in nested}
+
+
+def _columns_of_table(path: Path, ext: str) -> dict[str, list]:
+    try:
+        import pyarrow as pa
+        import pyarrow.feather as feather
+        import pyarrow.parquet as pq
+        import pyarrow.types as pt
+    except ImportError:
+        return {}
+    if ext == "parquet":
+        table = pq.read_table(str(path))
+    else:
+        try:
+            with pa.memory_map(str(path)) as source:
+                table = pa.ipc.open_file(source).read_all()
+        except pa.ArrowInvalid:
+            table = feather.read_table(str(path), memory_map=True)
+    columns: dict[str, list] = {}
+    for name, col in zip(table.schema.names, table.columns):
+        t = col.type
+        if pt.is_integer(t) or pt.is_floating(t) or pt.is_boolean(t) or pt.is_string(t) or pt.is_large_string(t) or pt.is_decimal(t):
+            columns[name] = [float(v) if pt.is_decimal(t) and v is not None else v for v in col.to_pylist()]
+    return columns
+
+
+def _values_statistics(values: list) -> list[tuple[str, str]]:
+    """열 값들 → 통계. 전부 숫자면 min·max·mean·median·std, 전부 bool 이거나 범주가 적고 반복되면 n_unique·mode·frequencies,
+    그 밖의 글은 길이의 통계. datasets-server 가 열 종류별로 주는 것과 같은 규칙이다."""
+    present = [v for v in values if v is not None and v != ""]
+    if not present:
+        return []
+    if all(isinstance(v, bool) for v in present):
+        counts = Counter(str(v).lower() for v in present)
+        return _label_statistics(len(counts), dict(counts))
+    numbers = _as_numbers(present)
+    if numbers is not None:
+        return _numeric_statistics(numbers)
+    texts = [str(v) for v in present]
+    counts = Counter(texts)
+    if len(counts) <= FREQUENCIES_LIMIT and len(counts) < len(texts):
+        return _label_statistics(len(counts), dict(counts))
+    return [(f"length:{kind}", value) for kind, value in _numeric_statistics([float(len(t)) for t in texts])]
+
+
+def _as_numbers(values: list) -> list[float] | None:
+    """모든 값이 유한한 수로 읽히면 그 목록, 하나라도 아니면 None. bool 은 수로 치지 않는다."""
+    out: list[float] = []
+    for v in values:
+        if isinstance(v, bool):
+            return None
+        if isinstance(v, (int, float)):
+            f = float(v)
+        elif isinstance(v, str):
+            try:
+                f = float(v)
+            except ValueError:
+                return None
+        else:
+            return None
+        if not math.isfinite(f):
+            return None
+        out.append(f)
+    return out
+
+
+def _numeric_statistics(nums: list[float]) -> list[tuple[str, str]]:
+    out = [("min", _number(min(nums))), ("max", _number(max(nums))), ("mean", _number(fmean(nums))), ("median", _number(median(nums)))]
+    if len(nums) > 1:
+        out.append(("std", _number(stdev(nums))))
+    return out
+
+
+def _label_statistics(n_unique, frequencies) -> list[tuple[str, str]]:
+    """라벨 열: n_unique, 그리고 범주가 FREQUENCIES_LIMIT 이하면 mode(최빈값, 동률이면 생략)와 frequencies(값=개수, 많은 순)."""
+    out: list[tuple[str, str]] = []
+    if isinstance(n_unique, int) and not isinstance(n_unique, bool):
+        out.append(("n_unique", str(n_unique)))
+    if isinstance(frequencies, dict) and frequencies and len(frequencies) <= FREQUENCIES_LIMIT:
+        items = sorted(frequencies.items(), key=lambda kv: (-(_int(kv[1]) or 0), str(kv[0])))
+        top = [k for k, v in items if v == items[0][1]]
+        if len(top) == 1:
+            out.append(("mode", str(top[0])))
+        out.append(("frequencies", ",".join(f"{k}={v}" for k, v in items)))
+    return out
+
+
+def _number(v) -> str:
+    """통계값 표기: 정수는 그대로, 실수는 소수 5자리까지 (정수값이면 정수로). datasets-server 표기와 같다."""
+    if isinstance(v, bool):
+        return str(v).lower()
+    if isinstance(v, int):
+        return str(v)
+    if isinstance(v, float):
+        if not math.isfinite(v):
+            return str(v)
+        return str(int(v)) if v.is_integer() else str(round(v, 5))
+    return str(v)
+
+
 def _sha256(path: Path) -> str:
     h = hashlib.sha256()
     with path.open("rb") as fh:
@@ -490,9 +655,11 @@ def hf_endpoint() -> str:
     return (os.environ.get("HF_ENDPOINT") or "https://huggingface.co").rstrip("/")
 
 
-def fetch_dataset_info(hf_id: str, log=print) -> dict | None:
-    """GET {HF_ENDPOINT}/api/datasets/<id>. 실패하면 None 을 돌려주고 알린다. 테스트는 이 함수를 바꿔 끼운다."""
-    url = f"{hf_endpoint()}/api/datasets/{quote(hf_id, safe='/')}"
+def datasets_server() -> str:
+    return (os.environ.get("HF_DATASETS_SERVER") or DATASETS_SERVER).rstrip("/")
+
+
+def _get_json(url: str, hf_id: str, what: str, log) -> dict | None:
     req = Request(url, headers={"User-Agent": "aibom-cli", "Accept": "application/json"})
     if os.environ.get("HF_TOKEN"):
         req.add_header("Authorization", f"Bearer {os.environ['HF_TOKEN']}")
@@ -500,12 +667,28 @@ def fetch_dataset_info(hf_id: str, log=print) -> dict | None:
         with urlopen(req, timeout=FETCH_TIMEOUT) as resp:
             info = json.load(resp)
     except HTTPError as e:
-        log(f"[dataset] {hf_id}: 허브 응답 {e.code}, 이름·purl 만 둔다")
+        log(f"[dataset] {hf_id}: {what} 응답 {e.code}")
         return None
     except (URLError, OSError, ValueError) as e:
-        log(f"[dataset] {hf_id}: 허브 조회 실패 ({e.__class__.__name__}), 이름·purl 만 둔다")
+        log(f"[dataset] {hf_id}: {what} 조회 실패 ({e.__class__.__name__})")
         return None
     return info if isinstance(info, dict) else None
+
+
+def fetch_dataset_info(hf_id: str, log=print) -> dict | None:
+    """GET {HF_ENDPOINT}/api/datasets/<id>. 실패하면 None 을 돌려주고 알린다. 테스트는 이 함수를 바꿔 끼운다."""
+    return _get_json(f"{hf_endpoint()}/api/datasets/{quote(hf_id, safe='/')}", hf_id, "허브", log)
+
+
+def fetch_dataset_size(hf_id: str, log=print) -> dict | None:
+    """GET datasets-server /size?dataset=<id>. 바이트 크기와 config·split 목록."""
+    return _get_json(f"{datasets_server()}/size?dataset={quote(hf_id, safe='/')}", hf_id, "datasets-server /size", log)
+
+
+def fetch_dataset_statistics(hf_id: str, config: str, split: str, log=print) -> dict | None:
+    """GET datasets-server /statistics?dataset=<id>&config=&split=. 열마다 통계."""
+    url = f"{datasets_server()}/statistics?dataset={quote(hf_id, safe='/')}&config={quote(config, safe='')}&split={quote(split, safe='')}"
+    return _get_json(url, hf_id, f"datasets-server /statistics {config}/{split}", log)
 
 
 def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log) -> None:
@@ -534,8 +717,44 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log) -> None:
             log(f"[dataset] {survivor_id} → {canonical} (허브 정식 id)")
         info = info_by_canonical.get(canonical)
         if info:
-            apply_hub_info(comp, canonical, info)
+            size = fetch_dataset_size(canonical, log)
+            statistics = _fetch_statistics(canonical, info, size, log)
+            apply_hub_info(comp, canonical, info, size, statistics)
             log(f"[dataset] {canonical}: 허브 정보로 채웠다")
+
+
+def _fetch_statistics(hf_id: str, info: dict, size: dict | None, log) -> list[tuple[str, str, dict]]:
+    """(config, split) 마다 datasets-server 통계를 받는다. 상한을 넘으면 앞쪽만 받고 알린다."""
+    pairs = _config_splits(info, size)
+    if len(pairs) > STATISTICS_REQUEST_LIMIT:
+        log(f"[dataset] {hf_id}: config·split {len(pairs)}개 중 앞 {STATISTICS_REQUEST_LIMIT}개만 통계를 조회한다")
+        pairs = pairs[:STATISTICS_REQUEST_LIMIT]
+    out: list[tuple[str, str, dict]] = []
+    for config, split in pairs:
+        resp = fetch_dataset_statistics(hf_id, config, split, log)
+        if resp and isinstance(resp.get("statistics"), list):
+            if resp.get("partial"):
+                log(f"[dataset] {hf_id}: {config}/{split} 통계는 일부 데이터 기준이다 (partial)")
+            out.append((config, split, resp))
+    return out
+
+
+def _config_splits(info: dict, size: dict | None) -> list[tuple[str, str]]:
+    """통계를 물을 (config, split). README 앞머리 dataset_info 에서, 없으면 /size 응답의 splits 에서. 나온 순서대로."""
+    card = info.get("cardData") or {}
+    pairs: list[tuple[str, str]] = []
+    for i in _as_list(card.get("dataset_info")):
+        if not isinstance(i, dict):
+            continue
+        config = str(i.get("config_name") or "default")
+        for sp in i.get("splits") or []:
+            if isinstance(sp, dict) and sp.get("name"):
+                pairs.append((config, str(sp["name"])))
+    if not pairs and size:
+        for sp in ((size.get("size") or {}).get("splits") or []):
+            if isinstance(sp, dict) and sp.get("config") and sp.get("split"):
+                pairs.append((str(sp["config"]), str(sp["split"])))
+    return list(dict.fromkeys(pairs))
 
 
 def canonical_id(hf_id: str, info: dict | None) -> str:
@@ -616,8 +835,10 @@ def _repoint(merged: dict, old: str, new: str) -> None:
         params["datasets"] = kept
 
 
-def apply_hub_info(comp: dict, hf_id: str, info: dict) -> None:
-    """허브 응답으로 컴포넌트를 채운다. 이미 있는 값은 두고 없는 것만 채운다. 사실은 aibom-internal:dataset:* 로. URL 은 정식 id 로."""
+def apply_hub_info(comp: dict, hf_id: str, info: dict, size: dict | None = None,
+                   statistics: list[tuple[str, str, dict]] = ()) -> None:
+    """허브 응답으로 컴포넌트를 채운다. 이미 있는 값은 두고 없는 것만 채운다. 사실은 aibom-internal:dataset:* 로. URL 은 정식 id 로.
+    size 는 datasets-server /size 응답, statistics 는 (config, split, /statistics 응답) 목록. 둘 다 없어도 된다."""
     hf_id = canonical_id(hf_id, info)
     card = info.get("cardData") or {}
     if not comp.get("version") and isinstance(info.get("sha"), str):
@@ -640,28 +861,31 @@ def apply_hub_info(comp: dict, hf_id: str, info: dict) -> None:
     if new_refs:
         comp["externalReferences"] = (comp.get("externalReferences") or []) + new_refs
 
-    facts = hub_facts(hf_id, info)
+    facts = hub_facts(hf_id, info, size, statistics)
     props = internal_properties(facts)
     if props:
         comp["properties"] = (comp.get("properties") or []) + props
 
 
-def hub_facts(hf_id: str, info: dict) -> dict:
-    """허브 응답 → 데이터셋 사실. 값이 없는 키는 비워 둔다. 출처 URL 은 정식 id 로.
-    모달리티는 허브가 붙인 modality:<x> 태그를 먼저 보고, 태그가 없을 때만 task_categories 로 추론한다."""
+def hub_facts(hf_id: str, info: dict, size: dict | None = None, statistics: list[tuple[str, str, dict]] = ()) -> dict:
+    """허브 응답 → 데이터셋 사실. 값이 없는 키는 비워 둔다 (추론하지 않는다). 출처 URL 은 정식 id 로.
+    크기는 README 앞머리 dataset_info 의 바이트 합, 없으면 datasets-server /size 의 원본 파일 바이트.
+    모달리티는 허브가 붙인 modality:<x> 태그를 먼저 보고, 태그가 없을 때만 task_categories 로 추론한다.
+    통계는 datasets-server /statistics 의 열 통계 (split 이름과 열 이름이 앞에 붙는다)."""
     hf_id = canonical_id(hf_id, info)
     card = info.get("cardData") or {}
     tag_modalities = [t[len("modality:"):].strip().lower() for t in _as_list(info.get("tags")) if isinstance(t, str) and t.startswith("modality:")]
     infos = [i for i in _as_list(card.get("dataset_info")) if isinstance(i, dict)]
     sizes = [_int(i.get("dataset_size")) if _int(i.get("dataset_size")) is not None else _int(i.get("download_size")) for i in infos]
     sizes = [s for s in sizes if s is not None]
+    server_size = _int((((size or {}).get("size") or {}).get("dataset") or {}).get("num_bytes_original_files"))
     facts: dict = {
-        "size": sum(sizes) if sizes else None,
+        "size": sum(sizes) if sizes else server_size,
         "modality": _unique(MODALITY_BY_TAG.get(t, "other") for t in tag_modalities if t) if tag_modalities
                     else _unique(_modality_of_task(t) for t in _as_list(card.get("task_categories")) if isinstance(t, str)),
         "availability": "registration" if info.get("gated") else "direct-download",
         "provenance": [_hub_url(hf_id)],
-        "statistics": _hub_statistics(infos),
+        "statistics": _hub_statistics(statistics),
     }
     return facts
 
@@ -674,21 +898,34 @@ def _modality_of_task(task: str) -> str:
     return "other"
 
 
-def _hub_statistics(infos: list[dict]) -> list[tuple[str, str]]:
-    stats: list[tuple[str, str]] = []
-    many = len(infos) > 1
-    for i in infos:
-        config = str(i.get("config_name") or "default")
-        for split in i.get("splits") or []:
-            n = _int((split or {}).get("num_examples")) if isinstance(split, dict) else None
-            if n is not None and split.get("name"):
-                stats.append((f"rows:{config}:{split['name']}" if many else f"rows:{split['name']}", str(n)))
-        features = i.get("features")
-        if isinstance(features, (list, dict)):
-            stats.append((f"features:{config}" if many else "features", str(len(features))))
-    if infos:
-        stats.append(("configs", str(len(infos))))
-    return stats
+def _hub_statistics(entries: list[tuple[str, str, dict]]) -> list[tuple[str, str]]:
+    """(config, split, /statistics 응답) → (종류, 값). 종류는 "<split>:<열>:<통계>", config 가 둘 이상이면 "<config>:" 를 앞에 더한다."""
+    configs = {c for c, _, _ in entries}
+    out: list[tuple[str, str]] = []
+    for config, split, resp in entries:
+        prefix = f"{config}:{split}" if len(configs) > 1 else split
+        for col in resp.get("statistics") or []:
+            if not isinstance(col, dict):
+                continue
+            name, ctype, cs = col.get("column_name"), col.get("column_type"), col.get("column_statistics")
+            if not name or not isinstance(cs, dict):
+                continue
+            out += [(f"{prefix}:{name}:{kind}", value) for kind, value in _column_statistics(ctype, cs)]
+    return out
+
+
+def _column_statistics(column_type, cs: dict) -> list[tuple[str, str]]:
+    """datasets-server 열 하나 → 통계. 숫자 열은 min·max·mean·median·std, 글·목록·이미지·오디오 열은 길이·너비·길이(초)의 그 통계
+    (종류 앞에 length·width·duration 을 붙인다), 라벨 열은 n_unique·mode·frequencies."""
+    if column_type in LABEL_COLUMN_TYPES:
+        return _label_statistics(cs.get("n_unique"), cs.get("frequencies"))
+    measure = MEASURE_BY_COLUMN_TYPE.get(column_type)
+    out: list[tuple[str, str]] = []
+    for key in STATISTIC_KEYS:
+        v = cs.get(key)
+        if isinstance(v, (int, float)) and not isinstance(v, bool):
+            out.append((f"{measure}:{key}" if measure else key, _number(v)))
+    return out
 
 
 def _license(value: str) -> dict:

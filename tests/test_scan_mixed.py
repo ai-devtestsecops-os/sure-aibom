@@ -1,6 +1,7 @@
 """tests/fixtures/mixed 를 실제 syft·cdxgen 으로 스캔해 병합 결과를 확인한다.
 두 도구가 없으면 건너뛴다. owasp 보강은 네트워크가 필요해 skip_reason 을 패치해=1 로 뺀다 — regulation 은 cdxgen 의
-cdx:ai:runtime / cdx:ai:contextWindow 만으로 technicalRequirements 와 inputs[0].maxSize 를 채운다.
+cdx:ai:runtime / cdx:ai:contextWindow 로 technicalRequirements 와 inputs[0].maxSize 를, models/config.json 에서 직접 읽은
+하이퍼파라미터로 hyperparameters 를 채운다 (파라미터 수는 가중치 파일이 없어 비어 있다).
 데이터셋의 허브 조회도 네트워크가 필요해, 닿는 것으로 치고 stanfordnlp/imdb 만 기록해 둔 응답으로 답한다 (bookcorpus 는 조회 실패)."""
 import json
 import shutil
@@ -13,6 +14,7 @@ from aibom_cli.cli import main
 
 FIXTURE = Path(__file__).parent / "fixtures" / "mixed"
 IMDB_FIXTURE = Path(__file__).parent / "fixtures" / "bom" / "hf_dataset_stanfordnlp_imdb.json"
+IMDB_ID = "stanfordnlp/imdb"
 IMDB_REF = "pkg:huggingface/datasets/stanfordnlp/imdb"
 LOCAL_REF = "data:local/data@"
 BOOK_REF = "data:datasets/bookcorpus@"
@@ -30,6 +32,10 @@ def offline(monkeypatch):
     monkeypatch.setattr(ds, "hf_reachable", lambda: True)
     imdb = json.loads(IMDB_FIXTURE.read_text(encoding="utf-8"))
     monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: json.loads(json.dumps(imdb)) if hf_id == "stanfordnlp/imdb" else None)
+    fixtures = IMDB_FIXTURE.parent
+    monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: json.loads((fixtures / "hf_size_stanfordnlp_imdb.json").read_text()) if hf_id == IMDB_ID else None)
+    monkeypatch.setattr(ds, "fetch_dataset_statistics", lambda hf_id, config, split, log=print:
+                        json.loads((fixtures / f"hf_statistics_stanfordnlp_imdb_{config}_{split}.json").read_text()) if hf_id == IMDB_ID else None)
 
 
 def scan(target, out: Path, *flags) -> dict:
@@ -85,6 +91,8 @@ def test_mixed_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert bert["modelCard"]["modelParameters"]["datasets"][0]["ref"] == BOOK_REF
     card = {p["name"]: p["value"] for p in bert["modelCard"]["properties"]}
     assert card["aibom:model:technicalRequirements:0"] == "transformers" and card["aibom:model:inputs:0:maxSize"] == "512"
+    assert (card["aibom:model:hyperparameters:0:name"], card["aibom:model:hyperparameters:0:value"]) == ("block_count", "12")
+    assert card["aibom:model:hyperparameters:5:value"] == "30522" and "aibom:model:parameterCount" not in card
     assert "cdx:ai:runtime" not in {p["name"] for p in bert["properties"]}       # 승격한 원본은 소비된다
 
     refs = {c["bom-ref"] for c in doc["components"]}
@@ -102,13 +110,16 @@ def test_typed_form_scan_validates_against_v06_only(tmp_path):
     bert = next(c for c in doc["components"] if c["name"] == "bert-base-uncased")
     assert bert["modelCard"]["considerations"]["technicalRequirements"] == ["transformers"]
     assert bert["modelCard"]["modelParameters"]["inputs"][0]["maxSize"] == "512"
+    assert bert["modelCard"]["modelParameters"]["hyperparameters"] == [
+        {"name": n, "value": v} for n, v in [("block_count", "12"), ("context_length", "512"), ("embedding_length", "768"),
+                                             ("feed_forward_length", "3072"), ("attention_head_count", "12"), ("vocab_size", "30522")]]
     assert not any(p["name"].startswith("aibom:model:") for p in bert["modelCard"].get("properties", []))
     text = cdx.read_text()
     assert "aibom:dataset:" not in text and "aibom-internal" not in text and str(FIXTURE) not in text
     datasets = {c["bom-ref"]: c for c in doc["components"] if c["type"] == "data"}
     imdb, local = datasets[IMDB_REF]["data"][0], datasets[LOCAL_REF]["data"][0]
     assert imdb["size"] == 133190302 and imdb["modality"] == ["text"] and imdb["contents"]["availability"] == "direct-download"
-    assert imdb["statistics"][0] == {"type": "rows:train", "value": "25000"} and imdb["provenance"] == ["https://huggingface.co/datasets/stanfordnlp/imdb"]
+    assert imdb["statistics"][0] == {"type": "train:label:n_unique", "value": "2"} and imdb["provenance"] == ["https://huggingface.co/datasets/stanfordnlp/imdb"]
     assert local["size"] == 149 and local["modality"] == ["text", "structured"] and local["provenance"] == ["data"]
     assert "size" not in datasets[LOCAL_REF]["data"][1] and "size" not in datasets[BOOK_REF]["data"][0]
 
