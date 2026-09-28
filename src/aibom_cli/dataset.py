@@ -6,7 +6,9 @@
        - 파이썬 소스의 load_dataset("owner/name") — 첫 위치 인자가 허브 id 모양일 때만.
          load_dataset("csv", data_files=…) 같은 로컬 빌더는 data_files 경로를 출처 2 로 보낸다.
        네트워크가 닿으면 GET {HF_ENDPOINT}/api/datasets/<id> 로 채우고, 닿지 않으면 이름·purl 만 두고 한 번 알린다.
-       컴포넌트가 없으면 만들고(bom-ref = purl pkg:huggingface/datasets/<id>), 있으면 제자리에서 채운다 — 중복은 없다.
+       컴포넌트가 없으면 만들고(bom-ref = purl pkg:huggingface/datasets/<id>), 있으면 제자리에서 채운다.
+       허브가 돌려준 id 가 정식 id 다: 옛 이름(imdb → stanfordnlp/imdb)이나 두 이름(bookcorpus, bookcorpus/bookcorpus)으로 부른
+       같은 데이터셋은 정식 id 의 컴포넌트 하나로 모으고 (purl·bom-ref 를 바꾸고, 가리키던 관계·modelCard ref 도 따라간다) 한 번만 조회한다.
     2) 로컬 데이터 파일 — 확장자로 찾고 부모 디렉터리마다 컴포넌트 하나 (bom-ref "data:local/<상대 디렉터리>@"),
        data[] 에 파일마다 componentData 하나 {type: dataset, name: <상대 경로>, contents.properties: 크기·sha256·형식·행·열}.
        코드가 가리키는 경로(pd.read_csv, open, np.load, data_files=)도 데이터 확장자이고 대상 안에 실제로 있으면 넣는다
@@ -38,6 +40,7 @@ from urllib.parse import quote
 from urllib.request import Request, urlopen
 
 from .enrich import hf_reachable
+from .merge import fill_missing
 from .regulation import INTERNAL_PREFIX
 from .validate import SCHEMA_DIR
 
@@ -65,6 +68,10 @@ DATA_EXTENSIONS = frozenset(MODALITY_BY_EXTENSION)
 _NON_DATA_NAME = re.compile(r"^(requirements[\w.-]*\.txt|readme.*|license.*|notice.*|changelog.*|package(-lock)?\.json"
                             r"|tsconfig\.json|.*config\.json|manifest\.json|composer\.json)$", re.IGNORECASE)
 _DRIVE_PATH = re.compile(r"^[A-Za-z]:")
+
+# 허브 modality:<x> 태그 → v0.6 허용값. 태그가 있으면 이것을 쓰고, 없을 때만 task_categories 로 추론한다.
+MODALITY_BY_TAG: dict[str, str] = {"text": "text", "image": "image", "audio": "audio", "video": "video",
+                                   "tabular": "structured", "timeseries": "timeseries", "graph": "graph"}
 
 # task_categories → 모달리티 (접두어 일치, 우선순위 순)
 MODALITY_BY_TASK: tuple[tuple[str, str], ...] = (
@@ -125,10 +132,10 @@ def discover(merged: dict, target: str, log=print) -> dict:
         components.append(comp)
         new_refs.append(comp["bom-ref"])
 
-    if by_hf_id:
-        _fill_from_hub(by_hf_id, log)
     if new_refs:
         _link_from_root(merged, new_refs)
+    if by_hf_id:
+        _fill_from_hub(merged, by_hf_id, log)
     return merged
 
 
@@ -501,19 +508,117 @@ def fetch_dataset_info(hf_id: str, log=print) -> dict | None:
     return info if isinstance(info, dict) else None
 
 
-def _fill_from_hub(by_hf_id: dict[str, dict], log) -> None:
+def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log) -> None:
+    """허브 응답으로 채우고, 같은 데이터셋을 다른 id 로 부른 컴포넌트는 정식 id 의 컴포넌트 하나로 모은다."""
     if not hf_reachable():
         log(f"[dataset] huggingface.co 에 닿지 않음, 데이터셋 {len(by_hf_id)}개는 이름·purl 만 둔다")
         return
+    info_by_canonical: dict[str, dict] = {}
+    members: dict[str, list[str]] = {}             # 정식 id → 그것을 부른 id 들 (정렬 순서)
     for hf_id in sorted(by_hf_id):
-        info = fetch_dataset_info(hf_id, log)
+        info = info_by_canonical.get(hf_id) or fetch_dataset_info(hf_id, log)   # 앞선 조회가 정식 id 로 알려 준 것은 다시 묻지 않는다
+        canonical = canonical_id(hf_id, info)
         if info:
-            apply_hub_info(by_hf_id[hf_id], hf_id, info)
-            log(f"[dataset] {hf_id}: 허브 정보로 채웠다")
+            info_by_canonical.setdefault(canonical, info)
+        members.setdefault(canonical, []).append(hf_id)
+
+    for canonical, ids in members.items():
+        survivor_id = canonical if canonical in ids else ids[0]
+        comp = by_hf_id[survivor_id]
+        for other in ids:
+            if other != survivor_id:
+                _absorb(merged, comp, by_hf_id[other])
+                log(f"[dataset] {other} 은 {canonical} 과 같은 데이터셋, 하나로 합쳤다")
+        if survivor_id != canonical:
+            _rename(merged, comp, survivor_id, canonical)
+            log(f"[dataset] {survivor_id} → {canonical} (허브 정식 id)")
+        info = info_by_canonical.get(canonical)
+        if info:
+            apply_hub_info(comp, canonical, info)
+            log(f"[dataset] {canonical}: 허브 정보로 채웠다")
+
+
+def canonical_id(hf_id: str, info: dict | None) -> str:
+    """허브 응답의 id. 허브는 옛 이름(imdb, bookcorpus)을 정식 owner/name 으로 돌려주므로 응답의 id 가 정식 id 다. 없으면 부른 id."""
+    cid = (info or {}).get("id")
+    cid = cid.strip("/") if isinstance(cid, str) else ""
+    return cid if cid and _HF_ID.match(cid) else hf_id
+
+
+def _absorb(merged: dict, survivor: dict, loser: dict) -> None:
+    """loser 를 survivor 에 합치고 문서에서 뺀다. survivor 에 없는 값만 채우고 properties·externalReferences·evidence.occurrences 는 합친다."""
+    occurrences = (loser.get("evidence") or {}).get("occurrences") or []
+    fill_missing(survivor, {k: v for k, v in loser.items() if k not in ("bom-ref", "purl", "evidence")})
+    if occurrences:
+        target = survivor.setdefault("evidence", {}).setdefault("occurrences", [])
+        known = {o.get("location") for o in target}
+        target.extend(o for o in occurrences if o.get("location") not in known)
+        target.sort(key=lambda o: o.get("location") or "")
+    merged["components"] = [c for c in merged["components"] if c is not loser]
+    _repoint(merged, loser["bom-ref"], survivor["bom-ref"])
+
+
+def _rename(merged: dict, comp: dict, old_id: str, new_id: str) -> None:
+    """컴포넌트의 id 를 정식 id 로. purl·bom-ref 는 pkg:huggingface/datasets/<id>, group/name 은 owner/name,
+    data[].name 과 contents.url 에 든 옛 id 도 바꾼다. 다른 컴포넌트·관계가 가리키던 bom-ref 는 따라간다."""
+    old_ref = comp["bom-ref"]
+    group, _, name = new_id.rpartition("/")
+    if group:
+        comp["group"] = group
+    else:
+        comp.pop("group", None)
+    comp["name"] = name
+    comp["bom-ref"] = comp["purl"] = HF_DATASETS_PURL + new_id
+    for d in comp.get("data") or []:
+        if d.get("name") in (old_id, f"datasets/{old_id}"):
+            d["name"] = d["name"][: -len(old_id)] + new_id
+        url = (d.get("contents") or {}).get("url")
+        if isinstance(url, str) and "/datasets/" in url:
+            d["contents"]["url"] = _hub_url(new_id)
+    _repoint(merged, old_ref, comp["bom-ref"])
+
+
+def _repoint(merged: dict, old: str, new: str) -> None:
+    """bom-ref old 를 가리키던 곳(dependencies[] 의 ref·dependsOn, modelCard.modelParameters.datasets[].ref)을 new 로 돌린다.
+    그 결과 같은 ref 가 된 관계 행과 modelCard 항목은 하나로 합친다."""
+    if old == new:
+        return
+    if merged.get("dependencies"):
+        rows: dict[str, dict] = {}
+        for row in merged["dependencies"]:
+            if row.get("ref") == old:
+                row["ref"] = new
+            targets = row.get("dependsOn") or []
+            if old in targets:
+                row["dependsOn"] = sorted({new if t == old else t for t in targets})
+            ref = row.get("ref")
+            if ref in rows:
+                rows[ref]["dependsOn"] = sorted(set(rows[ref].get("dependsOn") or []) | set(row.get("dependsOn") or []))
+            else:
+                rows[ref] = row
+        merged["dependencies"] = list(rows.values())
+    for comp in merged.get("components") or []:
+        params = (comp.get("modelCard") or {}).get("modelParameters") or {}
+        entries = params.get("datasets")
+        if not entries:
+            continue
+        seen: set[str] = set()
+        kept: list = []
+        for entry in entries:
+            ref = entry.get("ref") if isinstance(entry, dict) else None
+            if ref == old:
+                entry["ref"] = ref = new
+            if ref and ref in seen:
+                continue
+            if ref:
+                seen.add(ref)
+            kept.append(entry)
+        params["datasets"] = kept
 
 
 def apply_hub_info(comp: dict, hf_id: str, info: dict) -> None:
-    """허브 응답으로 컴포넌트를 채운다. 이미 있는 값은 두고 없는 것만 채운다. 사실은 aibom-internal:dataset:* 로."""
+    """허브 응답으로 컴포넌트를 채운다. 이미 있는 값은 두고 없는 것만 채운다. 사실은 aibom-internal:dataset:* 로. URL 은 정식 id 로."""
+    hf_id = canonical_id(hf_id, info)
     card = info.get("cardData") or {}
     if not comp.get("version") and isinstance(info.get("sha"), str):
         comp["version"] = info["sha"]
@@ -542,14 +647,18 @@ def apply_hub_info(comp: dict, hf_id: str, info: dict) -> None:
 
 
 def hub_facts(hf_id: str, info: dict) -> dict:
-    """허브 응답 → 데이터셋 사실. 값이 없는 키는 비워 둔다 (추론하지 않는다)."""
+    """허브 응답 → 데이터셋 사실. 값이 없는 키는 비워 둔다. 출처 URL 은 정식 id 로.
+    모달리티는 허브가 붙인 modality:<x> 태그를 먼저 보고, 태그가 없을 때만 task_categories 로 추론한다."""
+    hf_id = canonical_id(hf_id, info)
     card = info.get("cardData") or {}
+    tag_modalities = [t[len("modality:"):].strip().lower() for t in _as_list(info.get("tags")) if isinstance(t, str) and t.startswith("modality:")]
     infos = [i for i in _as_list(card.get("dataset_info")) if isinstance(i, dict)]
     sizes = [_int(i.get("dataset_size")) if _int(i.get("dataset_size")) is not None else _int(i.get("download_size")) for i in infos]
     sizes = [s for s in sizes if s is not None]
     facts: dict = {
         "size": sum(sizes) if sizes else None,
-        "modality": _unique(_modality_of_task(t) for t in _as_list(card.get("task_categories")) if isinstance(t, str)),
+        "modality": _unique(MODALITY_BY_TAG.get(t, "other") for t in tag_modalities if t) if tag_modalities
+                    else _unique(_modality_of_task(t) for t in _as_list(card.get("task_categories")) if isinstance(t, str)),
         "availability": "registration" if info.get("gated") else "direct-download",
         "provenance": [_hub_url(hf_id)],
         "statistics": _hub_statistics(infos),

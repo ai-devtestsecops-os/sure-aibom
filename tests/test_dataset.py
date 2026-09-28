@@ -258,6 +258,11 @@ def test_hub_facts_variants():
     assert gated["statistics"] == [("rows:x:train", "3"), ("features:x", "1"), ("configs", "2")]
     empty = ds.hub_facts("a/b", {"id": "a/b"})
     assert empty["size"] is None and empty["modality"] == [] and empty["statistics"] == [] and empty["availability"] == "direct-download"
+    # 허브의 modality: 태그가 있으면 task_categories 보다 먼저다. 모르는 태그 값은 other, 태그 값은 v0.6 허용값으로 옮긴다
+    tagged = ds.hub_facts("a/b", {"tags": ["modality:tabular", "modality:text", "modality:3d", "format:parquet", "modality:text"],
+                                  "cardData": {"task_categories": ["image-classification"]}})
+    assert tagged["modality"] == ["structured", "text", "other"]
+    assert ds.hub_facts("a/b", {"tags": ["format:parquet"], "cardData": {"task_categories": ["image-classification"]}})["modality"] == ["image"]
     assert ds._license("apache-2.0") == {"license": {"id": "Apache-2.0"}} and ds._license("MIT") == {"license": {"id": "MIT"}}
     assert ds._license("unknown") == {"license": {"name": "unknown"}}
 
@@ -266,7 +271,7 @@ def test_existing_cdxgen_component_is_enriched_in_place_not_duplicated(tmp_path,
     write(tmp_path, "train.py", 'load_dataset("bookcorpus")\n')
     doc = doc_of(cdxgen_bookcorpus())
     monkeypatch.setattr(ds, "hf_reachable", lambda: True)
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: {**copy.deepcopy(imdb), "id": "bookcorpus/bookcorpus", "sha": "abc"} if hf_id == "bookcorpus" else None)
+    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: {**copy.deepcopy(imdb), "id": "bookcorpus", "sha": "abc"} if hf_id == "bookcorpus" else None)
     deps_before = copy.deepcopy(doc["dependencies"])
     out = ds.discover(doc, str(tmp_path), log=lambda m: None)
     found = datasets(out)
@@ -277,6 +282,117 @@ def test_existing_cdxgen_component_is_enriched_in_place_not_duplicated(tmp_path,
     assert internal(book)["provenance:0"] == "https://huggingface.co/datasets/bookcorpus"
     assert props(book)["cdx:ai:kind"] == "dataset"                                     # cdxgen 프로퍼티는 그대로
     assert out["dependencies"] == deps_before                                          # 새 컴포넌트가 없으니 관계도 그대로
+
+
+# -- 허브 정식 id 로 모으기 -------------------------------------------------------------
+BERT_REF = "pkg:huggingface/google-bert/bert-base-uncased"
+BOOK_CANON = "pkg:huggingface/datasets/bookcorpus/bookcorpus"
+
+
+def cdxgen_bert() -> dict:
+    """cdxgen 이 README 에서 만드는 모델. modelCard 의 데이터셋 ref 는 purl 문자열이라 merge 가 data:datasets/bookcorpus@ 로 잇는다."""
+    return {"bom-ref": BERT_REF, "type": "machine-learning-model", "group": "google-bert", "name": "bert-base-uncased", "purl": BERT_REF,
+            "modelCard": {"modelParameters": {"datasets": [{"ref": "pkg:huggingface/datasets/bookcorpus"}]}}}
+
+
+def readme_doc() -> dict:
+    doc = merge([{"bomFormat": "CycloneDX", "specVersion": "1.7", "components": [cdxgen_bert(), cdxgen_bookcorpus()],
+                  "dependencies": [{"ref": BERT_REF, "dependsOn": ["cdxgen:ai:dataset:huggingface:datasets-bookcorpus"]}]}],
+                root=("proj", "directory"))
+    assert next(c for c in doc["components"] if c["bom-ref"] == BERT_REF)["modelCard"]["modelParameters"]["datasets"] == [{"ref": "data:datasets/bookcorpus@"}]
+    return doc
+
+
+def bookcorpus_hub(imdb: dict) -> dict:
+    return {**copy.deepcopy(imdb), "id": "bookcorpus/bookcorpus", "author": "bookcorpus", "sha": "abc", "paperswithcode_id": None}
+
+
+def refs_in(doc: dict) -> set[str]:
+    out = {t for d in doc["dependencies"] for t in [d["ref"], *d["dependsOn"]]}
+    for c in doc["components"]:
+        out |= {e["ref"] for e in ((c.get("modelCard") or {}).get("modelParameters") or {}).get("datasets") or []}
+    return out
+
+
+def deps_of(doc: dict) -> dict[str, list[str]]:
+    return {d["ref"]: d["dependsOn"] for d in doc["dependencies"]}
+
+
+@pytest.mark.parametrize("info_id", ["imdb", "stanfordnlp/imdb", "", None, "../x", 3])
+def test_canonical_id_takes_a_well_formed_hub_id_only(info_id):
+    expected = info_id if info_id in ("imdb", "stanfordnlp/imdb") else "a/b"
+    assert ds.canonical_id("a/b", {"id": info_id}) == expected
+    assert ds.canonical_id("a/b", None) == "a/b" and ds.canonical_id("a/b", {}) == "a/b"
+
+
+def test_same_dataset_under_two_ids_becomes_one_component_and_one_hub_call(tmp_path, monkeypatch, imdb):
+    """README 의 bookcorpus 와 코드의 bookcorpus/bookcorpus. 허브는 둘 다 bookcorpus/bookcorpus 라 답한다."""
+    write(tmp_path, "train.py", 'load_dataset("bookcorpus/bookcorpus")\n')
+    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    calls: list[str] = []
+    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: calls.append(hf_id) or bookcorpus_hub(imdb))
+    logs: list[str] = []
+    out = ds.discover(readme_doc(), str(tmp_path), log=logs.append)
+    found = datasets(out)
+    assert set(found) == {BOOK_CANON} and calls == ["bookcorpus"]                       # 하나로, 조회도 한 번
+    book = found[BOOK_CANON]
+    assert (book["group"], book["name"], book["purl"], book["version"]) == ("bookcorpus", "bookcorpus", BOOK_CANON, "abc")
+    assert book["data"] == [{"type": "dataset", "name": "bookcorpus/bookcorpus", "contents": {"url": "https://huggingface.co/datasets/bookcorpus/bookcorpus"}}]
+    assert book["evidence"]["occurrences"] == [{"location": "train.py"}]
+    assert props(book)["cdx:ai:kind"] == "dataset" and book["supplier"] == {"name": "bookcorpus"}   # cdxgen 값은 남고 허브 값이 더해진다
+    assert internal(book)["provenance:0"] == "https://huggingface.co/datasets/bookcorpus/bookcorpus"
+    bert = next(c for c in out["components"] if c["bom-ref"] == BERT_REF)
+    assert bert["modelCard"]["modelParameters"]["datasets"] == [{"ref": BOOK_CANON}]      # 모델 → 데이터셋 참조가 따라간다
+    deps = deps_of(out)
+    assert deps[BERT_REF] == [BOOK_CANON] and set(deps[out["metadata"]["component"]["bom-ref"]]) == {BERT_REF, BOOK_CANON}
+    assert refs_in(out) <= {c["bom-ref"] for c in out["components"]} | {out["metadata"]["component"]["bom-ref"]}   # 끊긴 참조 없음
+    assert [m for m in logs if "합쳤다" in m] == ["[dataset] bookcorpus 은 bookcorpus/bookcorpus 과 같은 데이터셋, 하나로 합쳤다"]
+    for form in ("properties", "typed"):
+        assert validate_cdx(apply(copy.deepcopy(out), form=form, log=print), "1.7" if form == "properties" else "v0.6", log=print)
+
+
+def test_readme_only_component_is_renamed_to_the_hub_id_and_refs_follow(tmp_path, monkeypatch, imdb):
+    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: bookcorpus_hub(imdb))
+    logs: list[str] = []
+    out = ds.discover(readme_doc(), str(tmp_path), log=logs.append)
+    found = datasets(out)
+    assert set(found) == {BOOK_CANON}
+    book = found[BOOK_CANON]
+    assert (book["group"], book["name"], book["purl"]) == ("bookcorpus", "bookcorpus", BOOK_CANON)
+    assert book["data"][0]["name"] == "datasets/bookcorpus/bookcorpus"                    # cdxgen 의 이름 모양은 그대로, id 만 바뀐다
+    assert book["data"][0]["contents"]["url"] == "https://huggingface.co/datasets/bookcorpus/bookcorpus"
+    assert props(book)["cdx:ai:kind"] == "dataset"
+    bert = next(c for c in out["components"] if c["bom-ref"] == BERT_REF)
+    assert bert["modelCard"]["modelParameters"]["datasets"] == [{"ref": BOOK_CANON}]
+    deps = deps_of(out)
+    assert deps[BERT_REF] == [BOOK_CANON] and deps[out["metadata"]["component"]["bom-ref"]] == [BERT_REF]   # 코드에서 안 불렀으니 루트 → 데이터셋 엣지는 없다
+    assert "[dataset] bookcorpus → bookcorpus/bookcorpus (허브 정식 id)" in logs
+
+
+def test_old_hub_name_in_code_is_renamed_and_two_spellings_collapse(tmp_path, monkeypatch, imdb):
+    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    calls: list[str] = []
+    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: calls.append(hf_id) or copy.deepcopy(imdb))
+    write(tmp_path, "a.py", 'load_dataset("imdb")\n')
+    write(tmp_path, "b.py", 'load_dataset("stanfordnlp/imdb")\n')
+    out = ds.discover(doc_of(), str(tmp_path), log=lambda m: None)
+    found = datasets(out)
+    assert set(found) == {IMDB_REF} and calls == ["imdb"]
+    hf = found[IMDB_REF]
+    assert (hf["group"], hf["name"], hf["purl"], hf["data"][0]["name"]) == ("stanfordnlp", "imdb", IMDB_REF, IMDB)
+    assert hf["evidence"]["occurrences"] == [{"location": "a.py"}, {"location": "b.py"}]
+    assert deps_of(out)[out["metadata"]["component"]["bom-ref"]] == [IMDB_REF]           # 옛 이름의 purl 은 관계에서도 사라진다
+    assert internal(hf)["size"] == "133190302"
+
+
+def test_alias_whose_lookup_fails_stays_a_separate_component(tmp_path, monkeypatch, imdb):
+    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: copy.deepcopy(imdb) if hf_id == IMDB else None)
+    write(tmp_path, "a.py", 'load_dataset("imdb")\nload_dataset("stanfordnlp/imdb")\n')
+    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))
+    assert set(found) == {IMDB_REF, "pkg:huggingface/datasets/imdb"}                     # 같은 것인지 알 길이 없으니 둔다
+    assert "properties" not in found["pkg:huggingface/datasets/imdb"]
 
 
 def test_offline_keeps_name_and_purl_and_logs_once(tmp_path, monkeypatch):

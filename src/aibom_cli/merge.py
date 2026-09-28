@@ -57,7 +57,7 @@ def _resolve_dataset_ref(ref: str, model_key: str, components: dict[str, dict], 
     return linked[0] if len(linked) == 1 else None
 
 
-def _fill_missing(base: dict, extra: dict) -> None:
+def fill_missing(base: dict, extra: dict) -> None:
     """base 에 없는 키만 extra 에서 채운다. properties/externalReferences 는 합친다."""
     for k, v in extra.items():
         if k not in base:
@@ -109,7 +109,7 @@ def merge(docs: list[dict], root: tuple[str, str] | None = None) -> dict:
                 ref_map[old_ref] = key
             comp.pop("components", None)
             if key in components:
-                _fill_missing(components[key], comp)
+                fill_missing(components[key], comp)
             else:
                 components[key] = comp
 
