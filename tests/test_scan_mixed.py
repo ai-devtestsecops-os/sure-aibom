@@ -10,8 +10,6 @@ import pytest
 
 import aibom_cli.dataset as ds
 from aibom_cli.cli import main
-from aibom_cli.spdx import cdx_to_spdx
-from aibom_cli.validate import validate_spdx
 
 FIXTURE = Path(__file__).parent / "fixtures" / "mixed"
 IMDB_FIXTURE = Path(__file__).parent / "fixtures" / "bom" / "hf_dataset_stanfordnlp_imdb.json"
@@ -48,13 +46,8 @@ def without_run_specifics(doc: dict) -> str:
 
 def test_mixed_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     cdx = tmp_path / "bom.cdx.json"
-    spdx = tmp_path / "bom.spdx.json"
     assert main(["scan", str(FIXTURE), "-o", str(cdx)]) == 0                       # 기본 --form properties
     assert main(["validate", str(cdx), "--spec", "1.7"]) == 0
-    # 변환기는 CLI 에 아직 노출하지 않으므로 함수를 직접 부른다
-    doc0 = json.loads(cdx.read_text())
-    spdx.write_text(json.dumps(cdx_to_spdx(doc0, log=lambda m: None), ensure_ascii=False, indent=2) + "\n")
-    assert validate_spdx(json.loads(spdx.read_text()), log=print)      # SPDX 검증은 CLI 미노출, 함수로
 
     doc = json.loads(cdx.read_text())
     by_type = {}
@@ -99,18 +92,6 @@ def test_mixed_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert {t["name"] for t in doc["metadata"]["tools"]["components"]} >= {"syft", "cdxgen", "aibom-cli"}
 
     assert doc["metadata"]["component"] == {"type": "application", "name": "mixed", "bom-ref": "application:/mixed@"}
-
-    spdx_doc = json.loads(spdx.read_text())
-    types = {e["type"] for e in spdx_doc["@graph"]}
-    assert {"SpdxDocument", "software_Sbom", "CreationInfo", "SoftwareAgent", "Tool", "software_Package", "software_File",
-            "ai_AIPackage", "dataset_DatasetPackage", "simplelicensing_LicenseExpression", "Relationship"} <= types
-    assert {r["relationshipType"] for r in spdx_doc["@graph"] if r["type"] == "Relationship"} >= {"trainedOn", "hasDeclaredLicense", "dependsOn"}
-    assert validate_spdx(spdx_doc, log=print)
-    root = next(n for n in spdx_doc["@graph"] if n["type"] == "software_Sbom")["rootElement"]
-    assert root == [f"{doc['serialNumber']}#SPDXRef-application-mixed"]
-    # 같은 CycloneDX 를 다시 변환하면 바이트 단위로 같다
-    again = json.dumps(cdx_to_spdx(doc, log=lambda m: None), ensure_ascii=False, indent=2) + "\n"
-    assert again == spdx.read_text()
 
 
 def test_typed_form_scan_validates_against_v06_only(tmp_path):

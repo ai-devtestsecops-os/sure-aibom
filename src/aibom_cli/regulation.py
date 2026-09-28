@@ -474,7 +474,7 @@ class _DatasetTarget:
 
 
 class _DatasetTypedTarget(_DatasetTarget):
-    """v0.6 componentData 필드 — data[0] 에 싣는다 (SPDX 변환기도 data[0] 을 컴포넌트에 접는다). data[] 가 없으면 만든다."""
+    """v0.6 componentData 필드 — data[0] 에 싣는다. data[] 가 없으면 만든다."""
 
     def __init__(self, comp: dict) -> None:
         self.comp = comp

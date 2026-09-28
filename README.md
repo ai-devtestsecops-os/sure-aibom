@@ -13,15 +13,18 @@
 |         | M-BOM · D-BOM 생성       | cdxgen              | `cdxgen <target> -t ai --no-install-deps`                 |
 | 2. 병합 | 하나의 json 파일로 병합   | **aibom-cli** |                                                             |
 | 3. 보강 | D-BOM 보강                | **aibom-cli** |                                                             |
-|         | M-BOM 보강                | aibom-generator     | `python -m src.cli <owner/model>`                         |
+|         | M-BOM 보강                | OWASP aibom-generator | `python -m src.cli <owner/model>`                         |
 |         | 규제 필드 추가            | **aibom-cli** | `aibom-cli scan --form properties \| typed`                |
 | 4. 검증 | CycloneDX 1.7/AI-BOM v0.6 | **aibom-cli** | `aibom-cli validate --spec 1.7 \| v0.6`                    |
 
 ## 설치
 
+Python 3.12 에서 테스트했다. OWASP aibom-generator 의 의존성이 3.12 이상을 요구하므로 그 아래 버전은 지원하지 않는다.
+
 ```bash
-# conda 환경
-conda env create -f environment.yml && conda activate aibom-cli
+# 파이썬 환경과 aibom-cli (wheel 파일은 배포 시 함께 전달)
+conda create -n aibom-cli python=3.12 && conda activate aibom-cli
+pip install aibom_cli-0.1.0-py3-none-any.whl
 
 # syft
 curl -sSfL https://get.anchore.io/syft | sh -s -- -b /usr/local/bin
@@ -29,7 +32,7 @@ curl -sSfL https://get.anchore.io/syft | sh -s -- -b /usr/local/bin
 # cdxgen
 npm install -g @cyclonedx/cdxgen
 
-# owasp
+# OWASP aibom-generator
 git clone https://github.com/GenAI-Security-Project/aibom-generator
 pip install -r aibom-generator/requirements.txt
 conda env config vars set AIBOM_GENERATOR_DIR=$PWD/aibom-generator && conda activate aibom-cli
