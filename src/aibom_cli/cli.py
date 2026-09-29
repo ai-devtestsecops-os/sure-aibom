@@ -4,6 +4,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 import sys
 import tempfile
 from pathlib import Path
@@ -14,6 +15,7 @@ from .enrich import enrich
 from .merge import merge
 from .model import discover as discover_models
 from .form import apply as regulate
+from .image import extract as extract_image, is_archive, pull as pull_image
 from .runners import run_cdxgen, run_syft
 from .runners._proc import RunnerError
 from .validate import CDX_SCHEMA_BY_SPEC, validate_cdx
@@ -117,43 +119,72 @@ def cmd_scan(args: argparse.Namespace) -> int:
     _log(f"[aibom-cli] Generating {FORMAT_NAME[args.spec]} for {args.target}{data}")
 
     workdir = Path(tempfile.mkdtemp(prefix="aibom-cli-"))
+    try:
+        return _scan(args, workdir)
+    finally:
+        shutil.rmtree(workdir, ignore_errors=True)             # 이미지를 푼 디렉터리가 커서 남기지 않는다
+
+
+def _failed(label: str, what: str, error: Exception, failed: list[str]) -> None:
+    first, *rest = str(error).splitlines() or [""]
+    _stage(label, f"failed: {first}")
+    for line in [r for r in rest if r.strip()][-10:]:
+        _log(f"[aibom-cli]   {line}")
+    failed.append(what)
+
+
+def _scan(args: argparse.Namespace, workdir: Path) -> int:
     docs: list[dict] = []
     failed: list[str] = []
-    for tool, label, runner, summarize in (
-        ("syft", "Generating S-BOM (syft)", run_syft, lambda d: _groups(d.get("components") or [])),
-        # cdxgen 이 만든 데이터셋은 이름뿐인 참조라 여기서 세지 않는다 (D-BOM 이 채워서 거기서 센다)
-        ("cdxgen", "Generating M-BOM (cdxgen)", run_cdxgen, lambda d: _groups(d.get("components") or [], skip=("datasets",))),
-    ):
+    try:
+        docs.append(run_syft(args.target, workdir))
+        _stage("Generating S-BOM (syft)", _groups(docs[-1].get("components") or []))
+    except RunnerError as e:
+        _failed("Generating S-BOM (syft)", "syft", e, failed)
+
+    # 이미지는 syft 만 그대로 읽는다. M-BOM·D-BOM 단계는 이미지를 푼 디렉터리에 대해 돌린다 (image.py 참고).
+    scan_dir: str | None = args.target
+    image_name: str | None = None
+    if not Path(args.target).is_dir():
+        scan_dir = None
+        label = "Pulling image"
         try:
-            doc = runner(args.target, workdir)
+            tar = Path(args.target)
+            if not is_archive(args.target):
+                tar, tool = pull_image(args.target, workdir)
+                _stage(f"{label} ({tool})", "done")
+            label = "Unpacking image"
+            layers, image_name = extract_image(tar, workdir / "rootfs")
+            _stage(label, _count(layers, "layer"))
+            scan_dir = str(workdir / "rootfs")
         except RunnerError as e:
-            first, *rest = str(e).splitlines() or [""]
-            _stage(label, f"failed: {first}")
-            for line in [r for r in rest if r.strip()][-10:]:
-                _log(f"[aibom-cli]   {line}")
-            failed.append(tool)
-            continue
-        _stage(label, summarize(doc))
-        if runner is run_cdxgen and not Path(args.target).is_dir() and not doc.get("components"):
-            # cdxgen 은 레지스트리에서 이미지를 직접 받지 못한다. 데몬이 없으면 조용히 빈 결과를 내므로 여기서 알린다.
-            _log("[aibom-cli] warning: cdxgen read nothing from the image (it needs a Docker/Podman daemon; "
-                 "pass the image as a .tar to scan without one)")
-        docs.append(doc)
+            _failed(label, label.lower(), e, failed)
+
+    if scan_dir is None:
+        _stage("Generating M-BOM (cdxgen)", "skipped: image not unpacked")
+    else:
+        try:
+            docs.append(run_cdxgen(scan_dir, workdir))
+            # cdxgen 이 만든 데이터셋은 이름뿐인 참조라 여기서 세지 않는다 (D-BOM 이 채워서 거기서 센다)
+            _stage("Generating M-BOM (cdxgen)", _groups(docs[-1].get("components") or [], skip=("datasets",)))
+        except RunnerError as e:
+            _failed("Generating M-BOM (cdxgen)", "cdxgen", e, failed)
 
     if not docs:
         _log("[aibom-cli] error: neither syft nor cdxgen produced a BOM")
         return EXIT_TOOL
 
-    merged = merge(docs, root=scan_root(args.target))
+    merged = merge(docs, root=scan_root(args.target, image_name))
+    scan_dir = scan_dir or args.target                        # 이미지를 못 풀었으면 볼 디렉터리가 없다
 
     datasets: dict = {}
-    merged = discover_datasets(merged, args.target, log=_quiet, report=datasets, data_paths=args.data)
+    merged = discover_datasets(merged, scan_dir, log=_quiet, report=datasets, data_paths=args.data)
     total = _count(sum(1 for c in merged["components"] if is_dataset(c)), "dataset")
     _stage("Generating D-BOM", total + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
     for path in datasets.get("empty_data_paths") or []:
         _log(f"[aibom-cli] warning: no data files in {path}")
 
-    merged = discover_models(merged, args.target, log=_quiet)
+    merged = discover_models(merged, scan_dir, log=_quiet)
 
     enriched: dict = {}
     merged = enrich(merged, workdir, log=_quiet, report=enriched)
@@ -180,12 +211,13 @@ def cmd_scan(args: argparse.Namespace) -> int:
     return 0
 
 
-def scan_root(target: str) -> tuple[str, str]:
-    """스캔 대상의 (이름, 종류). 디렉터리는 마지막 경로 이름, 그 외(이미지 참조)는 그대로."""
+def scan_root(target: str, image_name: str | None = None) -> tuple[str, str]:
+    """스캔 대상의 (이름, 종류). 디렉터리는 마지막 경로 이름. 이미지는 tar 에 적힌 이름(aiapp:demo)이 있으면 그것,
+    없으면 .tar 는 파일 이름, 이미지 참조는 준 그대로."""
     path = Path(target)
     if path.is_dir():
         return (path.resolve().name or target, "directory")
-    return (target, "image")
+    return (image_name or (path.name if is_archive(target) else target), "image")
 
 
 # ── validate ────────────────────────────────────────────────────────────────
@@ -240,8 +272,8 @@ Examples:
   aibom-cli scan ./project -o bom.cdx.json --spec v0.6        디렉터리를 스캔하여 규제 필드를 AI-BOM v0.6 필드로 넣음
   aibom-cli scan ./project -o bom.cdx.json --data ./dataset   로컬 데이터 경로를 함께 지정
 
-  aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔
-  aibom-cli scan image.tar -o image.cdx.json                  컨테이너 이미지를 스캔 (Docker/Podman 데몬이 없는 경우)
+  aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔 (Docker, Podman 또는 crane 으로 받음)
+  aibom-cli scan image.tar -o image.cdx.json                  이미지 .tar 를 스캔 (docker save, crane pull 로 만든 것)
 
   aibom-cli validate bom.cdx.json --spec 1.7                  CycloneDX 1.7 스키마로 검증
   aibom-cli validate bom.cdx.json --spec v0.6                 AI-BOM v0.6 스키마로 검증

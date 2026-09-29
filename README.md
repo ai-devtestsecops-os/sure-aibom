@@ -16,9 +16,12 @@ D-BOM 을 보강한 뒤, 규제(EU AI Act, ISO/IEC 42001, NIST AI RMF)가 요구
 |         | 규제 필드 추가              | **aibom-cli**   | `aibom-cli scan --spec 1.7 \| v0.6`                        |
 | 4. 검증 | CycloneDX 1.7 / AI-BOM v0.6 | **aibom-cli**   | `aibom-cli validate --spec 1.7 \| v0.6`                    |
 
+컨테이너 이미지는 syft 가 그대로 스캔하고, M-BOM · D-BOM 단계는 이미지를 푼 디렉터리에 대해 돌린다
+(cdxgen 은 이미지를 받으면 AI 수집을 건너뛴다). 이미지 .tar 는 바로 풀고, 이미지 이름은 Docker, Podman, crane 중 있는 것으로 받는다.
+
 ## 설치
 
-사전 설치: Node.js 20 이상, git
+사전 설치: Node.js 20 이상, git. 이미지 이름으로 스캔하려면 Docker, Podman, crane 중 하나 (이미지 .tar 는 필요 없음)
 
 ```bash
 # 파이썬 환경과 aibom-cli (conda 예시)
@@ -74,8 +77,8 @@ Examples:
   aibom-cli scan ./project -o bom.cdx.json --spec v0.6        디렉터리를 스캔하여 규제 필드를 AI-BOM v0.6 필드로 넣음
   aibom-cli scan ./project -o bom.cdx.json --data ./dataset   로컬 데이터 경로를 함께 지정
 
-  aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔
-  aibom-cli scan image.tar -o image.cdx.json                  컨테이너 이미지를 스캔 (Docker/Podman 데몬이 없는 경우)
+  aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔 (Docker, Podman 또는 crane 으로 받음)
+  aibom-cli scan image.tar -o image.cdx.json                  이미지 .tar 를 스캔 (docker save, crane pull 로 만든 것)
 
   aibom-cli validate bom.cdx.json --spec 1.7                  CycloneDX 1.7 스키마로 검증
   aibom-cli validate bom.cdx.json --spec v0.6                 AI-BOM v0.6 스키마로 검증

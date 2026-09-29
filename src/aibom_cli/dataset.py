@@ -62,7 +62,7 @@ HF_DATASETS_PURL = "pkg:huggingface/datasets/"
 _HF_DATASET_PURL = re.compile(r"^pkg:huggingface/datasets/(?P<id>[^@?#]+)")
 _HF_ID = re.compile(r"^[A-Za-z0-9][\w.-]*(?:/[A-Za-z0-9][\w.-]*)?$")
 
-SKIP_DIRS = frozenset({"node_modules", ".git", "venv", ".venv", "site-packages", "__pycache__"})
+SKIP_DIRS = frozenset({"node_modules", ".git", "venv", ".venv", "site-packages", "dist-packages", "__pycache__"})
 
 # 확장자 → 모달리티. --data 로 지목한 경로 안에서 이 확장자의 파일이 데이터다.
 MODALITY_BY_EXTENSION: dict[str, str] = {

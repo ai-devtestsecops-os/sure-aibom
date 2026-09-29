@@ -5,9 +5,11 @@ gguf 파일 하나 · LoRA 어댑터. 규제 필드는 cdxgen 프로퍼티와 �
 데이터셋의 허브 조회도 네트워크가 필요해, 닿는 것으로 치고 tests/data/hf_api/ 에 기록해 둔 실제 응답으로 답한다.
 imdb 는 세 엔드포인트가 다 있고, bookcorpus 는 /api/datasets 만 있다 (실제 허브도 /size 는 501, /statistics 는 404).
 기록이 없으면 None 을 돌려준다 — 허브가 답하지 않은 것과 같다."""
+import io
 import json
 import re
 import shutil
+import tarfile
 from pathlib import Path
 
 import pytest
@@ -205,17 +207,88 @@ def test_directory_without_datasets_gets_no_data_components(tmp_path, monkeypatc
     assert doc["dependencies"][0]["ref"] == "application:/plain@" and not any(r.startswith("data:") for r in doc["dependencies"][0]["dependsOn"])
 
 
-def test_image_target_with_empty_cdxgen_result_warns(tmp_path, monkeypatch, capsys):
-    """이미지 입력에서 cdxgen 이 빈 결과를 내면(데몬 없음) 경고가 남아야 한다. 디렉터리 입력에서는 조용하다."""
+def test_an_image_target_is_unpacked_and_the_unpacked_directory_is_scanned(tmp_path, monkeypatch, capsys):
+    """이미지는 syft 만 그대로 읽고, cdxgen 은 이미지를 푼 디렉터리를 본다. 이름이면 먼저 받는다. 임시 디렉터리는 끝나면 지운다."""
     import aibom_cli.cli as cli
-    empty = {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []}
+    seen: dict = {}
+    def mkdtemp(prefix):
+        (tmp_path / "work").mkdir(exist_ok=True)
+        return str(tmp_path / "work")
+    monkeypatch.setattr(cli.tempfile, "mkdtemp", mkdtemp)
+    monkeypatch.setattr(cli, "run_syft", lambda target, workdir: seen.setdefault("syft", target) and {
+        "bomFormat": "CycloneDX", "specVersion": "1.7",
+        "components": [{"bom-ref": "a", "type": "library", "name": "a", "version": "1", "purl": "pkg:pypi/a@1"}]})
+    monkeypatch.setattr(cli, "run_cdxgen", lambda target, workdir: seen.setdefault("cdxgen", (target, Path(target).is_dir())) and {
+        "bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
+    monkeypatch.setattr(cli, "pull_image", lambda ref, workdir: seen.setdefault("pull", ref) and (workdir / "image.tar", "crane"))
+
+    def extract(tar, rootfs):
+        rootfs.mkdir()
+        seen["extract"] = tar
+        return 2, "some:tag"
+    monkeypatch.setattr(cli, "extract_image", extract)
+
+    out = tmp_path / "i.json"
+    assert cli.main(["scan", "some-image:latest", "-o", str(out)]) == 0
+    assert seen["syft"] == "some-image:latest" and seen["pull"] == "some-image:latest"
+    assert seen["extract"] == tmp_path / "work" / "image.tar" and seen["cdxgen"] == (str(tmp_path / "work" / "rootfs"), True)
+    lines = capsys.readouterr().err.splitlines()
+    assert [line.split(" .")[0] for line in lines[1:4]] == ["[aibom-cli] Generating S-BOM (syft)", "[aibom-cli] Pulling image (crane)", "[aibom-cli] Unpacking image"]
+    assert lines[2].endswith(" done") and lines[3].endswith(" 2 layers")
+    doc = json.loads(out.read_text())
+    assert (doc["metadata"]["component"]["type"], doc["metadata"]["component"]["name"]) == ("container", "some:tag")
+    assert not (tmp_path / "work").exists()                                    # 푼 디렉터리째 지운다
+
+    seen.clear()
+    tar = tmp_path / "img.tar"
+    tar.write_bytes(b"")
+    assert cli.main(["scan", str(tar), "-o", str(out)]) == 0
+    assert "pull" not in seen and seen["extract"] == tar                        # .tar 는 받지 않고 바로 푼다
+    assert "Pulling image" not in capsys.readouterr().err
+
+    seen.clear()
+    assert cli.main(["scan", str(FIXTURE), "-o", str(out)]) == 0                # 디렉터리는 그대로
+    assert "extract" not in seen and seen["cdxgen"] == (str(FIXTURE), True)
+
+
+def test_an_image_that_cannot_be_unpacked_skips_the_m_bom_and_exits_2(tmp_path, monkeypatch, capsys):
+    import aibom_cli.cli as cli
+    from aibom_cli.runners._proc import RunnerError
     monkeypatch.setattr(cli, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7",
-                        "components": [{"bom-ref": "a", "type": "library", "name": "a", "version": "1", "purl": "pkg:pypi/a@1"}]})
-    monkeypatch.setattr(cli, "run_cdxgen", lambda target, workdir: dict(empty))
-    assert cli.main(["scan", "some-image:latest", "-o", str(tmp_path / "i.json")]) == 0
-    assert "Docker/Podman daemon" in capsys.readouterr().err
-    assert cli.main(["scan", str(FIXTURE), "-o", str(tmp_path / "d.json")]) == 0
-    assert "daemon" not in capsys.readouterr().err
+        "components": [{"bom-ref": "a", "type": "library", "name": "a", "version": "1", "purl": "pkg:pypi/a@1"}]})
+    monkeypatch.setattr(cli, "run_cdxgen", lambda target, workdir: pytest.fail("이미지를 못 풀었는데 cdxgen 을 돌렸다"))
+    monkeypatch.setattr(cli, "pull_image", lambda ref, workdir: (_ for _ in ()).throw(RunnerError("could not fetch some-image:latest\ndocker: daemon down")))
+    out = tmp_path / "i.json"
+    assert cli.main(["scan", "some-image:latest", "-o", str(out)]) == 2
+    lines = capsys.readouterr().err.splitlines()
+    stages = {line.split(" .")[0]: line.rsplit(". ", 1)[-1] for line in lines if " ..." in line}
+    assert stages["[aibom-cli] Pulling image"] == "failed: could not fetch some-image:latest"
+    assert "[aibom-cli]   docker: daemon down" in lines
+    assert stages["[aibom-cli] Generating M-BOM (cdxgen)"] == "skipped: image not unpacked"
+    assert lines[-1] == "[aibom-cli] error: pulling image failed, so the BOM is incomplete"
+    assert json.loads(out.read_text())["components"][0]["name"] == "a"      # S-BOM 은 그래도 쓴다
+
+
+def test_an_image_tar_yields_the_models_inside_it(tmp_path):
+    """픽스처 프로젝트를 /app 에 담은 docker-save 모양의 tar: 디렉터리 스캔과 같은 모델·데이터셋이 나오고 경로는 이미지 안 경로다."""
+    from test_image import docker_tar
+    buf = io.BytesIO()
+    with tarfile.open(fileobj=buf, mode="w") as t:
+        t.add(FIXTURE, arcname="app")
+    tar = docker_tar(tmp_path / "aiapp.tar", [buf.getvalue()], tag="aiapp:test")
+    doc = scan(tar, out_file("image.cdx.json"))
+    assert main(["validate", str(out_file("image.cdx.json")), "--spec", "1.7"]) == 0
+    assert (doc["metadata"]["component"]["type"], doc["metadata"]["component"]["name"]) == ("container", "aiapp:test")
+    assert {c["name"] for c in doc["components"] if c["type"] == "machine-learning-model"} == {
+        "bert-base-uncased", "llama3.2:1b", "llama", "tiny-random-gpt2", "tiny-gpt2-lora"}
+    assert {c["bom-ref"] for c in doc["components"] if c["type"] == "data"} == {BOOK_REF, IMDB_REF}      # --data 가 없으니 로컬 데이터는 없다
+    assert {c["bom-ref"] for c in doc["components"] if c["type"] == "file"} >= {"file:/app/Modelfile", "file:/app/models/stories260K.gguf"}
+    gguf = next(c for c in doc["components"] if c["name"] == "llama")
+    card = {p["name"]: p["value"] for p in gguf["modelCard"]["properties"]}
+    assert card["aibom:model:parameterCount"] == "292800"                       # 푼 디렉터리의 gguf 를 읽었다
+    imdb = next(c for c in doc["components"] if c["bom-ref"] == IMDB_REF)
+    assert imdb["evidence"]["occurrences"] == [{"location": "app/src/train.py"}]
+    assert str(tmp_path) not in out_file("image.cdx.json").read_text()
 
 
 def test_a_missing_path_target_is_an_error_not_an_image(tmp_path, capsys):
