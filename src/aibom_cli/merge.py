@@ -4,6 +4,8 @@
     소프트웨어  purl
     모델        pkg:huggingface/ns/name@rev → 없으면 hashes → 없으면 (type, name, version)
     데이터셋    pkg:huggingface/datasets/… (cdxgen 만 생산)
+    파일        경로 `file:/<path>` — syft 는 해시, cdxgen 은 purl(`?path=`)·`urn:file:ai:<path>` 로 내므로
+                다른 키로는 같은 파일이 두 번 남는다.
 
 같은 키의 컴포넌트가 여러 문서에 있으면 먼저 온 것을 기준으로 두고, 없는 필드만 뒤 것에서 채운다.
 bom-ref 는 병합 키로 다시 부여하고 dependencies[] 의 참조를 따라 바꾼다.
@@ -19,13 +21,22 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 from typing import Iterable
+from urllib.parse import unquote, urlsplit
 
 SPEC_VERSION = "1.7"
 ROOT_TYPE_BY_KIND = {"directory": "application", "image": "container"}
 
 
+FILE_TYPE = "file"
+AI_FILE_REF_PREFIX = "urn:file:ai:"       # cdxgen 이 AI 파일(gguf, Modelfile 등)에 붙이는 bom-ref
+
+
 def identity(component: dict) -> str:
     """컴포넌트의 병합 키."""
+    if component.get("type") == FILE_TYPE:
+        path = file_path_of(component)
+        if path:
+            return f"file:/{path.lstrip('/')}"
     purl = component.get("purl")
     if purl:
         return purl
@@ -34,6 +45,21 @@ def identity(component: dict) -> str:
         if h.get("alg") in ("SHA-256", "SHA-512", "SHA-1") and h.get("content"):
             return f"hash:{h['alg']}:{h['content']}"
     return f"{component.get('type', 'component')}:{component.get('group', '')}/{component.get('name', '')}@{component.get('version', '')}"
+
+
+def file_path_of(component: dict) -> str | None:
+    """파일 컴포넌트의 경로. cdxgen 이미지 스캔은 purl 의 `path=` 에, cdxgen AI 파일은 bom-ref `urn:file:ai:<path>` 에,
+    syft 는 name 에 경로를 둔다 (디렉터리 스캔은 스캔 루트 기준, 이미지는 이미지 안 절대경로)."""
+    purl = component.get("purl") or ""
+    if "?" in purl:
+        for pair in urlsplit(purl).query.split("&"):
+            key, _, value = pair.partition("=")
+            if key == "path" and value:
+                return unquote(value)
+    ref = component.get("bom-ref") or ""
+    if ref.startswith(AI_FILE_REF_PREFIX) and len(ref) > len(AI_FILE_REF_PREFIX):
+        return ref[len(AI_FILE_REF_PREFIX):]
+    return component.get("name") or None
 
 
 def _resolve_dataset_ref(ref: str, model_key: str, components: dict[str, dict], deps: dict[str, set[str]]) -> str | None:

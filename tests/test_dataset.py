@@ -138,6 +138,20 @@ def test_hf_dataset_id_of(comp, expected):
     assert ds.hf_dataset_id_of(comp) == expected
 
 
+@pytest.mark.parametrize("comp, expected", [
+    (cdxgen_bookcorpus(), True),
+    ({"type": "data", "purl": "pkg:huggingface/datasets/stanfordnlp/imdb"}, True),                       # 허브 id 면 data[] 없어도 데이터셋
+    ({"type": "data", "name": "data", "data": [{"type": "dataset", "name": "data/train.csv"}]}, True),   # 로컬 데이터
+    # cdxgen 이 이미지의 apt 저장소 설정을 내는 모양: type=data 인데 data[] 가 비어 있다
+    ({"type": "data", "name": "deb.debian.org/debian", "data": [],
+      "purl": "pkg:generic/os-repository/deb.debian.org%2Fdebian@trixie?path=/etc/apt/sources.list.d/debian.sources&repo_type=apt-source"}, False),
+    ({"type": "data", "name": "snippet", "data": [{"type": "source-code", "name": "snippet"}]}, False),
+    ({"type": "library", "data": [{"type": "dataset", "name": "x"}]}, False),
+])
+def test_is_dataset(comp, expected):
+    assert ds.is_dataset(comp) is expected
+
+
 # -- 파이썬 소스 ---------------------------------------------------------------------
 def test_python_source_yields_only_hub_ids(tmp_path):
     src = write(tmp_path, "a.py", '''

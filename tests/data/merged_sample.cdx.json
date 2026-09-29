@@ -141,7 +141,7 @@
       ]
     },
     {
-      "bom-ref": "hash:SHA-1:923ca73ff01cf8895691e71833605bac717e6670",
+      "bom-ref": "file:/requirements.txt",
       "type": "file",
       "name": "/requirements.txt",
       "hashes": [
@@ -160,7 +160,7 @@
       "name": "Modelfile",
       "version": "",
       "type": "file",
-      "bom-ref": "file:/Modelfile@",
+      "bom-ref": "file:/Modelfile",
       "tags": [
         "ai",
         "model-config-file",
@@ -557,7 +557,7 @@
   ],
   "dependencies": [
     {
-      "ref": "file:/Modelfile@",
+      "ref": "file:/Modelfile",
       "dependsOn": [
         "pkg:generic/ollama/llama3.2:1b"
       ]
@@ -565,7 +565,7 @@
     {
       "ref": "urn:service:ai:ollama:ollama-service",
       "dependsOn": [
-        "file:/Modelfile@",
+        "file:/Modelfile",
         "pkg:generic/ollama/llama3.2:1b"
       ]
     },

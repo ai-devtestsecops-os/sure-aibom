@@ -1,3 +1,5 @@
+import pytest
+
 from aibom_cli.merge import identity, merge
 
 
@@ -12,6 +14,38 @@ def test_identity_prefers_purl():
 def test_identity_falls_back_to_hash_then_name():
     assert identity({"name": "m", "hashes": [{"alg": "SHA-256", "content": "abc"}]}) == "hash:SHA-256:abc"
     assert identity({"type": "library", "name": "m", "version": "1"}) == "library:/m@1"
+
+
+@pytest.mark.parametrize("comp, expected", [
+    # syft: name 이 경로 (디렉터리 스캔은 루트 기준 `/…`, 이미지는 이미지 안 절대경로), 해시가 있어도 경로가 키
+    ({"type": "file", "name": "/requirements.txt", "hashes": [{"alg": "SHA-1", "content": "923c"}]}, "file:/requirements.txt"),
+    # cdxgen 이미지 스캔: purl 의 path= (퍼센트 인코딩)
+    ({"type": "file", "name": "apt", "purl": "pkg:generic/apt?path=%2Fusr%2Fbin%2Fapt", "hashes": [{"alg": "SHA-1", "content": "923c"}]}, "file:/usr/bin/apt"),
+    ({"type": "file", "name": "g++", "purl": "pkg:generic/g%2B%2B?path=%2Fusr%2Fbin%2Fg%2B%2B"}, "file:/usr/bin/g++"),
+    # cdxgen AI 파일: bom-ref urn:file:ai:<루트 기준 경로>, name 은 파일 이름뿐
+    ({"type": "file", "name": "stories260K.gguf", "bom-ref": "urn:file:ai:models/stories260K.gguf", "group": "", "version": ""}, "file:/models/stories260K.gguf"),
+    # 경로를 알 길이 없으면 종전 규칙
+    ({"type": "file", "name": "", "hashes": [{"alg": "SHA-256", "content": "abc"}]}, "hash:SHA-256:abc"),
+])
+def test_file_components_are_keyed_by_path(comp, expected):
+    assert identity(comp) == expected
+
+
+def test_the_same_file_from_syft_and_cdxgen_is_one_component():
+    """이미지 스캔에서 syft(해시)와 cdxgen(purl) 이 같은 파일을 각자 내면 하나로 합쳐지고, 해시와 프로퍼티가 모인다."""
+    syft = _doc([{"bom-ref": "s", "type": "file", "name": "/usr/bin/apt",
+                  "hashes": [{"alg": "SHA-1", "content": "2ffd"}, {"alg": "SHA-256", "content": "9a1b"}]}])
+    cdx = _doc([{"bom-ref": "pkg:generic/apt?path=%2Fusr%2Fbin%2Fapt", "type": "file", "name": "apt",
+                 "purl": "pkg:generic/apt?path=%2Fusr%2Fbin%2Fapt", "properties": [{"name": "internal:is_file", "value": "true"}]}],
+                [{"ref": "pkg:generic/apt?path=%2Fusr%2Fbin%2Fapt", "dependsOn": []}])
+    out = merge([syft, cdx])
+    files = [c for c in out["components"] if c["type"] == "file"]
+    assert len(files) == 1
+    comp = files[0]
+    assert comp["bom-ref"] == "file:/usr/bin/apt" and comp["name"] == "/usr/bin/apt"      # 먼저 온 syft 가 기준
+    assert [h["alg"] for h in comp["hashes"]] == ["SHA-1", "SHA-256"]
+    assert comp["purl"] == "pkg:generic/apt?path=%2Fusr%2Fbin%2Fapt" and comp["properties"] == [{"name": "internal:is_file", "value": "true"}]
+    assert {d["ref"] for d in out["dependencies"]} >= {"file:/usr/bin/apt"}
 
 
 def test_same_purl_from_two_tools_is_one_component():

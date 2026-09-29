@@ -54,6 +54,7 @@ from .form import INTERNAL_PREFIX
 from .validate import SCHEMA_DIR
 
 DATA_TYPE = "data"
+DATASET_KIND = "dataset"       # data[].type 의 다섯 값 중 D-BOM 으로 치는 것
 FILE_PREFIX = "aibom-cli:file:"                 # componentData.contents.properties 의 파일 사실
 LOCAL_REF_PREFIX = "data:local/"
 
@@ -156,7 +157,15 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
     return merged
 
 
-# ── HF id 읽기 ───────────────────────────────────────────────────────────────
+# ── 데이터셋 판정 ─────────────────────────────────────────────────────────────
+
+def is_dataset(comp: dict) -> bool:
+    """D-BOM 으로 세는 컴포넌트. type=data 만으로는 모자라다: cdxgen 이 이미지의 apt 저장소 설정도 data[] 없는
+    type=data 로 낸다. data[] 에 dataset 항목이 있거나 허브 데이터셋 id 가 있으면 데이터셋이다."""
+    if comp.get("type") != DATA_TYPE:
+        return False
+    return any(d.get("type") == DATASET_KIND for d in comp.get("data") or []) or hf_dataset_id_of(comp) is not None
+
 
 def hf_dataset_id_of(comp: dict) -> str | None:
     """type=data 컴포넌트의 Hugging Face 데이터셋 id. purl → data[].name "datasets/<id>" → group "datasets" 의 name."""

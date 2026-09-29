@@ -9,7 +9,7 @@ import tempfile
 from pathlib import Path
 
 from . import __version__
-from .dataset import discover as discover_datasets
+from .dataset import discover as discover_datasets, is_dataset
 from .enrich import enrich
 from .merge import merge
 from .model import discover as discover_models
@@ -26,9 +26,8 @@ SCHEMA_NAME = {"1.7": "CycloneDX 1.7 schema", "v0.6": "AI-BOM v0.6 schema"}   # 
 FORM_BY_SPEC = {"1.7": "properties", "v0.6": "typed"}
 FORMAT_NAME = {"1.7": "CycloneDX 1.7", "v0.6": "AI-BOM v0.6"}
 # 요약 줄의 묶음: CycloneDX type → S/M/D 와 파일. 목록에 없는 type(library, application, operating-system …)은 packages
-GROUP_BY_TYPE = {"machine-learning-model": "models", "data": "datasets", "file": "files"}
-GROUP_ORDER = ("packages", "models", "datasets", "files")
-SINGULAR = {"packages": "package", "models": "model", "datasets": "dataset", "files": "file"}
+GROUP_ORDER = ("packages", "models", "datasets", "files", "other")
+SINGULAR = {"packages": "package", "models": "model", "datasets": "dataset", "files": "file", "other": "other"}
 STAGE_WIDTH = 36                                   # 단계 이름 뒤 점선까지의 너비
 
 
@@ -49,11 +48,23 @@ def _count(n: int, one: str, many: str | None = None) -> str:
     return f"{n} {one if n == 1 else (many or one + 's')}"
 
 
+def _group_of(comp: dict) -> str:
+    """packages(S-BOM) · models(M-BOM) · datasets(D-BOM) · files, 그 어디도 아닌 type=data (cdxgen 의 apt 저장소 설정) 는 other."""
+    kind = comp.get("type")
+    if kind == "machine-learning-model":
+        return "models"
+    if kind == "file":
+        return "files"
+    if kind == "data":
+        return "datasets" if is_dataset(comp) else "other"
+    return "packages"
+
+
 def _groups(components: list[dict], skip: tuple[str, ...] = ()) -> str:
-    """컴포넌트를 packages · models · datasets · files 로 묶어 센다. 0 인 묶음은 뺀다."""
+    """컴포넌트를 packages · models · datasets · files (· other) 로 묶어 센다. 0 인 묶음은 뺀다."""
     counts = dict.fromkeys(GROUP_ORDER, 0)
     for c in components:
-        counts[GROUP_BY_TYPE.get(c.get("type"), "packages")] += 1
+        counts[_group_of(c)] += 1
     parts = [f"{n} {SINGULAR[g] if n == 1 else g}" for g, n in counts.items() if n and g not in skip]
     return ", ".join(parts) or "nothing found"
 
@@ -137,7 +148,7 @@ def cmd_scan(args: argparse.Namespace) -> int:
 
     datasets: dict = {}
     merged = discover_datasets(merged, args.target, log=_quiet, report=datasets, data_paths=args.data)
-    total = _count(sum(1 for c in merged["components"] if c.get("type") == "data"), "dataset")
+    total = _count(sum(1 for c in merged["components"] if is_dataset(c)), "dataset")
     _stage("Generating D-BOM", total + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
     for path in datasets.get("empty_data_paths") or []:
         _log(f"[aibom-cli] warning: no data files in {path}")

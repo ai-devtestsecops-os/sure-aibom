@@ -5,7 +5,7 @@ from pathlib import Path
 import pytest
 
 from aibom_cli import __version__
-from aibom_cli.cli import HELP, build_parser, main
+from aibom_cli.cli import HELP, _groups, build_parser, main
 
 README = Path(__file__).parents[1] / "README.md"
 
@@ -71,3 +71,16 @@ def test_data_can_be_given_more_than_once():
     args = build_parser().parse_args(["scan", "x", "--data", "a", "--data", "b"])
     assert args.data == ["a", "b"] and build_parser().parse_args(["scan", "x"]).data == []
 
+
+def test_groups_count_only_real_datasets_as_datasets():
+    """type=data 라도 data[] 에 dataset 항목이 없으면(cdxgen 의 apt 저장소 설정) 데이터셋으로 세지 않는다."""
+    comps = [
+        {"type": "library", "name": "numpy"}, {"type": "operating-system", "name": "debian"},
+        {"type": "machine-learning-model", "name": "bert"},
+        {"type": "data", "name": "imdb", "data": [{"type": "dataset", "name": "stanfordnlp/imdb"}]},
+        {"type": "data", "name": "deb.debian.org/debian", "data": []},
+        {"type": "file", "name": "/usr/bin/apt"},
+    ]
+    assert _groups(comps) == "2 packages, 1 model, 1 dataset, 1 file, 1 other"
+    assert _groups(comps, skip=("datasets",)) == "2 packages, 1 model, 1 file, 1 other"
+    assert _groups([]) == "nothing found"
