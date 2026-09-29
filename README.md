@@ -19,23 +19,28 @@
 
 ## 설치
 
-Python 3.12 에서 테스트했다. OWASP aibom-generator 의 의존성이 3.12 이상을 요구하므로 그 아래 버전은 지원하지 않는다.
+사전 설치: Node.js 20 이상, git
 
 ```bash
-# 파이썬 환경과 aibom-cli (wheel 파일은 배포 시 함께 전달)
+# 파이썬 환경과 aibom-cli (conda 예시)
 conda create -n aibom-cli python=3.12 && conda activate aibom-cli
 pip install aibom_cli-0.1.0-py3-none-any.whl
 
-# syft
-curl -sSfL https://get.anchore.io/syft | sh -s -- -b /usr/local/bin
+# syft 1.52.0
+curl -sSfL https://get.anchore.io/syft | sh -s -- -b /usr/local/bin v1.52.0
 
-# cdxgen
-npm install -g @cyclonedx/cdxgen
+# cdxgen 12.8.4
+npm install -g @cyclonedx/cdxgen@12.8.4
 
-# OWASP aibom-generator
+# OWASP aibom-generator (커밋 9b8056a)
 git clone https://github.com/GenAI-Security-Project/aibom-generator
+git -C aibom-generator checkout 9b8056a66c03d4f6cf707059b83b21f97923c27b
 pip install -r aibom-generator/requirements.txt
-conda env config vars set AIBOM_GENERATOR_DIR=$PWD/aibom-generator && conda activate aibom-cli
+
+# aibom-generator 경로를 환경변수에 저장하고, 환경을 다시 켜서 반영
+conda env config vars set AIBOM_GENERATOR_DIR=$PWD/aibom-generator
+conda deactivate
+conda activate aibom-cli
 ```
 
 ## 사용

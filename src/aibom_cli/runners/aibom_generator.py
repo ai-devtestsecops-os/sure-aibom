@@ -16,12 +16,12 @@ from ._proc import RunnerError, load_json_file, run
 def run_aibom_generator(hf_id: str, workdir: Path) -> dict:
     repo = os.environ.get("AIBOM_GENERATOR_DIR")
     if not repo:
-        raise RunnerError("AIBOM_GENERATOR_DIR 환경변수가 없다 (aibom-generator 클론 경로)")
+        raise RunnerError("AIBOM_GENERATOR_DIR not set")
     python = sys.executable
     safe = hf_id.replace("/", "__")
     out = workdir / f"owasp.{safe}.cdx.json"
     cmd = [python, "-m", "src.cli", hf_id, "-o", str(out)]
     proc = run(cmd, cwd=repo)
     if proc.returncode != 0:
-        raise RunnerError(f"aibom-generator 실패 ({hf_id}, exit {proc.returncode})\n{proc.stderr[-2000:]}")
+        raise RunnerError(f"aibom-generator exited with {proc.returncode} for {hf_id}\n{proc.stderr[-2000:]}")
     return load_json_file(out, "aibom-generator")

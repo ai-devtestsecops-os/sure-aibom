@@ -26,5 +26,5 @@ def run_cdxgen(target: str, workdir: Path, install_deps: bool = False) -> dict:
         cmd.append("--no-install-deps")
     proc = run(cmd)
     if proc.returncode != 0:
-        raise RunnerError(f"cdxgen 실패 (exit {proc.returncode})\n{proc.stderr[-2000:]}")
+        raise RunnerError(f"cdxgen exited with {proc.returncode}\n{proc.stderr[-2000:]}")
     return load_json_file(out, "cdxgen")

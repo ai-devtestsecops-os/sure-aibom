@@ -321,3 +321,11 @@ def test_validate_cli_requires_spec_and_names_it(tmp_path, sample, capsys):
     assert main(["validate", str(typed), "--spec", "v0.6"]) == 0
     assert main(["validate", str(typed), "--spec", "1.7"]) == 3                    # 자동 전환 없음
     assert "--spec 1.7" in capsys.readouterr().err
+    # properties 형은 1.7 에 맞으니 1.7 을 넓힌 v0.6 에도 맞는다. 메시지는 맞은 스키마만 말하고 문서 형태는 말하지 않는다
+    props = tmp_path / "properties.json"
+    props.write_text(json.dumps(apply(copy.deepcopy(json.loads(SAMPLE.read_text(encoding="utf-8"))), form="properties",
+                                      log=lambda m: None)), encoding="utf-8")
+    capsys.readouterr()
+    assert main(["validate", str(props), "--spec", "v0.6"]) == 0
+    err = capsys.readouterr().err
+    assert "Valid against the AI-BOM v0.6 schema" in err and "typed" not in err

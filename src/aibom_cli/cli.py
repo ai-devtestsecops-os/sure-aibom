@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 import sys
 import tempfile
 from pathlib import Path
@@ -21,12 +22,34 @@ from .validate import CDX_SCHEMA_BY_SPEC, validate_cdx
 EXIT_TOOL = 2      # 생산자·입력 문제
 EXIT_INVALID = 3   # 검증 실패
 
-SPEC_NOTE = {"1.7": "공식 CycloneDX 1.7 (properties 형, 표준 소비자가 읽을 수 있다)",
-             "v0.6": "aibom-v0.6 CycloneDX 스키마 (typed 형, v0.6 를 아는 소비자만 읽을 수 있다)"}
+SCHEMA_NAME = {"1.7": "CycloneDX 1.7 schema", "v0.6": "AI-BOM v0.6 schema"}   # 문서의 --form 은 모른다. 맞은 스키마만 말한다
+STAGE_WIDTH = 36                                   # 단계 이름 뒤 점선까지의 너비
 
 
 def _log(msg: str) -> None:
     print(msg, file=sys.stderr)
+
+
+def _quiet(msg: str) -> None:
+    """모듈의 항목별 로그는 CLI 에서 찍지 않는다 (단계마다 한 줄만 찍는다)."""
+
+
+def _stage(label: str, result: str = "") -> None:
+    dots = "." * max(3, STAGE_WIDTH - len(label))
+    _log(f"[aibom-cli] {label} {dots} {result}".rstrip())
+
+
+def _count(n: int, one: str, many: str | None = None) -> str:
+    return f"{n} {one if n == 1 else (many or one + 's')}"
+
+
+_DRIVE = re.compile(r"^[A-Za-z]:[\\/]")
+
+
+def _looks_like_path(target: str) -> bool:
+    """이미지 참조가 아니라 파일 경로로 준 것인가. 이미지 이름도 / 를 담으므로(ghcr.io/org/img) 앞머리와 .tar 로만 가른다."""
+    return (target.startswith(("/", "./", "../", "~")) or bool(_DRIVE.match(target))
+            or target.lower().endswith((".tar", ".tar.gz", ".tgz")))
 
 
 def _emit(doc: dict, path: str | None) -> None:
@@ -36,7 +59,6 @@ def _emit(doc: dict, path: str | None) -> None:
         out = Path(path)
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(text, encoding="utf-8")
-        _log(f"[aibom-cli] wrote {out}")
     else:
         sys.stdout.write(text)
 
@@ -46,43 +68,83 @@ def _read(path: str) -> dict | None:
         with open(path, encoding="utf-8") as f:
             return json.load(f)
     except (OSError, json.JSONDecodeError) as e:
-        _log(f"[aibom-cli] 읽을 수 없다: {path} ({e})")
+        _log(f"[aibom-cli] error: cannot read {path} ({e})")
         return None
 
 
 # ── scan ────────────────────────────────────────────────────────────────────
 
 def cmd_scan(args: argparse.Namespace) -> int:
+    """단계마다 한 줄씩 찍는다. 항목별 내용은 찍지 않고, 사용자가 할 일이 있는 것(건너뜀·실패)만 그 줄에 붙인다.
+    syft·cdxgen 중 하나라도 실패하면 만든 만큼은 쓰되 종료 코드 2 로 끝낸다 (CI 가 모자란 BOM 을 성공으로 넘기지 않게)."""
+    if args.target.startswith("~"):
+        args.target = str(Path(args.target).expanduser())
+    if _looks_like_path(args.target) and not Path(args.target).exists():
+        _log(f"[aibom-cli] error: target not found: {args.target}")
+        return EXIT_TOOL
+
     workdir = Path(tempfile.mkdtemp(prefix="aibom-cli-"))
     docs: list[dict] = []
-    for name, runner in (
-        ("syft", lambda: run_syft(args.target, workdir)),
-        ("cdxgen", lambda: run_cdxgen(args.target, workdir)),
+    failed: list[str] = []
+    for tool, label, runner, summarize in (
+        ("syft", "Generating S-BOM (syft)", run_syft, lambda d: _count(len(d.get("components") or []), "component")),
+        ("cdxgen", "Generating M-BOM (cdxgen)", run_cdxgen, lambda d: _count(_models(d), "model")),
     ):
         try:
-            doc = runner()
+            doc = runner(args.target, workdir)
         except RunnerError as e:
-            _log(f"[aibom-cli] {name}: {e}")
+            first, *rest = str(e).splitlines() or [""]
+            _stage(label, f"failed: {first}")
+            for line in [r for r in rest if r.strip()][-10:]:
+                _log(f"[aibom-cli]   {line}")
+            failed.append(tool)
             continue
-        if name == "cdxgen" and not Path(args.target).is_dir() and not doc.get("components"):
+        _stage(label, summarize(doc))
+        if runner is run_cdxgen and not Path(args.target).is_dir() and not doc.get("components"):
             # cdxgen 은 레지스트리에서 이미지를 직접 받지 못한다. 데몬이 없으면 조용히 빈 결과를 내므로 여기서 알린다.
-            _log("[aibom-cli] cdxgen 이 이미지에서 아무것도 읽지 못했다 (Docker/Podman 데몬이 없으면 모델·데이터셋이 빠진다. "
-                 "이미지를 .tar 로 내보내 넘기면 데몬 없이도 읽는다")
+            _log("[aibom-cli] warning: cdxgen read nothing from the image (it needs a Docker/Podman daemon; "
+                 "pass the image as a .tar to scan without one)")
         docs.append(doc)
 
     if not docs:
-        _log("[aibom-cli] 생산자 결과가 하나도 없다")
+        _log("[aibom-cli] error: neither syft nor cdxgen produced a BOM")
         return EXIT_TOOL
 
     merged = merge(docs, root=scan_root(args.target))
-    merged = discover_datasets(merged, args.target, log=_log)
-    merged = discover_models(merged, args.target, log=_log)
-    merged = enrich(merged, workdir, log=_log)
-    merged = regulate(merged, form=args.form, log=_log)
+
+    datasets: dict = {}
+    merged = discover_datasets(merged, args.target, log=_quiet, report=datasets)
+    n = _count(sum(1 for c in merged["components"] if c.get("type") == "data"), "dataset")
+    _stage("Generating D-BOM", n + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
+
+    merged = discover_models(merged, args.target, log=_quiet)
+
+    enriched: dict = {}
+    merged = enrich(merged, workdir, log=_quiet, report=enriched)
+    if enriched["skipped"]:
+        result = f"skipped: {enriched['skipped']}"
+    elif enriched["failed"]:
+        result = f"{enriched['enriched']} of {_count(enriched['models'], 'model')}, {len(enriched['failed'])} failed"
+    else:
+        result = _count(enriched["enriched"], "model")
+    _stage("Enriching M-BOM (aibom-generator)", result)
+    for hf_id, reason in enriched["errors"].items():             # 보강은 선택 단계라 종료 코드는 그대로 두고 이유만 알린다
+        _log(f"[aibom-cli]   {hf_id}: {reason}")
+
+    merged = regulate(merged, form=args.form, log=_quiet)
+    _stage("Adding regulation fields", args.form)
 
     _emit(merged, args.output)
-    _log(f"[aibom-cli] components={len(merged['components'])} dependencies={len(merged['dependencies'])}")
+    _log(f"[aibom-cli] Wrote {args.output or 'stdout'} ({_count(len(merged['components']), 'component')}, "
+         f"{_count(len(merged['dependencies']), 'dependency', 'dependencies')})")
+    if failed:
+        _log(f"[aibom-cli] error: {' and '.join(failed)} failed, so the BOM is incomplete")
+        return EXIT_TOOL
     return 0
+
+
+def _models(doc: dict) -> int:
+    return sum(1 for c in doc.get("components") or [] if c.get("type") == "machine-learning-model")
 
 
 def scan_root(target: str) -> tuple[str, str]:
@@ -100,12 +162,12 @@ def cmd_validate(args: argparse.Namespace) -> int:
     if doc is None:
         return EXIT_TOOL
     if "bomFormat" not in doc:
-        _log("[aibom-cli] CycloneDX 문서(bomFormat)가 아니다")
+        _log(f"[aibom-cli] error: not a CycloneDX document (no bomFormat): {args.bom}")
         return EXIT_TOOL
     if not validate_cdx(doc, args.spec, log=_log):
-        _log(f"[aibom-cli] 검증 실패 (--spec {args.spec}): {args.bom}")
+        _log(f"[aibom-cli] Invalid against the {SCHEMA_NAME[args.spec]} (--spec {args.spec}): {args.bom}")
         return EXIT_INVALID
-    _log(f"[aibom-cli] CycloneDX {args.spec} 적합 ({SPEC_NOTE[args.spec]}): {args.bom}")
+    _log(f"[aibom-cli] Valid against the {SCHEMA_NAME[args.spec]}: {args.bom}")
     return 0
 
 

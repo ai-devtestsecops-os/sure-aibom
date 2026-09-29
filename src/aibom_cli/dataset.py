@@ -116,8 +116,9 @@ STATISTICS_FILE_LIMIT = JSON_PARSE_LIMIT                      # 로컬 파일 �
 
 # ── 진입점 ──────────────────────────────────────────────────────────────────
 
-def discover(merged: dict, target: str, log=print) -> dict:
-    """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다."""
+def discover(merged: dict, target: str, log=print, report: dict | None = None) -> dict:
+    """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다.
+    report 를 주면 hub_unreachable(허브 데이터셋이 있는데 허브에 닿지 않았는지)을 적는다."""
     components: list[dict] = merged.setdefault("components", [])
     by_hf_id: dict[str, dict] = {}
     for comp in components:
@@ -149,8 +150,9 @@ def discover(merged: dict, target: str, log=print) -> dict:
 
     if new_refs:
         _link_from_root(merged, new_refs)
-    if by_hf_id:
-        _fill_from_hub(merged, by_hf_id, log)
+    reachable = _fill_from_hub(merged, by_hf_id, log) if by_hf_id else True
+    if report is not None:
+        report["hub_unreachable"] = not reachable
     return merged
 
 
@@ -690,11 +692,12 @@ def fetch_dataset_statistics(hf_id: str, config: str, split: str, log=print) -> 
     return _get_json(url, hf_id, f"datasets-server /statistics {config}/{split}", log)
 
 
-def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log) -> None:
-    """허브 응답으로 채우고, 같은 데이터셋을 다른 id 로 부른 컴포넌트는 정식 id 의 컴포넌트 하나로 모은다."""
+def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log) -> bool:
+    """허브 응답으로 채우고, 같은 데이터셋을 다른 id 로 부른 컴포넌트는 정식 id 의 컴포넌트 하나로 모은다.
+    허브에 닿지 않으면 아무것도 하지 않고 False."""
     if not hf_reachable():
         log(f"[dataset] huggingface.co 에 닿지 않음, 데이터셋 {len(by_hf_id)}개는 이름·purl 만 둔다")
-        return
+        return False
     info_by_canonical: dict[str, dict] = {}
     members: dict[str, list[str]] = {}             # 정식 id → 그것을 부른 id 들 (정렬 순서)
     for hf_id in sorted(by_hf_id):
@@ -720,6 +723,7 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log) -> None:
             statistics = _fetch_statistics(canonical, info, size, log)
             apply_hub_info(comp, canonical, info, size, statistics)
             log(f"[dataset] {canonical}: 허브 정보로 채웠다")
+    return True
 
 
 def _fetch_statistics(hf_id: str, info: dict, size: dict | None, log) -> list[tuple[str, str, dict]]:

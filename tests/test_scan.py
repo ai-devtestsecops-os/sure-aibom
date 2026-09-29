@@ -146,9 +146,17 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert doc["metadata"]["component"] == {"type": "application", "name": "project", "bom-ref": "application:/project@"}
 
 
-def test_typed_form_scan_validates_against_v06_only(tmp_path):
+def test_typed_form_scan_validates_against_v06_only(tmp_path, capsys):
     cdx = out_file("typed.cdx.json")
     doc = scan(FIXTURE, cdx, "--form", "typed")
+    # 단계마다 한 줄. 모듈의 항목별 로그([dataset] 등)와 도구 명령은 찍지 않는다
+    lines = capsys.readouterr().err.splitlines()
+    assert [line.split(" .")[0] for line in lines] == [
+        "[aibom-cli] Generating S-BOM (syft)", "[aibom-cli] Generating M-BOM (cdxgen)", "[aibom-cli] Generating D-BOM",
+        "[aibom-cli] Enriching M-BOM (aibom-generator)", "[aibom-cli] Adding regulation fields",
+        f"[aibom-cli] Wrote {cdx} ({len(doc['components'])} components, {len(doc['dependencies'])} dependencies)"]
+    assert lines[1].endswith(" 5 models") and lines[2].endswith(" 3 datasets") and lines[4].endswith(" typed")
+    assert lines[3].endswith(" skipped: 테스트")                                   # offline 픽스처가 준 이유가 그대로
     assert main(["validate", str(cdx), "--spec", "v0.6"]) == 0
     assert main(["validate", str(cdx), "--spec", "1.7"]) == 3                      # maxSize·technicalRequirements·componentData 필드는 공식 1.7 에 없다
     gpt2 = next(c for c in doc["components"] if c["name"] == "tiny-random-gpt2")
@@ -199,6 +207,34 @@ def test_image_target_with_empty_cdxgen_result_warns(tmp_path, monkeypatch, caps
                         "components": [{"bom-ref": "a", "type": "library", "name": "a", "version": "1", "purl": "pkg:pypi/a@1"}]})
     monkeypatch.setattr(cli, "run_cdxgen", lambda target, workdir: dict(empty))
     assert cli.main(["scan", "some-image:latest", "-o", str(tmp_path / "i.json")]) == 0
-    assert "데몬" in capsys.readouterr().err
+    assert "Docker/Podman daemon" in capsys.readouterr().err
     assert cli.main(["scan", str(FIXTURE), "-o", str(tmp_path / "d.json")]) == 0
-    assert "데몬" not in capsys.readouterr().err
+    assert "daemon" not in capsys.readouterr().err
+
+
+def test_a_missing_path_target_is_an_error_not_an_image(tmp_path, capsys):
+    """경로처럼 생긴 대상이 없으면 이미지 이름으로 넘기지 않고 바로 2 로 끝낸다 (오타가 빈 BOM 이 되지 않게)."""
+    out = tmp_path / "bom.json"
+    for target in (str(tmp_path / "nope"), "./nope", "../nope", "~/definitely-not-here", "missing-image.tar"):
+        assert main(["scan", target, "-o", str(out)]) == 2, target
+        assert "error: target not found" in capsys.readouterr().err
+    assert not out.exists()
+
+
+def test_one_failing_tool_still_writes_the_bom_but_exits_2(tmp_path, monkeypatch, capsys):
+    """syft·cdxgen 중 하나가 실패하면 만든 만큼은 쓰고, CI 가 모자란 BOM 을 성공으로 넘기지 않도록 2 로 끝낸다."""
+    import aibom_cli.cli as cli
+    from aibom_cli.runners._proc import RunnerError
+
+    def broken(target, workdir):
+        raise RunnerError("syft exited with 1\nfirst detail\nlast detail")
+    monkeypatch.setattr(cli, "run_syft", broken)
+    monkeypatch.setattr(cli, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": [
+        {"bom-ref": "m", "type": "machine-learning-model", "name": "m", "purl": "pkg:generic/m"}]})
+    out = tmp_path / "bom.json"
+    assert cli.main(["scan", str(FIXTURE), "-o", str(out)]) == 2
+    err = capsys.readouterr().err.splitlines()
+    assert err[0].endswith("failed: syft exited with 1") and err[1:3] == ["[aibom-cli]   first detail", "[aibom-cli]   last detail"]
+    assert err[-1] == "[aibom-cli] error: syft failed, so the BOM is incomplete"
+    assert any(c["name"] == "m" for c in json.loads(out.read_text())["components"])             # 부분 BOM 은 남는다
+

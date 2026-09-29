@@ -39,22 +39,33 @@ def hf_reachable(timeout: float = 3.0) -> bool:
 
 
 def skip_reason() -> str | None:
-    """보강을 건너뛰어야 하면 그 이유를, 해도 되면 None 을 돌려준다."""
-    if not os.environ.get("AIBOM_GENERATOR_DIR"):
-        return "AIBOM_GENERATOR_DIR 미설정"
+    """보강을 건너뛰어야 하면 그 이유를, 해도 되면 None 을 돌려준다. 이유는 CLI 요약에 그대로 나가므로 영어다."""
+    repo = os.environ.get("AIBOM_GENERATOR_DIR")
+    if not repo:
+        return "AIBOM_GENERATOR_DIR not set"
+    if not Path(repo).is_dir():
+        return f"AIBOM_GENERATOR_DIR not found: {repo}"
+    if not (Path(repo) / "src" / "cli.py").is_file():
+        return f"AIBOM_GENERATOR_DIR is not an aibom-generator clone (no src/cli.py): {repo}"
     if not hf_reachable():
-        return "huggingface.co 에 닿지 않음"
+        return "huggingface.co unreachable"
     return None
 
 
-def enrich(merged: dict, workdir: Path, log=print) -> dict:
+def enrich(merged: dict, workdir: Path, log=print, report: dict | None = None) -> dict:
+    """report 를 주면 결과를 적는다: models(대상 수) · enriched(성공 수) · failed(실패한 id) · errors(id → 이유 첫 줄)
+    · skipped(건너뛴 이유)."""
+    report = {} if report is None else report
     targets = {hf: c for c in merged.get("components", []) if (hf := hf_id_of(c))}
+    report.update(models=len(targets), enriched=0, failed=[], errors={}, skipped=None)
     if not targets:
         log("[enrich] pkg:huggingface 모델 컴포넌트가 없어 보강을 건너뛴다")
+        report["skipped"] = "no Hugging Face models"
         return merged
     reason = skip_reason()
     if reason:
         log(f"[enrich] {reason} — 보강을 건너뛴다 ({len(targets)}개 모델)")
+        report["skipped"] = reason
         return merged
 
     for hf_id, comp in targets.items():
@@ -62,12 +73,17 @@ def enrich(merged: dict, workdir: Path, log=print) -> dict:
             owasp = run_aibom_generator(hf_id, workdir)
         except RunnerError as e:
             log(f"[enrich] {hf_id}: {e}")
+            report["failed"].append(hf_id)
+            report["errors"][hf_id] = (str(e).splitlines() or ["failed"])[0]
             continue
         src = next((c for c in owasp.get("components", []) if c.get("type") == "machine-learning-model"), None)
         if not src:
+            report["failed"].append(hf_id)
+            report["errors"][hf_id] = "no model component in the aibom-generator output"
             continue
         _apply(comp, src, owasp.get("metadata") or {})
         log(f"[enrich] {hf_id}: 보강 완료")
+        report["enriched"] += 1
     return merged
 
 

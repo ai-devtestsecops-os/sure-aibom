@@ -91,6 +91,44 @@ def test_offline_skips_without_running_anything(monkeypatch):
     assert [m for m in logs if "건너뛴다" in m] == ["[enrich] huggingface.co 에 닿지 않음 — 보강을 건너뛴다 (1개 모델)"]
 
 
+def test_skip_reason_checks_the_clone_before_the_network(tmp_path, monkeypatch):
+    monkeypatch.setattr(en, "hf_reachable", lambda: pytest.fail("클론이 틀렸는데 네트워크를 봤다"))
+    monkeypatch.delenv("AIBOM_GENERATOR_DIR", raising=False)
+    assert skip_reason() == "AIBOM_GENERATOR_DIR not set"
+    monkeypatch.setenv("AIBOM_GENERATOR_DIR", str(tmp_path / "nope"))
+    assert skip_reason() == f"AIBOM_GENERATOR_DIR not found: {tmp_path / 'nope'}"
+    monkeypatch.setenv("AIBOM_GENERATOR_DIR", str(tmp_path))
+    assert skip_reason() == f"AIBOM_GENERATOR_DIR is not an aibom-generator clone (no src/cli.py): {tmp_path}"
+    (tmp_path / "src").mkdir()
+    (tmp_path / "src" / "cli.py").write_text("", encoding="utf-8")
+    monkeypatch.setattr(en, "hf_reachable", lambda: False)
+    assert skip_reason() == "huggingface.co unreachable"
+    monkeypatch.setattr(en, "hf_reachable", lambda: True)
+    assert skip_reason() is None
+
+
+def test_report_carries_the_first_line_of_each_failure(monkeypatch, owasp):
+    other = "pkg:huggingface/acme/other"
+
+    def run(hf_id, workdir):
+        if hf_id == "acme/other":
+            raise RunnerError("aibom-generator exited with 1 for acme/other\nTraceback …")
+        return {"bomFormat": "CycloneDX", "components": []}                     # 모델 컴포넌트가 없는 결과
+    monkeypatch.setattr(en, "run_aibom_generator", run)
+    report: dict = {}
+    enrich(doc_of(bert_component(), {"bom-ref": other, "type": "machine-learning-model", "name": "other", "purl": other}),
+           WORKDIR, log=lambda m: None, report=report)
+    assert (report["models"], report["enriched"], sorted(report["failed"])) == (2, 0, ["acme/other", HF_ID])
+    assert report["errors"] == {HF_ID: "no model component in the aibom-generator output",
+                                "acme/other": "aibom-generator exited with 1 for acme/other"}
+
+
+def test_a_missing_working_directory_is_not_reported_as_a_missing_program():
+    from aibom_cli.runners._proc import run
+    with pytest.raises(RunnerError, match="working directory not found: /nonexistent"):
+        run(["python", "-c", "0"], cwd="/nonexistent")
+
+
 # -- 합치기 ------------------------------------------------------------------------
 def test_owasp_properties_are_filtered_and_merged_into_the_model_card(monkeypatch, owasp):
     calls: list[str] = []

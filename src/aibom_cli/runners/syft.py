@@ -21,7 +21,7 @@ def run_syft(target: str, workdir: Path) -> dict:
     ]
     proc = run(cmd)
     if proc.returncode != 0:
-        raise RunnerError(f"syft 실패 (exit {proc.returncode})\n{proc.stderr[-2000:]}")
+        raise RunnerError(f"syft exited with {proc.returncode}\n{proc.stderr[-2000:]}")
     return _relativize_file_components(load_json_file(out, "syft"), target)
 
 

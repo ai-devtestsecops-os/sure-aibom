@@ -45,6 +45,6 @@ def validate_cdx(doc: dict, spec: str, log=print) -> bool:
 
 def _report(messages: list[str], log) -> None:
     for m in messages[:20]:
-        log(f"[validate] {m}")
+        log(f"[aibom-cli]   {m}")
     if len(messages) > 20:
-        log(f"[validate] … 외 {len(messages) - 20}건")
+        log(f"[aibom-cli]   ... and {len(messages) - 20} more")
