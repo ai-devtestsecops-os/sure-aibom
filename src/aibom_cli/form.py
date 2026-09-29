@@ -1,4 +1,4 @@
-"""앞 단계들이 모아 둔 값을 aibom-v0.6 필드로 옮긴다. --form 스위치는 여기 하나다.
+"""앞 단계들이 모아 둔 값을 aibom-v0.6 필드로 옮긴다. 형태(properties·typed) 스위치는 여기 하나다.
 값을 찾아내는 일은 dataset.py · model.py · enrich.py 가 하고, 여기서는 어느 자리에 어떤 모양으로 넣을지만 정한다.
 
 모델(type=machine-learning-model): 가져오는 값은 전부 component.properties / component.modelCard.properties 에 있는

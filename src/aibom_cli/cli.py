@@ -13,7 +13,6 @@ from .dataset import discover as discover_datasets
 from .enrich import enrich
 from .merge import merge
 from .model import discover as discover_models
-from .form import FORMS
 from .form import apply as regulate
 from .runners import run_cdxgen, run_syft
 from .runners._proc import RunnerError
@@ -22,7 +21,10 @@ from .validate import CDX_SCHEMA_BY_SPEC, validate_cdx
 EXIT_TOOL = 2      # 생산자·입력 문제
 EXIT_INVALID = 3   # 검증 실패
 
-SCHEMA_NAME = {"1.7": "CycloneDX 1.7 schema", "v0.6": "AI-BOM v0.6 schema"}   # 문서의 --form 은 모른다. 맞은 스키마만 말한다
+SCHEMA_NAME = {"1.7": "CycloneDX 1.7 schema", "v0.6": "AI-BOM v0.6 schema"}   # validate 는 문서를 어떻게 만들었는지 모른다
+# scan --spec → 규제 필드를 넣는 형태. 1.7 은 표준 properties 라 1.7·v0.6 스키마 모두에 맞고, v0.6 은 v0.6 스키마에만 맞는다
+FORM_BY_SPEC = {"1.7": "properties", "v0.6": "typed"}
+FIELDS_LABEL = {"1.7": "CycloneDX 1.7 properties", "v0.6": "AI-BOM v0.6 fields"}
 STAGE_WIDTH = 36                                   # 단계 이름 뒤 점선까지의 너비
 
 
@@ -131,8 +133,8 @@ def cmd_scan(args: argparse.Namespace) -> int:
     for hf_id, reason in enriched["errors"].items():             # 보강은 선택 단계라 종료 코드는 그대로 두고 이유만 알린다
         _log(f"[aibom-cli]   {hf_id}: {reason}")
 
-    merged = regulate(merged, form=args.form, log=_quiet)
-    _stage("Adding regulation fields", args.form)
+    merged = regulate(merged, form=FORM_BY_SPEC[args.spec], log=_quiet)
+    _stage("Adding regulation fields", FIELDS_LABEL[args.spec])
 
     _emit(merged, args.output)
     _log(f"[aibom-cli] Wrote {args.output or 'stdout'} ({_count(len(merged['components']), 'component')}, "
@@ -175,8 +177,8 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
 EXAMPLES = """\
 examples:
-  aibom-cli scan ./project -o bom.cdx.json                    디렉터리를 스캔하여 규제 필드를 properties로 넣음
-  aibom-cli scan ./project -o bom.cdx.json --form typed       디렉터리를 스캔하여 규제 필드를 v0.6 필드로 넣음
+  aibom-cli scan ./project -o bom.cdx.json                    디렉터리를 스캔하여 규제 필드를 CycloneDX 1.7 properties 로 넣음
+  aibom-cli scan ./project -o bom.cdx.json --spec v0.6        디렉터리를 스캔하여 규제 필드를 AI-BOM v0.6 필드로 넣음
   aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔
   aibom-cli scan image.tar -o image.cdx.json                  컨테이너 이미지를 스캔 (Docker/Podman 데몬이 없는 경우)
   aibom-cli scan ./project                                    표준출력으로 출력
@@ -207,16 +209,16 @@ def build_parser() -> argparse.ArgumentParser:
     s = sub.add_parser(
         "scan",
         help="디렉터리 또는 컨테이너 이미지를 스캔해 CycloneDX 1.7 AI-BOM 을 만든다",
-        usage="aibom-cli scan <TARGET> [-o PATH] [--form {properties,typed}]",
+        usage="aibom-cli scan <TARGET> [-o PATH] [--spec {1.7,v0.6}]",
         epilog="environment:\n  AIBOM_GENERATOR_DIR           aibom-generator 클론 경로 (설치 절에서 설정)",
         formatter_class=_formatter,
     )
     s.add_argument("target", metavar="TARGET", help="디렉터리 경로, 컨테이너 이미지 참조, 또는 이미지 .tar")
     s.add_argument("-o", "--output", metavar="PATH", help="출력 경로. 없으면 표준출력")
-    s.add_argument("--form", choices=FORMS, default="properties", metavar="{properties,typed}",
-                   help="규제 필드를 내보내는 형태 (default: properties)\n"
-                        "  properties  CycloneDX의 properties로 내보냄\n"
-                        "  typed       AI-BOM v0.6 스키마의 필드로 내보냄")
+    s.add_argument("--spec", choices=tuple(FORM_BY_SPEC), default="1.7", metavar="{1.7,v0.6}",
+                   help="규제 필드를 넣을 스키마 (default: 1.7)\n"
+                        "  1.7   CycloneDX 1.7 의 properties 로 넣음\n"
+                        "  v0.6  AI-BOM v0.6 의 필드로 넣음 (문서의 specVersion 은 1.7 그대로)")
     s.set_defaults(func=cmd_scan)
 
     v = sub.add_parser(

@@ -65,7 +65,7 @@ def without_run_specifics(doc: dict) -> str:
 
 def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     cdx = out_file("properties.cdx.json")
-    assert main(["scan", str(FIXTURE), "-o", str(cdx)]) == 0                       # 기본 --form properties
+    assert main(["scan", str(FIXTURE), "-o", str(cdx)]) == 0                       # 기본 --spec properties
     assert main(["validate", str(cdx), "--spec", "1.7"]) == 0
 
     doc = json.loads(cdx.read_text())
@@ -146,16 +146,16 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert doc["metadata"]["component"] == {"type": "application", "name": "project", "bom-ref": "application:/project@"}
 
 
-def test_typed_form_scan_validates_against_v06_only(tmp_path, capsys):
+def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
     cdx = out_file("typed.cdx.json")
-    doc = scan(FIXTURE, cdx, "--form", "typed")
+    doc = scan(FIXTURE, cdx, "--spec", "v0.6")
     # 단계마다 한 줄. 모듈의 항목별 로그([dataset] 등)와 도구 명령은 찍지 않는다
     lines = capsys.readouterr().err.splitlines()
     assert [line.split(" .")[0] for line in lines] == [
         "[aibom-cli] Generating S-BOM (syft)", "[aibom-cli] Generating M-BOM (cdxgen)", "[aibom-cli] Generating D-BOM",
         "[aibom-cli] Enriching M-BOM (aibom-generator)", "[aibom-cli] Adding regulation fields",
         f"[aibom-cli] Wrote {cdx} ({len(doc['components'])} components, {len(doc['dependencies'])} dependencies)"]
-    assert lines[1].endswith(" 5 models") and lines[2].endswith(" 3 datasets") and lines[4].endswith(" typed")
+    assert lines[1].endswith(" 5 models") and lines[2].endswith(" 3 datasets") and lines[4].endswith(" AI-BOM v0.6 fields")
     assert lines[3].endswith(" skipped: 테스트")                                   # offline 픽스처가 준 이유가 그대로
     assert main(["validate", str(cdx), "--spec", "v0.6"]) == 0
     assert main(["validate", str(cdx), "--spec", "1.7"]) == 3                      # maxSize·technicalRequirements·componentData 필드는 공식 1.7 에 없다

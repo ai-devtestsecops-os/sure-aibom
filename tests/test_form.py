@@ -1,4 +1,4 @@
-"""form — 모아 둔 값을 --form 이 고른 자리(properties 또는 v0.6 필드)로 옮긴다. 모델 쪽 네 필드를 본다.
+"""form — 모아 둔 값을 고른 형태(properties 또는 v0.6 필드)의 자리로 옮긴다. CLI 의 scan --spec 1.7 · v0.6 이 고른다. 모델 쪽 네 필드를 본다.
 정적 샘플(tests/data/merged_sample.cdx.json)의 bert 컴포넌트가 실제 owasp 보강 값을 가진다."""
 import copy
 import json

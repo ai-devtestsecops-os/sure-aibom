@@ -22,7 +22,7 @@
        csv·tsv·jsonl·json·parquet·arrow 에서 64 MB 까지만 낸다. 허브 datasets-server 가 주는 것과 같은 종류다.
 
 데이터셋 사실(size, modality, availability, provenance, statistics)은 aibom-internal:dataset:* 프로퍼티로 컴포넌트에 두고,
-form 이 --form 에 맞는 자리로 옮기며 지운다 — 출력에는 남지 않는다.
+form 이 고른 형태의 자리로 옮기며 지운다 — 출력에는 남지 않는다.
 
 관계: 로컬 데이터셋과 코드에서 찾은 HF 데이터셋은 metadata.component(루트)가 dependsOn 한다. README 에서 온 것은
 cdxgen 이 준 모델 → 데이터셋 엣지를 그대로 둔다.
