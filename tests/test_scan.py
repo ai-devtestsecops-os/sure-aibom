@@ -2,7 +2,9 @@
 두 도구가 없으면 건너뛴다. owasp 보강은 네트워크가 필요해 skip_reason 을 패치해 뺀다 (enrich 자체는 test_enrich 가 본다).
 모델 네 개가 서로 다른 경로로 들어온다: 소스의 from_pretrained (허브 참조, 파일 없음) · 받아 둔 HF 모델 디렉터리 ·
 gguf 파일 하나 · LoRA 어댑터. 규제 필드는 cdxgen 프로퍼티와 우리가 읽은 config.json·gguf·safetensors 헤더에서 온다.
-데이터셋의 허브 조회도 네트워크가 필요해, 닿는 것으로 치고 stanfordnlp/imdb 만 기록해 둔 응답으로 답한다 (bookcorpus 는 조회 실패)."""
+데이터셋의 허브 조회도 네트워크가 필요해, 닿는 것으로 치고 tests/data/hf_api/ 에 기록해 둔 실제 응답으로 답한다.
+imdb 는 세 엔드포인트가 다 있고, bookcorpus 는 /api/datasets 만 있다 (실제 허브도 /size 는 501, /statistics 는 404).
+기록이 없으면 None 을 돌려준다 — 허브가 답하지 않은 것과 같다."""
 import json
 import shutil
 from pathlib import Path
@@ -13,11 +15,17 @@ import aibom_cli.dataset as ds
 from aibom_cli.cli import main
 
 FIXTURE = Path(__file__).parent / "data" / "project"
-IMDB_FIXTURE = Path(__file__).parent / "data" / "hf_api" / "hf_dataset_stanfordnlp_imdb.json"
-IMDB_ID = "stanfordnlp/imdb"
+HF_API = Path(__file__).parent / "data" / "hf_api"
+HUB_REDIRECTS = {"bookcorpus": "bookcorpus/bookcorpus"}      # 허브가 307 로 정식 id 에 돌려보내는 옛 이름
 IMDB_REF = "pkg:huggingface/datasets/stanfordnlp/imdb"
 LOCAL_REF = "data:local/data@"
-BOOK_REF = "data:datasets/bookcorpus@"
+BOOK_REF = "pkg:huggingface/datasets/bookcorpus/bookcorpus"   # 모델 카드의 bookcorpus 가 정식 id 로 바뀐다
+OUT = Path(__file__).parents[1] / "out" / "test_scan"      # 스캔 결과를 남겨 둔다. .gitignore 의 out/ 라 올라가지 않는다
+
+
+def out_file(name: str) -> Path:
+    OUT.mkdir(parents=True, exist_ok=True)
+    return OUT / name
 
 
 pytestmark = pytest.mark.skipif(
@@ -26,16 +34,21 @@ pytestmark = pytest.mark.skipif(
 )
 
 
+def recorded(kind: str, hf_id: str, *rest: str) -> dict | None:
+    """tests/data/hf_api/hf_<kind>_<owner>_<name>[_<config>_<split>].json. 없으면 None (허브가 답하지 않은 것)."""
+    hf_id = HUB_REDIRECTS.get(hf_id, hf_id)
+    path = HF_API / ("_".join(["hf", kind, hf_id.replace("/", "_"), *rest]) + ".json")
+    return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
+
+
 @pytest.fixture(autouse=True)
 def offline(monkeypatch):
     monkeypatch.setattr("aibom_cli.enrich.skip_reason", lambda: "테스트")                                # 보강은 네트워크가 필요해 강제 생략
     monkeypatch.setattr(ds, "hf_reachable", lambda: True)
-    imdb = json.loads(IMDB_FIXTURE.read_text(encoding="utf-8"))
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: json.loads(json.dumps(imdb)) if hf_id == "stanfordnlp/imdb" else None)
-    fixtures = IMDB_FIXTURE.parent
-    monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: json.loads((fixtures / "hf_size_stanfordnlp_imdb.json").read_text()) if hf_id == IMDB_ID else None)
-    monkeypatch.setattr(ds, "fetch_dataset_statistics", lambda hf_id, config, split, log=print:
-                        json.loads((fixtures / f"hf_statistics_stanfordnlp_imdb_{config}_{split}.json").read_text()) if hf_id == IMDB_ID else None)
+    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))
+    monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: recorded("size", hf_id))
+    monkeypatch.setattr(ds, "fetch_dataset_statistics",
+                        lambda hf_id, config, split, log=print: recorded("statistics", hf_id, config, split))
 
 
 def scan(target, out: Path, *flags) -> dict:
@@ -51,7 +64,7 @@ def without_run_specifics(doc: dict) -> str:
 
 
 def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
-    cdx = tmp_path / "bom.cdx.json"
+    cdx = out_file("properties.cdx.json")
     assert main(["scan", str(FIXTURE), "-o", str(cdx)]) == 0                       # 기본 --form properties
     assert main(["validate", str(cdx), "--spec", "1.7"]) == 0
 
@@ -83,7 +96,15 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     props = {p["name"]: p["value"] for p in imdb["properties"]}
     assert props["aibom:dataset:size"] == "133190302" and props["aibom:dataset:modality:0"] == "text" and props["aibom:dataset:availability"] == "direct-download"
     assert imdb["licenses"] == [{"license": {"name": "other"}}] and imdb["evidence"]["occurrences"] == [{"location": "src/train.py"}]
-    assert "properties" in datasets[BOOK_REF] and not any(p["name"].startswith("aibom:") for p in datasets[BOOK_REF]["properties"])   # 조회 실패 → cdxgen 값만
+    # bookcorpus: 저장소 정보는 받고 datasets-server 는 실패 → 크기는 모델 카드의 dataset_info 에서, 통계는 없다
+    book = datasets[BOOK_REF]
+    props = {p["name"]: p["value"] for p in book["properties"]}
+    assert (book["group"], book["name"], book["version"][:8]) == ("bookcorpus", "bookcorpus", "d917559b")
+    assert props["aibom:dataset:size"] == "4853859824" and props["aibom:dataset:availability"] == "direct-download"
+    assert props["aibom:dataset:provenance:0"] == "https://huggingface.co/datasets/bookcorpus/bookcorpus"
+    assert props["aibom:dataset:modality:0"] == "text"                          # modality 태그가 없어 task_categories 로
+    assert not any(k.startswith("aibom:dataset:statistics") for k in props)
+    assert book["data"][0]["contents"]["url"] == "https://huggingface.co/datasets/bookcorpus/bookcorpus"   # cdxgen 의 datasets/datasets/ 가 고쳐진다
     # 관계: 루트 → 로컬·코드 데이터셋, 모델 → README 데이터셋 (cdxgen 그대로), modelCard 링크도 살아 있다
     deps = {d["ref"]: set(d["dependsOn"]) for d in doc["dependencies"]}
     assert {LOCAL_REF, IMDB_REF} <= deps["application:/project@"] and BOOK_REF not in deps["application:/project@"]
@@ -126,7 +147,7 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
 
 
 def test_typed_form_scan_validates_against_v06_only(tmp_path):
-    cdx = tmp_path / "typed.cdx.json"
+    cdx = out_file("typed.cdx.json")
     doc = scan(FIXTURE, cdx, "--form", "typed")
     assert main(["validate", str(cdx), "--spec", "v0.6"]) == 0
     assert main(["validate", str(cdx), "--spec", "1.7"]) == 3                      # maxSize·technicalRequirements·componentData 필드는 공식 1.7 에 없다
@@ -145,7 +166,8 @@ def test_typed_form_scan_validates_against_v06_only(tmp_path):
     assert imdb["statistics"][0] == {"type": "train:label:n_unique", "value": "2"} and imdb["provenance"] == ["https://huggingface.co/datasets/stanfordnlp/imdb"]
     assert local["size"] == 149 and local["modality"] == ["text", "structured"]
     assert "provenance" not in local and "availability" not in local.get("contents", {})       # 로컬은 셋만 채운다
-    assert "size" not in datasets[LOCAL_REF]["data"][1] and "size" not in datasets[BOOK_REF]["data"][0]
+    assert "size" not in datasets[LOCAL_REF]["data"][1]                          # 디렉터리 값은 data[0] 에만
+    assert datasets[BOOK_REF]["data"][0]["size"] == 4853859824 and "statistics" not in datasets[BOOK_REF]["data"][0]
 
 
 def test_scanning_twice_is_byte_identical_apart_from_serial_and_timestamp(tmp_path):
