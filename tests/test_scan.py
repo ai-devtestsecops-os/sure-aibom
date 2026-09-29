@@ -65,7 +65,7 @@ def without_run_specifics(doc: dict) -> str:
 
 def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     cdx = out_file("properties.cdx.json")
-    assert main(["scan", str(FIXTURE), "-o", str(cdx)]) == 0                       # 기본 --spec properties
+    assert main(["scan", str(FIXTURE), "-o", str(cdx), "--data", str(FIXTURE / "data")]) == 0   # 기본 --spec properties
     assert main(["validate", str(cdx), "--spec", "1.7"]) == 0
 
     doc = json.loads(cdx.read_text())
@@ -148,7 +148,7 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
 
 def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
     cdx = out_file("typed.cdx.json")
-    doc = scan(FIXTURE, cdx, "--spec", "v0.6")
+    doc = scan(FIXTURE, cdx, "--spec", "v0.6", "--data", str(FIXTURE / "data"))
     # 단계마다 한 줄. 모듈의 항목별 로그([dataset] 등)와 도구 명령은 찍지 않는다
     lines = capsys.readouterr().err.splitlines()
     assert [line.split(" .")[0] for line in lines] == [
@@ -237,4 +237,21 @@ def test_one_failing_tool_still_writes_the_bom_but_exits_2(tmp_path, monkeypatch
     assert err[0].endswith("failed: syft exited with 1") and err[1:3] == ["[aibom-cli]   first detail", "[aibom-cli]   last detail"]
     assert err[-1] == "[aibom-cli] error: syft failed, so the BOM is incomplete"
     assert any(c["name"] == "m" for c in json.loads(out.read_text())["components"])             # 부분 BOM 은 남는다
+
+
+def test_without_data_paths_the_project_has_no_local_dataset(tmp_path):
+    """로컬 데이터는 --data 로만 들어온다. 같은 프로젝트를 --data 없이 스캔하면 data/ 는 BOM 에 없다."""
+    doc = scan(FIXTURE, tmp_path / "bom.json")
+    assert LOCAL_REF not in {c["bom-ref"] for c in doc["components"]}
+    assert {c["name"] for c in doc["components"] if c["type"] == "data"} == {"bookcorpus", "imdb"}
+
+
+def test_a_data_path_without_data_files_is_a_warning(tmp_path, monkeypatch, capsys):
+    import aibom_cli.cli as cli
+    monkeypatch.setattr(cli, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
+    monkeypatch.setattr(cli, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
+    (tmp_path / "docs").mkdir()
+    (tmp_path / "docs" / "notes.md").write_text("x", encoding="utf-8")
+    assert cli.main(["scan", str(FIXTURE), "-o", str(tmp_path / "b.json"), "--data", str(tmp_path / "docs")]) == 0
+    assert f"[aibom-cli] warning: no data files in {tmp_path / 'docs'}" in capsys.readouterr().err
 

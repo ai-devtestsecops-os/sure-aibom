@@ -56,3 +56,18 @@ def test_usage_errors_exit_2_and_name_the_command(argv, message, capsys):
     with pytest.raises(SystemExit) as e:
         main(argv)
     assert e.value.code == 2 and message in capsys.readouterr().err
+
+
+def test_a_missing_data_path_is_an_error_before_any_tool_runs(tmp_path, monkeypatch, capsys):
+    import aibom_cli.cli as cli
+    monkeypatch.setattr(cli, "run_syft", lambda *a: pytest.fail("데이터 경로가 틀렸는데 도구를 돌렸다"))
+    out = tmp_path / "bom.json"
+    assert main(["scan", str(tmp_path), "-o", str(out), "--data", str(tmp_path / "nope"), "--data", str(tmp_path)]) == 2
+    assert f"[aibom-cli] error: data path not found: {tmp_path / 'nope'}" in capsys.readouterr().err
+    assert not out.exists()
+
+
+def test_data_can_be_given_more_than_once():
+    args = build_parser().parse_args(["scan", "x", "--data", "a", "--data", "b"])
+    assert args.data == ["a", "b"] and build_parser().parse_args(["scan", "x"]).data == []
+

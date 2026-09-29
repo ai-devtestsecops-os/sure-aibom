@@ -3,20 +3,22 @@
 출처 두 가지:
     1) Hugging Face 데이터셋 참조
        - cdxgen 이 모델 README 에서 만든 type=data 컴포넌트 (purl 또는 data[0].name "datasets/<id>" 에서 id 를 얻는다)
-       - 파이썬 소스의 load_dataset("owner/name") — 첫 위치 인자가 허브 id 모양일 때만.
-         load_dataset("csv", data_files=…) 같은 로컬 빌더는 data_files 경로를 출처 2 로 보낸다.
+       - 스캔 대상 디렉터리의 파이썬 소스에서 load_dataset("owner/name") — 첫 위치 인자가 허브 id 모양일 때만.
+         load_dataset("csv", data_files=…) 같은 로컬 빌더와 파일 경로는 허브 id 가 아니라 넘긴다.
        네트워크가 닿으면 GET {HF_ENDPOINT}/api/datasets/<id> 로 채우고, 닿지 않으면 이름·purl 만 두고 한 번 알린다.
        datasets-server 의 /size(README 앞머리에 크기가 없을 때의 바이트 크기)와 /statistics(config·split 별 열 통계)도 본다.
        컴포넌트가 없으면 만들고(bom-ref = purl pkg:huggingface/datasets/<id>), 있으면 제자리에서 채운다.
        허브가 돌려준 id 가 정식 id 다: 옛 이름(imdb → stanfordnlp/imdb)이나 두 이름(bookcorpus, bookcorpus/bookcorpus)으로 부른
        같은 데이터셋은 정식 id 의 컴포넌트 하나로 모으고 (purl·bom-ref 를 바꾸고, 가리키던 관계·modelCard ref 도 따라간다) 한 번만 조회한다.
-    2) 로컬 데이터 파일 — 확장자로 찾고 부모 디렉터리마다 컴포넌트 하나 (bom-ref "data:local/<상대 디렉터리>@").
+    2) 로컬 데이터 파일 — scan --data 로 지목한 경로에서만 읽는다. 스캔 대상은 데이터 파일을 찾으려고 걷지 않는다
+       (확장자만으로 추측하면 웹앱의 아이콘 같은 것도 데이터셋이 된다).
+       경로 하나가 컴포넌트 하나 (bom-ref "data:local/<폴더 이름>@", 이름이 겹치면 -2, -3 을 붙인다). 파일 하나를 지목하면
+       그 파일만으로 만든다. 같은 경로를 두 번 주면 한 번만 읽는다.
+       data[] 에 데이터 확장자 파일마다 componentData 하나 {type: dataset, name: <폴더 이름>/<상대 경로>,
+       contents.properties: 크기·sha256·형식·행·열}. 지목한 곳이라 json·txt 도 데이터로 치되, README·LICENSE·*config.json·
+       dataset_info.json 같은 잘 알려진 메타데이터 이름은 뺀다. 점으로 시작하는 폴더·파일, SKIP_DIRS, 지목한 경로 밖으로
+       나가는 심볼릭 링크는 건너뛴다.
        규제 필드는 size·modality·statistics 셋만 채운다 — 출처(provenance)와 가용성(availability)은 파일만 보고 알 수 없다.
-       data[] 에 파일마다 componentData 하나 {type: dataset, name: <상대 경로>, contents.properties: 크기·sha256·형식·행·열}.
-       코드가 가리키는 경로(pd.read_csv, open, np.load, data_files=)도 데이터 확장자이고 대상 안에 실제로 있으면 넣는다
-       (역슬래시 구분자는 / 로 읽고, .. 은 정리해 한 파일이 두 번 들어가지 않게 한다). 대상 밖으로 나가는 심볼릭 링크는 건너뛴다.
-       json·txt 는 어디에나 있는 확장자라, 코드가 가리키거나 같은 디렉터리에 다른 데이터 파일이 있을 때만 데이터로 치고,
-       requirements*.txt · README* · package.json · *config.json 같은 잘 알려진 비데이터 이름은 코드가 가리킬 때만 친다.
        분석은 표준 라이브러리만 쓴다 (parquet·arrow·feather 는 pyarrow 가 있을 때만). pickle 은 절대 읽지 않는다.
        열 통계(숫자 열은 min·max·mean·median·std, 글 열은 길이의 그 통계, 라벨 열은 n_unique·mode·frequencies)는
        csv·tsv·jsonl·json·parquet·arrow 에서 64 MB 까지만 낸다. 허브 datasets-server 가 주는 것과 같은 종류다.
@@ -61,7 +63,7 @@ _HF_ID = re.compile(r"^[A-Za-z0-9][\w.-]*(?:/[A-Za-z0-9][\w.-]*)?$")
 
 SKIP_DIRS = frozenset({"node_modules", ".git", "venv", ".venv", "site-packages", "__pycache__"})
 
-# 확장자 → 모달리티. 강한 확장자는 어디 있든 데이터, 약한 확장자(json, txt)는 근거가 더 있어야 데이터.
+# 확장자 → 모달리티. --data 로 지목한 경로 안에서 이 확장자의 파일이 데이터다.
 MODALITY_BY_EXTENSION: dict[str, str] = {
     "csv": "structured", "tsv": "structured", "parquet": "structured", "arrow": "structured", "feather": "structured",
     "npy": "structured", "npz": "structured",
@@ -69,12 +71,11 @@ MODALITY_BY_EXTENSION: dict[str, str] = {
     "png": "image", "jpg": "image", "jpeg": "image", "webp": "image",
     "wav": "audio", "mp3": "audio", "flac": "audio",
 }
-WEAK_EXTENSIONS = frozenset({"json", "txt"})
 DATA_EXTENSIONS = frozenset(MODALITY_BY_EXTENSION)
-# 약한 확장자인데 이름만 봐도 데이터가 아닌 것 — 이웃에 데이터 파일이 있어도 승격하지 않는다 (코드가 직접 읽으면 데이터다)
+# 데이터 경로 안에 있어도 데이터가 아닌 잘 알려진 이름 (문서·설정·datasets 의 save_to_disk 메타데이터)
 _NON_DATA_NAME = re.compile(r"^(requirements[\w.-]*\.txt|readme.*|license.*|notice.*|changelog.*|package(-lock)?\.json"
-                            r"|tsconfig\.json|.*config\.json|manifest\.json|composer\.json)$", re.IGNORECASE)
-_DRIVE_PATH = re.compile(r"^[A-Za-z]:")
+                            r"|tsconfig\.json|.*config\.json|manifest\.json|composer\.json"
+                            r"|dataset_info\.json|dataset_dict\.json|state\.json)$", re.IGNORECASE)
 
 # 허브 modality:<x> 태그 → v0.6 허용값. 태그가 있으면 이것을 쓰고, 없을 때만 task_categories 로 추론한다.
 MODALITY_BY_TAG: dict[str, str] = {"text": "text", "image": "image", "audio": "audio", "video": "video",
@@ -92,10 +93,9 @@ MODALITY_BY_TASK: tuple[tuple[str, str], ...] = (
     ("tabular-", "structured"), ("time-series", "timeseries"), ("graph-", "graph"),
 )
 
-# load_dataset 의 첫 인자가 이것이면 허브 id 가 아니라 로컬 빌더다 — data_files 가 데이터다
+# load_dataset 의 첫 인자가 이것이면 허브 id 가 아니라 로컬 빌더다
 LOCAL_BUILDERS = frozenset({"csv", "json", "jsonl", "parquet", "text", "arrow", "pandas", "imagefolder", "audiofolder",
                             "videofolder", "webdataset", "xml", "sql", "generator", "spark", "polars"})
-PANDAS_READERS = frozenset({"read_csv", "read_table", "read_json", "read_parquet", "read_feather", "read_fwf"})
 
 HASH_LIMIT = 2 * 1024 ** 3                      # 이보다 큰 파일은 크기만 적는다
 JSON_PARSE_LIMIT = 64 * 1024 ** 2               # json 배열 길이를 세려고 통째로 읽는 상한
@@ -116,9 +116,10 @@ STATISTICS_FILE_LIMIT = JSON_PARSE_LIMIT                      # 로컬 파일 �
 
 # ── 진입점 ──────────────────────────────────────────────────────────────────
 
-def discover(merged: dict, target: str, log=print, report: dict | None = None) -> dict:
+def discover(merged: dict, target: str, log=print, report: dict | None = None, data_paths: Iterable[str] = ()) -> dict:
     """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다.
-    report 를 주면 hub_unreachable(허브 데이터셋이 있는데 허브에 닿지 않았는지)을 적는다."""
+    data_paths 는 로컬 데이터 경로들 (scan --data). report 를 주면 hub_unreachable(허브 데이터셋이 있는데 허브에 닿지
+    않았는지)과 empty_data_paths(데이터 파일이 하나도 없던 경로)를 적는다."""
     components: list[dict] = merged.setdefault("components", [])
     by_hf_id: dict[str, dict] = {}
     for comp in components:
@@ -127,10 +128,7 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None) -
             by_hf_id[hf_id] = comp
 
     root = Path(target)
-    code_hf_ids: dict[str, list[str]] = {}         # id → 그것을 부른 소스 파일 (상대 경로)
-    local_files: set[Path] = set()
-    if root.is_dir():
-        code_hf_ids, local_files = _scan_directory(root, log)
+    code_hf_ids = _scan_sources(root, log) if root.is_dir() else {}     # id → 그것을 부른 소스 파일 (상대 경로)
 
     new_refs: list[str] = []
     for hf_id in sorted(code_hf_ids):
@@ -144,7 +142,8 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None) -
         known = {o.get("location") for o in occurrences}
         occurrences.extend({"location": loc} for loc in code_hf_ids[hf_id] if loc not in known)
 
-    for comp in _local_components(root, local_files, log):
+    empty: list[str] = []
+    for comp in _data_components(data_paths, log, empty):
         components.append(comp)
         new_refs.append(comp["bom-ref"])
 
@@ -153,6 +152,7 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None) -
     reachable = _fill_from_hub(merged, by_hf_id, log) if by_hf_id else True
     if report is not None:
         report["hub_unreachable"] = not reachable
+        report["empty_data_paths"] = empty
     return merged
 
 
@@ -191,117 +191,67 @@ def _hub_url(hf_id: str) -> str:
 
 # ── 소스 코드 훑기 ────────────────────────────────────────────────────────────
 
-def _scan_directory(root: Path, log) -> tuple[dict[str, list[str]], set[Path]]:
-    """대상 디렉터리를 한 번 걷는다. 파이썬 소스에서 HF id 와 코드가 가리키는 로컬 경로를, 확장자로 데이터 파일을 찾는다."""
+def _scan_sources(root: Path, log) -> dict[str, list[str]]:
+    """대상 디렉터리의 파이썬 소스에서 load_dataset 으로 부른 HF id 를 찾는다. id → 그것을 부른 소스 파일(상대 경로)."""
     hf_ids: dict[str, list[str]] = {}
-    referenced: set[Path] = set()
-    by_dir: dict[Path, list[Path]] = {}
     root_resolved = root.resolve()
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = sorted(d for d in dirnames if d not in SKIP_DIRS and not d.startswith("."))
         here = Path(dirpath)
         for filename in sorted(filenames):
+            if not filename.endswith(".py"):
+                continue
             path = here / filename
             if not _inside(path, root_resolved):
                 log(f"[dataset] {_relative(path, root)}: 대상 밖을 가리키는 링크라 건너뛴다")
                 continue
-            if filename.endswith(".py"):
-                ids, paths = _parse_python(path, log)
-                loc = _relative(path, root)
-                for hf_id in ids:
-                    hf_ids.setdefault(hf_id, []).append(loc)
-                referenced.update(_resolve_paths(paths, path.parent, root))
-            elif _extension(filename) in DATA_EXTENSIONS and path.is_file():
-                by_dir.setdefault(here, []).append(path)
-
-    files: set[Path] = set(referenced)
-    for paths in by_dir.values():
-        strong = any(_is_strong(p) for p in paths)
-        files.update(p for p in paths if _is_strong(p) or (strong and not _NON_DATA_NAME.match(p.name)))
-    return hf_ids, files
-
-
-def _is_strong(path: Path) -> bool:
-    return _extension(path.name) not in WEAK_EXTENSIONS
+            loc = _relative(path, root)
+            for hf_id in _parse_python(path, log):
+                hf_ids.setdefault(hf_id, []).append(loc)
+    return hf_ids
 
 
 def _inside(path: Path, root_resolved: Path) -> bool:
-    """심볼릭 링크를 따라간 실제 위치가 대상 안인가."""
+    """심볼릭 링크를 따라간 실제 위치가 root 안인가."""
     try:
         return path.resolve().is_relative_to(root_resolved)
     except OSError:
         return False
 
 
-def _parse_python(path: Path, log) -> tuple[list[str], list[str]]:
-    """소스 하나에서 (HF 데이터셋 id 들, 코드가 읽는 로컬 경로 문자열들). 파싱이 안 되면 건너뛰고 알린다."""
+def _parse_python(path: Path, log) -> list[str]:
+    """소스 하나에서 load_dataset 으로 부른 HF 데이터셋 id 들. 파싱이 안 되면 건너뛰고 알린다.
+    첫 인자가 로컬 빌더(csv, json …)이거나 경로·파일 이름이면 허브 id 가 아니라 넘긴다."""
     try:
         tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
     except (SyntaxError, ValueError, OSError) as e:
         log(f"[dataset] {path.name}: 파싱하지 못해 건너뛴다 ({e.__class__.__name__})")
-        return [], []
+        return []
     ids: list[str] = []
-    paths: list[str] = []
     for node in ast.walk(tree):
-        if not isinstance(node, ast.Call):
+        if not isinstance(node, ast.Call) or _callee(node.func) != "load_dataset":
             continue
-        func = _callee(node.func)
         first = _string(node.args[0]) if node.args else None
-        if func == "load_dataset":
-            for kw in node.keywords:
-                if kw.arg == "data_files":
-                    paths += [s] if (s := _string(kw.value)) else _strings(kw.value)
-            if first and first.lower() not in LOCAL_BUILDERS:
-                if _looks_like_hub_id(first):
-                    if first not in ids:
-                        ids.append(first)
-                else:
-                    paths.append(first)                              # 스크립트·파일 경로는 출처 2 로
-        elif func in PANDAS_READERS or func == ("np", "load") or func == ("numpy", "load"):
-            if first:
-                paths.append(first)
-        elif func == "open" and first:
-            paths.append(first)
-    return ids, [p for p in paths if _keep_code_path(p, path.name, log)]
-
-
-def _keep_code_path(text: str, source: str, log) -> bool:
-    """코드가 읽는 경로 중 데이터 확장자인 것만 남긴다. 나머지(.dat, .bin, .xlsx, 확장자 없음)는 알리고 버린다."""
-    if _extension(_last_segment(text)) in DATA_EXTENSIONS:
-        return True
-    log(f"[dataset] {source}: {text!r} 은 아는 데이터 형식이 아니라 건너뛴다")
-    return False
+        if first and first.lower() not in LOCAL_BUILDERS and _looks_like_hub_id(first) and first not in ids:
+            ids.append(first)
+    return ids
 
 
 def _last_segment(text: str) -> str:
     return text.replace("\\", "/").rsplit("/", 1)[-1]
 
 
-def _callee(func: ast.expr):
-    """호출 대상 이름. pd.read_csv → "read_csv", np.load → ("np", "load"), open → "open"."""
+def _callee(func: ast.expr) -> str | None:
+    """호출 대상 이름. load_dataset(…) 과 datasets.load_dataset(…) 모두 "load_dataset"."""
     if isinstance(func, ast.Name):
         return func.id
     if isinstance(func, ast.Attribute):
-        if func.attr == "load" and isinstance(func.value, ast.Name):
-            return (func.value.id, "load")
         return func.attr
     return None
 
 
 def _string(node: ast.expr | None) -> str | None:
     return node.value if isinstance(node, ast.Constant) and isinstance(node.value, str) else None
-
-
-def _strings(node: ast.expr | None) -> list[str]:
-    """data_files 의 목록·사전 값 안의 문자열들."""
-    if isinstance(node, (ast.List, ast.Tuple)):
-        return [s for e in node.elts if (s := _string(e))]
-    if isinstance(node, ast.Dict):
-        out: list[str] = []
-        for v in node.values:
-            out += [s] if (s := _string(v)) else _strings(v)
-        return out
-    return []
 
 
 def _looks_like_hub_id(text: str) -> bool:
@@ -313,40 +263,72 @@ def _looks_like_hub_id(text: str) -> bool:
     return not (ext.isalnum() and not ext.isdigit())
 
 
-def _resolve_paths(raw: Iterable[str], source_dir: Path, root: Path) -> set[Path]:
-    """코드의 경로 문자열 → 대상 안에 실제로 있는 파일. 대상 루트 기준, 다음에 소스 파일 기준으로 본다. 밖을 가리키면 버린다.
-    역슬래시는 / 로 읽고, 찾은 경로는 .. 을 정리한 루트 기준 경로로 둔다 (걷기로 찾은 같은 파일과 하나로 모이게)."""
-    found: set[Path] = set()
-    root_resolved = root.resolve()
-    for text in raw:
-        text = text.replace("\\", "/")
-        if not text or "://" in text or "*" in text or text.startswith("/") or _DRIVE_PATH.match(text):
-            continue
-        for base in (root, source_dir):
-            candidate = base / text
-            if candidate.is_file() and _inside(candidate, root_resolved):
-                found.add(root / candidate.resolve().relative_to(root_resolved))
-                break
-    return found
+# ── --data 경로 → 컴포넌트 ───────────────────────────────────────────────────
 
-
-# ── 로컬 파일 → 컴포넌트 ─────────────────────────────────────────────────────
-
-def _local_components(root: Path, files: set[Path], log) -> list[dict]:
-    """부모 디렉터리마다 컴포넌트 하나. 디렉터리·파일 순서는 상대 경로 정렬로 결정적이다."""
-    by_dir: dict[str, list[Path]] = {}
-    for path in files:
-        by_dir.setdefault(_relative(path.parent, root), []).append(path)
+def _data_components(paths: Iterable[str], log, empty: list[str]) -> list[dict]:
+    """--data 경로마다 컴포넌트 하나. 같은 경로는 한 번만, 폴더 이름이 겹치면 bom-ref 에 -2, -3 을 붙인다.
+    한 파일은 한 컴포넌트에만 들어간다 (폴더와 그 안의 파일을 둘 다 주면 먼저 준 쪽이 가진다).
+    없거나 새로 넣을 데이터 파일이 하나도 없는 경로는 empty 에 적고 건너뛴다."""
     out: list[dict] = []
-    for rel_dir in sorted(by_dir):
-        analyses = [_analyze_file(p, _relative(p, root), log) for p in sorted(by_dir[rel_dir], key=lambda p: _relative(p, root))]
-        out.append(_local_component(root, rel_dir, analyses))
+    seen: set[Path] = set()
+    claimed: set[Path] = set()
+    used: set[str] = set()
+    for raw in paths:
+        given = Path(raw).expanduser()
+        try:
+            base = given.resolve()
+        except OSError:
+            base = given
+        if base in seen:
+            continue
+        seen.add(base)
+        if base.is_file():
+            name = base.stem or base.name
+            files = [(base, base.name)] if _extension(base.name) in DATA_EXTENSIONS else []
+        elif base.is_dir():
+            name = base.name or "data"
+            files = _data_files(base, log)
+        else:
+            files = []
+        files = [(path, rel) for path, rel in files if path.resolve() not in claimed]
+        if not files:
+            log(f"[dataset] {raw}: 데이터 파일이 없어 건너뛴다")
+            empty.append(raw)
+            continue
+        ref, n = name, 2
+        while ref in used:
+            ref, n = f"{name}-{n}", n + 1
+        used.add(ref)
+        claimed.update(path.resolve() for path, _ in files)
+        analyses = []
+        for path, rel in files:
+            a = _analyze_file(path, f"{name}/{rel}" if base.is_dir() else rel, log)
+            a["key"] = PurePosixPath(rel).with_suffix("").as_posix()        # 통계 이름 앞머리 (파일이 여럿일 때)
+            analyses.append(a)
+        out.append(_data_component(ref, name, analyses))
     return out
 
 
-def _local_component(root: Path, rel_dir: str, analyses: list[dict]) -> dict:
-    name = PurePosixPath(rel_dir).name if rel_dir != "." else (root.resolve().name or ".")
-    comp: dict = {"type": DATA_TYPE, "name": name, "bom-ref": f"{LOCAL_REF_PREFIX}{rel_dir}@"}
+def _data_files(base: Path, log) -> list[tuple[Path, str]]:
+    """지목한 폴더 아래의 데이터 파일 (경로, 폴더 기준 상대 경로). 상대 경로 정렬 순이라 결정적이다."""
+    found: list[tuple[Path, str]] = []
+    for dirpath, dirnames, filenames in os.walk(base):
+        dirnames[:] = sorted(d for d in dirnames if d not in SKIP_DIRS and not d.startswith("."))
+        here = Path(dirpath)
+        for filename in sorted(filenames):
+            if filename.startswith(".") or _extension(filename) not in DATA_EXTENSIONS or _NON_DATA_NAME.match(filename):
+                continue
+            path = here / filename
+            if not _inside(path, base):
+                log(f"[dataset] {_relative(path, base)}: 데이터 경로 밖을 가리키는 링크라 건너뛴다")
+                continue
+            if path.is_file():
+                found.append((path, _relative(path, base)))
+    return sorted(found, key=lambda item: item[1])
+
+
+def _data_component(ref: str, name: str, analyses: list[dict]) -> dict:
+    comp: dict = {"type": DATA_TYPE, "name": name, "bom-ref": f"{LOCAL_REF_PREFIX}{ref}@"}
     comp["data"] = [_component_data(a) for a in analyses]
     facts = {                                                     # provenance·availability 는 비운다: 파일이 어디서 왔는지,
         "size": sum(a["size"] for a in analyses),                 # 공개 데이터셋을 어떻게 받는지는 로컬 파일만 보고 알 수 없다
@@ -369,12 +351,12 @@ def _component_data(a: dict) -> dict:
 
 
 def _local_statistics(analyses: list[dict]) -> list[tuple[str, str]]:
-    """파일별 열 통계를 모은다. 파일이 둘 이상이면 파일 이름(확장자 뺀)을 앞에 붙여 허브의 split 자리처럼 쓴다."""
+    """파일별 열 통계를 모은다. 파일이 둘 이상이면 폴더 기준 경로(확장자 뺀)를 앞에 붙여 허브의 split 자리처럼 쓴다."""
     many = len(analyses) > 1
     out: list[tuple[str, str]] = []
     for a in analyses:
-        stem = PurePosixPath(a["path"]).stem
-        out += [(f"{stem}:{kind}" if many else kind, value) for kind, value in a.get("statistics") or []]
+        key = a.get("key") or PurePosixPath(a["path"]).stem
+        out += [(f"{key}:{kind}" if many else kind, value) for kind, value in a.get("statistics") or []]
     return out
 
 

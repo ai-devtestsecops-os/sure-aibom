@@ -113,15 +113,17 @@ def write(root: Path, rel: str, text: str) -> Path:
 
 
 def project(tmp_path: Path) -> Path:
-    """tests/data/project 의 데이터 부분과 같은 모양의 임시 프로젝트."""
+    """tests/data/project 와 같은 모양의 임시 프로젝트. 로컬 데이터는 data/ 에 있고 --data 로 지목한다."""
     write(tmp_path, "data/train.csv", 'id,text,label\n1,"good movie",1\n2,"bad movie",0\n3,"fine",1\n4,"meh",0\n5,"great",1\n')
     write(tmp_path, "data/labels.jsonl", '{"id":1,"label":"pos"}\n{"id":2,"label":"neg"}\n{"id":3,"label":"pos"}\n')
-    write(tmp_path, "src/train.py", 'from datasets import load_dataset\nimport pandas as pd\n'
-                                    'imdb = load_dataset("stanfordnlp/imdb")\ndf = pd.read_csv("data/train.csv")\n'
-                                    'local = load_dataset("csv", data_files="data/train.csv")\n')
-    write(tmp_path, "package.json", '{"name": "x"}')                     # 약한 확장자 홀로 → 데이터가 아니다
-    write(tmp_path, "models/config.json", '{"model_type": "bert"}')
+    write(tmp_path, "src/train.py", 'from datasets import load_dataset\nfrom transformers import AutoModel\n'
+                                    'bert = AutoModel.from_pretrained("google-bert/bert-base-uncased")\n'
+                                    'imdb = load_dataset("stanfordnlp/imdb")\n')
     return tmp_path
+
+
+def data_of(root: Path) -> list[str]:
+    return [str(root / "data")]
 
 
 # -- HF id 읽기 ----------------------------------------------------------------------
@@ -137,7 +139,7 @@ def test_hf_dataset_id_of(comp, expected):
 
 
 # -- 파이썬 소스 ---------------------------------------------------------------------
-def test_python_source_yields_hub_ids_and_routes_local_builders_to_data_files(tmp_path):
+def test_python_source_yields_only_hub_ids(tmp_path):
     src = write(tmp_path, "a.py", '''
 from datasets import load_dataset
 import datasets, numpy as np
@@ -145,38 +147,19 @@ a = load_dataset("stanfordnlp/imdb", split="train")
 b = datasets.load_dataset("imdb")
 c = load_dataset("csv", data_files="data/train.csv")
 d = load_dataset("json", data_files=["a.jsonl", "b.jsonl"])
-e = load_dataset("parquet", data_files={"train": "t.parquet", "test": ["u.parquet"]})
 f = load_dataset("./local_script.py")
 g = load_dataset("data/train.csv")
 h = load_dataset(name)
 df = pd.read_csv("data/train.csv")
-arr = np.load("emb.npy")
 fh = open("labels.txt")
-cfg = open("config.yaml")
 ''')
-    logs: list[str] = []
-    ids, paths = ds._parse_python(src, log=logs.append)
-    assert ids == ["stanfordnlp/imdb", "imdb"]
-    # load_dataset("data/train.csv") 는 허브 id 가 아니라 경로라 출처 2 로 간다; open("config.yaml") 은 데이터 형식이 아니라 버린다
-    assert paths == ["data/train.csv", "a.jsonl", "b.jsonl", "t.parquet", "u.parquet", "data/train.csv", "data/train.csv", "emb.npy", "labels.txt"]
-    assert [m for m in logs if "건너뛴다" in m] == ["[dataset] a.py: './local_script.py' 은 아는 데이터 형식이 아니라 건너뛴다",
-                                                 "[dataset] a.py: 'config.yaml' 은 아는 데이터 형식이 아니라 건너뛴다"]
+    assert ds._parse_python(src, log=print) == ["stanfordnlp/imdb", "imdb"]    # 빌더 이름 · 경로 · 다른 호출은 허브 id 가 아니다
 
 
 def test_unparsable_python_is_skipped_with_a_log(tmp_path):
     logs: list[str] = []
-    assert ds._parse_python(write(tmp_path, "bad.py", "def (:\n"), log=logs.append) == ([], [])
+    assert ds._parse_python(write(tmp_path, "bad.py", "def (:\n"), log=logs.append) == []
     assert any("bad.py" in m for m in logs)
-
-
-def test_code_paths_resolve_inside_the_target_only(tmp_path):
-    root = tmp_path / "proj"
-    write(root, "data/a.csv", "x\n1\n")
-    write(root, "src/b.csv", "x\n1\n")
-    write(tmp_path, "outside.csv", "x\n1\n")
-    found = ds._resolve_paths(["data/a.csv", "b.csv", "../outside.csv", "/etc/passwd", "s3://bucket/x.csv", "missing.csv", "*.csv"],
-                              root / "src", root)
-    assert found == {root / "data/a.csv", root / "src" / "b.csv"}
 
 
 # -- 로컬 파일 분석 ------------------------------------------------------------------
@@ -220,12 +203,12 @@ def test_large_files_record_size_only(tmp_path, monkeypatch):
     assert "sha256" not in a and "rows" not in a and a["size"] == 40 and any("2 GB" in m for m in logs)
 
 
-# -- discover: 로컬 + 코드 ------------------------------------------------------------
-def test_discover_builds_one_component_per_directory_and_links_from_root(tmp_path, online):
+# -- discover: --data 경로 + 코드 ------------------------------------------------------------
+def test_discover_builds_one_component_per_data_path_and_links_from_root(tmp_path, online):
     root = project(tmp_path)
-    out = ds.discover(doc_of(), str(root), log=lambda m: None)
+    out = ds.discover(doc_of(), str(root), log=lambda m: None, data_paths=data_of(root))
     found = datasets(out)
-    assert set(found) == {"data:local/data@", IMDB_REF}                          # package.json / models/config.json 은 데이터가 아니다
+    assert set(found) == {"data:local/data@", IMDB_REF}
 
     local = found["data:local/data@"]
     assert local["name"] == "data" and [d["name"] for d in local["data"]] == ["data/labels.jsonl", "data/train.csv"]
@@ -251,32 +234,65 @@ def test_discover_builds_one_component_per_directory_and_links_from_root(tmp_pat
     assert str(tmp_path) not in json.dumps(out)                                   # 절대 경로가 새지 않는다
 
 
-def test_weak_extensions_count_only_with_evidence(tmp_path, online):
-    write(tmp_path, "notes/readme.txt", "hello\n")                                # 홀로 → 아니다
-    write(tmp_path, "corpus/a.txt", "a\nb\n")                                     # 같은 디렉터리에 강한 파일 → 데이터
-    write(tmp_path, "corpus/b.csv", "x\n1\n")
-    write(tmp_path, "cfg/labels.json", '["a", "b"]')                              # 코드가 읽는다 → 데이터
-    write(tmp_path, "run.py", 'import pandas as pd\npd.read_json("cfg/labels.json")\n')
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))
-    assert set(found) == {"data:local/corpus@", "data:local/cfg@"}
-    assert [d["name"] for d in found["data:local/corpus@"]["data"]] == ["corpus/a.txt", "corpus/b.csv"]
+def test_data_path_counts_json_and_txt_but_not_metadata_names(tmp_path, online):
+    """지목한 경로 안에서는 json·txt 도 데이터다. 문서·설정·save_to_disk 메타데이터 이름, 숨은 파일, 모르는 확장자는 뺀다."""
+    for rel in ("a.txt", "labels.json", "b.csv", "README.md", "README.txt", "LICENSE.txt", "model_config.json",
+                "dataset_info.json", "state.json", "x.xlsx", ".hidden.csv"):
+        write(tmp_path, f"corpus/{rel}", "a\n1\n")
+    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "corpus")]))
+    assert [d["name"] for d in found["data:local/corpus@"]["data"]] == ["corpus/a.txt", "corpus/b.csv", "corpus/labels.json"]
 
 
 def test_skip_dirs_and_hidden_dirs_are_not_walked(tmp_path, online):
     for d in ("node_modules", ".git", "venv", ".venv", "site-packages", "__pycache__", ".cache"):
-        write(tmp_path, f"{d}/x.csv", "a\n1\n")
-        write(tmp_path, f"{d}/x.py", 'load_dataset("hidden/one")\n')
-    write(tmp_path, "ok/y.csv", "a\n1\n")
-    out = ds.discover(doc_of(), str(tmp_path), log=lambda m: None)
-    assert set(datasets(out)) == {"data:local/ok@"}
+        write(tmp_path, f"data/{d}/x.csv", "a\n1\n")                          # 데이터 경로 안에서도
+        write(tmp_path, f"{d}/x.py", 'load_dataset("hidden/one")\n')            # 대상의 소스를 걸을 때도
+    write(tmp_path, "data/ok/y.csv", "a\n1\n")
+    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=data_of(tmp_path)))
+    assert set(found) == {"data:local/data@"} and [d["name"] for d in found["data:local/data@"]["data"]] == ["data/ok/y.csv"]
 
 
-def test_root_level_files_use_the_target_name(tmp_path, online):
+def test_a_single_file_data_path_is_its_own_component(tmp_path, online):
     write(tmp_path, "train.csv", "a\n1\n")
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))
-    assert set(found) == {"data:local/.@"} and found["data:local/.@"]["name"] == tmp_path.name
-    facts = internal(found["data:local/.@"])
+    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "train.csv")]))
+    assert set(found) == {"data:local/train@"} and found["data:local/train@"]["name"] == "train"
+    assert [d["name"] for d in found["data:local/train@"]["data"]] == ["train.csv"]
+    facts = internal(found["data:local/train@"])
     assert "provenance:0" not in facts and "availability" not in facts       # 로컬 파일로는 출처·가용성을 알 수 없다
+
+
+def test_data_files_in_the_target_are_not_read_without_a_data_path(tmp_path, monkeypatch):
+    """로컬 데이터는 --data 로 지목한 곳에서만 읽는다. 확장자만 보고 추측하면 아이콘 같은 것도 데이터셋이 된다."""
+    monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("조회할 것이 없는데 네트워크를 봤다"))
+    write(tmp_path, "data/train.csv", "a\n1\n")
+    write(tmp_path, "static/icon.png", "x")
+    write(tmp_path, "app.py", 'import pandas as pd\npd.read_csv("data/train.csv")\n')       # 코드가 읽어도 넣지 않는다
+    doc = doc_of()
+    before = json.dumps(doc)
+    assert json.dumps(ds.discover(doc, str(tmp_path), log=lambda m: None)) == before
+
+
+def test_data_paths_are_deduplicated_and_names_do_not_collide(tmp_path, online):
+    write(tmp_path, "a/data/x.csv", "v\n1\n")
+    write(tmp_path, "b/data/y.csv", "v\n2\n")
+    write(tmp_path, "empty/notes.md", "docs\n")
+    report: dict = {}
+    paths = [str(tmp_path / "a/data"), str(tmp_path / "a/data") + "/", str(tmp_path / "a/data/x.csv"),   # 같은 곳 · 이미 들어간 파일
+             str(tmp_path / "b/data"), str(tmp_path / "empty"), str(tmp_path / "missing")]
+    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, report=report, data_paths=paths))
+    assert set(found) == {"data:local/data@", "data:local/data-2@"}                  # 폴더 이름이 같으면 -2
+    assert [d["name"] for d in found["data:local/data@"]["data"]] == ["data/x.csv"]
+    assert [d["name"] for d in found["data:local/data-2@"]["data"]] == ["data/y.csv"]
+    assert report["empty_data_paths"] == [str(tmp_path / "a/data/x.csv"), str(tmp_path / "empty"), str(tmp_path / "missing")]
+
+
+def test_nested_files_keep_their_path_and_statistics_prefix(tmp_path, online):
+    write(tmp_path, "imdb/train/part-0.csv", "v\n1\n3\n")
+    write(tmp_path, "imdb/test/part-0.csv", "v\n5\n")
+    local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "imdb")]))["data:local/imdb@"]
+    assert [d["name"] for d in local["data"]] == ["imdb/test/part-0.csv", "imdb/train/part-0.csv"]
+    kinds = {v for k, v in internal(local).items() if k.endswith(":type")}
+    assert {"test/part-0:v:min", "train/part-0:v:min"} <= kinds                   # 같은 파일 이름도 경로로 갈린다
 
 
 # -- discover: 허브 -------------------------------------------------------------------
@@ -520,7 +536,7 @@ def test_local_file_statistics_for_jsonl_json_tsv_and_limits(tmp_path, monkeypat
 
 def test_local_statistics_prefix_only_when_a_directory_has_several_files(tmp_path):
     write(tmp_path, "data/only.csv", "v\n1\n2\n")
-    facts = internal(datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))["data:local/data@"])
+    facts = internal(datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=data_of(tmp_path)))["data:local/data@"])
     assert facts["statistics:0:type"] == "v:min" and facts["statistics:2:value"] == "1.5"                           # 파일 하나면 파일 이름을 붙이지 않는다
 
 
@@ -569,7 +585,8 @@ def test_directory_without_datasets_leaves_the_document_byte_identical(tmp_path,
 # -- form: 두 형태 --------------------------------------------------------------
 @pytest.fixture
 def discovered(tmp_path, online) -> dict:
-    return ds.discover(doc_of(), str(project(tmp_path)), log=lambda m: None)
+    root = project(tmp_path)
+    return ds.discover(doc_of(), str(root), log=lambda m: None, data_paths=data_of(root))
 
 
 def test_properties_form_moves_facts_to_aibom_dataset_keys(discovered):
@@ -660,41 +677,34 @@ def test_data_component_without_internal_keys_is_untouched():
 
 
 # -- 회귀: 확인된 결함 ------------------------------------------------------------------
-def test_code_referenced_file_with_unknown_extension_is_dropped_not_crashing(tmp_path, online):
-    """pd.read_csv("data/train.dat") 같은 참조가 KeyError 로 스캔을 죽였다. 이제 알리고 버린다; 분석기도 모르는 확장자를 'other' 로 받는다."""
+def test_unknown_extensions_are_not_data_and_the_analyser_accepts_them(tmp_path, online):
+    """모르는 확장자가 KeyError 로 스캔을 죽였다. 데이터 경로에서는 빼고, 분석기에 직접 넣으면 'other' 로 받는다."""
     write(tmp_path, "data/train.dat", "a,b\n1,2\n")
     write(tmp_path, "data/train", "a,b\n1,2\n")
-    write(tmp_path, "w.bin", "x")
-    write(tmp_path, "d/x.xlsx", "x")
-    write(tmp_path, "t.py", 'import pandas as pd, numpy as np\nfrom datasets import load_dataset\n'
-                            'pd.read_csv("data/train.dat")\npd.read_csv("data/train")\nnp.load("w.bin")\n'
-                            'load_dataset("csv", data_files="d/x.xlsx")\n')
-    logs: list[str] = []
-    out = ds.discover(doc_of(), str(tmp_path), log=logs.append)
-    assert datasets(out) == {}
-    assert sorted(m.split(": ", 1)[1] for m in logs if "건너뛴다" in m) == [
-        "'d/x.xlsx' 은 아는 데이터 형식이 아니라 건너뛴다", "'data/train' 은 아는 데이터 형식이 아니라 건너뛴다",
-        "'data/train.dat' 은 아는 데이터 형식이 아니라 건너뛴다", "'w.bin' 은 아는 데이터 형식이 아니라 건너뛴다"]
+    write(tmp_path, "data/x.xlsx", "x")
+    report: dict = {}
+    out = ds.discover(doc_of(), str(tmp_path), log=lambda m: None, report=report, data_paths=data_of(tmp_path))
+    assert datasets(out) == {} and report["empty_data_paths"] == data_of(tmp_path)
     a = ds._analyze_file(tmp_path / "data/train.dat", "data/train.dat", log=print)
     assert a["modality"] == "other" and a["format"] == "dat" and a["sha256"] and "rows" not in a
 
 
-def test_symlink_to_a_file_outside_the_target_is_skipped(tmp_path, monkeypatch, online):
-    """대상 밖을 가리키는 링크가 절대 경로(또는 ../ 경로)를 data[].name 에 흘렸다."""
+def test_a_symlink_leaving_the_data_path_is_skipped(tmp_path, monkeypatch, online):
+    """데이터 경로 밖을 가리키는 링크가 절대 경로(또는 ../ 경로)를 data[].name 에 흘렸다."""
     outside = write(tmp_path, "elsewhere/outside_secret.csv", "a\n1\n")
     root = tmp_path / "T"
     write(root, "data/train.csv", "a\n1\n2\n")
     (root / "data/link.csv").symlink_to(outside)
-    (root / "data/inner.csv").symlink_to(root / "data/train.csv")             # 안을 가리키는 링크는 대상 안의 이름으로 남는다
-    for target in (str(root), "T"):
+    (root / "data/inner.csv").symlink_to(root / "data/train.csv")             # 안을 가리키는 링크는 경로 안의 이름으로 남는다
+    for data in (str(root / "data"), "T/data"):
         monkeypatch.chdir(tmp_path)
         logs: list[str] = []
-        out = ds.discover(doc_of(), target, log=logs.append)
+        out = ds.discover(doc_of(), str(root), log=logs.append, data_paths=[data])
         local = datasets(out)["data:local/data@"]
         assert [d["name"] for d in local["data"]] == ["data/inner.csv", "data/train.csv"]
         text = json.dumps(out)
         assert "outside_secret" not in text and str(tmp_path) not in text and ".." not in text
-        assert any("data/link.csv" in m and "대상 밖" in m for m in logs)
+        assert any("link.csv" in m and "경로 밖" in m for m in logs)
 
 
 @pytest.mark.skipif(not hasattr(os, "geteuid") or os.geteuid() == 0, reason="root 는 권한을 무시한다")
@@ -708,7 +718,7 @@ def test_unreadable_file_records_size_only(tmp_path, online):
         a = ds._analyze_file(secret, "data/secret.csv", log=logs.append)
         assert a == {"path": "data/secret.csv", "size": 8, "format": "csv", "modality": "structured"}
         assert any("data/secret.csv" in m and "크기만" in m for m in logs)
-        local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))["data:local/data@"]
+        local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=data_of(tmp_path)))["data:local/data@"]
         assert [d["name"] for d in local["data"]] == ["data/ok.csv", "data/secret.csv"] and internal(local)["size"] == "12"
     finally:
         secret.chmod(0o644)
@@ -779,34 +789,9 @@ def test_load_dataset_with_script_or_file_path_makes_no_hub_component(tmp_path, 
     """load_dataset("my_script.py") · load_dataset("data/train.xlsx") 가 가짜 허브 컴포넌트(pkg:huggingface/datasets/my_script.py)가 되었다."""
     monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("허브 id 가 없는데 네트워크를 봤다"))
     write(tmp_path, "my_script.py", "")
-    write(tmp_path, "data/train.xlsx", "x")
     write(tmp_path, "data/train.csv", "a\n1\n")
     write(tmp_path, "t.py", 'load_dataset("my_script.py")\nload_dataset("data/train.xlsx")\nload_dataset("data/train.csv")\n')
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))
-    assert set(found) == {"data:local/data@"}                                  # 경로 인자는 출처 2 로, 파일은 한 번만
-    assert [d["name"] for d in found["data:local/data@"]["data"]] == ["data/train.csv"]
-
-
-def test_windows_style_code_paths_resolve_and_drive_paths_are_rejected(tmp_path, online):
-    """cfg\\labels.json 을 글자 그대로 찾아 조용히 잃었다."""
-    write(tmp_path, "cfg/labels.json", '["a"]')
-    write(tmp_path, "data/train.csv", "a\n1\n")
-    write(tmp_path, "t.py", 'import pandas as pd\npd.read_json("cfg\\\\labels.json")\npd.read_csv("data\\\\train.csv")\n'
-                            'pd.read_csv("C:\\\\x.csv")\npd.read_csv("C:/x.csv")\n')
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))
-    assert set(found) == {"data:local/cfg@", "data:local/data@"}
-    assert [d["name"] for d in found["data:local/cfg@"]["data"]] == ["cfg/labels.json"]
-    assert ds._resolve_paths(["C:/x.csv", "C:\\x.csv", "cfg\\labels.json"], tmp_path, tmp_path) == {tmp_path / "cfg/labels.json"}
-
-
-def test_parent_segments_in_code_paths_do_not_duplicate_a_file(tmp_path, online):
-    """src/train.py 의 "../data/train.csv" 가 걷기로 찾은 같은 파일과 따로 세어져 크기·행·파일 수가 두 배였다."""
-    write(tmp_path, "data/train.csv", "id,text\n1,a\n2,b\n")
-    write(tmp_path, "src/train.py", 'import pandas as pd\npd.read_csv("../data/train.csv")\npd.read_csv("./data/train.csv")\n')
-    local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))["data:local/data@"]
-    assert [d["name"] for d in local["data"]] == ["data/train.csv"]
-    facts = internal(local)
-    assert facts["size"] == "16" and facts["statistics:0:value"] == "1" and facts["statistics:1:value"] == "2"
+    assert datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None)) == {}
 
 
 @pytest.mark.parametrize("task, modality", [
@@ -815,26 +800,6 @@ def test_parent_segments_in_code_paths_do_not_duplicate_a_file(tmp_path, online)
 ])
 def test_specific_text_to_tasks_map_before_the_text_prefix(task, modality):
     assert ds._modality_of_task(task) == modality
-
-
-def test_well_known_manifests_are_not_promoted_by_a_neighbouring_data_file(tmp_path, online):
-    """train.csv 옆의 requirements.txt · README.txt · package.json 이 데이터 파일로 잡혔다. 코드가 직접 읽으면 여전히 데이터다."""
-    write(tmp_path, "requirements.txt", "numpy\n")
-    write(tmp_path, "README.txt", "hello\n")
-    write(tmp_path, "package.json", '{"name": "x"}')
-    write(tmp_path, "train.csv", "a\n1\n")
-    write(tmp_path, "d/a.csv", "x\n1\n")
-    write(tmp_path, "d/README.txt", "docs\n")
-    write(tmp_path, "d/LICENSE.txt", "MIT\n")
-    write(tmp_path, "d/model_config.json", "{}")
-    write(tmp_path, "d/notes.txt", "a\nb\n")
-    write(tmp_path, "e/labels.json", '["a"]')
-    write(tmp_path, "e/tsconfig.json", "{}")
-    write(tmp_path, "e/run.py", 'import pandas as pd\npd.read_json("e/tsconfig.json")\n')
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))
-    assert [d["name"] for d in found["data:local/.@"]["data"]] == ["train.csv"]
-    assert [d["name"] for d in found["data:local/d@"]["data"]] == ["d/a.csv", "d/notes.txt"]
-    assert [d["name"] for d in found["data:local/e@"]["data"]] == ["e/tsconfig.json"]          # 코드가 읽는다; labels.json 은 홀로 약한 파일
 
 
 # -- 실제 허브 (하나뿐) ------------------------------------------------------------------

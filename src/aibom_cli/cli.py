@@ -84,6 +84,10 @@ def cmd_scan(args: argparse.Namespace) -> int:
     if _looks_like_path(args.target) and not Path(args.target).exists():
         _log(f"[aibom-cli] error: target not found: {args.target}")
         return EXIT_TOOL
+    missing = [d for d in args.data if not Path(d).expanduser().exists()]
+    if missing:
+        _log(f"[aibom-cli] error: data path not found: {', '.join(missing)}")
+        return EXIT_TOOL
 
     workdir = Path(tempfile.mkdtemp(prefix="aibom-cli-"))
     docs: list[dict] = []
@@ -115,9 +119,11 @@ def cmd_scan(args: argparse.Namespace) -> int:
     merged = merge(docs, root=scan_root(args.target))
 
     datasets: dict = {}
-    merged = discover_datasets(merged, args.target, log=_quiet, report=datasets)
+    merged = discover_datasets(merged, args.target, log=_quiet, report=datasets, data_paths=args.data)
     n = _count(sum(1 for c in merged["components"] if c.get("type") == "data"), "dataset")
     _stage("Generating D-BOM", n + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
+    for path in datasets.get("empty_data_paths") or []:
+        _log(f"[aibom-cli] warning: no data files in {path}")
 
     merged = discover_models(merged, args.target, log=_quiet)
 
@@ -196,6 +202,7 @@ Commands:
 
 Options:
   -o, --output <path>         [scan] 출력 경로. 없으면 표준출력
+  --data <path>               [scan] 로컬 데이터 경로. 여러 번 줄 수 있음 (없으면 로컬 데이터는 넣지 않음)
   --spec <1.7|v0.6>           [scan] 규제 필드를 넣을 스키마 (default: 1.7)
                                 1.7   CycloneDX 1.7 의 properties 로 넣음
                                 v0.6  AI-BOM v0.6 의 필드로 넣음 (문서의 specVersion 은 1.7 그대로)
@@ -206,6 +213,7 @@ Options:
 Examples:
   aibom-cli scan ./project -o bom.cdx.json                    디렉터리를 스캔하여 규제 필드를 CycloneDX 1.7 properties 로 넣음
   aibom-cli scan ./project -o bom.cdx.json --spec v0.6        디렉터리를 스캔하여 규제 필드를 AI-BOM v0.6 필드로 넣음
+  aibom-cli scan ./project -o bom.cdx.json --data ./dataset   로컬 데이터 경로를 함께 지정
 
   aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔
   aibom-cli scan image.tar -o image.cdx.json                  컨테이너 이미지를 스캔 (Docker/Podman 데몬이 없는 경우)
@@ -242,6 +250,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("-h", "--help", action=_Help)
     s.add_argument("target", metavar="<target>")
     s.add_argument("-o", "--output", metavar="<path>")
+    s.add_argument("--data", action="append", default=[], metavar="<path>")
     s.add_argument("--spec", choices=tuple(FORM_BY_SPEC), default="1.7", metavar="<1.7|v0.6>")
     s.set_defaults(func=cmd_scan)
 
