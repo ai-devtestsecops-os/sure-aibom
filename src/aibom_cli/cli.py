@@ -24,7 +24,11 @@ EXIT_INVALID = 3   # 스키마 불일치 (1 은 파이썬이 처리 못 한 예�
 SCHEMA_NAME = {"1.7": "CycloneDX 1.7 schema", "v0.6": "AI-BOM v0.6 schema"}   # validate 는 문서를 어떻게 만들었는지 모른다
 # scan --spec → 규제 필드를 넣는 형태. 1.7 은 표준 properties 라 1.7·v0.6 스키마 모두에 맞고, v0.6 은 v0.6 스키마에만 맞는다
 FORM_BY_SPEC = {"1.7": "properties", "v0.6": "typed"}
-FIELDS_LABEL = {"1.7": "CycloneDX 1.7 properties", "v0.6": "AI-BOM v0.6 fields"}
+FORMAT_NAME = {"1.7": "CycloneDX 1.7", "v0.6": "AI-BOM v0.6"}
+# 요약 줄의 묶음: CycloneDX type → S/M/D 와 파일. 목록에 없는 type(library, application, operating-system …)은 packages
+GROUP_BY_TYPE = {"machine-learning-model": "models", "data": "datasets", "file": "files"}
+GROUP_ORDER = ("packages", "models", "datasets", "files")
+SINGULAR = {"packages": "package", "models": "model", "datasets": "dataset", "files": "file"}
 STAGE_WIDTH = 36                                   # 단계 이름 뒤 점선까지의 너비
 
 
@@ -43,6 +47,15 @@ def _stage(label: str, result: str = "") -> None:
 
 def _count(n: int, one: str, many: str | None = None) -> str:
     return f"{n} {one if n == 1 else (many or one + 's')}"
+
+
+def _groups(components: list[dict], skip: tuple[str, ...] = ()) -> str:
+    """컴포넌트를 packages · models · datasets · files 로 묶어 센다. 0 인 묶음은 뺀다."""
+    counts = dict.fromkeys(GROUP_ORDER, 0)
+    for c in components:
+        counts[GROUP_BY_TYPE.get(c.get("type"), "packages")] += 1
+    parts = [f"{n} {SINGULAR[g] if n == 1 else g}" for g, n in counts.items() if n and g not in skip]
+    return ", ".join(parts) or "nothing found"
 
 
 _DRIVE = re.compile(r"^[A-Za-z]:[\\/]")
@@ -89,12 +102,16 @@ def cmd_scan(args: argparse.Namespace) -> int:
         _log(f"[aibom-cli] error: data path not found: {', '.join(missing)}")
         return EXIT_TOOL
 
+    data = f", data from {', '.join(args.data)}" if args.data else ""
+    _log(f"[aibom-cli] Generating {FORMAT_NAME[args.spec]} for {args.target}{data}")
+
     workdir = Path(tempfile.mkdtemp(prefix="aibom-cli-"))
     docs: list[dict] = []
     failed: list[str] = []
     for tool, label, runner, summarize in (
-        ("syft", "Generating S-BOM (syft)", run_syft, lambda d: _count(len(d.get("components") or []), "component")),
-        ("cdxgen", "Generating M-BOM (cdxgen)", run_cdxgen, lambda d: _count(_models(d), "model")),
+        ("syft", "Generating S-BOM (syft)", run_syft, lambda d: _groups(d.get("components") or [])),
+        # cdxgen 이 만든 데이터셋은 이름뿐인 참조라 여기서 세지 않는다 (D-BOM 이 채워서 거기서 센다)
+        ("cdxgen", "Generating M-BOM (cdxgen)", run_cdxgen, lambda d: _groups(d.get("components") or [], skip=("datasets",))),
     ):
         try:
             doc = runner(args.target, workdir)
@@ -120,8 +137,8 @@ def cmd_scan(args: argparse.Namespace) -> int:
 
     datasets: dict = {}
     merged = discover_datasets(merged, args.target, log=_quiet, report=datasets, data_paths=args.data)
-    n = _count(sum(1 for c in merged["components"] if c.get("type") == "data"), "dataset")
-    _stage("Generating D-BOM", n + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
+    total = _count(sum(1 for c in merged["components"] if c.get("type") == "data"), "dataset")
+    _stage("Generating D-BOM", total + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
     for path in datasets.get("empty_data_paths") or []:
         _log(f"[aibom-cli] warning: no data files in {path}")
 
@@ -132,27 +149,24 @@ def cmd_scan(args: argparse.Namespace) -> int:
     if enriched["skipped"]:
         result = f"skipped: {enriched['skipped']}"
     elif enriched["failed"]:
-        result = f"{enriched['enriched']} of {_count(enriched['models'], 'model')}, {len(enriched['failed'])} failed"
+        result = f"{enriched['enriched']} of {_count(enriched['models'], 'hub model')} ({len(enriched['failed'])} failed)"
     else:
-        result = _count(enriched["enriched"], "model")
+        result = _count(enriched["enriched"], "hub model")
     _stage("Enriching M-BOM (aibom-generator)", result)
     for hf_id, reason in enriched["errors"].items():             # 보강은 선택 단계라 종료 코드는 그대로 두고 이유만 알린다
         _log(f"[aibom-cli]   {hf_id}: {reason}")
 
     merged = regulate(merged, form=FORM_BY_SPEC[args.spec], log=_quiet)
-    _stage("Adding regulation fields", FIELDS_LABEL[args.spec])
+    _stage("Adding regulation fields", "done")
 
     _emit(merged, args.output)
-    _log(f"[aibom-cli] Wrote {args.output or 'stdout'} ({_count(len(merged['components']), 'component')}, "
-         f"{_count(len(merged['dependencies']), 'dependency', 'dependencies')})")
+    # 위 줄들을 더하지 않고 다 만든 BOM 을 다시 센다 (병합·별칭 합치기로 줄어든 만큼이 여기 반영된다)
+    _log(f"[aibom-cli] Wrote {args.output or 'stdout'} ({_count(len(merged['components']), 'component')}: "
+         f"{_groups(merged['components'])}; {_count(len(merged['dependencies']), 'dependency', 'dependencies')})")
     if failed:
         _log(f"[aibom-cli] error: {' and '.join(failed)} failed, so the BOM is incomplete")
         return EXIT_TOOL
     return 0
-
-
-def _models(doc: dict) -> int:
-    return sum(1 for c in doc.get("components") or [] if c.get("type") == "machine-learning-model")
 
 
 def scan_root(target: str) -> tuple[str, str]:

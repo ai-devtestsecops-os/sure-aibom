@@ -6,6 +6,7 @@ gguf 파일 하나 · LoRA 어댑터. 규제 필드는 cdxgen 프로퍼티와 �
 imdb 는 세 엔드포인트가 다 있고, bookcorpus 는 /api/datasets 만 있다 (실제 허브도 /size 는 501, /statistics 는 404).
 기록이 없으면 None 을 돌려준다 — 허브가 답하지 않은 것과 같다."""
 import json
+import re
 import shutil
 from pathlib import Path
 
@@ -149,14 +150,19 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
 def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
     cdx = out_file("typed.cdx.json")
     doc = scan(FIXTURE, cdx, "--spec", "v0.6", "--data", str(FIXTURE / "data"))
-    # 단계마다 한 줄. 모듈의 항목별 로그([dataset] 등)와 도구 명령은 찍지 않는다
+    # 첫 줄에 형식과 입력, 그 뒤 단계마다 한 줄. 모듈의 항목별 로그([dataset] 등)와 도구 명령은 찍지 않는다
     lines = capsys.readouterr().err.splitlines()
-    assert [line.split(" .")[0] for line in lines] == [
+    assert lines[0] == f"[aibom-cli] Generating AI-BOM v0.6 for {FIXTURE}, data from {FIXTURE / 'data'}"
+    assert [line.split(" .")[0] for line in lines[1:-1]] == [
         "[aibom-cli] Generating S-BOM (syft)", "[aibom-cli] Generating M-BOM (cdxgen)", "[aibom-cli] Generating D-BOM",
-        "[aibom-cli] Enriching M-BOM (aibom-generator)", "[aibom-cli] Adding regulation fields",
-        f"[aibom-cli] Wrote {cdx} ({len(doc['components'])} components, {len(doc['dependencies'])} dependencies)"]
-    assert lines[1].endswith(" 5 models") and lines[2].endswith(" 3 datasets") and lines[4].endswith(" AI-BOM v0.6 fields")
-    assert lines[3].endswith(" skipped: 테스트")                                   # offline 픽스처가 준 이유가 그대로
+        "[aibom-cli] Enriching M-BOM (aibom-generator)", "[aibom-cli] Adding regulation fields"]
+    assert lines[1].endswith(" 4 packages, 1 file") and lines[2].endswith(" 5 models, 2 files")   # cdxgen 의 데이터셋 참조는 D-BOM 에서 센다
+    assert lines[3].endswith(" 3 datasets") and lines[4].endswith(" skipped: 테스트") and lines[5].endswith(" done")
+    # 마지막 줄은 다 만든 BOM 을 다시 센 것 — 묶음을 더하면 전체와 같다
+    total, groups, deps = re.fullmatch(rf"\[aibom-cli\] Wrote {re.escape(str(cdx))} \((\d+) components: (.+); (\d+) dependencies\)", lines[-1]).groups()
+    assert groups == "4 packages, 5 models, 3 datasets, 3 files"
+    assert int(total) == len(doc["components"]) == sum(int(g.split()[0]) for g in groups.split(", "))
+    assert int(deps) == len(doc["dependencies"])
     assert main(["validate", str(cdx), "--spec", "v0.6"]) == 0
     assert main(["validate", str(cdx), "--spec", "1.7"]) == 3                      # maxSize·technicalRequirements·componentData 필드는 공식 1.7 에 없다
     gpt2 = next(c for c in doc["components"] if c["name"] == "tiny-random-gpt2")
@@ -233,7 +239,7 @@ def test_one_failing_tool_still_writes_the_bom_but_exits_2(tmp_path, monkeypatch
         {"bom-ref": "m", "type": "machine-learning-model", "name": "m", "purl": "pkg:generic/m"}]})
     out = tmp_path / "bom.json"
     assert cli.main(["scan", str(FIXTURE), "-o", str(out)]) == 2
-    err = capsys.readouterr().err.splitlines()
+    err = capsys.readouterr().err.splitlines()[1:]                                 # 첫 줄은 형식·입력 안내
     assert err[0].endswith("failed: syft exited with 1") and err[1:3] == ["[aibom-cli]   first detail", "[aibom-cli]   last detail"]
     assert err[-1] == "[aibom-cli] error: syft failed, so the BOM is incomplete"
     assert any(c["name"] == "m" for c in json.loads(out.read_text())["components"])             # 부분 BOM 은 남는다
