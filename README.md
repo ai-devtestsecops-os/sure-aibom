@@ -46,28 +46,41 @@ conda activate aibom-cli
 ## 사용
 
 ```
+    ___    ________  ____  __  ___   ________    ____
+   /   |  /  _/ __ )/ __ \/  |/  /  / ____/ /   /  _/
+  / /| |  / // __  / / / / /|_/ /  / /   / /    / /
+ / ___ |_/ // /_/ / /_/ / /  / /  / /___/ /____/ /
+/_/  |_/___/_____/\____/_/  /_/   \____/_____/___/
+
 Usage:
-  aibom-cli scan     <TARGET> [flags]
-  aibom-cli validate <BOM> --spec {1.7,v0.6}
+  aibom-cli scan <target> [options]
+  aibom-cli validate <bom> --spec <1.7|v0.6>
+
+Commands:
+  scan <target>               디렉터리, 컨테이너 이미지 또는 이미지 .tar 를 스캔해 AI-BOM 을 만든다
+  validate <bom>              BOM 을 --spec 이 고른 스키마로 검증한다
+
+Options:
+  -o, --output <path>         [scan] 출력 경로. 없으면 표준출력
+  --spec <1.7|v0.6>           [scan] 규제 필드를 넣을 스키마 (default: 1.7)
+                                1.7   CycloneDX 1.7 의 properties 로 넣음
+                                v0.6  AI-BOM v0.6 의 필드로 넣음 (문서의 specVersion 은 1.7 그대로)
+                              [validate] 검증할 스키마 (필수)
+  --version                   버전을 보여 준다
+  -h, --help                  도움말을 보여 준다
 
 Examples:
   aibom-cli scan ./project -o bom.cdx.json                    디렉터리를 스캔하여 규제 필드를 CycloneDX 1.7 properties 로 넣음
   aibom-cli scan ./project -o bom.cdx.json --spec v0.6        디렉터리를 스캔하여 규제 필드를 AI-BOM v0.6 필드로 넣음
-  
+
   aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔
   aibom-cli scan image.tar -o image.cdx.json                  컨테이너 이미지를 스캔 (Docker/Podman 데몬이 없는 경우)
-  
+
   aibom-cli validate bom.cdx.json --spec 1.7                  CycloneDX 1.7 스키마로 검증
   aibom-cli validate bom.cdx.json --spec v0.6                 AI-BOM v0.6 스키마로 검증
 
-Flags (scan):
-  -o, --output PATH               출력 경로. 없으면 표준출력
-  --spec {1.7,v0.6}               규제 필드를 넣을 스키마 (default: 1.7)
-                                    1.7   CycloneDX 1.7 의 properties 로 넣음
-                                    v0.6  AI-BOM v0.6 의 필드로 넣음 (문서의 specVersion 은 1.7 그대로)
-
-Flags (validate):
-  --spec {1.7,v0.6}               검증할 스키마 (필수). 1.7 = CycloneDX 1.7, v0.6 = AI-BOM v0.6
+Environment:
+  AIBOM_GENERATOR_DIR         OWASP aibom-generator 클론 경로. 없으면 모델 보강을 건너뜀
 
 Exit codes:
   0  성공        2  실행 오류        3  스키마 불일치

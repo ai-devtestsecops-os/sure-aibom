@@ -174,70 +174,91 @@ def cmd_validate(args: argparse.Namespace) -> int:
 
 
 # ── parser ──────────────────────────────────────────────────────────────────
+# 도움말은 한 장이다. aibom-cli --help, scan --help, validate --help, 인자 없이 실행이 모두 이것을 찍고,
+# README 의 사용 절도 이 글자 그대로다 (tests/test_cli.py 가 둘이 같은지 본다).
 
-EXAMPLES = """\
-examples:
+BANNER = r"""
+    ___    ________  ____  __  ___   ________    ____
+   /   |  /  _/ __ )/ __ \/  |/  /  / ____/ /   /  _/
+  / /| |  / // __  / / / / /|_/ /  / /   / /    / /
+ / ___ |_/ // /_/ / /_/ / /  / /  / /___/ /____/ /
+/_/  |_/___/_____/\____/_/  /_/   \____/_____/___/
+"""[1:]
+
+HELP = BANNER + """
+Usage:
+  aibom-cli scan <target> [options]
+  aibom-cli validate <bom> --spec <1.7|v0.6>
+
+Commands:
+  scan <target>               디렉터리, 컨테이너 이미지 또는 이미지 .tar 를 스캔해 AI-BOM 을 만든다
+  validate <bom>              BOM 을 --spec 이 고른 스키마로 검증한다
+
+Options:
+  -o, --output <path>         [scan] 출력 경로. 없으면 표준출력
+  --spec <1.7|v0.6>           [scan] 규제 필드를 넣을 스키마 (default: 1.7)
+                                1.7   CycloneDX 1.7 의 properties 로 넣음
+                                v0.6  AI-BOM v0.6 의 필드로 넣음 (문서의 specVersion 은 1.7 그대로)
+                              [validate] 검증할 스키마 (필수)
+  --version                   버전을 보여 준다
+  -h, --help                  도움말을 보여 준다
+
+Examples:
   aibom-cli scan ./project -o bom.cdx.json                    디렉터리를 스캔하여 규제 필드를 CycloneDX 1.7 properties 로 넣음
   aibom-cli scan ./project -o bom.cdx.json --spec v0.6        디렉터리를 스캔하여 규제 필드를 AI-BOM v0.6 필드로 넣음
+
   aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔
   aibom-cli scan image.tar -o image.cdx.json                  컨테이너 이미지를 스캔 (Docker/Podman 데몬이 없는 경우)
-  aibom-cli scan ./project                                    표준출력으로 출력
+
   aibom-cli validate bom.cdx.json --spec 1.7                  CycloneDX 1.7 스키마로 검증
   aibom-cli validate bom.cdx.json --spec v0.6                 AI-BOM v0.6 스키마로 검증
 
-exit codes:
+Environment:
+  AIBOM_GENERATOR_DIR         OWASP aibom-generator 클론 경로. 없으면 모델 보강을 건너뜀
+
+Exit codes:
   0  성공        2  실행 오류        3  스키마 불일치
 """
 
 
-def _formatter(prog: str) -> argparse.HelpFormatter:
-    """옵션 이름과 설명을 한 줄에 놓고(max_help_position), 설명 안의 줄바꿈은 그대로 둔다."""
-    return argparse.RawTextHelpFormatter(prog, max_help_position=32, width=110)
+class _Help(argparse.Action):
+    """-h, --help: argparse 가 만드는 도움말 대신 HELP 한 장을 찍는다."""
+
+    def __init__(self, option_strings, dest=argparse.SUPPRESS, default=argparse.SUPPRESS, help=None):
+        super().__init__(option_strings=option_strings, dest=dest, default=default, nargs=0, help=help)
+
+    def __call__(self, parser, namespace, values, option_string=None):
+        sys.stdout.write(HELP)
+        parser.exit()
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(
-        prog="aibom-cli",
-        usage="aibom-cli <command> [flags]",
-        description="syft·cdxgen·OWASP aibom-generator 로 데이터셋·모델·소프트웨어 BOM 을 만들고 규제 필드를 더해 CycloneDX 1.7 로 낸다.",
-        epilog=EXAMPLES,
-        formatter_class=_formatter,
-    )
+    p = argparse.ArgumentParser(prog="aibom-cli", usage="aibom-cli <command> [options]", add_help=False)
+    p.add_argument("-h", "--help", action=_Help)
     p.add_argument("--version", action="version", version=f"aibom-cli {__version__}")
-    sub = p.add_subparsers(dest="command", required=True, title="commands", metavar="<command>")
+    sub = p.add_subparsers(dest="command", metavar="<command>")
 
-    s = sub.add_parser(
-        "scan",
-        help="디렉터리 또는 컨테이너 이미지를 스캔해 CycloneDX 1.7 AI-BOM 을 만든다",
-        usage="aibom-cli scan <TARGET> [-o PATH] [--spec {1.7,v0.6}]",
-        epilog="environment:\n  AIBOM_GENERATOR_DIR           aibom-generator 클론 경로 (설치 절에서 설정)",
-        formatter_class=_formatter,
-    )
-    s.add_argument("target", metavar="TARGET", help="디렉터리 경로, 컨테이너 이미지 참조, 또는 이미지 .tar")
-    s.add_argument("-o", "--output", metavar="PATH", help="출력 경로. 없으면 표준출력")
-    s.add_argument("--spec", choices=tuple(FORM_BY_SPEC), default="1.7", metavar="{1.7,v0.6}",
-                   help="규제 필드를 넣을 스키마 (default: 1.7)\n"
-                        "  1.7   CycloneDX 1.7 의 properties 로 넣음\n"
-                        "  v0.6  AI-BOM v0.6 의 필드로 넣음 (문서의 specVersion 은 1.7 그대로)")
+    s = sub.add_parser("scan", prog="aibom-cli scan", usage="aibom-cli scan <target> [options]", add_help=False)
+    s.add_argument("-h", "--help", action=_Help)
+    s.add_argument("target", metavar="<target>")
+    s.add_argument("-o", "--output", metavar="<path>")
+    s.add_argument("--spec", choices=tuple(FORM_BY_SPEC), default="1.7", metavar="<1.7|v0.6>")
     s.set_defaults(func=cmd_scan)
 
-    v = sub.add_parser(
-        "validate",
-        help="CycloneDX 문서를 --spec 이 고른 스키마로 검증한다",
-        usage="aibom-cli validate <BOM> --spec {1.7,v0.6}",
-        formatter_class=_formatter,
-    )
-    v.add_argument("bom", metavar="BOM", help="검증할 CycloneDX JSON 파일")
-    v.add_argument("--spec", choices=tuple(CDX_SCHEMA_BY_SPEC), required=True, metavar="{1.7,v0.6}",
-                   help="검증할 스키마 (필수)\n"
-                        "  1.7   CycloneDX 1.7\n"
-                        "  v0.6  AI-BOM v0.6")
+    v = sub.add_parser("validate", prog="aibom-cli validate", usage="aibom-cli validate <bom> --spec <1.7|v0.6>",
+                       add_help=False)
+    v.add_argument("-h", "--help", action=_Help)
+    v.add_argument("bom", metavar="<bom>")
+    v.add_argument("--spec", choices=tuple(CDX_SCHEMA_BY_SPEC), required=True, metavar="<1.7|v0.6>")
     v.set_defaults(func=cmd_validate)
     return p
 
 
 def main(argv: list[str] | None = None) -> int:
     args = build_parser().parse_args(argv)
+    if not hasattr(args, "func"):                      # 명령 없이 실행하면 도움말
+        sys.stdout.write(HELP)
+        return 0
     return args.func(args)
 
 
