@@ -18,8 +18,8 @@ from .runners import run_cdxgen, run_syft
 from .runners._proc import RunnerError
 from .validate import CDX_SCHEMA_BY_SPEC, validate_cdx
 
-EXIT_TOOL = 2      # 생산자·입력 문제
-EXIT_INVALID = 3   # 검증 실패
+EXIT_TOOL = 2      # 실행 오류 (잘못된 인자·입력, 도구 없음·실패)
+EXIT_INVALID = 3   # 스키마 불일치 (1 은 파이썬이 처리 못 한 예외로 죽을 때 내므로 비워 둔다)
 
 SCHEMA_NAME = {"1.7": "CycloneDX 1.7 schema", "v0.6": "AI-BOM v0.6 schema"}   # validate 는 문서를 어떻게 만들었는지 모른다
 # scan --spec → 규제 필드를 넣는 형태. 1.7 은 표준 properties 라 1.7·v0.6 스키마 모두에 맞고, v0.6 은 v0.6 스키마에만 맞는다
@@ -186,7 +186,7 @@ examples:
   aibom-cli validate bom.cdx.json --spec v0.6                 AI-BOM v0.6 스키마로 검증
 
 exit codes:
-  0  성공        2  도구·입력 문제        3  검증 실패
+  0  성공        2  실행 오류        3  스키마 불일치
 """
 
 

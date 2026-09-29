@@ -70,7 +70,7 @@ Flags (validate):
   --spec {1.7,v0.6}               검증할 스키마 (필수). 1.7 = CycloneDX 1.7, v0.6 = AI-BOM v0.6
 
 Exit codes:
-  0  성공        2  도구·입력 문제        3  검증 실패
+  0  성공        2  실행 오류        3  스키마 불일치
 ```
 
 ## Updates
