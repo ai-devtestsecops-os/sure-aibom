@@ -100,8 +100,8 @@ def stats_props(pairs: list[tuple[str, str]]) -> dict[str, str]:
     return out
 
 
-IMDB_TRAIN_STATS = [("train:label:n_unique", "2"), ("train:label:frequencies", "neg=12500,pos=12500"),      # 동률이라 mode 없음
-                    ("train:text:length:min", "52"), ("train:text:length:max", "13704"), ("train:text:length:mean", "1325.06964"),
+IMDB_TRAIN_STATS = [("train:label:nan_count", "0"), ("train:label:n_unique", "2"), ("train:label:frequencies", "neg=12500,pos=12500"),      # 동률이라 mode 없음
+                    ("train:text:nan_count", "0"), ("train:text:length:min", "52"), ("train:text:length:max", "13704"), ("train:text:length:mean", "1325.06964"),
                     ("train:text:length:median", "979"), ("train:text:length:std", "1003.13367")]
 
 
@@ -228,14 +228,15 @@ def test_discover_builds_one_component_per_data_path_and_links_from_root(tmp_pat
     assert local["name"] == "data" and [d["name"] for d in local["data"]] == ["data/labels.jsonl", "data/train.csv"]
     train = {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]}
     assert train["aibom-cli:file:rows"] == "5" and train["aibom-cli:file:columns"] == "id,text,label" and train["aibom-cli:file:format"] == "csv"
-    # 열 통계: 파일이 둘이라 파일 이름이 앞에 붙는다. labels.jsonl 의 label 은 범주(pos 2, neg 1), train.csv 의 text 는 글(길이 통계), label 0/1 은 숫자로 읽힌다
+    # 열 통계: 파일이 둘이라 파일 이름이 앞에 붙는다. 열마다 nan_count 가 먼저. labels.jsonl 의 label 은 범주(pos 2, neg 1),
+    # train.csv 의 text 는 글(길이 통계), label 0/1 은 숫자로 읽힌다
     assert internal(local) == {"size": str(80 + 69), "modality:0": "text", "modality:1": "structured", **stats_props([
-                                   ("labels:id:min", "1"), ("labels:id:max", "3"), ("labels:id:mean", "2"), ("labels:id:median", "2"), ("labels:id:std", "1"),
-                                   ("labels:label:n_unique", "2"), ("labels:label:mode", "pos"), ("labels:label:frequencies", "pos=2,neg=1"),
-                                   ("train:id:min", "1"), ("train:id:max", "5"), ("train:id:mean", "3"), ("train:id:median", "3"), ("train:id:std", "1.58114"),
-                                   ("train:text:length:min", "3"), ("train:text:length:max", "10"), ("train:text:length:mean", "6.2"),
+                                   ("labels:id:nan_count", "0"), ("labels:id:min", "1"), ("labels:id:max", "3"), ("labels:id:mean", "2"), ("labels:id:median", "2"), ("labels:id:std", "1"),
+                                   ("labels:label:nan_count", "0"), ("labels:label:n_unique", "2"), ("labels:label:mode", "pos"), ("labels:label:frequencies", "pos=2,neg=1"),
+                                   ("train:id:nan_count", "0"), ("train:id:min", "1"), ("train:id:max", "5"), ("train:id:mean", "3"), ("train:id:median", "3"), ("train:id:std", "1.58114"),
+                                   ("train:text:nan_count", "0"), ("train:text:length:min", "3"), ("train:text:length:max", "10"), ("train:text:length:mean", "6.2"),
                                    ("train:text:length:median", "5"), ("train:text:length:std", "3.11448"),
-                                   ("train:label:min", "0"), ("train:label:max", "1"), ("train:label:mean", "0.6"), ("train:label:median", "1"), ("train:label:std", "0.54772")])}
+                                   ("train:label:nan_count", "0"), ("train:label:min", "0"), ("train:label:max", "1"), ("train:label:mean", "0.6"), ("train:label:median", "1"), ("train:label:std", "0.54772")])}
 
     hf = found[IMDB_REF]
     assert hf["group"] == "stanfordnlp" and hf["name"] == "imdb" and hf["purl"] == IMDB_REF
@@ -497,35 +498,37 @@ def test_statistics_requests_follow_dataset_info_then_size_and_are_capped(monkey
 
 def test_hub_column_statistics_by_column_type():
     resp = {"statistics": [
-        {"column_name": "y", "column_type": "class_label", "column_statistics": {"n_unique": 12, "frequencies": {str(i): 1 for i in range(12)}}},   # 범주 11개 이상 → n_unique 만
+        {"column_name": "y", "column_type": "class_label", "column_statistics": {"nan_count": 3, "n_unique": 12, "frequencies": {str(i): 1 for i in range(12)}}},   # 범주 11개 이상 → n_unique 만
         {"column_name": "img", "column_type": "image", "column_statistics": {"min": 32, "max": 32.0, "mean": 32.0, "median": 32.0, "std": 0.0, "nan_count": 0}},
         {"column_name": "dur", "column_type": "audio", "column_statistics": {"mean": 6.589523, "histogram": {}}},
         {"column_name": "flag", "column_type": "bool", "column_statistics": {"n_unique": 2, "frequencies": {"True": 3, "False": 3}}},
         {"column_name": "sp", "column_type": "string_label", "column_statistics": {"n_unique": 3, "frequencies": {"b": 1, "a": 5, "c": 2}}},
-        {"column_name": "n", "column_type": "float", "column_statistics": {"min": "bad", "max": True, "mean": 1.5}},
+        {"column_name": "n", "column_type": "float", "column_statistics": {"nan_count": True, "min": "bad", "max": True, "mean": 1.5}},     # bool 은 개수가 아니다
         {"column_name": "", "column_type": "int", "column_statistics": {"min": 1}}, "garbage", {"column_name": "z", "column_statistics": None}]}
     single = ds._hub_statistics([("only", "train", resp)])
-    assert single == [("train:y:n_unique", "12"),
-                      ("train:img:width:min", "32"), ("train:img:width:max", "32"), ("train:img:width:mean", "32"), ("train:img:width:median", "32"), ("train:img:width:std", "0"),
+    assert single == [("train:y:nan_count", "3"), ("train:y:n_unique", "12"),
+                      ("train:img:nan_count", "0"), ("train:img:width:min", "32"), ("train:img:width:max", "32"), ("train:img:width:mean", "32"), ("train:img:width:median", "32"), ("train:img:width:std", "0"),
                       ("train:dur:duration:mean", "6.58952"),
                       ("train:flag:n_unique", "2"), ("train:flag:frequencies", "False=3,True=3"),                  # 동률 → mode 없음, 이름순
                       ("train:sp:n_unique", "3"), ("train:sp:mode", "a"), ("train:sp:frequencies", "a=5,c=2,b=1"),
                       ("train:n:mean", "1.5")]
     multi = ds._hub_statistics([("c1", "train", resp), ("c2", "test", {"statistics": []})])
-    assert multi[0] == ("c1:train:y:n_unique", "12") and len(multi) == len(single)
+    assert multi[0] == ("c1:train:y:nan_count", "3") and len(multi) == len(single)
 
 
 @pytest.mark.parametrize("values, expected", [
-    (["1", "2", "3", ""], [("min", "1"), ("max", "3"), ("mean", "2"), ("median", "2"), ("std", "1")]),                 # 빈 칸은 뺀다
-    ([1.5, 2, None], [("min", "1.5"), ("max", "2"), ("mean", "1.75"), ("median", "1.75"), ("std", "0.35355")]),
-    (["7"], [("min", "7"), ("max", "7"), ("mean", "7"), ("median", "7")]),                                         # 하나면 std 없음
-    (["1", "inf", "2"], [("length:min", "1"), ("length:max", "3"), ("length:mean", "1.66667"), ("length:median", "1"), ("length:std", "1.1547")]),   # inf 는 수가 아니다 → 글
-    ([True, False, True], [("n_unique", "2"), ("mode", "true"), ("frequencies", "true=2,false=1")]),
-    (["cat", "dog", "cat", "cat"], [("n_unique", "2"), ("mode", "cat"), ("frequencies", "cat=3,dog=1")]),
-    (["a", "b", "c"], [("length:min", "1"), ("length:max", "1"), ("length:mean", "1"), ("length:median", "1"), ("length:std", "0")]),   # 전부 달라 범주가 아니다
-    ([f"w{i}" for i in range(11)] * 2, [("length:min", "2"), ("length:max", "3"), ("length:mean", "2.09091"), ("length:median", "2"), ("length:std", "0.29424")]),  # 범주 11개 → 글
-    ([None, ""], []),
-    ([{"nested": 1}, "x"], [("length:min", "1"), ("length:max", "13"), ("length:mean", "7"), ("length:median", "7"), ("length:std", "8.48528")]),
+    (["1", "2", "3", ""], [("nan_count", "1"), ("min", "1"), ("max", "3"), ("mean", "2"), ("median", "2"), ("std", "1")]),   # 빈 칸은 세고, 통계에서는 뺀다
+    ([1.5, 2, None], [("nan_count", "1"), ("min", "1.5"), ("max", "2"), ("mean", "1.75"), ("median", "1.75"), ("std", "0.35355")]),
+    (["7"], [("nan_count", "0"), ("min", "7"), ("max", "7"), ("mean", "7"), ("median", "7")]),                          # 하나면 std 없음
+    (["1", "inf", "2"], [("nan_count", "0"), ("length:min", "1"), ("length:max", "3"), ("length:mean", "1.66667"), ("length:median", "1"), ("length:std", "1.1547")]),   # inf 는 수가 아니다 → 글
+    ([True, False, True], [("nan_count", "0"), ("n_unique", "2"), ("mode", "true"), ("frequencies", "true=2,false=1")]),
+    (["cat", "dog", "cat", "cat"], [("nan_count", "0"), ("n_unique", "2"), ("mode", "cat"), ("frequencies", "cat=3,dog=1")]),
+    (["a", "b", "c"], [("nan_count", "0"), ("length:min", "1"), ("length:max", "1"), ("length:mean", "1"), ("length:median", "1"), ("length:std", "0")]),   # 전부 달라 범주가 아니다
+    ([f"w{i}" for i in range(11)] * 2, [("nan_count", "0"), ("length:min", "2"), ("length:max", "3"), ("length:mean", "2.09091"), ("length:median", "2"), ("length:std", "0.29424")]),  # 범주 11개 → 글
+    ([None, "", "  "], [("nan_count", "2"), ("length:min", "2"), ("length:max", "2"), ("length:mean", "2"), ("length:median", "2")]),   # 공백만 있는 값은 값이다 (CSV 는 읽을 때 strip 한다)
+    ([None, ""], [("nan_count", "2")]),                                                                                   # 전부 비면 개수만
+    ([], []),
+    ([{"nested": 1}, "x"], [("nan_count", "0"), ("length:min", "1"), ("length:max", "13"), ("length:mean", "7"), ("length:median", "7"), ("length:std", "8.48528")]),
 ])
 def test_local_values_statistics_rules(values, expected):
     assert ds._values_statistics(values) == expected
@@ -533,13 +536,14 @@ def test_local_values_statistics_rules(values, expected):
 
 def test_local_file_statistics_for_jsonl_json_tsv_and_limits(tmp_path, monkeypatch):
     write(tmp_path, "a.jsonl", '{"x": 1, "tags": ["p"], "y": "u"}\n{"x": 3, "tags": [], "y": "u"}\n{"x": 2, "y": "v"}\n')
-    assert ds._file_statistics(tmp_path / "a.jsonl", "jsonl") == [("x:min", "1"), ("x:max", "3"), ("x:mean", "2"), ("x:median", "2"), ("x:std", "1"),
-                                                                   ("y:n_unique", "2"), ("y:mode", "u"), ("y:frequencies", "u=2,v=1")]   # tags 는 중첩 값이라 뺀다
-    write(tmp_path, "b.json", '[{"k": 2}, {"k": 4}, 5, {"k": null}]')
-    assert ds._file_statistics(tmp_path / "b.json", "json") == [("k:min", "2"), ("k:max", "4"), ("k:mean", "3"), ("k:median", "3"), ("k:std", "1.41421")]
+    assert ds._file_statistics(tmp_path / "a.jsonl", "jsonl") == [("x:nan_count", "0"), ("x:min", "1"), ("x:max", "3"), ("x:mean", "2"), ("x:median", "2"), ("x:std", "1"),
+                                                                   ("y:nan_count", "0"), ("y:n_unique", "2"), ("y:mode", "u"), ("y:frequencies", "u=2,v=1")]   # tags 는 중첩 값이라 뺀다
+    write(tmp_path, "b.json", '[{"k": 2}, {"k": 4}, 5, {"k": null}, {"j": 1}]')
+    assert ds._file_statistics(tmp_path / "b.json", "json") == [("k:nan_count", "2"), ("k:min", "2"), ("k:max", "4"), ("k:mean", "3"), ("k:median", "3"), ("k:std", "1.41421"),
+                                                                 ("j:nan_count", "3"), ("j:min", "1"), ("j:max", "1"), ("j:mean", "1"), ("j:median", "1")]   # null 도, 키가 없는 것도 빈 값
     write(tmp_path, "c.tsv", "h1\t\th3\n1\tx\ta\n2\ty\tb\n")
-    assert ds._file_statistics(tmp_path / "c.tsv", "tsv") == [("h1:min", "1"), ("h1:max", "2"), ("h1:mean", "1.5"), ("h1:median", "1.5"), ("h1:std", "0.70711"),
-                                                              ("h3:length:min", "1"), ("h3:length:max", "1"), ("h3:length:mean", "1"), ("h3:length:median", "1"), ("h3:length:std", "0")]   # 이름 없는 열은 뺀다
+    assert ds._file_statistics(tmp_path / "c.tsv", "tsv") == [("h1:nan_count", "0"), ("h1:min", "1"), ("h1:max", "2"), ("h1:mean", "1.5"), ("h1:median", "1.5"), ("h1:std", "0.70711"),
+                                                              ("h3:nan_count", "0"), ("h3:length:min", "1"), ("h3:length:max", "1"), ("h3:length:mean", "1"), ("h3:length:median", "1"), ("h3:length:std", "0")]   # 이름 없는 열은 뺀다
     assert ds._file_statistics(tmp_path / "c.tsv", "png") == [] and ds._file_statistics(write(tmp_path, "e.csv", ""), "csv") == []
     write(tmp_path, "bad.json", "{not json")
     assert "statistics" not in ds._analyze_file(tmp_path / "bad.json", "bad.json", log=lambda m: None)             # 파싱 실패 → 크기·해시만
@@ -551,7 +555,7 @@ def test_local_file_statistics_for_jsonl_json_tsv_and_limits(tmp_path, monkeypat
 def test_local_statistics_prefix_only_when_a_directory_has_several_files(tmp_path):
     write(tmp_path, "data/only.csv", "v\n1\n2\n")
     facts = internal(datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=data_of(tmp_path)))["data:local/data@"])
-    assert facts["statistics:0:type"] == "v:min" and facts["statistics:2:value"] == "1.5"                           # 파일 하나면 파일 이름을 붙이지 않는다
+    assert facts["statistics:0:type"] == "v:nan_count" and facts["statistics:3:value"] == "1.5"                     # 파일 하나면 파일 이름을 붙이지 않는다
 
 
 def test_offline_keeps_name_and_purl_and_logs_once(tmp_path, monkeypatch):
@@ -609,12 +613,12 @@ def test_properties_form_moves_facts_to_aibom_dataset_keys(discovered):
     p = props(hf)
     assert p["aibom:dataset:size"] == "133190302" and p["aibom:dataset:modality:0"] == "text"
     assert p["aibom:dataset:availability"] == "direct-download" and p["aibom:dataset:provenance:0"] == "https://huggingface.co/datasets/stanfordnlp/imdb"
-    assert (p["aibom:dataset:statistics:0:type"], p["aibom:dataset:statistics:0:value"]) == ("train:label:n_unique", "2")
-    assert p["aibom:dataset:statistics:20:type"] == "unsupervised:text:length:std" and "aibom:dataset:statistics:21:type" not in p   # split 3개 × 7개
+    assert (p["aibom:dataset:statistics:0:type"], p["aibom:dataset:statistics:0:value"]) == ("train:label:nan_count", "0")
+    assert p["aibom:dataset:statistics:26:type"] == "unsupervised:text:length:std" and "aibom:dataset:statistics:27:type" not in p   # split 3개 × 9개
     assert not any(k.startswith(INTERNAL_PREFIX) for k in p) and "aibom-internal" not in json.dumps(out)
     assert "size" not in hf["data"][0] and "availability" not in hf["data"][0]["contents"]                  # typed 필드는 건드리지 않는다
     local = datasets(out)["data:local/data@"]
-    assert props(local)["aibom:dataset:size"] == "149" and props(local)["aibom:dataset:statistics:6:value"] == "pos"          # labels:label:mode
+    assert props(local)["aibom:dataset:size"] == "149" and props(local)["aibom:dataset:statistics:8:value"] == "pos"          # labels:label:mode
     assert validate_cdx(out, "1.7", log=print) and validate_cdx(out, "v0.6", log=print)
 
 
@@ -625,7 +629,7 @@ def test_typed_form_fills_componentdata_fields_on_data0(discovered):
     assert entry["size"] == 133190302 and isinstance(entry["size"], int) and entry["modality"] == ["text"]
     assert entry["contents"] == {"url": "https://huggingface.co/datasets/stanfordnlp/imdb", "availability": "direct-download"}
     assert entry["provenance"] == ["https://huggingface.co/datasets/stanfordnlp/imdb"]
-    assert entry["statistics"][:7] == [{"type": t, "value": v} for t, v in IMDB_TRAIN_STATS] and len(entry["statistics"]) == 21
+    assert entry["statistics"][:9] == [{"type": t, "value": v} for t, v in IMDB_TRAIN_STATS] and len(entry["statistics"]) == 27
     assert "properties" not in hf                                                     # 내부 키만 있었으니 목록째 사라진다
     local = datasets(out)["data:local/data@"]
     assert local["data"][0]["size"] == 149 and local["data"][0]["modality"] == ["text", "structured"] and "size" not in local["data"][1]

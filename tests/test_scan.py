@@ -179,7 +179,8 @@ def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
     datasets = {c["bom-ref"]: c for c in doc["components"] if c["type"] == "data"}
     imdb, local = datasets[IMDB_REF]["data"][0], datasets[LOCAL_REF]["data"][0]
     assert imdb["size"] == 133190302 and imdb["modality"] == ["text"] and imdb["contents"]["availability"] == "direct-download"
-    assert imdb["statistics"][0] == {"type": "train:label:n_unique", "value": "2"} and imdb["provenance"] == ["https://huggingface.co/datasets/stanfordnlp/imdb"]
+    assert imdb["statistics"][:2] == [{"type": "train:label:nan_count", "value": "0"}, {"type": "train:label:n_unique", "value": "2"}]
+    assert imdb["provenance"] == ["https://huggingface.co/datasets/stanfordnlp/imdb"]
     assert local["size"] == 149 and local["modality"] == ["text", "structured"]
     assert "provenance" not in local and "availability" not in local.get("contents", {})       # 로컬은 셋만 채운다
     assert "size" not in datasets[LOCAL_REF]["data"][1]                          # 디렉터리 값은 data[0] 에만

@@ -560,9 +560,16 @@ def _columns_of_table(path: Path, ext: str) -> dict[str, list]:
 
 
 def _values_statistics(values: list) -> list[tuple[str, str]]:
-    """열 값들 → 통계. 전부 숫자면 min·max·mean·median·std, 전부 bool 이거나 범주가 적고 반복되면 n_unique·mode·frequencies,
+    """열 값들 → 통계. 맨 앞은 nan_count(None 과 빈 문자열의 개수. CSV 는 빈 칸 말고는 결측을 적을 방법이 없다). 나머지는
+    값이 있는 것만으로: 전부 숫자면 min·max·mean·median·std, 전부 bool 이거나 범주가 적고 반복되면 n_unique·mode·frequencies,
     그 밖의 글은 길이의 통계. datasets-server 가 열 종류별로 주는 것과 같은 규칙이다."""
+    if not values:
+        return []
     present = [v for v in values if v is not None and v != ""]
+    return [("nan_count", str(len(values) - len(present)))] + _present_statistics(present)
+
+
+def _present_statistics(present: list) -> list[tuple[str, str]]:
     if not present:
         return []
     if all(isinstance(v, bool) for v in present):
@@ -909,12 +916,15 @@ def _hub_statistics(entries: list[tuple[str, str, dict]]) -> list[tuple[str, str
 
 
 def _column_statistics(column_type, cs: dict) -> list[tuple[str, str]]:
-    """datasets-server 열 하나 → 통계. 숫자 열은 min·max·mean·median·std, 글·목록·이미지·오디오 열은 길이·너비·길이(초)의 그 통계
-    (종류 앞에 length·width·duration 을 붙인다), 라벨 열은 n_unique·mode·frequencies."""
-    if column_type in LABEL_COLUMN_TYPES:
-        return _label_statistics(cs.get("n_unique"), cs.get("frequencies"))
-    measure = MEASURE_BY_COLUMN_TYPE.get(column_type)
+    """datasets-server 열 하나 → 통계. 맨 앞은 nan_count(서버가 센 null 값 개수). 숫자 열은 min·max·mean·median·std,
+    글·목록·이미지·오디오 열은 길이·너비·길이(초)의 그 통계(종류 앞에 length·width·duration 을 붙인다), 라벨 열은 n_unique·mode·frequencies."""
     out: list[tuple[str, str]] = []
+    nan_count = cs.get("nan_count")
+    if isinstance(nan_count, int) and not isinstance(nan_count, bool):
+        out.append(("nan_count", _number(nan_count)))
+    if column_type in LABEL_COLUMN_TYPES:
+        return out + _label_statistics(cs.get("n_unique"), cs.get("frequencies"))
+    measure = MEASURE_BY_COLUMN_TYPE.get(column_type)
     for key in STATISTIC_KEYS:
         v = cs.get(key)
         if isinstance(v, (int, float)) and not isinstance(v, bool):
