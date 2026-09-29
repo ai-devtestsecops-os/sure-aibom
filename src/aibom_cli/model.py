@@ -12,7 +12,7 @@ M-BOM 을 보강하지 않는다 — 컴포넌트를 만들지도, 규제 필드
 디렉터리에서 찾는다. 컴포넌트가 없으면 만들지 않는다 (가중치 파일만 있고 config.json·README 가 없는 폴더는 그대로).
 
 가중치는 절대 읽지 않는다 (헤더·메타데이터만). pickle 을 담은 것(.bin, .pt, .pth, .ckpt, .pkl)은 열지 않는다.
-값은 aibom-internal:model:* 프로퍼티로 두고 regulation 이 --form 에 맞는 자리로 옮기며 지운다 (출력에는 남지 않는다).
+값은 aibom-internal:model:* 프로퍼티로 두고 form 이 --form 에 맞는 자리로 옮기며 지운다 (출력에는 남지 않는다).
 """
 from __future__ import annotations
 
@@ -22,7 +22,7 @@ from pathlib import Path, PurePosixPath
 from typing import Iterable
 
 MODEL_TYPE = "machine-learning-model"
-INTERNAL_MODEL_PREFIX = "aibom-internal:model:"      # regulation 이 읽어 가고 지운다
+INTERNAL_MODEL_PREFIX = "aibom-internal:model:"      # form 이 읽어 가고 지운다
 
 CONFIG_NAME = "config.json"
 GGUF_SUFFIX = ".gguf"

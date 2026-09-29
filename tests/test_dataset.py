@@ -1,5 +1,5 @@
-"""dataset — 스캔 대상 안의 데이터셋(HF 참조 · 로컬 데이터 파일)을 type=data 컴포넌트로 만들고, regulation 이 두 형태로 옮긴다.
-허브 조회는 tests/fixtures/bom/hf_dataset_stanfordnlp_imdb.json (실제 GET /api/datasets/stanfordnlp/imdb 응답)으로 바꿔 끼운다.
+"""dataset — 스캔 대상 안의 데이터셋(HF 참조 · 로컬 데이터 파일)을 type=data 컴포넌트로 만들고, form 이 두 형태로 옮긴다.
+허브 조회는 tests/data/hf_api/hf_dataset_stanfordnlp_imdb.json (실제 GET /api/datasets/stanfordnlp/imdb 응답)으로 바꿔 끼운다.
 실제 허브를 치는 테스트는 마지막 하나뿐이고, 네트워크·AIBOM_GENERATOR_DIR 이 없으면 건너뛴다."""
 import copy
 import csv
@@ -15,10 +15,10 @@ import pytest
 import aibom_cli.dataset as ds
 from aibom_cli.enrich import skip_reason
 from aibom_cli.merge import merge
-from aibom_cli.regulation import INTERNAL_PREFIX, apply
+from aibom_cli.form import INTERNAL_PREFIX, apply
 from aibom_cli.validate import validate_cdx
 
-IMDB_FIXTURE = Path(__file__).parent / "fixtures" / "bom" / "hf_dataset_stanfordnlp_imdb.json"
+IMDB_FIXTURE = Path(__file__).parent / "data" / "hf_api" / "hf_dataset_stanfordnlp_imdb.json"
 IMDB = "stanfordnlp/imdb"
 IMDB_REF = "pkg:huggingface/datasets/stanfordnlp/imdb"
 
@@ -29,7 +29,7 @@ def imdb() -> dict:
 
 
 def hub_fixture(name: str) -> dict:
-    return json.loads((Path(__file__).parent / "fixtures" / "bom" / name).read_text(encoding="utf-8"))
+    return json.loads((Path(__file__).parent / "data" / "hf_api" / name).read_text(encoding="utf-8"))
 
 
 def imdb_size() -> dict:
@@ -113,7 +113,7 @@ def write(root: Path, rel: str, text: str) -> Path:
 
 
 def project(tmp_path: Path) -> Path:
-    """tests/fixtures/mixed 의 데이터 부분과 같은 모양의 임시 프로젝트."""
+    """tests/data/project 의 데이터 부분과 같은 모양의 임시 프로젝트."""
     write(tmp_path, "data/train.csv", 'id,text,label\n1,"good movie",1\n2,"bad movie",0\n3,"fine",1\n4,"meh",0\n5,"great",1\n')
     write(tmp_path, "data/labels.jsonl", '{"id":1,"label":"pos"}\n{"id":2,"label":"neg"}\n{"id":3,"label":"pos"}\n')
     write(tmp_path, "src/train.py", 'from datasets import load_dataset\nimport pandas as pd\n'
@@ -232,8 +232,7 @@ def test_discover_builds_one_component_per_directory_and_links_from_root(tmp_pat
     train = {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]}
     assert train["aibom-cli:file:rows"] == "5" and train["aibom-cli:file:columns"] == "id,text,label" and train["aibom-cli:file:format"] == "csv"
     # 열 통계: 파일이 둘이라 파일 이름이 앞에 붙는다. labels.jsonl 의 label 은 범주(pos 2, neg 1), train.csv 의 text 는 글(길이 통계), label 0/1 은 숫자로 읽힌다
-    assert internal(local) == {"size": str(80 + 69), "modality:0": "text", "modality:1": "structured", "availability": "direct-download",
-                               "provenance:0": "data", **stats_props([
+    assert internal(local) == {"size": str(80 + 69), "modality:0": "text", "modality:1": "structured", **stats_props([
                                    ("labels:id:min", "1"), ("labels:id:max", "3"), ("labels:id:mean", "2"), ("labels:id:median", "2"), ("labels:id:std", "1"),
                                    ("labels:label:n_unique", "2"), ("labels:label:mode", "pos"), ("labels:label:frequencies", "pos=2,neg=1"),
                                    ("train:id:min", "1"), ("train:id:max", "5"), ("train:id:mean", "3"), ("train:id:median", "3"), ("train:id:std", "1.58114"),
@@ -276,7 +275,8 @@ def test_root_level_files_use_the_target_name(tmp_path, online):
     write(tmp_path, "train.csv", "a\n1\n")
     found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))
     assert set(found) == {"data:local/.@"} and found["data:local/.@"]["name"] == tmp_path.name
-    assert internal(found["data:local/.@"])["provenance:0"] == "."
+    facts = internal(found["data:local/.@"])
+    assert "provenance:0" not in facts and "availability" not in facts       # 로컬 파일로는 출처·가용성을 알 수 없다
 
 
 # -- discover: 허브 -------------------------------------------------------------------
@@ -566,7 +566,7 @@ def test_directory_without_datasets_leaves_the_document_byte_identical(tmp_path,
         assert json.dumps(apply(copy.deepcopy(out), form=form, log=lambda m: None), ensure_ascii=False) == before
 
 
-# -- regulation: 두 형태 --------------------------------------------------------------
+# -- form: 두 형태 --------------------------------------------------------------
 @pytest.fixture
 def discovered(tmp_path, online) -> dict:
     return ds.discover(doc_of(), str(project(tmp_path)), log=lambda m: None)
@@ -647,7 +647,7 @@ def test_existing_values_win_and_internal_keys_are_always_removed(form):
 
 
 @pytest.mark.parametrize("form", ["properties", "typed"])
-def test_dataset_regulation_is_idempotent(discovered, form):
+def test_dataset_form_is_idempotent(discovered, form):
     once = apply(copy.deepcopy(discovered), form=form, log=lambda m: None)
     logs: list[str] = []
     assert json.dumps(apply(copy.deepcopy(once), form=form, log=logs.append)) == json.dumps(once) and logs == []

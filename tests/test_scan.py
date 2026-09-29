@@ -1,7 +1,7 @@
-"""tests/fixtures/mixed 를 실제 syft·cdxgen 으로 스캔해 병합 결과를 확인한다.
-두 도구가 없으면 건너뛴다. owasp 보강은 네트워크가 필요해 skip_reason 을 패치해=1 로 뺀다 — regulation 은 cdxgen 의
-cdx:ai:runtime / cdx:ai:contextWindow 로 technicalRequirements 와 inputs[0].maxSize 를, models/config.json 에서 직접 읽은
-하이퍼파라미터로 hyperparameters 를 채운다 (파라미터 수는 가중치 파일이 없어 비어 있다).
+"""tests/data/project 를 실제 syft·cdxgen 으로 스캔해 병합 결과를 확인한다.
+두 도구가 없으면 건너뛴다. owasp 보강은 네트워크가 필요해 skip_reason 을 패치해 뺀다 (enrich 자체는 test_enrich 가 본다).
+모델 네 개가 서로 다른 경로로 들어온다: 소스의 from_pretrained (허브 참조, 파일 없음) · 받아 둔 HF 모델 디렉터리 ·
+gguf 파일 하나 · LoRA 어댑터. 규제 필드는 cdxgen 프로퍼티와 우리가 읽은 config.json·gguf·safetensors 헤더에서 온다.
 데이터셋의 허브 조회도 네트워크가 필요해, 닿는 것으로 치고 stanfordnlp/imdb 만 기록해 둔 응답으로 답한다 (bookcorpus 는 조회 실패)."""
 import json
 import shutil
@@ -12,8 +12,8 @@ import pytest
 import aibom_cli.dataset as ds
 from aibom_cli.cli import main
 
-FIXTURE = Path(__file__).parent / "fixtures" / "mixed"
-IMDB_FIXTURE = Path(__file__).parent / "fixtures" / "bom" / "hf_dataset_stanfordnlp_imdb.json"
+FIXTURE = Path(__file__).parent / "data" / "project"
+IMDB_FIXTURE = Path(__file__).parent / "data" / "hf_api" / "hf_dataset_stanfordnlp_imdb.json"
 IMDB_ID = "stanfordnlp/imdb"
 IMDB_REF = "pkg:huggingface/datasets/stanfordnlp/imdb"
 LOCAL_REF = "data:local/data@"
@@ -50,7 +50,7 @@ def without_run_specifics(doc: dict) -> str:
     return json.dumps(doc, ensure_ascii=False, sort_keys=True)
 
 
-def test_mixed_fixture_yields_all_three_domains(tmp_path, monkeypatch):
+def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     cdx = tmp_path / "bom.cdx.json"
     assert main(["scan", str(FIXTURE), "-o", str(cdx)]) == 0                       # 기본 --form properties
     assert main(["validate", str(cdx), "--spec", "1.7"]) == 0
@@ -61,10 +61,11 @@ def test_mixed_fixture_yields_all_three_domains(tmp_path, monkeypatch):
         by_type.setdefault(c["type"], set()).add(c["name"])
 
     assert {"numpy", "requests"} <= by_type["library"]                      # syft → 소프트웨어
-    assert "bert-base-uncased" in by_type["machine-learning-model"]         # cdxgen → HF 모델
-    assert "llama3.2:1b" in by_type["machine-learning-model"]               # cdxgen → Modelfile
-    assert by_type["data"] == {"bookcorpus", "imdb", "data"}                # cdxgen(README) · 코드의 load_dataset · 로컬 data/
-    assert "fixture" not in by_type.get("application", set())               # package.json 은 -t ai 가 막는다
+    assert by_type["machine-learning-model"] == {"bert-base-uncased", "llama3.2:1b", "llama", "tiny-random-gpt2",
+                                                 "tiny-gpt2-lora"}
+    #   src/train.py 의 from_pretrained · Modelfile · models/stories260K.gguf · models/tiny-random-gpt2/ · 어댑터
+    assert by_type["data"] == {"bookcorpus", "imdb", "data"}                # 모델 카드 · 코드의 load_dataset · 로컬 data/
+    assert {s["name"] for s in doc["services"]} == {"ollama-service", "google-bert-service"}
 
     # 스캔 머신 경로가 어디에도 새지 않는다 (파일 컴포넌트 이름, 데이터 파일 경로, evidence)
     text = cdx.read_text()
@@ -75,7 +76,8 @@ def test_mixed_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     local = datasets[LOCAL_REF]
     assert [d["name"] for d in local["data"]] == ["data/labels.jsonl", "data/train.csv"]      # 디렉터리 하나에 파일 둘, 정렬 순
     props = {p["name"]: p["value"] for p in local["properties"]}
-    assert props["aibom:dataset:size"] == "149" and props["aibom:dataset:modality:1"] == "structured" and props["aibom:dataset:provenance:0"] == "data"
+    assert props["aibom:dataset:size"] == "149" and props["aibom:dataset:modality:1"] == "structured"
+    assert not any(k.startswith("aibom:dataset:provenance") or k == "aibom:dataset:availability" for k in props)
     assert {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]}["aibom-cli:file:columns"] == "id,text,label"
     imdb = datasets[IMDB_REF]
     props = {p["name"]: p["value"] for p in imdb["properties"]}
@@ -84,22 +86,43 @@ def test_mixed_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert "properties" in datasets[BOOK_REF] and not any(p["name"].startswith("aibom:") for p in datasets[BOOK_REF]["properties"])   # 조회 실패 → cdxgen 값만
     # 관계: 루트 → 로컬·코드 데이터셋, 모델 → README 데이터셋 (cdxgen 그대로), modelCard 링크도 살아 있다
     deps = {d["ref"]: set(d["dependsOn"]) for d in doc["dependencies"]}
-    assert {LOCAL_REF, IMDB_REF} <= deps["application:/mixed@"] and BOOK_REF not in deps["application:/mixed@"]
-    assert deps["pkg:huggingface/google-bert/bert-base-uncased"] == {BOOK_REF}
+    assert {LOCAL_REF, IMDB_REF} <= deps["application:/project@"] and BOOK_REF not in deps["application:/project@"]
+    assert deps["pkg:generic/huggingface/tiny-random-gpt2"] == {BOOK_REF}       # 모델 카드가 적은 데이터셋
 
+    # 받아 둔 HF 모델 디렉터리: config.json 의 하이퍼파라미터 6개 + model.safetensors 헤더의 파라미터 수
+    gpt2 = next(c for c in doc["components"] if c["name"] == "tiny-random-gpt2")
+    assert gpt2["modelCard"]["modelParameters"]["datasets"][0]["ref"] == BOOK_REF
+    card = {p["name"]: p["value"] for p in gpt2["modelCard"]["properties"]}
+    assert (card["aibom:model:hyperparameters:0:name"], card["aibom:model:hyperparameters:0:value"]) == ("block_count", "5")
+    assert card["aibom:model:hyperparameters:5:value"] == "1000"                # vocab_size
+    assert card["aibom:model:parameterCount"] == "111968"                       # model.safetensors 헤더의 shape 합
+    assert card["aibom:model:technicalRequirements:0"] == "transformers"
+    assert "cdx:ai:runtime" not in {p["name"] for p in gpt2["properties"]}       # 승격한 원본은 소비된다
+    assert [a["name"] for a in gpt2["pedigree"]["ancestors"]] == ["gpt2"]        # 카드의 base_model
+
+    # gguf: 헤더의 하이퍼파라미터 8개와 텐서에서 센 파라미터 수 (stories260K 에는 general.parameter_count 가 없다)
+    gguf = next(c for c in doc["components"] if c["name"] == "llama")
+    gguf_card = {p["name"]: p["value"] for p in gguf["modelCard"]["properties"]}
+    assert (gguf_card["aibom:model:hyperparameters:0:name"], gguf_card["aibom:model:hyperparameters:0:value"]) == ("block_count", "5")
+    assert gguf_card["aibom:model:hyperparameters:7:name"] == "vocab_size" and "aibom:model:hyperparameters:8:name" not in gguf_card
+    assert gguf_card["aibom:model:parameterCount"] == "292800" and gguf_card["aibom:model:technicalRequirements:0"] == "llama.cpp"
+
+    # 소스의 from_pretrained: 파일이 없어 하이퍼파라미터·파라미터 수가 없다 (허브 보강은 여기서 끈다).
+    # technicalRequirements 만 cdxgen 이 소스의 import 에서 읽는다.
     bert = next(c for c in doc["components"] if c["name"] == "bert-base-uncased")
-    assert bert["modelCard"]["modelParameters"]["datasets"][0]["ref"] == BOOK_REF
-    card = {p["name"]: p["value"] for p in bert["modelCard"]["properties"]}
-    assert card["aibom:model:technicalRequirements:0"] == "transformers" and card["aibom:model:inputs:0:maxSize"] == "512"
-    assert (card["aibom:model:hyperparameters:0:name"], card["aibom:model:hyperparameters:0:value"]) == ("block_count", "12")
-    assert card["aibom:model:hyperparameters:5:value"] == "30522" and "aibom:model:parameterCount" not in card
-    assert "cdx:ai:runtime" not in {p["name"] for p in bert["properties"]}       # 승격한 원본은 소비된다
+    assert bert["purl"] == "pkg:huggingface/google-bert/bert-base-uncased"
+    assert {p["name"] for p in bert["modelCard"]["properties"]} == {"aibom:model:technicalRequirements:0"}
+
+    # adapter_config.json: 베이스 모델 계보만 나온다 (config.json 이 없으니 하이퍼파라미터는 없다)
+    adapter = next(c for c in doc["components"] if c["name"] == "tiny-gpt2-lora")
+    assert [a["name"] for a in adapter["pedigree"]["ancestors"]] == ["tiny-random-gpt2"]
+    assert "modelCard" not in adapter or "properties" not in adapter["modelCard"]
 
     refs = {c["bom-ref"] for c in doc["components"]}
     assert len(refs) == len(doc["components"])                              # bom-ref 중복 없음
     assert {t["name"] for t in doc["metadata"]["tools"]["components"]} >= {"syft", "cdxgen", "aibom-cli"}
 
-    assert doc["metadata"]["component"] == {"type": "application", "name": "mixed", "bom-ref": "application:/mixed@"}
+    assert doc["metadata"]["component"] == {"type": "application", "name": "project", "bom-ref": "application:/project@"}
 
 
 def test_typed_form_scan_validates_against_v06_only(tmp_path):
@@ -107,20 +130,21 @@ def test_typed_form_scan_validates_against_v06_only(tmp_path):
     doc = scan(FIXTURE, cdx, "--form", "typed")
     assert main(["validate", str(cdx), "--spec", "v0.6"]) == 0
     assert main(["validate", str(cdx), "--spec", "1.7"]) == 3                      # maxSize·technicalRequirements·componentData 필드는 공식 1.7 에 없다
-    bert = next(c for c in doc["components"] if c["name"] == "bert-base-uncased")
-    assert bert["modelCard"]["considerations"]["technicalRequirements"] == ["transformers"]
-    assert bert["modelCard"]["modelParameters"]["inputs"][0]["maxSize"] == "512"
-    assert bert["modelCard"]["modelParameters"]["hyperparameters"] == [
-        {"name": n, "value": v} for n, v in [("block_count", "12"), ("context_length", "512"), ("embedding_length", "768"),
-                                             ("feed_forward_length", "3072"), ("attention_head_count", "12"), ("vocab_size", "30522")]]
-    assert not any(p["name"].startswith("aibom:model:") for p in bert["modelCard"].get("properties", []))
+    gpt2 = next(c for c in doc["components"] if c["name"] == "tiny-random-gpt2")
+    assert gpt2["modelCard"]["considerations"]["technicalRequirements"] == ["transformers"]
+    assert gpt2["modelCard"]["modelParameters"]["parameterCount"] == 111968
+    assert gpt2["modelCard"]["modelParameters"]["hyperparameters"] == [
+        {"name": n, "value": v} for n, v in [("block_count", "5"), ("context_length", "512"), ("embedding_length", "32"),
+                                             ("feed_forward_length", "37"), ("attention_head_count", "4"), ("vocab_size", "1000")]]
+    assert not any(p["name"].startswith("aibom:model:") for p in gpt2["modelCard"].get("properties", []))
     text = cdx.read_text()
     assert "aibom:dataset:" not in text and "aibom-internal" not in text and str(FIXTURE) not in text
     datasets = {c["bom-ref"]: c for c in doc["components"] if c["type"] == "data"}
     imdb, local = datasets[IMDB_REF]["data"][0], datasets[LOCAL_REF]["data"][0]
     assert imdb["size"] == 133190302 and imdb["modality"] == ["text"] and imdb["contents"]["availability"] == "direct-download"
     assert imdb["statistics"][0] == {"type": "train:label:n_unique", "value": "2"} and imdb["provenance"] == ["https://huggingface.co/datasets/stanfordnlp/imdb"]
-    assert local["size"] == 149 and local["modality"] == ["text", "structured"] and local["provenance"] == ["data"]
+    assert local["size"] == 149 and local["modality"] == ["text", "structured"]
+    assert "provenance" not in local and "availability" not in local.get("contents", {})       # 로컬은 셋만 채운다
     assert "size" not in datasets[LOCAL_REF]["data"][1] and "size" not in datasets[BOOK_REF]["data"][0]
 
 
@@ -136,11 +160,12 @@ def test_directory_without_datasets_gets_no_data_components(tmp_path, monkeypatc
     monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("조회할 것이 없는데 네트워크를 봤다"))
     target = tmp_path / "plain"
     target.mkdir()
-    for name in ("requirements.txt", "package.json", "Modelfile"):
+    for name in ("requirements.txt", "Modelfile"):
         (target / name).write_text((FIXTURE / name).read_text(encoding="utf-8"), encoding="utf-8")
     doc = scan(target, tmp_path / "plain.json")
     assert not any(c["type"] == "data" for c in doc["components"])
-    assert {c["name"] for c in doc["components"]} == {"numpy", "requests", "/requirements.txt", "Modelfile", "llama3.2:1b"}
+    assert {c["name"] for c in doc["components"]} == {"numpy", "requests", "datasets", "transformers",
+                                                      "/requirements.txt", "Modelfile", "llama3.2:1b"}
     assert doc["dependencies"][0]["ref"] == "application:/plain@" and not any(r.startswith("data:") for r in doc["dependencies"][0]["dependsOn"])
 
 

@@ -1,5 +1,5 @@
-"""regulation — 병합 문서 안의 값으로 v0.6 규제 필드 네 개를 정규화한다.
-정적 샘플(tests/fixtures/merged_sample.cdx.json)의 bert 컴포넌트가 실제 owasp 보강 값을 가진다."""
+"""form — 모아 둔 값을 --form 이 고른 자리(properties 또는 v0.6 필드)로 옮긴다. 모델 쪽 네 필드를 본다.
+정적 샘플(tests/data/merged_sample.cdx.json)의 bert 컴포넌트가 실제 owasp 보강 값을 가진다."""
 import copy
 import json
 from pathlib import Path
@@ -7,10 +7,10 @@ from pathlib import Path
 import pytest
 
 from aibom_cli.cli import main
-from aibom_cli.regulation import apply
+from aibom_cli.form import apply
 from aibom_cli.validate import validate_cdx
 
-SAMPLE = Path(__file__).parent / "fixtures" / "merged_sample.cdx.json"
+SAMPLE = Path(__file__).parent / "data" / "merged_sample.cdx.json"
 BERT = "pkg:huggingface/google-bert/bert-base-uncased"
 
 # 샘플 bert 의 원본 값 — modelCard.properties 의 genai:aibom:modelcard:hyperparameter JSON 과 vocabSize,

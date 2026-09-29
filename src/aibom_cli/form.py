@@ -1,4 +1,5 @@
-"""병합 문서에 이미 들어 있는 값으로 aibom-v0.6 규제 필드를 정규화한다. --form 스위치는 여기 하나다.
+"""앞 단계들이 모아 둔 값을 aibom-v0.6 필드로 옮긴다. --form 스위치는 여기 하나다.
+값을 찾아내는 일은 dataset.py · model.py · enrich.py 가 하고, 여기서는 어느 자리에 어떤 모양으로 넣을지만 정한다.
 
 모델(type=machine-learning-model): 가져오는 값은 전부 component.properties / component.modelCard.properties 에 있는
 것이다 — 조회·추론·본문 해석은 하지 않는다. hyperparameters 와 parameterCount 는 model.py 가 대상 안의 모델 파일에서
@@ -140,7 +141,7 @@ def _resolve(existing, candidates: list[tuple[object, dict]], field: str, label:
             consumed.append(prop)
         else:
             verb = "버린다" if prop["name"].startswith(INTERNAL_MODEL_PREFIX) else "남긴다"
-            log(f"[regulation] {label}: {field} 에 {prop['name']}={prop['value']!r} 는 {winner!r} 와 달라 {verb}")
+            log(f"[form] {label}: {field} 에 {prop['name']}={prop['value']!r} 는 {winner!r} 와 달라 {verb}")
     return winner, consumed
 
 
@@ -162,12 +163,12 @@ def _hyperparameters(comp: dict, target: "_Target", label: str, log) -> list[dic
     for prop in _sources(comp, HYPERPARAMETER_JSON):
         parsed = _json_object(prop["value"])
         if parsed is None:
-            log(f"[regulation] {label}: {HYPERPARAMETER_JSON} 가 JSON 객체가 아니어서 남긴다")
+            log(f"[form] {label}: {HYPERPARAMETER_JSON} 가 JSON 객체가 아니어서 남긴다")
             continue
         pairs = {k: _stringify(v) for k, v in parsed.items()}
         conflicts = {k: v for k, v in pairs.items() if k in by_name and by_name[k] != v}
         if conflicts:
-            log(f"[regulation] {label}: hyperparameters {sorted(conflicts)} 가 이미 있는 값과 달라 {HYPERPARAMETER_JSON} 를 남긴다")
+            log(f"[form] {label}: hyperparameters {sorted(conflicts)} 가 이미 있는 값과 달라 {HYPERPARAMETER_JSON} 를 남긴다")
             continue
         for k, v in pairs.items():
             take(k, v)
@@ -177,10 +178,10 @@ def _hyperparameters(comp: dict, target: "_Target", label: str, log) -> list[dic
             if take(name, prop["value"]):
                 consumed.append(prop)
             else:
-                log(f"[regulation] {label}: hyperparameters[{name}]={prop['value']!r} 는 {by_name[name]!r} 와 달라 {source} 를 남긴다")
+                log(f"[form] {label}: hyperparameters[{name}]={prop['value']!r} 는 {by_name[name]!r} 와 달라 {source} 를 남긴다")
     for name, value in _Bag(_internal(comp), INTERNAL_MODEL_PREFIX).named_pairs("hyperparameters"):
         if not take(name, value):                                 # 내부 키는 뒤에 본다 — 도구가 준 값이 먼저다
-            log(f"[regulation] {label}: hyperparameters[{name}]={value!r} 는 {by_name[name]!r} 와 달라 버린다")
+            log(f"[form] {label}: hyperparameters[{name}]={value!r} 는 {by_name[name]!r} 와 달라 버린다")
     if added:
         target.add_hyperparameters(added)
     return consumed
@@ -192,12 +193,12 @@ def _parameter_count(comp: dict, target: "_Target", label: str, log) -> list[dic
     for prop in [p for source in PARAMETER_COUNT_SOURCES for p in _sources(comp, source)] + internal:
         n = _non_negative_int(prop["value"])
         if n is None:
-            log(f"[regulation] {label}: {prop['name']}={prop['value']!r} 는 음이 아닌 정수가 아니어서 승격하지 않는다")
+            log(f"[form] {label}: {prop['name']}={prop['value']!r} 는 음이 아닌 정수가 아니어서 승격하지 않는다")
         else:
             candidates.append((n, prop))
     existing = target.get_parameter_count()
     if existing is not None and not isinstance(existing, int) and candidates:
-        log(f"[regulation] {label}: 이미 있는 parameterCount={existing!r} 는 음이 아닌 정수가 아니지만 그대로 두고 원본을 남긴다")
+        log(f"[form] {label}: 이미 있는 parameterCount={existing!r} 는 음이 아닌 정수가 아니지만 그대로 두고 원본을 남긴다")
     winner, consumed = _resolve(existing, candidates, "parameterCount", label, log)
     if consumed and existing is None:
         target.set_parameter_count(winner)
@@ -247,23 +248,23 @@ def _apply_dataset(comp: dict, form: str, log) -> None:
         if field == "size":
             value = _non_negative_int(value)
             if value is None:
-                log(f"[regulation] {label}: size={facts.scalar(field)!r} 는 음이 아닌 정수가 아니어서 승격하지 않는다")
+                log(f"[form] {label}: size={facts.scalar(field)!r} 는 음이 아닌 정수가 아니어서 승격하지 않는다")
                 continue
         elif value not in valid:
-            log(f"[regulation] {label}: {field}={value!r} 는 허용값이 아니어서 승격하지 않는다")
+            log(f"[form] {label}: {field}={value!r} 는 허용값이 아니어서 승격하지 않는다")
             continue
         existing = target.get_scalar(field)
         if existing is None:
             target.set_scalar(field, value)
         elif existing != value:
-            log(f"[regulation] {label}: {field} 에 이미 {existing!r} 가 있어 {value!r} 를 버린다")
+            log(f"[form] {label}: {field} 에 이미 {existing!r} 가 있어 {value!r} 를 버린다")
 
     for field in ("modality", "provenance"):
         have = target.get_list(field)
         new: list[str] = []
         for value in facts.indexed(field):
             if field == "modality" and value not in MODALITIES:
-                log(f"[regulation] {label}: modality={value!r} 는 허용값이 아니어서 승격하지 않는다")
+                log(f"[form] {label}: modality={value!r} 는 허용값이 아니어서 승격하지 않는다")
             elif value not in have and value not in new:
                 new.append(value)
         if new:
@@ -274,7 +275,7 @@ def _apply_dataset(comp: dict, form: str, log) -> None:
     for kind, value in facts.statistics():
         if kind in have_stats:
             if have_stats[kind] != value:
-                log(f"[regulation] {label}: statistics[{kind}] 에 이미 {have_stats[kind]!r} 가 있어 {value!r} 를 버린다")
+                log(f"[form] {label}: statistics[{kind}] 에 이미 {have_stats[kind]!r} 가 있어 {value!r} 를 버린다")
         elif kind not in dict(new_stats):
             new_stats.append((kind, value))
     if new_stats:

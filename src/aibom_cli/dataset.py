@@ -10,7 +10,8 @@
        컴포넌트가 없으면 만들고(bom-ref = purl pkg:huggingface/datasets/<id>), 있으면 제자리에서 채운다.
        허브가 돌려준 id 가 정식 id 다: 옛 이름(imdb → stanfordnlp/imdb)이나 두 이름(bookcorpus, bookcorpus/bookcorpus)으로 부른
        같은 데이터셋은 정식 id 의 컴포넌트 하나로 모으고 (purl·bom-ref 를 바꾸고, 가리키던 관계·modelCard ref 도 따라간다) 한 번만 조회한다.
-    2) 로컬 데이터 파일 — 확장자로 찾고 부모 디렉터리마다 컴포넌트 하나 (bom-ref "data:local/<상대 디렉터리>@"),
+    2) 로컬 데이터 파일 — 확장자로 찾고 부모 디렉터리마다 컴포넌트 하나 (bom-ref "data:local/<상대 디렉터리>@").
+       규제 필드는 size·modality·statistics 셋만 채운다 — 출처(provenance)와 가용성(availability)은 파일만 보고 알 수 없다.
        data[] 에 파일마다 componentData 하나 {type: dataset, name: <상대 경로>, contents.properties: 크기·sha256·형식·행·열}.
        코드가 가리키는 경로(pd.read_csv, open, np.load, data_files=)도 데이터 확장자이고 대상 안에 실제로 있으면 넣는다
        (역슬래시 구분자는 / 로 읽고, .. 은 정리해 한 파일이 두 번 들어가지 않게 한다). 대상 밖으로 나가는 심볼릭 링크는 건너뛴다.
@@ -21,7 +22,7 @@
        csv·tsv·jsonl·json·parquet·arrow 에서 64 MB 까지만 낸다. 허브 datasets-server 가 주는 것과 같은 종류다.
 
 데이터셋 사실(size, modality, availability, provenance, statistics)은 aibom-internal:dataset:* 프로퍼티로 컴포넌트에 두고,
-regulation 이 --form 에 맞는 자리로 옮기며 지운다 — 출력에는 남지 않는다.
+form 이 --form 에 맞는 자리로 옮기며 지운다 — 출력에는 남지 않는다.
 
 관계: 로컬 데이터셋과 코드에서 찾은 HF 데이터셋은 metadata.component(루트)가 dependsOn 한다. README 에서 온 것은
 cdxgen 이 준 모델 → 데이터셋 엣지를 그대로 둔다.
@@ -47,7 +48,7 @@ from urllib.request import Request, urlopen
 
 from .enrich import hf_reachable
 from .merge import fill_missing
-from .regulation import INTERNAL_PREFIX
+from .form import INTERNAL_PREFIX
 from .validate import SCHEMA_DIR
 
 DATA_TYPE = "data"
@@ -345,11 +346,9 @@ def _local_component(root: Path, rel_dir: str, analyses: list[dict]) -> dict:
     name = PurePosixPath(rel_dir).name if rel_dir != "." else (root.resolve().name or ".")
     comp: dict = {"type": DATA_TYPE, "name": name, "bom-ref": f"{LOCAL_REF_PREFIX}{rel_dir}@"}
     comp["data"] = [_component_data(a) for a in analyses]
-    facts = {
-        "size": sum(a["size"] for a in analyses),
+    facts = {                                                     # provenance·availability 는 비운다: 파일이 어디서 왔는지,
+        "size": sum(a["size"] for a in analyses),                 # 공개 데이터셋을 어떻게 받는지는 로컬 파일만 보고 알 수 없다
         "modality": _unique(a["modality"] for a in analyses),
-        "availability": "direct-download",
-        "provenance": [rel_dir],
         "statistics": _local_statistics(analyses),
     }
     comp["properties"] = internal_properties(facts)

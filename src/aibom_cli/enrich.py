@@ -18,7 +18,7 @@ from .runners._proc import RunnerError
 
 _HF_PURL = re.compile(r"^pkg:huggingface/(?P<ns>[^/@]+)/(?P<name>[^/@]+)(?:@[^?#]+)?")
 _KEEP_PREFIXES = ("genai:aibom:", "owasp:aibom:")
-_KEEP_UNPREFIXED = frozenset({"safetensors_total_parameters"})     # regulation 의 parameterCount 원본 — 접두어 없는 키는 이것만
+_KEEP_UNPREFIXED = frozenset({"safetensors_total_parameters"})     # form 의 parameterCount 원본 — 접두어 없는 키는 이것만
 
 
 def hf_id_of(component: dict) -> str | None:

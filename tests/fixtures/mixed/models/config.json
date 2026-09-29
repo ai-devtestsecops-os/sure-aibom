@@ -1,1 +1,0 @@
-{"architectures":["BertForMaskedLM"],"model_type":"bert","_name_or_path":"google-bert/bert-base-uncased","max_position_embeddings":512,"num_hidden_layers":12,"hidden_size":768,"num_attention_heads":12,"intermediate_size":3072,"vocab_size":30522}

@@ -1,5 +1,5 @@
 """model — 스캔 대상 안의 모델 파일(config.json · gguf · safetensors)에서 규제 필드 둘을 읽고,
-regulation 이 두 형태로 옮긴다. 네트워크는 쓰지 않는다."""
+form 이 두 형태로 옮긴다. 네트워크는 쓰지 않는다."""
 import copy
 import json
 import struct
@@ -9,7 +9,7 @@ import pytest
 
 import aibom_cli.model as md
 from aibom_cli.merge import merge
-from aibom_cli.regulation import INTERNAL_MODEL_PREFIX, apply
+from aibom_cli.form import INTERNAL_MODEL_PREFIX, apply
 from aibom_cli.validate import validate_cdx
 
 MODEL_REF = "pkg:huggingface/acme/tiny"
@@ -313,7 +313,7 @@ def test_evidence_locations_may_be_absolute_or_windows_style(tmp_path):
         assert dict(hparams_of(comp))["block_count"] == "12", location
 
 
-# -- regulation: 두 형태 ----------------------------------------------------------------
+# -- form: 두 형태 ----------------------------------------------------------------
 @pytest.fixture
 def discovered(tmp_path) -> dict:
     write_json(tmp_path, "models/config.json", BERT_CONFIG)

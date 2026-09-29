@@ -12,8 +12,8 @@ from .dataset import discover as discover_datasets
 from .enrich import enrich
 from .merge import merge
 from .model import discover as discover_models
-from .regulation import FORMS
-from .regulation import apply as regulate
+from .form import FORMS
+from .form import apply as regulate
 from .runners import run_cdxgen, run_syft
 from .runners._proc import RunnerError
 from .validate import CDX_SCHEMA_BY_SPEC, validate_cdx
