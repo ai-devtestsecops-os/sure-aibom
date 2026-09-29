@@ -1,0 +1,186 @@
+{
+  "components": [
+    {
+      "authors": [
+        {
+          "name": "google-bert"
+        }
+      ],
+      "bom-ref": "pkg:huggingface/google-bert/bert-base-uncased@86b5e093",
+      "description": "No description available",
+      "externalReferences": [
+        {
+          "comment": "Training dataset: bookcorpus",
+          "type": "distribution",
+          "url": "https://huggingface.co/datasets/bookcorpus"
+        },
+        {
+          "comment": "Training dataset: wikipedia",
+          "type": "distribution",
+          "url": "https://huggingface.co/datasets/wikipedia"
+        },
+        {
+          "comment": "Model files",
+          "type": "distribution",
+          "url": "https://huggingface.co/google-bert/bert-base-uncased/tree/main"
+        },
+        {
+          "comment": "ArXiv Paper",
+          "type": "documentation",
+          "url": "https://arxiv.org/abs/1810.04805"
+        },
+        {
+          "comment": "Specific commit",
+          "type": "vcs",
+          "url": "https://huggingface.co/google-bert/bert-base-uncased/commit/86b5e0934494bd15c9632b12f734a8a67f723594"
+        },
+        {
+          "comment": "Model repository",
+          "type": "website",
+          "url": "https://huggingface.co/google-bert/bert-base-uncased"
+        }
+      ],
+      "group": "google-bert",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "manufacturer": {
+        "name": "google-bert",
+        "url": [
+          "https://huggingface.co/google-bert"
+        ]
+      },
+      "name": "bert-base-uncased",
+      "properties": [
+        {
+          "name": "model_type",
+          "value": "bert"
+        }
+      ],
+      "purl": "pkg:huggingface/google-bert/bert-base-uncased@86b5e093",
+      "supplier": {
+        "name": "google-bert"
+      },
+      "type": "machine-learning-model",
+      "version": "86b5e093",
+      "modelCard": {
+        "modelParameters": {
+          "task": "fill-mask",
+          "modelArchitecture": "bert",
+          "datasets": [
+            {
+              "type": "dataset",
+              "name": "bookcorpus",
+              "contents": {
+                "url": "https://huggingface.co/datasets/bookcorpus"
+              }
+            },
+            {
+              "type": "dataset",
+              "name": "wikipedia",
+              "contents": {
+                "url": "https://huggingface.co/datasets/wikipedia"
+              }
+            }
+          ]
+        },
+        "considerations": {
+          "technicalLimitations": [
+            "You can use the raw model for either masked language modeling or next sentence prediction, but it's mostly intended to be fine-tuned on a downstream task"
+          ]
+        },
+        "properties": [
+          {
+            "name": "genai:aibom:modelcard:hyperparameter",
+            "value": "{\"context_length\": 512, \"embedding_length\": 768, \"block_count\": 12, \"attention_head_count\": 12, \"feed_forward_length\": 3072}"
+          },
+          {
+            "name": "genai:aibom:modelcard:vocabSize",
+            "value": "30522"
+          },
+          {
+            "name": "genai:aibom:modelcard:contextLength",
+            "value": "512"
+          },
+          {
+            "name": "genai:aibom:trainingDataAvailable",
+            "value": "true"
+          },
+          {
+            "name": "genai:aibom:trainingDataStatus",
+            "value": "Training datasets verified: Dataset(s) exist and are accessible on Hugging Face Hub."
+          },
+          {
+            "name": "owasp:aibom:distribution:modelFileSize",
+            "value": "2918975670"
+          },
+          {
+            "name": "owasp:aibom:distribution:runtimeRequirement",
+            "value": "python"
+          },
+          {
+            "name": "serialNumber",
+            "value": "urn:uuid:google-bert-bert-base-uncased"
+          },
+          {
+            "name": "safetyRiskAssessment",
+            "value": "Even if the training data used for this model could be characterized as fairly neutral, this model can have biased predictions: ```python >>> from transformers import pipeline >>> unmasker = pipeline('fill-mask', model='bert-base-uncased') >>> unmasker(\"The man worked as a [MASK]"
+          },
+          {
+            "name": "safetensors_total_parameters",
+            "value": "110106428"
+          }
+        ]
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "dependsOn": [
+        "pkg:huggingface/google-bert/bert-base-uncased@86b5e093"
+      ],
+      "ref": "pkg:generic/OWASP-AIBOM-Generator/job-2026-09-28-07:07:50@1790579270"
+    },
+    {
+      "ref": "pkg:huggingface/google-bert/bert-base-uncased@86b5e093"
+    }
+  ],
+  "metadata": {
+    "component": {
+      "bom-ref": "pkg:generic/OWASP-AIBOM-Generator/job-2026-09-28-07:07:50@1790579270",
+      "description": "Generating SBOM for google-bert/bert-base-uncased",
+      "manufacturer": {
+        "name": "OWASP AIBOM Generator"
+      },
+      "name": "job-2026-09-28-07:07:50",
+      "purl": "pkg:generic/OWASP-AIBOM-Generator/job-2026-09-28-07:07:50@1790579270",
+      "supplier": {
+        "name": "OWASP AIBOM Generator"
+      },
+      "type": "application",
+      "version": "1790579270"
+    },
+    "timestamp": "2026-09-28T07:07:51.384687+00:00",
+    "tools": {
+      "components": [
+        {
+          "manufacturer": {
+            "name": "OWASP GenAI Security Project"
+          },
+          "name": "owasp-aibom-generator",
+          "type": "application",
+          "version": "1.0.2"
+        }
+      ]
+    }
+  },
+  "serialNumber": "urn:uuid:6a84452c-5533-40b9-a026-a4296d58b9fd",
+  "version": 1,
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6"
+}

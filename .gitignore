@@ -5,5 +5,4 @@ dist/
 .pytest_cache/
 out/
 *.cdx.json
-*.spdx.json
-!tests/fixtures/*.cdx.json
+!tests/data/**/*.cdx.json
