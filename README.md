@@ -23,18 +23,11 @@ aibom-cli 는 디렉터리와 컨테이너 이미지를 스캔해 AI-BOM(D/M/S-B
 
 ## 설치
 
-사전 설치: Node.js 20 이상, git. 이미지 이름으로 스캔하려면 이미지를 받아 올 도구 필요(예: Docker, Podman 또는 crane, .tar 는 필요 없음)
-
 ```bash
-# 파이썬 환경과 aibom-cli (conda 예시)
-conda create -n aibom-cli python=3.12 && conda activate aibom-cli
+# 환경 세팅 및 aibom-cli 설치 (conda 예시)
+conda env create -f environment.yml
+conda activate aibom-cli
 pip install aibom_cli-0.1.0-py3-none-any.whl
-
-# syft 1.52.0
-curl -sSfL https://get.anchore.io/syft | sh -s -- -b /usr/local/bin v1.52.0
-
-# cdxgen 12.8.4
-npm install -g @cyclonedx/cdxgen@12.8.4
 
 # OWASP aibom-generator (커밋 9b8056a)
 git clone https://github.com/GenAI-Security-Project/aibom-generator

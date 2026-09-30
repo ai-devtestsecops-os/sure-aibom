@@ -1,8 +1,12 @@
+# aibom-cli 가 부르는 도구들. conda env create -f environment.yml 로 한 번에 설치한다.
+# aibom-cli 자체(wheel)와 OWASP aibom-generator 는 README 설치 절의 명령으로 이어서 넣는다.
 name: aibom-cli
 channels:
-  - defaults
+  - conda-forge
 dependencies:
   - python=3.12
+  - syft=1.52.0          # S-BOM
+  - cdxgen=12.8.4        # M-BOM (Node.js 가 같이 설치된다)
+  - crane=0.22.1         # 이미지 이름으로 스캔할 때 이미지를 받아 온다 (.tar 를 줄 때는 필요 없다)
+  - git                  # OWASP aibom-generator 클론
   - pip
-  - pip:
-      - -e .[dev]
