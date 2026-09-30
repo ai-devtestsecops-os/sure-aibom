@@ -254,7 +254,7 @@ Usage:
   aibom-cli validate <bom> --spec <1.7|v0.6>
 
 Commands:
-  scan <target>               디렉터리, 컨테이너 이미지 또는 이미지 .tar 를 스캔해 AI-BOM 을 만든다
+  scan <target>               디렉터리 또는 컨테이너 이미지를 스캔해 AI-BOM 을 만든다
   validate <bom>              BOM 을 --spec 이 고른 스키마로 검증한다
 
 Options:
@@ -262,21 +262,21 @@ Options:
   --data <path>               [scan] 로컬 데이터 경로. 여러 번 줄 수 있음 (optional)
   --spec <1.7|v0.6>           [scan] 규제 필드를 넣을 스키마 (default: 1.7)
                                 1.7   CycloneDX 1.7 의 properties 로 넣음
-                                v0.6  AI-BOM v0.6 의 필드로 넣음
+                                v0.6  AI-BOM v0.6 (CycloneDX) 의 필드로 넣음
                               [validate] 검증할 스키마 (required)
   --version                   버전을 보여 준다
   -h, --help                  도움말을 보여 준다
 
 Examples:
   aibom-cli scan ./project -o bom.cdx.json                    디렉터리를 스캔하여 규제 필드를 CycloneDX 1.7 properties 로 넣음
-  aibom-cli scan ./project -o bom.cdx.json --spec v0.6        디렉터리를 스캔하여 규제 필드를 AI-BOM v0.6 필드로 넣음
+  aibom-cli scan ./project -o bom.cdx.json --spec v0.6        디렉터리를 스캔하여 규제 필드를 AI-BOM v0.6 (CycloneDX) 필드로 넣음
   aibom-cli scan ./project -o bom.cdx.json --data ./dataset   로컬 데이터 경로를 함께 지정
 
-  aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔 (Docker, Podman 또는 crane 으로 받음)
-  aibom-cli scan image.tar -o image.cdx.json                  이미지 .tar 를 스캔 (docker save, crane pull 로 만든 것)
+  aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔
+  aibom-cli scan image.tar -o image.cdx.json                  이미지 .tar 를 스캔
 
   aibom-cli validate bom.cdx.json --spec 1.7                  CycloneDX 1.7 스키마로 검증
-  aibom-cli validate bom.cdx.json --spec v0.6                 AI-BOM v0.6 스키마로 검증
+  aibom-cli validate bom.cdx.json --spec v0.6                 AI-BOM v0.6 (CycloneDX) 스키마로 검증
 
 Exit codes:
   0  성공        2  실행 오류        3  스키마 불일치
