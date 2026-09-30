@@ -65,12 +65,12 @@ Commands:
   validate <bom>              BOM 을 --spec 이 고른 스키마로 검증한다
 
 Options:
-  -o, --output <path>         [scan] 출력 경로. 없으면 표준출력
-  --data <path>               [scan] 로컬 데이터 경로. 여러 번 줄 수 있음 (없으면 로컬 데이터는 넣지 않음)
+  -o, --output <path>         [scan] 출력 경로 (default: 표준출력)
+  --data <path>               [scan] 로컬 데이터 경로. 여러 번 줄 수 있음 (optional)
   --spec <1.7|v0.6>           [scan] 규제 필드를 넣을 스키마 (default: 1.7)
                                 1.7   CycloneDX 1.7 의 properties 로 넣음
-                                v0.6  AI-BOM v0.6 의 필드로 넣음 (문서의 specVersion 은 1.7 그대로)
-                              [validate] 검증할 스키마 (필수)
+                                v0.6  AI-BOM v0.6 의 필드로 넣음
+                              [validate] 검증할 스키마 (required)
   --version                   버전을 보여 준다
   -h, --help                  도움말을 보여 준다
 
@@ -84,9 +84,6 @@ Examples:
 
   aibom-cli validate bom.cdx.json --spec 1.7                  CycloneDX 1.7 스키마로 검증
   aibom-cli validate bom.cdx.json --spec v0.6                 AI-BOM v0.6 스키마로 검증
-
-Environment:
-  AIBOM_GENERATOR_DIR         OWASP aibom-generator 클론 경로. 없으면 모델 보강을 건너뜀
 
 Exit codes:
   0  성공        2  실행 오류        3  스키마 불일치
