@@ -154,7 +154,7 @@ def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
     doc = scan(FIXTURE, cdx, "--spec", "v0.6", "--data", str(FIXTURE / "data"))
     # 첫 줄에 형식과 입력, 그 뒤 단계마다 한 줄. 모듈의 항목별 로그([dataset] 등)와 도구 명령은 찍지 않는다
     lines = capsys.readouterr().err.splitlines()
-    assert lines[0] == f"[aibom-cli] Generating AI-BOM v0.6 for {FIXTURE}, data from {FIXTURE / 'data'}"
+    assert lines[0] == f"[aibom-cli] Generating AI-BOM v0.6 (CycloneDX) for {FIXTURE}, data from {FIXTURE / 'data'}"
     assert [line.split(" .")[0] for line in lines[1:-1]] == [
         "[aibom-cli] Generating S-BOM (syft)", "[aibom-cli] Generating M-BOM (cdxgen)", "[aibom-cli] Generating D-BOM",
         "[aibom-cli] Enriching M-BOM (aibom-generator)", "[aibom-cli] Adding regulation fields"]

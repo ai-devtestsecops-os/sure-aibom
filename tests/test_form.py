@@ -328,4 +328,4 @@ def test_validate_cli_requires_spec_and_names_it(tmp_path, sample, capsys):
     capsys.readouterr()
     assert main(["validate", str(props), "--spec", "v0.6"]) == 0
     err = capsys.readouterr().err
-    assert "Valid against the AI-BOM v0.6 schema" in err and "typed" not in err
+    assert "Valid against the AI-BOM v0.6 (CycloneDX) schema" in err and "typed" not in err
