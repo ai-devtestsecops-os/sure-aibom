@@ -1,8 +1,6 @@
 # aibom-cli
 
-aibom-cli 는 syft, cdxgen, OWASP aibom-generator 를 활용해 데이터셋·모델·소프트웨어 BOM(D/M/S-BOM)을 생성한다.
-스캔 대상에서 찾은 HuggingFace 데이터셋은 허브에서 정보를 받아 채우고, `--data` 로 지정한 로컬 데이터 파일은 직접 읽어
-D-BOM 을 보강한 뒤, 규제(EU AI Act, ISO/IEC 42001, NIST AI RMF)가 요구하는 필드를 더해 CycloneDX 1.7 한 문서로 낸다.
+aibom-cli 는 디렉터리와 컨테이너 이미지를 스캔해 AI-BOM(D/M/S-BOM) 을 CycloneDX 문서 하나로 내는 CLI 도구다.
 
 ## 파이프라인
 
@@ -11,13 +9,17 @@ D-BOM 을 보강한 뒤, 규제(EU AI Act, ISO/IEC 42001, NIST AI RMF)가 요구
 | 1. 스캔 | S-BOM 생성                  | syft                  | `syft <target> --select-catalogers -ai -o cyclonedx-json` |
 |         | M-BOM · D-BOM 생성         | cdxgen                | `cdxgen <target> -t ai --no-install-deps`                 |
 | 2. 병합 | 하나의 json 파일로 병합     | **aibom-cli**   |                                                             |
-| 3. 보강 | D-BOM 보강                  | **aibom-cli**   | `aibom-cli scan --data <path>`                              |
+| 3. 보강 | D-BOM 보강                  | **aibom-cli**   | `aibom-cli scan --data <path>`                            |
 |         | M-BOM 보강                  | OWASP aibom-generator | `python -m src.cli <owner/model>`                         |
 |         | 규제 필드 추가              | **aibom-cli**   | `aibom-cli scan --spec 1.7 \| v0.6`                        |
 | 4. 검증 | CycloneDX 1.7 / AI-BOM v0.6 | **aibom-cli**   | `aibom-cli validate --spec 1.7 \| v0.6`                    |
 
-컨테이너 이미지는 syft 가 그대로 스캔하고, M-BOM · D-BOM 단계는 이미지를 푼 디렉터리에 대해 돌린다
-(cdxgen 은 이미지를 받으면 AI 수집을 건너뛴다). 이미지 .tar 는 바로 풀고, 이미지 이름은 Docker, Podman, crane 중 있는 것으로 받는다.
+## 주요 기능
+
+- 오픈소스 도구 활용: S-BOM 은 syft, M-BOM 은 cdxgen, 허브 모델 정보는 OWASP aibom-generator 로 생성하고 aibom-cli 가 하나로 병합
+- D-BOM 생성: 코드와 모델 카드에서 찾은 HuggingFace 데이터셋은 허브 API 로, `--data` 로 지정한 로컬 데이터는 파일을 직접 읽어 데이터셋 컴포넌트 구성
+- 규제 필드 추가: EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 필드를 모델과 데이터셋에 기재
+- 출력과 검증: CycloneDX 1.7 (properties) 또는 AI-BOM v0.6 (필드) 형식으로 출력하고 같은 스키마로 검증
 
 ## 설치
 
@@ -100,6 +102,12 @@ Exit codes:
   - M-BOM: hyperparameters, parameterCount, inputs maxSize, technicalRequirements
   - D-BOM: size, modality, availability, provenance, statistics
 - CycloneDX 1.7 / AI-BOM v0.6 스키마 검증
+
+## 추가 예정
+
+- SPDX 출력
+- 규제 완성도: 규제별로 요구 필드 중 채워진 것과 빈 것 표시
+- 스캔 대상 문서: 디렉터리와 컨테이너 이미지에서 무엇을 어떻게 찾는지에 대한 상세 설명
 
 ## 출처
 
