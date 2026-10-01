@@ -587,3 +587,16 @@
 /* 두 트리는 같은 높이로 늘린다. 짧은 쪽 트리가 먼저 끝나면 그 머리줄이 위로 밀려 검색 줄과 겹쳐 보인다 */
 .mapping-viewer #panes { align-items: stretch; }
 .mapping-viewer #detail-panel { align-self: flex-start; }
+
+/* 검색 줄과 트리 머리줄은 페이지와 함께 올라간다 (상단 바만 고정). 상세 패널만 붙어서 따라온다:
+   깊은 행을 눌렀을 때 그 설명이 보여야 하므로 */
+.mapping-viewer #topbar { position: static; z-index: auto; }
+.mapping-viewer .pane h2 { position: static; }
+.mapping-viewer #detail-panel { top: calc(2.4rem + .6rem); max-height: calc(100vh - 3rem); }
+
+/* 두 트리의 글자 규칙을 맞춘다: 펼칠 수 있는 행(CycloneDX 의 객체·배열, SPDX 의 프로파일·클래스)은 600, 잎은 400. 기울임은 없다 */
+.mapping-viewer .node-row .label { font-weight: 400; font-style: normal; }
+.mapping-viewer .node-row.expandable > .label, .mapping-viewer .node-row.class-row .label { font-weight: 600; }
+.mapping-viewer .node-row.branch .label { font-style: normal; font-family: var(--mono); color: var(--text); }
+.mapping-viewer .node-row.profile-header { font-style: normal; text-transform: none; letter-spacing: 0; font-size: 14.5px; }
+.mapping-viewer .node-row.profile-header .label { font-family: var(--sans); font-weight: 600; color: var(--text); }   /* 프로파일 이름은 식별자가 아니라 본문 글꼴 */

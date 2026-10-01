@@ -534,6 +534,7 @@ function renderCdxNode(node, depth, ancestors) {
   cdxNodeIndex.get(row.path).push(li);
 
   if (node.children.length && !isRecursive) {
+    div.classList.add("expandable");          // 두 트리 공통: 펼칠 수 있는 행은 조금 굵게 (SPDX 의 클래스 행과 같은 규칙)
     const toggle = div.querySelector(".toggle");
     toggle.textContent = "▶";
     toggle.addEventListener("click", (e) => {
@@ -607,6 +608,7 @@ function renderSpdxProfileNode(node, depth) {
 
   li.appendChild(div);
   if (node.children.length) {
+    div.classList.add("expandable");
     const toggle = div.querySelector(".toggle");
     toggle.textContent = "▶";
     toggle.addEventListener("click", (e) => {
