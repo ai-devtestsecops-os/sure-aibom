@@ -90,3 +90,9 @@ html { scrollbar-gutter: stable; }
 
 /* 경로 표시: 현재 페이지 조각은 링크가 아니라 글자 색으로 */
 .md-path__item--current .md-path__link { color: var(--md-default-fg-color); font-weight: 700; cursor: default; }
+
+/* 바닥글(이전·다음): 폭은 Material 기본대로 화면 전체, 높이만 낮춘다 (기본은 링크 위 1rem, 제목 밑 .7rem 여백) */
+.md-footer__link { margin-top: .3rem; margin-bottom: .2rem; }
+.md-footer__title { margin-bottom: .3rem; font-size: .8rem; }
+.md-footer__direction { font-size: .6rem; }
+.md-copyright { padding: .2rem 0; }     /* 아래 메타 띠(저작권·생성기 자리, 지금은 비어 있다)도 얇게 */

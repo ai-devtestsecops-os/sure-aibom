@@ -105,7 +105,11 @@ async function init() {
   if (addedOnlyEl) addedOnlyEl.addEventListener("change", applyFilter);
   initResizers();
   syncToolbarHeight();
-  window.addEventListener("resize", syncToolbarHeight);
+  fitTrees();
+  window.addEventListener("resize", () => { syncToolbarHeight(); scheduleFit(); });
+  window.addEventListener("scroll", scheduleFit, { passive: true });
+  for (const tree of document.querySelectorAll(".mapping-viewer .tree")) tree.addEventListener("wheel", wheelBeforeDock, { passive: false });
+  if (document.fonts) document.fonts.ready.then(fitTrees);
 }
 
 /** 트리 머리줄과 상세 패널이 붙는 자리는 검색 줄 바로 아래다. 검색 줄의 실제 높이를 CSS 변수로 넘긴다 (글자 크기·줄바꿈에 따라 달라진다). */
@@ -113,6 +117,53 @@ function syncToolbarHeight() {
   const viewer = document.querySelector(".mapping-viewer");
   const topbar = document.getElementById("topbar");
   if (viewer && topbar) viewer.style.setProperty("--toolbar-h", `${topbar.offsetHeight}px`);
+}
+
+/** 뷰어 윗선이 상단 바 밑선보다 얼마나 아래 있는지 (px). 0 이하면 뷰어가 상단 바에 붙은 것 */
+function dockDistance() {
+  const viewer = document.querySelector(".mapping-viewer");
+  const header = document.querySelector(".md-header");
+  return viewer.getBoundingClientRect().top - (header ? header.getBoundingClientRect().bottom : 0);
+}
+
+/** 트리 높이를 화면에 맞춘다: 뷰어가 상단 바에 붙었을 때 트리 윗선부터, 바닥글이 다 보이는 화면 바닥까지.
+ *  스크롤과 무관한 고정 높이라 페이지는 꼭 소개 글 높이만큼만 움직이고, 붙는 순간 페이지 끝(바닥글 밑선)이
+ *  화면 바닥에 온다. 그 뒤로는 두 트리와 상세 패널이 각자 스크롤한다.
+ *  (스크롤마다 트리를 다시 재면 한 프레임 늦게 자라서 바닥글이 올라왔다 내려가는 떨림이 생긴다) */
+function fitTrees() {
+  const viewer = document.querySelector(".mapping-viewer");
+  const tree = document.getElementById("cdx-tree");
+  if (!viewer || !tree) return;
+  const dist = dockDistance();
+  const rect = tree.getBoundingClientRect();
+  const top = rect.top - dist;   // 붙었을 때의 트리 윗선 (지금 스크롤 위치와 무관)
+  // 트리 밑에 남은 페이지(여백과 바닥글). 트리 높이와 무관하므로 이만큼 빼면 붙었을 때 페이지 끝이 꼭 화면 바닥에 온다
+  const below = document.documentElement.scrollHeight - (rect.bottom + window.scrollY);
+  const h = Math.max(320, Math.round(window.innerHeight - top - below));
+  viewer.style.setProperty("--tree-h", `${h}px`);
+  // 붙기 전엔 트리 위에서 휠을 굴려도 페이지가 내려가고, 붙은 뒤에야 트리가 스크롤된다.
+  // 그래야 한 번의 스크롤로 소개 글을 지나 트리 속으로 이어진다.
+  viewer.classList.toggle("docked", dist <= 1);
+}
+
+/** 붙기 전에 트리 위에서 아래로 굴린 휠: 붙을 만큼만 페이지를 내리고 나머지로 트리를 굴린다.
+ *  브라우저에 맡기면 한 칸(100px 남짓)씩 움직여서 검색 줄이 상단 바 밑으로 들어가 버린다. */
+function wheelBeforeDock(e) {
+  const dist = dockDistance();
+  if (dist <= 1 || e.deltaY <= 0 || e.ctrlKey) return;
+  const tree = e.currentTarget;
+  const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * tree.clientHeight : e.deltaY;
+  e.preventDefault();
+  const pageStep = Math.min(dy, dist);
+  window.scrollBy(0, pageStep);
+  if (dy > pageStep) tree.scrollTop += dy - pageStep;
+}
+
+let fitPending = false;
+function scheduleFit() {
+  if (fitPending) return;
+  fitPending = true;
+  requestAnimationFrame(() => { fitPending = false; fitTrees(); });
 }
 
 /** v0.6 추가 필드의 대응 행을 기존 매핑 행 모양으로. 대상이 둘이면 서로 다른 대안(alt)으로 둔다. */

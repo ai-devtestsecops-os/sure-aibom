@@ -656,7 +656,9 @@
 /* 두 트리와 상세 패널은 각자 스크롤한다 (화면 높이에 맞춤). 한쪽 대응 행으로 가도 다른 쪽 트리는 그대로다.
    flex 항목은 내용보다 작아지지 않으려 해서(min-height: auto) height 만으론 트리가 내용만큼 늘어난다 */
 .mapping-viewer { --tree-h: max(320px, calc(100vh - 2.4rem - var(--toolbar-h) - var(--head-h) - 2.5rem)); }
-.mapping-viewer .tree { flex: 0 0 var(--tree-h); height: var(--tree-h); min-height: 0; overflow: auto; }
+.mapping-viewer .tree { flex: 0 0 var(--tree-h); height: var(--tree-h); min-height: 0; overflow: auto; overflow-y: hidden; scrollbar-gutter: stable; }
+.mapping-viewer.docked .tree { overflow-y: auto; }   /* 뷰어가 상단 바에 붙은 뒤에만 휠이 트리를 굴린다 (fitTrees) */
 .mapping-viewer .pane { max-height: calc(var(--tree-h) + var(--head-h)); }
-.mapping-viewer #detail-panel { position: static; max-height: calc(var(--tree-h) + var(--head-h)); }
+.mapping-viewer #detail-panel { position: sticky; top: calc(2.4rem + .6rem); max-height: calc(var(--tree-h) + var(--head-h)); }
+/* --tree-h 는 app.js 의 fitTrees 가 화면에 맞춰 다시 쓴다. 위 값은 스크립트가 돌기 전의 기본값 */
 .mapping-viewer .section-none { transform: translateY(-.5px); }   /* 글자 중심보다 0.5px 낮게 앉는다 */
