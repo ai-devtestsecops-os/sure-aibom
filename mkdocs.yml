@@ -1,0 +1,28 @@
+site_name: AI-BOM CLI
+site_description: AI-BOM 생성 CLI 문서
+docs_dir: docs
+theme:
+  name: material
+  language: ko
+  palette:
+    scheme: default
+    primary: blue
+    accent: blue
+  font:
+    text: Noto Sans KR
+    code: JetBrains Mono
+  features:
+    - navigation.sections
+    - navigation.footer
+    - search.highlight
+    - content.code.copy
+extra:
+  generator: false
+markdown_extensions:
+  - tables
+  - admonition
+  - pymdownx.superfences
+nav:
+  - 소개: index.md
+  - 스캔 대상: scan-targets.md
+  - 필드 매핑 뷰어: field-mapping.md

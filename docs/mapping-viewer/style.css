@@ -1,0 +1,763 @@
+/* Clean documentation-site look (cyclonedx.org/docs style): white background,
+   quiet grays for structure, a single blue accent reserved for the active
+   cross-reference, and small colored "kind" badges so profile/class/property/
+   vocabulary read as four distinct tiers at a glance. */
+:root {
+  --bg:          #ffffff;
+  --bg-subtle:   #f6f8fa;
+  --border:      #d8dee4;
+  --text:        #1f2328;
+  --text-muted:  #656d76;
+  --accent:      #0969da;
+  --accent-soft: #ddf0ff;
+  --flag:        #cf222e;
+
+  --badge-class-bg: #eef2ff;    --badge-class-fg: #4338ca;
+  --badge-vocab-bg: #fff8c5;    --badge-vocab-fg: #7d5b00;
+  --badge-indiv-bg: #d1f7f4;    --badge-indiv-fg: #0f7b6c;
+  --badge-type-bg:  #eaeef2;    --badge-type-fg:  #57606a;
+  --badge-req-bg:   #ffebe9;    --badge-req-fg:   #cf222e;
+
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", "Cascadia Code", Menlo, Consolas, monospace;
+  --sans: "Inter", -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Top bar ─────────────────────────────────────────────────────────── */
+#topbar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 18px;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  flex: 0 0 auto;
+}
+#topbar h1 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text);
+  white-space: nowrap;
+}
+#search-box {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 1;
+  max-width: 380px;
+  height: 30px;
+  box-sizing: border-box;
+  padding: 0 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-subtle);
+  transition: border-color .15s, background .15s;
+}
+#search-box:focus-within { border-color: var(--accent); background: var(--bg); }
+#search-icon { color: var(--text-muted); flex: 0 0 auto; }
+#detail-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  flex: 0 0 auto;
+  margin-left: auto; /* topbar 오른쪽 끝으로 붙인다 */
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  box-sizing: border-box;
+  padding: 0 12px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text-muted);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .15s, color .15s, border-color .15s;
+}
+#detail-toggle::-moz-focus-inner { border: 0; padding: 0; }
+#detail-toggle svg { flex: 0 0 auto; }
+#detail-toggle:hover { border-color: var(--accent); color: var(--accent); }
+/* 패널이 열려 있을 때 버튼 자체가 "눌린" 상태로 보이게 — 오른쪽 패널과 이 버튼이
+   하나의 스위치라는 걸 시각적으로 묶어준다. */
+#detail-toggle.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+#detail-toggle.active:hover { background: var(--accent); color: #fff; }
+#search {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--text);
+  font-family: var(--sans);
+  font-size: 13px;
+  outline: none;
+}
+#search::placeholder { color: var(--text-muted); }
+
+/* ── 3-pane layout ───────────────────────────────────────────────────── */
+#panes {
+  flex: 1 1 auto;
+  display: flex;
+  min-height: 0;
+}
+.pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 160px;
+  overflow: hidden;
+}
+#cdx-pane { flex: 0 0 40%; }
+#spdx-pane { flex: 1 1 auto; }
+
+/* 좌우 폭 조절 손잡이 — 드래그하면 왼쪽(cdx-pane) 또는 오른쪽(detail-panel) 폭이
+   바뀌고, 가운데 spdx-pane은 flex:1이라 남는 공간을 알아서 채운다. */
+.no-transition { transition: none !important; }
+.resizer {
+  flex: 0 0 5px;
+  cursor: col-resize;
+  background: var(--border);
+  position: relative;
+}
+.resizer:hover, .resizer.dragging { background: var(--accent); }
+.resizer::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -3px; right: -3px; /* 실제 드래그 가능 영역은 좀 더 넓게 */
+}
+.pane-title { font-size: 13px; font-weight: 700; color: var(--text); }
+/* SPDX 는 판이 하나뿐이라 고를 것이 없다. 그래도 **지금 보고 있는 판**이라는 사실은 왼쪽과
+   같아야 하므로, 왼쪽 토글에서 켜진 버튼과 똑같은 꼴로 둔다 — 회색으로 두면 켜져 있지 않은
+   것처럼 읽힌다. */
+.pane-ver {
+  margin-left: 8px; padding: 3px 9px;
+  border: 1px solid var(--accent); border-radius: 5px;
+  background: var(--accent); color: #fff;
+  font-size: 11px; font-weight: 600;
+}
+.pane h2 {
+  margin: 0;
+  height: 38px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+.tree {
+  overflow-y: auto;
+  flex: 1;
+  padding: 6px 4px 40px;
+}
+
+ul.tree-list {
+  list-style: none;
+  margin: 0;
+  padding-left: 15px;
+  border-left: 1px solid var(--bg-subtle);
+}
+#cdx-tree > ul.tree-list, #spdx-tree > ul.tree-list { border-left: none; padding-left: 6px; }
+
+.node-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px 6px;
+  padding: 3px 8px;
+  margin: 0 0 0 -2px;
+  border-radius: 4px;
+  cursor: default;
+  position: relative;
+}
+.node-row.clickable { cursor: pointer; }
+.node-row.clickable:hover { background: var(--bg-subtle); }
+.node-row .toggle {
+  width: 11px;
+  flex: 0 0 auto;
+  display: inline-block;
+  color: var(--text-muted);
+  user-select: none;
+  cursor: pointer;
+  font-size: 10px;
+}
+.node-row .label {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  word-break: break-word;
+}
+.node-row .sub {
+  color: var(--text-muted);
+  font-size: 11px;
+  font-family: var(--mono);
+  word-break: break-word;
+}
+.enum-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  flex-basis: 100%;
+  margin-left: 17px; /* toggle 폭만큼 라벨 시작 위치에 맞춘다 */
+}
+.enum-chip {
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--text-muted);
+  background: var(--bg-subtle);
+  border: 1px dashed var(--border); /* 대응 없음 = 회색 점선, 비활성 느낌 */
+  border-radius: 10px;
+  padding: 1px 7px;
+}
+/* matched(대응 있음)는 클릭 가능하다는 것만 표시하고, 실제 파란색은 지금 클릭해서
+   활성화된 것에만 쓴다 — 안 그러면 여러 CDX 필드가 같은 SPDX vocab(예: RelationshipType)을
+   공유할 때, 그 vocab 전체에서 "이때까지 매칭된 적 있는 값 전부"가 항상 파랗게 보여서
+   지금 보고 있는 매핑과 무관한 값까지 활성화된 것처럼 보이는 문제가 있었다. */
+.enum-chip.matched { cursor: pointer; border-style: solid; border-color: var(--text-muted); }
+.enum-chip.matched:hover,
+.enum-chip.chip-hover,
+.enum-chip.chip-pinned {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── Kind badges: the visual distinction between profile / class /
+   property / vocabulary the user asked for ─────────────────────────── */
+.badge {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 1px 6px;
+  border-radius: 3px;
+  line-height: 1.5;
+}
+.badge-class    { background: var(--badge-class-bg); color: var(--badge-class-fg); }
+.badge-vocab    { background: var(--badge-vocab-bg); color: var(--badge-vocab-fg); }
+.badge-individual { background: var(--badge-indiv-bg); color: var(--badge-indiv-fg); }
+.badge-datatype { background: var(--badge-type-bg); color: var(--badge-type-fg); }
+.badge-required { background: var(--badge-req-bg); color: var(--badge-req-fg); }
+
+/* Profile header: top tier, bold caps + underline — deliberately no badge,
+   its position and weight alone should read as "this is the outermost
+   grouping". */
+.node-row.profile-header {
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  font-family: var(--sans);
+  border-bottom: 1px solid var(--border);
+  border-radius: 0;
+  padding-bottom: 6px;
+  margin-top: 4px;
+}
+
+/* Class row: bold label, distinguishes it from a plain property leaf */
+.node-row.class-row .label { font-weight: 700; }
+
+/* CDX branch header (oneOf grouping, not a real field) */
+.node-row.branch .label { font-weight: 400; color: var(--text-muted); font-family: var(--sans); font-style: italic; }
+
+/* 클릭해서 지금 보고 있는 원본 행 — 반대쪽에 뜨는 파란 강조(.highlight)와는 다른,
+   중립적인 회색으로 "이게 내가 누른 것"을 표시한다. */
+/* :hover(3개 셀렉터)가 .selected(2개)보다 우선순위가 높아서, 클릭한 순간에도 마우스가
+   그 위에 있는 동안은 계속 호버색으로 보이다가 마우스를 떼야 비로소 선택색으로
+   바뀌어 버리는 문제가 있었다 — 클릭한 순간 바로 선택색이 보이도록 :hover와 겹칠 때도
+   선택색이 이기게 뒤에 따로 명시한다. */
+.node-row.selected { background: var(--border); }
+.node-row.selected:hover { background: var(--border); }
+
+/* ── Signature: active cross-reference highlight — the one place color
+   does real work, everything else stays quiet. Independent alt-candidates
+   each get their own color so you can tell them apart at a glance; a
+   chain is a single candidate so it stays one color throughout. ──────── */
+/* 역방향(SPDX 를 눌러 CDX 쪽을 밝힐 때)의 강조. 이쪽은 단계가 아니라 서로 다른 필드라 전부
+   같은 자격으로 켜진다. */
+.node-row.highlight { background: var(--accent-soft); }
+.node-row.highlight .label { color: var(--accent); font-weight: 700; }
+.node-row.highlight.cand-1 { background: #f2edfd; }
+.node-row.highlight.cand-1 .label { color: #8250df; }
+.node-row.highlight.cand-2 { background: #e6f4ea; }
+.node-row.highlight.cand-2 .label { color: #1a7f37; }
+.node-row.highlight.cand-3 { background: #fdedf6; }
+.node-row.highlight.cand-3 .label { color: #bf3989; }
+
+/* 정방향(CDX 필드를 눌러 SPDX 대상을 볼 때)의 표시는 **매핑 단위**다. 활성 매핑의 지금 단계만
+   진하게 칠하고 페이저를 붙인다. 다른 매핑의 지금 단계는 "여기도 대응된다"만 알리는 옅은 색이고,
+   같은 매핑의 다른 단계는 아무 표시도 하지 않는다 — 페이저로 넘기면 색이 그리로 옮겨간다. */
+.node-row.step-row { --sc: var(--accent); background: var(--accent-soft); }
+.node-row.step-row.cand-1 { --sc: #8250df; background: #f2edfd; }
+.node-row.step-row.cand-2 { --sc: #1a7f37; background: #e6f4ea; }
+.node-row.step-row.cand-3 { --sc: #bf3989; background: #fdedf6; }
+.node-row.step-row > .label { color: var(--sc); font-weight: 700; }
+
+/* 배지는 라벨 뒤(줄 끝)에 자연스러운 흐름으로 붙인다 — 앞에 끼워넣지 않으니 라벨 위치를
+   안 밀고, 같은 flex row 안이라 하이라이트 배경 안에 자연스럽게 들어간다. */
+.hop-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--sans);
+  flex: 0 0 auto;
+}
+/* 체인이면 배지가 곧 단계 이동 버튼이다 — 트리는 프로파일 순으로 정렬돼 뒷 단계가 위에 오는
+   일이 잦아서, 눌러서 다음 단계로 건너뛸 수 있어야 순서대로 읽을 수 있다. 배지만으론 누르는
+   것인지 알 수 없어 갈 곳을 가리키는 홑화살표를 붙이고, 그 화살표까지가 클릭 대상이다. */
+/* 규칙이 하나다 — **번호를 누르면 그 단계를 본다.** 트리에서도 패널의 단계 띠에서도 같다. */
+.hop-badge.steppable, .hop-badge.step { cursor: pointer; }
+.hop-badge.steppable:hover, .hop-badge.step:hover { outline: 2px solid currentColor; outline-offset: 1px; }
+
+/* 건너뛴 자리를 잠깐 밝혀 눈이 따라가게 한다. */
+@keyframes hop-flash { 0%, 100% { box-shadow: none; } 30% { box-shadow: 0 0 0 3px var(--accent-soft); } }
+.node-row.hop-flash { animation: hop-flash .7s ease; }
+
+.hop-badge.cand-1 { background: #8250df; }
+.hop-badge.cand-2 { background: #1a7f37; }
+.hop-badge.cand-3 { background: #bf3989; }
+/* 현재 단계 줄에 붙는 페이저 — 상세 패널의 것과 같은 모양이다. 가운데 낀 단계에서 앞뒤로 다
+   갈 수 있어야 하고, 숫자만 있으면 눌리는 것인지 알 수 없어서 트리에도 같은 컨트롤을 둔다. */
+.tree-pager { display: inline-flex; align-items: center; gap: 3px; flex: 0 0 auto; }
+.tree-pager .pager-btn { width: 16px; height: 16px; font-size: 11px; }
+.tree-pager .pager-now { font-size: 10px; }
+
+.collapsed > ul.tree-list { display: none; }
+
+/* ── Side detail panel ───────────────────────────────────────────────── */
+#detail-panel {
+  flex: 0 0 340px;
+  min-width: 220px;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-subtle);
+  overflow: hidden;
+  transition: flex-basis .22s ease, min-width .22s ease, opacity .18s ease;
+}
+/* display:none 대신 폭을 0으로 접는다 — 그래야 "버튼 누름 → 패널이 스르륵 접힘"이
+   하나의 동작처럼 눈에 보인다. !important는 리사이저 드래그로 생긴 인라인
+   style.flex보다 우선해야 해서 필요하다(닫았다 다시 열면 인라인 값이 그대로
+   드러나면서 원래 드래그해둔 폭으로 자동 복원된다). */
+#detail-panel.hidden {
+  flex-basis: 0 !important;
+  min-width: 0 !important;
+  opacity: 0;
+  pointer-events: none;
+}
+#detail-panel-header {
+  flex: 0 0 auto;
+  height: 38px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+  background: var(--bg-subtle);
+  border-bottom: 1px solid var(--border);
+}
+#detail-panel-header h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+}
+#detail-close {
+  border: none;
+  background: none;
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+#detail-close:hover { color: var(--text); }
+#detail-body { flex: 1; min-height: 0; overflow-y: auto; padding: 14px; }
+
+/* 오른쪽 패널을 CycloneDX / SPDX / Mapping 세 칸으로 나눈다 — 어느 쪽에서
+   클릭했든 항상 이 구조로 보여주고, 클릭 안 한 반대쪽은 조회해서 채운다. */
+.detail-section {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  margin-bottom: 12px;
+}
+.detail-section > h4 {
+  margin: 0 0 10px;
+  font-size: 11px;
+  color: var(--accent);
+  font-weight: 700;
+}
+/* 절 제목엔 색을 쓰지 않는다 — 이 화면에서 색은 **매핑을 가르는 데만** 쓴다. */
+.detail-section > h4 .section-count {
+  margin-left: 6px;
+  padding: 0 5px;
+  border-radius: 8px;
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 600;
+}
+.tag-list { display: flex; flex-wrap: wrap; gap: 6px; }
+.badge-g7 { background: var(--bg-subtle); color: var(--text); border: 1px solid var(--border); }
+/* G7 요소는 이름만으론 무엇을 요구하는지 안 보여서 설명을 같이 싣는다. v0.5 를 그 요소
+   때문에 더한 자리면 초록 표시가 붙는다. */
+.g7-list { display: flex; flex-direction: column; gap: 9px; }
+.g7-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
+
+/* 요구사항 블록 — 원문의 파란 강조는 엑셀 "요구사항 매핑" 시트와 같은 뜻이다: 이 필드로
+   매핑된 근거 문구. 시트의 빨강(대응 필드 없음)은 여기 오지 않는다 — 그 행은 어떤 필드로도
+   닿지 않기 때문이다. */
+.req-block { margin-bottom: 12px; }
+.req-block:last-child { margin-bottom: 0; }
+/* 여러 개를 늘어놓는 자리의 구분선은 어느 절이든 같다 — 매핑끼리든 필드끼리든 요구사항끼리든
+   "여기서 다음 것이 시작한다"는 같은 뜻이라 굵기를 달리할 이유가 없다. */
+.req-block + .req-block,
+.chain + .chain,
+.field-block + .field-block { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--border); }
+
+
+/* 출처 문서와 조항 번호를 각자 칸에 넣어 "어느 문서의 어느 조항인지"가 한눈에 읽히게 한다.
+   Group(매핑 시트의 묶음)은 폭을 다 쓰는 셋째 칸. */
+.req-meta {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.req-cell { display: flex; flex-direction: column; gap: 2px; padding: 5px 8px; background: var(--bg-subtle); }
+.req-label { font-size: 9.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-muted); }
+.req-doc { font-size: 12px; font-weight: 600; color: var(--text); }
+.req-id { font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--text); }
+.req-text { margin-top: 7px; font-size: 12px; line-height: 1.6; color: var(--text); }
+.req-hl { color: var(--accent); font-weight: 600; }
+
+/* 체인 — 한 후보가 여러 단계를 거치는 하나의 경로. 왼쪽 레일과 화살표가 "따로 있는 둘"이
+   아니라 "이어지는 단계"로 읽히게 한다. 단계 사이엔 블록 구분선을 두지 않는다. */
+.chain { margin-bottom: 10px; }
+/* 매핑이 여럿이면 이름표 대신 진한 선으로만 가른다 — 어느 매핑인지는 페이저 색이 말한다. */
+.chain .field-block { margin-bottom: 0; }
+/* 단계 페이저 — 번호를 1·2·3·4 로 늘어놓으면 단계가 늘수록 안 늘어난다. 양쪽 홑화살표 사이에
+   「1 / 2」만 두면 단계가 넷이든 열이든 같은 크기다. 색은 그 매핑의 색을 따른다. */
+.pager, .tree-pager { --pc: var(--accent); }
+.pager.cand-1, .tree-pager.cand-1 { --pc: #8250df; }
+.pager.cand-2, .tree-pager.cand-2 { --pc: #1a7f37; }
+.pager.cand-3, .tree-pager.cand-3 { --pc: #bf3989; }
+.pager { display: flex; align-items: center; gap: 4px; margin-bottom: 8px; }
+/* 호버 색을 currentColor 로 잡았더니 같은 규칙의 color:#fff 가 먼저 먹어서 배경까지 흰색이 됐다.
+   배경은 변수로, 글자는 흰색으로 따로 정한다. */
+.pager-btn {
+  appearance: none; border: 1px solid var(--pc); background: transparent; color: var(--pc);
+  width: 19px; height: 19px; border-radius: 50%; padding: 0;
+  font: 700 13px/1 var(--sans); cursor: pointer;
+}
+.pager-btn:hover:not(:disabled) { background: var(--pc); color: #fff; }
+.pager-btn:disabled { opacity: .3; cursor: default; }
+.pager-now { font: 700 11px var(--mono); color: var(--pc); margin: 0 2px; }
+.pager-of { font-weight: 400; opacity: .65; }
+
+.field-block { margin-bottom: 10px; }
+.field-block:last-child { margin-bottom: 0; }
+.field-name {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+  word-break: break-word;
+}
+.field-name .hop-badge { margin-right: 5px; vertical-align: middle; }
+/* 패널의 홑 배지도 누르면 트리의 그 자리로 간다 — 눌러 보게 되는 건 트리보다 여기가 먼저다. */
+.hop-badge.jumpable { cursor: pointer; }
+.hop-badge.jumpable:hover { outline: 2px solid currentColor; outline-offset: 1px; }
+.field-name .sub { margin-left: 6px; font-size: 11px; color: var(--text-muted); font-family: var(--mono); font-weight: 400; }
+.field-desc { margin-top: 5px; font-size: 12px; line-height: 1.5; color: var(--text); }
+/* G7 요소 설명도 필드 설명과 같은 결로 읽힌다 — 이 패널의 설명은 전부 같은 검정이다. */
+.field-desc-ko { margin-top: 3px; font-size: 12px; line-height: 1.5; color: var(--text); }
+/* v0.5 새 필드를 볼 때 이 패널이 "대응"이 아니라 "왜 더했나"를 보이는 곳임을 알린다. */
+.detail-banner {
+  margin: 0 0 12px; padding: 7px 9px; border-radius: 6px;
+  background: #f0fdf4; border: 1px solid #bbf7d0;
+  font-size: 11.5px; line-height: 1.6; color: #15803d;
+}
+.field-empty { font-size: 12px; color: var(--text-muted); font-style: italic; }
+.field-flags { margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap; }
+
+#detail-body .row { margin: 5px 0; line-height: 1.5; font-size: 12px; }
+#detail-body .k {
+  color: var(--text-muted);
+  display: inline-block;
+  min-width: 78px;
+  vertical-align: top;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+#detail-body .v { display: inline-block; max-width: calc(100% - 82px); vertical-align: top; white-space: normal; font-family: var(--mono); font-size: 12px; }
+#detail-body .mismatch-flag { color: var(--flag); font-weight: 700; font-family: var(--sans); font-size: 11px; }
+
+/* ── 유틸 ────────────────────────────────────────────────────────────── */
+.hidden { display: none; }
+/* #panes/#search-box/#detail-toggle 는 자기 자신의 ID 선택자로 이미 display:flex를
+   정하고 있어서(ID가 클래스보다 우선순위가 높다) 위의 일반 .hidden 만으로는 안 먹는다
+   — 여기서 ID+class 조합으로 명시적으로 눌러준다. */
+#panes.hidden, #search-box.hidden, #detail-toggle.hidden, #generator-view.hidden { display: none; }
+
+/* ── 탭 ──────────────────────────────────────────────────────────────── */
+#tabs {
+  display: flex;
+  gap: 2px;
+  flex: 0 0 auto;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px;
+}
+.tab-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  height: 26px;
+  padding: 0 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active { background: var(--bg); color: var(--accent); box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+
+/* ── Generator 탭 ────────────────────────────────────────────────────── */
+#generator-view {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  display: flex;
+  justify-content: center;
+}
+.generator-panel {
+  width: 100%;
+  max-width: 720px;
+  padding: 28px 20px 60px;
+}
+.generator-input-row {
+  display: flex;
+  gap: 8px;
+}
+#gen-source, #gen-id, #gen-run {
+  height: 34px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--text);
+  background: var(--bg);
+}
+#gen-source { flex: 0 0 auto; padding: 0 8px; }
+#gen-id { flex: 1; padding: 0 10px; }
+#gen-id:focus, #gen-source:focus { outline: none; border-color: var(--accent); }
+#gen-run {
+  flex: 0 0 auto;
+  padding: 0 18px;
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+}
+#gen-run:hover { opacity: .92; }
+#gen-run:disabled { opacity: .5; cursor: default; }
+
+#gen-status {
+  margin-top: 10px;
+  font-size: 12px;
+  min-height: 1.4em;
+}
+#gen-status.error { color: var(--flag); }
+#gen-status.loading { color: var(--text-muted); }
+
+.generator-result-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 22px 0 8px;
+}
+#gen-result-title {
+  margin: 0;
+  font-family: var(--mono);
+  font-size: 13px;
+  font-weight: 700;
+  flex: 1;
+  word-break: break-word;
+}
+#gen-export {
+  flex: 0 0 auto;
+  height: 28px;
+  padding: 0 14px;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+#gen-export:hover { opacity: .9; }
+
+#gen-view-toggle {
+  display: flex;
+  gap: 2px;
+  flex: 0 0 auto;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 2px;
+}
+.gen-view-btn {
+  appearance: none;
+  -webkit-appearance: none;
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--sans);
+  font-size: 11.5px;
+  font-weight: 600;
+  height: 24px;
+  padding: 0 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background .15s, color .15s;
+}
+.gen-view-btn:hover { color: var(--text); }
+.gen-view-btn.active { background: var(--bg); color: var(--accent); box-shadow: 0 1px 2px rgba(0,0,0,.06); }
+
+#gen-raw {
+  margin: 0;
+  max-height: 60vh;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px 14px;
+  background: var(--bg-subtle);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre;
+}
+
+/* ── 생성 결과 요약 ──────────────────────────────────────────────────────
+   트리를 걷어낸 자리다. 머리글이 "이게 무엇인가"를 한 줄로 들고, 나머지는 성격별 카드로 나눈다 —
+   한 덩어리 표로 늘어놓으면 무엇이 한 묶음인지가 안 보인다. */
+#gen-summary { display: flex; flex-direction: column; gap: 14px; }
+
+.sum-head {
+  padding: 14px 16px;
+  border: 1px solid var(--border); border-radius: 8px;
+  background: var(--bg-subtle);
+}
+.sum-name { font-family: var(--mono); font-size: 15px; font-weight: 700; word-break: break-all; }
+.sum-badges { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px; }
+.sum-badge {
+  padding: 2px 8px; border-radius: 10px;
+  background: var(--accent-soft); color: var(--accent);
+  font-size: 11px; font-weight: 600;
+}
+.sum-sub { margin-top: 7px; font-size: 11.5px; color: var(--text-muted); }
+
+/* 카드는 넓으면 두 줄로 앉는다 — 항목이 적은 카드(라이선스·아키텍처)가 화면 폭을 다 쓰지 않게. */
+.sum-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; align-items: start; }
+.sum-card { border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+.sum-card > h4 {
+  margin: 0 0 9px;
+  font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.sum-rows { display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; margin: 0; }
+.sum-rows dt { font-size: 11.5px; color: var(--text-muted); }
+.sum-rows dd { margin: 0; font-size: 12.5px; font-family: var(--mono); word-break: break-word; }
+.sum-rows dd a { color: var(--accent); }
+
+.sum-chips { display: flex; flex-wrap: wrap; gap: 5px; }
+.sum-chip {
+  padding: 2px 8px; border: 1px solid var(--border); border-radius: 10px;
+  font-family: var(--mono); font-size: 11.5px;
+}
+
+.sum-table { border-collapse: collapse; width: 100%; }
+.sum-table tr + tr th, .sum-table tr + tr td { border-top: 1px solid var(--bg-subtle); }
+.sum-table th {
+  text-align: left; font-weight: 400; font-size: 11.5px; color: var(--text-muted);
+  padding: 5px 10px 5px 0; word-break: break-word;
+}
+.sum-table td { padding: 5px 0; }
+.sum-num { font-family: var(--mono); font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+.sum-slice { font-size: 11px; color: var(--text-muted); padding-left: 8px; white-space: nowrap; }
+
+/* ── 버전 토글 · 새 필드 표시 ─────────────────────────────────────────── */
+/* 왼쪽 트리의 제목 줄에 CycloneDX 1.7 / AI-BOM v0.5 를 갈아 끼우는 토글을 둔다.
+   탭을 늘리지 않는 이유는 v0.5 가 1.7 의 상위집합이라 두 트리가 대부분 같기 때문이다 —
+   나란히 두면 대비가 안 되고, 갈아 끼우면 무엇이 늘었는지가 배지로 바로 보인다. */
+#version-toggle { display: inline-flex; margin-left: 8px; border: 1px solid var(--border); border-radius: 5px; overflow: hidden; }
+#version-toggle .ver-btn {
+  border: 0; background: transparent; cursor: pointer; padding: 3px 9px;
+  font: inherit; font-size: 11px; font-weight: 600; color: var(--text-muted);
+}
+#version-toggle .ver-btn + .ver-btn { border-left: 1px solid var(--border); }
+#version-toggle .ver-btn.active { background: var(--accent, #2563eb); color: #fff; }
+/* origin 이 있는 행 = v0.5 에서 더한 필드. 어느 문서 때문에 더했는지를 배지로 보인다. */
+.new-badge {
+  margin-left: 6px; padding: 0 5px; border-radius: 3px;
+  font-size: 9.5px; font-weight: 700; letter-spacing: .02em;
+  background: #16a34a; color: #fff; vertical-align: 1px;
+}
+/* 새 필드는 필터 없이도 늘 눈에 띄어야 한다 — 표시는 NEW 배지와 굵은 라벨까지다.
+   행에 녹색 선까지 세워 보니 접붙임 사본 탓에 같은 선이 수천 줄에 깔려 시끄러웠다. */
+.node-row.is-new > .label { font-weight: 600; }
+/* 접힌 가지에 그 아래 새 필드 수를 적는다 — 루트에서부터 어디로 내려가면 되는지가 보인다. */
+.new-count {
+  margin-left: 4px; padding: 0 5px; border-radius: 8px;
+  font-family: var(--sans); font-size: 9.5px; font-weight: 700;
+  background: #dcfce7; color: #15803d; flex: 0 0 auto;
+}
+

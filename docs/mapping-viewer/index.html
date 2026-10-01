@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>AI-BOM 필드 매핑 뷰어</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header id="topbar">
+  <h1>AI-BOM 필드 매핑</h1>
+  <div id="search-box" class="mapping-only">
+    <svg id="search-icon" viewBox="0 0 16 16" width="14" height="14"><path fill="currentColor" d="M11.03 9.62a4.7 4.7 0 1 0-1.41 1.41l3.02 3.02 1.41-1.41-3.02-3.02ZM4 6.7a2.7 2.7 0 1 1 5.4 0 2.7 2.7 0 0 1-5.4 0Z"/></svg>
+    <input id="search" type="text" placeholder="Search fields, classes, properties…">
+  </div>
+  <button id="detail-toggle" class="mapping-only" title="Show/hide details panel">
+    <svg viewBox="0 0 16 16" width="15" height="15">
+      <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3"/>
+      <rect id="detail-toggle-fill" x="9.7" y="2.5" width="4.8" height="11" fill="currentColor"/>
+    </svg>
+    <span>Details</span>
+  </button>
+</header>
+
+<main id="panes" class="tab-view">
+  <section class="pane" id="cdx-pane">
+    <h2>
+      <span class="pane-title">CycloneDX</span>
+      <span id="version-toggle">
+        <button class="ver-btn active" data-ver="1.7">1.7</button><button class="ver-btn" data-ver="v0.5">v0.5</button>
+      </span>
+    </h2>
+    <div class="tree" id="cdx-tree"></div>
+  </section>
+  <div class="resizer" data-resize="cdx-pane"></div>
+  <section class="pane" id="spdx-pane">
+    <h2><span class="pane-title">SPDX</span><span class="pane-ver">3.0.1</span></h2>
+    <div class="tree" id="spdx-tree"></div>
+  </section>
+  <div class="resizer" data-resize="detail-panel" data-invert="1"></div>
+  <aside id="detail-panel" class="hidden">
+    <div id="detail-panel-header">
+      <h3>Details</h3>
+      <button id="detail-close" title="Close">✕</button>
+    </div>
+    <div id="detail-body"></div>
+  </aside>
+</main>
+
+<script src="app.js"></script>
+</body>
+</html>

@@ -6,3 +6,4 @@ dist/
 out/
 *.cdx.json
 !tests/data/**/*.cdx.json
+site/
