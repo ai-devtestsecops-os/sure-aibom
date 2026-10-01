@@ -1,0 +1,21 @@
+/* 본문을 넓게 (기본 61rem), 왼쪽 메뉴는 좁게. 오른쪽 목차는 그대로 둔다 */
+.md-grid { max-width: 90rem; }
+.md-sidebar--primary { width: 11rem; }
+
+/* 상단 바는 스크롤해도 사이트 이름을 그대로 둔다 (기본은 페이지 제목으로 바뀜) */
+.md-header__title--active .md-header__topic:first-child {
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: initial !important;
+  z-index: 0 !important;
+}
+.md-header__topic + .md-header__topic { display: none; }
+
+/* 넓은 화면의 왼쪽 메뉴 맨 위 사이트 이름은 뺀다 (상단 바에 있으니). 좁은 화면의 서랍에는 남긴다 */
+@media screen and (min-width: 76.25em) {
+  .md-nav--primary > .md-nav__title { display: none; }
+}
+
+/* 기본 로고 아이콘은 뺀다. 이름만 둔다 */
+.md-header__button.md-logo { display: none; }
+.md-nav__title .md-nav__button.md-logo { display: none; }

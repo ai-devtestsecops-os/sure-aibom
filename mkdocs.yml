@@ -18,11 +18,13 @@ theme:
     - content.code.copy
 extra:
   generator: false
+extra_css:
+  - stylesheets/extra.css
 markdown_extensions:
   - tables
   - admonition
   - pymdownx.superfences
 nav:
-  - 소개: index.md
+  - Home: index.md
   - 스캔 대상: scan-targets.md
   - 필드 매핑 뷰어: field-mapping.md
