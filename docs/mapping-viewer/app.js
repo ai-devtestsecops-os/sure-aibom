@@ -730,7 +730,7 @@ function selectCdxRow(row, mapping, sourceDiv, scroll = true) {
     // 1.7 필드에는 근거라는 개념이 없으므로 그 칸을 그대로 든다.
     properties: propsByPath.get(row.path) || [],
     origins,
-    ...requirementsFor(row.path, origins),
+    ...requirementsFor(row.path, origins, targets),
     from: "cdx",
   });
 
@@ -759,12 +759,20 @@ const isG7Source = source => source === "G7";
      3. 조항 출처인데 1·2 어디에도 안 걸린 것 — 조항이 컨테이너에, 출처는 그 하위 필드에
         적히는 식으로 한 칸씩 어긋난 자리가 다섯 곳 있다(statistics ↔ statistics.type 등).
         같은 계열(컨테이너와 그 하위)에서 그 조항의 행을 끌어온다. */
-function requirementsFor(path, origins) {
+function requirementsFor(path, origins, targets = []) {
   const rows = [];
   const push = r => { if (!rows.some(x => x.row_key === r.row_key)) rows.push(r); };
   const clauses = new Set(origins.filter(o => !isSpdxSource(o.source) && !isG7Source(o.source))
                                  .map(o => o.reference));
   for (const r of reqByCdxPath.get(path) || []) push(r);
+  // 요구사항 표가 SPDX 쪽 속성에만 걸어 둔 행이 있다 (1.7 에 자리가 없던 값은 SPDX 로만 충족했으므로). 이 필드와 대응하는
+  // SPDX 속성의 행도 같은 요구사항이다. v0.6 추가 필드면 그 필드의 근거 조항인 행만 든다 — 넓은 속성에 걸린 다른 조항까지
+  // 끌어오면 우리가 하지 않은 판단이 된다.
+  for (const t of targets) {
+    for (const r of reqBySpdxKey.get(keyFor(t.cls, t.property || "")) || []) {
+      if (!clauses.size || clauses.has(r.id)) push(r);
+    }
+  }
   // aibom_field 로 걸린 행은 **그 조항이 이 필드를 만든 근거일 때만** 싣는다. SPDX 속성 하나가
   // 넓은 범위를 덮는 자리가 있어서(ai_informationAboutApplication 이 그렇다), 그 속성에 걸린
   // 조항을 그보다 좁은 새 필드로 그대로 옮기면 우리가 하지 않은 판단을 한 것이 된다.
