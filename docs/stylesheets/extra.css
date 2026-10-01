@@ -52,3 +52,22 @@ input[data-md-color-media="(prefers-color-scheme: light)"]:checked ~ .palette-me
 input[data-md-color-media="(prefers-color-scheme: dark)"]:checked ~ .palette-menu__list .palette-menu__item[data-md-color-media="(prefers-color-scheme)"] {
   color: inherit; font-weight: normal;
 }
+
+/* 표는 내용 폭이 아니라 본문 폭을 꽉 채운다 (페이지마다 폭이 달라 보이지 않게). Material 은 표를 inline-block 래퍼로 감싼다 */
+.md-typeset__table { display: block; }
+.md-typeset__table table:not([class]) { display: table; width: 100%; }
+
+/* 스크롤바 자리를 항상 비워 둔다. 짧은 페이지(Home)는 스크롤바가 없어 폭이 15px 넓어지고 제목·메뉴가 옆으로 움직이던 것 */
+html { scrollbar-gutter: stable; }
+
+/* 제목: Anchore 문서처럼 h1 은 크고 굵게(700), h2 는 중간 굵기(500)에 짧은 밑줄, h3 는 중간 굵기. Material 기본은 전부 가늘고 회색 */
+.md-typeset h1 { font-size: 2.2em; font-weight: 700; color: var(--md-default-fg-color); margin-bottom: .8em; }
+.md-typeset h2 { font-size: 1.6em; font-weight: 500; color: var(--md-default-fg-color); padding-bottom: .3em; }
+.md-typeset h2::after { content: ""; display: block; width: 3rem; height: 3px; margin-top: .35em; border-radius: 2px; background: var(--md-primary-fg-color); }
+.md-typeset h3 { font-size: 1.25em; font-weight: 500; color: var(--md-default-fg-color); }
+
+/* 오른쪽 목차: "목차" 제목은 빼고, 항목은 회색, 지금 보고 있는 절만 파랗게 */
+.md-nav--secondary > .md-nav__title { display: none; }
+.md-nav--secondary .md-nav__link { color: var(--md-default-fg-color--light); }
+.md-nav--secondary .md-nav__link:hover { color: var(--md-default-fg-color); }
+.md-nav--secondary .md-nav__link--active { color: var(--md-primary-fg-color); }
