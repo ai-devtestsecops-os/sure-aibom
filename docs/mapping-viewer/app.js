@@ -992,6 +992,7 @@ function renderDetailPanel({ cdxFields, spdxFields, properties, origins, require
     <div class="detail-section section-req"><h4>규제 요구사항${reqCount}</h4>${reqHtml}</div>
   `;
   detailBody.innerHTML = html;
+  detailBody.scrollTop = 0;   // 다른 필드로 바꾸면 새 설명의 머리부터 보인다 (이전 필드에서 내려 둔 스크롤을 잇지 않는다)
   wirePanelJumps();
   setDetailPanelOpen(true);
 }
