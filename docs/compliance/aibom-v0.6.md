@@ -43,4 +43,4 @@ v0.6 이 정의한 필드 가운데 aibom-cli 0.1.0 이 실제로 값을 채우�
 | 모델 | inputs maxSize, technicalRequirements | cdxgen 이 읽은 모델 카드와 코드 |
 | 데이터셋 | size, modality, availability, provenance, statistics | HuggingFace Hub API (허브 데이터셋), 파일 분석 (로컬 데이터) |
 
-필드가 어디에 붙고 기존 표준의 어느 필드와 대응하는지는 [필드 매핑](field-mapping.md)에서 볼 수 있다.
+키 이름과 설명, 허용값은 [규제 필드](regulation-fields.md)에, 필드가 어디에 붙고 기존 표준의 어느 필드와 대응하는지는 [필드 레퍼런스](field-mapping.md)에 있다.

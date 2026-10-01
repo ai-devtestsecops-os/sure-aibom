@@ -55,4 +55,5 @@ nav:
   - 규제 준수:
       - compliance/index.md
       - AI-BOM v0.6: compliance/aibom-v0.6.md
-      - 필드 매핑: compliance/field-mapping.md
+      - 규제 필드: compliance/regulation-fields.md
+      - 필드 레퍼런스: compliance/field-mapping.md

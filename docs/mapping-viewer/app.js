@@ -1,27 +1,23 @@
 // 필드 매핑 뷰어. docs/field-mapping.md 에 직접 넣은 HTML 을 채운다. 다른 페이지에서는 (뷰어 요소가 없으니) 아무것도 하지 않는다.
 if (document.querySelector(".mapping-viewer")) (() => {
-// CycloneDX <-> SPDX 매핑 뷰어 (프로토타입)
+// CycloneDX <-> SPDX 필드 레퍼런스 뷰어.
 // 데이터는 build 스텝 없이 data/*.json 을 그대로 fetch 해서 쓴다 (ai-bom/data 의 복사본).
 //
 // 데이터 소스 역할 분담:
-//   cyclonedx.json      : CDX 루트 BOM 트리(공용 타입은 ref 포인터로만 표시)
-//   cyclonedx_refs.json : CDX 공용 타입(재사용 타입)의 정의 본문 — ref로 서로 이어붙인다
-//   spdx.json           : SPDX 트리(profile -> class -> property), 요약·한국어 포함
-//   cdx_spdx_mapping.json: CDX 각 필드가 SPDX 어디에 매핑되는지 (조인 테이블 역할)
-//   requirement_field_mapping.json: NIST AI RMF·ISO 42001 요구사항이 어느 필드로 충족되는지
-//                        — cdx_ref(CDX 경로)·spdx_ref("Class.property")가 위 두 트리로의 조인 키
+//   aibom_v0.6_cyclonedx.json : CycloneDX 1.7 전체(공용 타입 포함) + v0.6 추가 필드(added, origin·reference 는 근거 조항)
+//   aibom_v0.6_spdx.json      : SPDX 3.0.1 전체 + v0.6 추가 필드(added, path 는 대응하는 CycloneDX 경로)
+//   cdx_spdx_mapping.json     : 기존 필드의 형식 간 대응 (조인 테이블). 추가 필드의 대응은 SPDX 행의 path 로 만든다
+//   requirement_field_mapping.json : 규제 요구사항이 어느 필드로 충족되는지. cdx_ref(CDX 경로)·spdx_ref("Class.property") 가 조인 키
+//   aibom_v0.6_properties.json : 추가 필드를 --spec 1.7 로 낼 때의 properties 키 (ai-bom 의 정의서와 같은 출처)
+//   aibom_v0.6_links.json      : 추가 필드의 형식 간 대응 (CycloneDX 경로 → SPDX class.property 들)
 
 const BASE = document.querySelector(".mapping-viewer").dataset.base || "data/";   // 페이지 기준 상대 경로
-const CDX_URL = BASE + "cyclonedx.json";
-const CDX_REFS_URL = BASE + "cyclonedx_refs.json";
-const SPDX_URL = BASE + "spdx.json";
+const CDX_URL = BASE + "aibom_v0.6_cyclonedx.json";
+const SPDX_URL = BASE + "aibom_v0.6_spdx.json";
 const MAPPING_URL = BASE + "cdx_spdx_mapping.json";
-// AI-BOM v0.5 — CycloneDX 1.7 트리에 새 필드를 꽂은 형식과 그 SPDX 매핑. 탭을 늘리지 않고
-// 왼쪽 트리를 갈아 끼운다(v0.5 는 1.7 의 상위집합이라 나란히 두면 대비가 안 된다).
-const V05_URL = BASE + "aibom_v0.5.json";
-const V05_MAPPING_URL = BASE + "aibom_v0.5_spdx_mapping.json";
 const REQ_URL = BASE + "requirement_field_mapping.json";
-const G7_URL = BASE + "g7_aibom.json";
+const PROPS_URL = BASE + "aibom_v0.6_properties.json";
+const LINKS_URL = BASE + "aibom_v0.6_links.json";        // v0.6 추가 필드의 형식 간 대응 (export_data.py 가 만든다)
 
 const PROFILE_ORDER = ["Core", "Software", "AI", "Dataset", "Security",
   "Expanded Licensing", "Simple Licensing", "Build", "Extension"];
@@ -57,67 +53,61 @@ const cdxNodeIndex = new Map();         // cdx path -> [<li>, ...]     (그래�
 const cdxChipIndex = new Map();         // "cdxPath::value" -> [<span class=enum-chip>, ...]
 const spdxChipIndex = new Map();        // "cls::value" -> [<span class=enum-chip>, ...]
 let currentHighlighted = [];
+let propsByPath = new Map();            // CycloneDX 경로 -> [properties 키 행, ...] (v0.6 추가 필드만)
+let representativeLis = new Set();      // 경로마다 가장 얕은 자리의 <li> 하나 ("추가 필드만" 필터가 남기는 자리)
+const addedOnlyEl = document.getElementById("added-only");
 
 init();
 
-let VERSIONS = {};      // "1.7" | "v0.5" → { rows, mapping }
-let currentVersion = "1.7";
-
 async function init() {
-  const [cdxRows, cdxRefRows, spdxRows, mappingRows, reqRows, v05Rows, v05Mapping, g7Rows] =
-    await Promise.all([
-      fetch(CDX_URL).then(r => r.json()),
-      fetch(CDX_REFS_URL).then(r => r.json()),
-      fetch(SPDX_URL).then(r => r.json()),
-      fetch(MAPPING_URL).then(r => r.json()),
-      fetch(REQ_URL).then(r => r.json()),
-      fetch(V05_URL).then(r => r.json()),
-      fetch(V05_MAPPING_URL).then(r => r.json()),
-      fetch(G7_URL).then(r => r.json()),
-    ]);
+  const [cdxRows, spdxRows, baseMapping, reqRows, propRows, linkRows] = await Promise.all([
+    fetch(CDX_URL).then(r => r.json()),
+    fetch(SPDX_URL).then(r => r.json()),
+    fetch(MAPPING_URL).then(r => r.json()),
+    fetch(REQ_URL).then(r => r.json()),
+    fetch(PROPS_URL).then(r => r.json()),
+    fetch(LINKS_URL).then(r => r.json()),
+  ]);
 
-  VERSIONS = {
-    "1.7":  { rows: cdxRows.concat(cdxRefRows), mapping: mappingRows },
-    "v0.5": { rows: v05Rows,                    mapping: v05Mapping },
-  };
-
+  for (const p of propRows) {
+    if (!propsByPath.has(p.path)) propsByPath.set(p.path, []);
+    propsByPath.get(p.path).push(p);
+  }
   spdxRowByKey = new Map(spdxRows.map(r => [keyFor(r.class, r.property), r]));
-  buildG7Index(g7Rows);
   ({ reqByCdxPath, reqBySpdxKey, reqByAibomField } = buildRequirementIndex(reqRows));
 
-  const spdxRoot = buildSpdxTree(spdxRows);
-  spdxTreeEl.appendChild(renderChildren(spdxRoot.children, renderSpdxProfileNode, 0));
+  // 형식 간 대응: 기존 필드는 분석 결과(cdx_spdx_mapping.json), v0.6 추가 필드는 links 파일. 뒤에 오는 추가 필드 행이
+  // 같은 경로의 기존 행을 덮는다 (SPDX 에만 더한 속성이 CycloneDX 의 기존 필드에 대응하는 경우).
+  const mapping = new Map(baseMapping.map(r => [r.path, r]));
+  for (const r of addedMappingRows(linkRows)) mapping.set(r.path, r);
+  const mappingRows = [...mapping.values()];
+  mappingByPath = mapping;
+  spdxToCdx = buildReverseIndex(mappingRows);
+  cdxRowByPath = new Map(cdxRows.map(r => [r.path, r]));
+  ({ cdxEnumIndex, spdxEnumIndex } = buildEnumIndex(mappingRows));
 
-  renderVersion("1.7");
-  wireVersionToggle();
-  searchEl.addEventListener("input", () => applyFilter(searchEl.value.trim().toLowerCase()));
+  spdxTreeEl.appendChild(renderChildren(buildSpdxTree(spdxRows).children, renderSpdxProfileNode, 0));
+  cdxTreeEl.appendChild(renderChildren(buildCdxTree(cdxRows).children, renderCdxNode, 0, new Set()));
+  countNewFields(cdxRows);
+  for (const path of cdxNodeIndex.keys()) representativeLis.add(shallowestLi(path));
+
+  searchEl.addEventListener("input", applyFilter);
+  if (addedOnlyEl) addedOnlyEl.addEventListener("change", applyFilter);
   initResizers();
 }
 
-/** 왼쪽 트리와 그에 딸린 색인을 통째로 그 판의 것으로 갈아 끼운다. SPDX 트리는 그대로다. */
-function renderVersion(ver) {
-  currentVersion = ver;
-  const { rows, mapping } = VERSIONS[ver];
-  mappingByPath = new Map(mapping.map(r => [r.path, r]));
-  spdxToCdx = buildReverseIndex(mapping);
-  cdxRowByPath = new Map(rows.map(r => [r.path, r]));
-  ({ cdxEnumIndex, spdxEnumIndex } = buildEnumIndex(mapping));
-  cdxNodeIndex.clear();
-  cdxTreeEl.textContent = "";
-  const root = buildCdxTree(rows);
-  cdxTreeEl.appendChild(renderChildren(root.children, renderCdxNode, 0, new Set()));
-  countNewFields(rows);
-  refreshSpdxChipMatches();
-  applyFilter(searchEl.value.trim().toLowerCase());
-}
-
-function wireVersionToggle() {
-  const box = document.getElementById("version-toggle");
-  box.addEventListener("click", e => {
-    const btn = e.target.closest(".ver-btn");
-    if (!btn || btn.classList.contains("active")) return;
-    box.querySelectorAll(".ver-btn").forEach(b => b.classList.toggle("active", b === btn));
-    renderVersion(btn.dataset.ver);
+/** v0.6 추가 필드의 대응 행을 기존 매핑 행 모양으로. 대상이 둘이면 서로 다른 대안(alt)으로 둔다. */
+function addedMappingRows(linkRows) {
+  return linkRows.map(l => {
+    const t = l.targets;
+    const row = { path: l.path, parent: "v0.6", spdx: t.map(x => `${x.class}.${x.property}`).join(", ") };
+    if (t.length > 1) {
+      row.spdx_multi = t.map(x => ({ profile: x.profile, class: x.class, property: x.property, kind: "Property" }));
+      row.spdx_multi_kind = "alt";
+    } else {
+      Object.assign(row, { spdx_profile: t[0].profile, spdx_class: t[0].class, spdx_property: t[0].property });
+    }
+    return row;
   });
 }
 
@@ -156,7 +146,7 @@ function shallowestLi(path) {
 function countNewFields(rows) {
   const counts = new Map();   // 조상 <li> -> 그 아래 새 필드가 나타나는 자리 수
   for (const r of rows) {
-    if (!r.origin) continue;
+    if (!r.added) continue;
     const lis = cdxNodeIndex.get(r.path) || [];
     // 컨테이너는 값을 담지 않으므로 세지 않는다 — 트리에 자식이 달렸으면 컨테이너다.
     if (lis.length && lis[0].querySelector(":scope > ul.tree-list")) continue;
@@ -179,7 +169,7 @@ function countNewFields(rows) {
     const badge = document.createElement("span");
     badge.className = "new-count";
     badge.textContent = `+${n}`;
-    badge.title = `이 가지 아래 v0.5 새 필드가 나타나는 자리 ${n}곳`;
+    badge.title = `이 가지 아래 v0.6 추가 필드가 나타나는 자리 ${n}곳`;
     appendToRow(div, badge);
   }
 }
@@ -388,6 +378,8 @@ function parseEnum(typeStr) {
 }
 
 function enumChipsHtml(values, side, contextKey) {
+  return "";                                  // 값 단위 대응은 설계 분석용이라 사용자 뷰어에서는 그리지 않는다
+  // eslint-disable-next-line no-unreachable
   const index = side === "cdx" ? cdxEnumIndex : spdxEnumIndex;
   const chips = values.map(v => {
     const matched = index.has(`${contextKey}::${v}`);
@@ -499,21 +491,22 @@ function renderCdxNode(node, depth, ancestors) {
   const hasMapping = !!(mapping && mapping.spdx && mapping.spdx !== "-" && mapping.spdx !== "");
   const li = document.createElement("li");
   li.className = "collapsed";
+  li.dataset.path = row.path;
 
   const div = document.createElement("div");
   div.className = "node-row" + (isBranch ? " branch" : "") +
     (!isBranch && !hasMapping ? " no-map" : "") +
-    (row.origin ? " is-new" : "") +   // v0.5 가 더한 필드 — 필터를 켜지 않아도 늘 눈에 띄게
+    (row.added ? " is-new" : "") +    // v0.6 이 더한 필드. 필터를 켜지 않아도 늘 눈에 띄게
     (!isBranch ? " clickable" : "");
   div.dataset.searchText = [row.name, row.title, row.path, row.type, row.description, row.description_ko]
     .filter(Boolean).join(" ").toLowerCase();
 
   const label = row.name || row.title || row.path;
   const enumInfo = parseEnum(row.type);
-  // origin 이 있으면 v0.5 에서 더한 필드다. 근거가 여럿이면 배열로 온다.
-  const origins = row.origin ? (Array.isArray(row.origin) ? row.origin : [row.origin]) : [];
-  const newBadge = origins.length
-    ? `<span class="new-badge" title="${escapeHtml(origins.join(" · "))}">NEW</span>` : "";
+  // added 면 v0.6 이 더한 필드다. origin 은 그 근거(규제)이고 여럿이면 배열로 온다.
+  const origins = row.added ? (Array.isArray(row.origin) ? row.origin : (row.origin ? [row.origin] : [])) : [];
+  const newBadge = row.added
+    ? `<span class="new-badge" title="${escapeHtml(origins.join(" · ") || "AI-BOM v0.6 추가 필드")}">v0.6</span>` : "";
   div.innerHTML = `<span class="toggle"></span><span class="label">${escapeHtml(label)}</span>${newBadge}` +
     (row.type ? `<span class="sub">${escapeHtml(enumInfo ? enumInfo.label : row.type)}</span>` : "") +
     (row.required === "Y" ? `<span class="badge badge-required">required</span>` : "") +
@@ -621,11 +614,12 @@ function renderSpdxPropertyNode(node) {
   const row = node.row;
   const li = document.createElement("li");
   const div = document.createElement("div");
-  div.className = "node-row clickable";
+  div.className = "node-row clickable" + (row.added ? " is-new" : "");
   div.dataset.searchText = [row.class, row.property, row.summary, row.summary_ko, row.type]
     .filter(Boolean).join(" ").toLowerCase();
   const enumInfo = parseEnum(row.type);
   div.innerHTML = `<span class="toggle"></span><span class="label">${escapeHtml(row.property)}</span>` +
+    (row.added ? `<span class="new-badge" title="AI-BOM v0.6 추가 필드">v0.6</span>` : "") +
     (row.type ? `<span class="sub">${escapeHtml(enumInfo ? enumInfo.label : row.type)}</span>` : "") +
     (enumInfo ? enumChipsHtml(enumInfo.values, "spdx", row.class) : "");
   div.addEventListener("click", () => selectSpdxNode(node, div));
@@ -723,9 +717,8 @@ function selectCdxRow(row, mapping, sourceDiv, scroll = true) {
     // 든다 — g7_element 칸은 요소 축의 추적성이라 필드마다 검토된 적이 없고(사라지는 격차
     // 행에서 상속되기도 한다), 그것을 여기 실으면 근거가 아닌 것이 근거로 읽힌다.
     // 1.7 필드에는 근거라는 개념이 없으므로 그 칸을 그대로 든다.
-    g7: origins.length
-      ? g7Blocks(origins.filter(o => isG7Source(o.source)).map(o => o.reference))
-      : g7Tags(mapping && mapping.g7_element, []),
+    properties: propsByPath.get(row.path) || [],
+    origins,
     ...requirementsFor(row.path, origins),
     from: "cdx",
   });
@@ -822,7 +815,8 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
   const cdxFields = [];
   let scrollTo = null;
   let first = true;
-  const g7Set = new Set();
+  const properties = [];
+  const originList = [];
   for (const m of matches) {
     // 공용 타입은 수십 자리에 접붙여져 있어서 사본을 전부 켜면 필드 넷이 이천 줄로 보인다
     // (ExternalRefType 이 2055 줄이었다). 대표 자리 한 곳만 켠다 — 숨기는 게 아니라, 같은
@@ -835,16 +829,15 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
       if (first) { scrollTo = targetDiv; first = false; }
     }
     const cdxRow = cdxRowByPath.get(m.cdxPath);
-    const mappingRow = mappingByPath.get(m.cdxPath);
-    g7Names(mappingRow && mappingRow.g7_element).forEach(n => g7Set.add(n));
+    properties.push(...(propsByPath.get(m.cdxPath) || []));
+    originList.push(...originsOf(cdxRow));
     cdxFields.push({
       // 여기 늘어서는 것은 한 매핑의 단계가 아니라 **서로 다른 필드들**이라 번호를 붙이지 않는다.
       name: m.cdxPath,
       type: cdxRow ? (cdxRow.type || "") : "",
       desc: cdxRow ? (cdxRow.description || "") : "",
       descKo: cdxRow ? (cdxRow.description_ko || "") : "",
-      mismatch: m.mismatch,
-      isNew: !!(cdxRow && cdxRow.origin),
+      isNew: !!(cdxRow && cdxRow.added),
       cdxPath: m.cdxPath,
     });
   }
@@ -855,7 +848,7 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
   } else {
     const row = node.row;
     spdxFields = [{ name: `${row.class}.${row.property}`, type: row.type || "", desc: row.summary || "",
-                    descKo: row.summary_ko || "" }];
+                    descKo: row.summary_ko || "", isNew: !!row.added }];
   }
 
   // CDX 쪽에서 걸린 요구사항도 함께 모은다 — 요구사항 행이 CDX 축으로만 필드를 지정한
@@ -869,7 +862,8 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
   renderDetailPanel({
     cdxFields,
     spdxFields,
-    g7: g7Blocks([...g7Set]),
+    properties,
+    origins: originList,
     requirements: reqs,
     from: "spdx",
   });
@@ -879,42 +873,54 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
 
 // ── 오른쪽 패널 공통 렌더러: 어느 쪽에서 클릭했든 CycloneDX/SPDX/G7 Element 세
 // 칸으로 항상 같은 구조를 보여준다 ───────────────────────────────────────
-function renderDetailPanel({ cdxFields, spdxFields, g7, requirements, from }) {
+function renderDetailPanel({ cdxFields, spdxFields, properties, origins, requirements, from }) {
   const cdxHtml = cdxFields.length ? cdxFields.map(fieldBlockHtml).join("")
-    : `<div class="field-empty">No mapping</div>`;
-  // 매핑이 없으면 fieldBlocksHtml 이 안 불린다 — 그러면 지난 필드의 단계 목록이 남아서
-  // 그 자리에 색과 페이저가 그대로 서 있게 된다. 여기서 비워 준다.
+    : `<div class="field-empty">대응 없음</div>`;
+  // 매핑이 없으면 fieldBlocksHtml 이 안 불린다. 그러면 지난 필드의 단계 목록이 남아서 그 자리에 색과 페이저가
+  // 그대로 서 있게 된다. 여기서 비워 준다.
   const spdxHtml = spdxFields.length ? fieldBlocksHtml(spdxFields)
-    : (panelChains = new Map(), `<div class="field-empty">No mapping</div>`);
-  const g7Html = g7 && g7.length
-    ? `<div class="g7-list">${g7.map(g7BlockHtml).join("")}</div>`
-    : `<div class="field-empty">No mapping</div>`;
+    : (panelChains = new Map(), `<div class="field-empty">대응 없음</div>`);
   const reqs = requirements || [];
   const reqHtml = reqs.length ? reqs.map(requirementBlockHtml).join("")
-    : `<div class="field-empty">No requirement</div>`;
-  // 셋 다 같은 규칙이다 — **둘 이상일 때만** 센다. 하나뿐인데 ①이 붙으면 뜻 없는 장식이 된다.
+    : `<div class="field-empty">요구사항 없음</div>`;
   const reqCount = sectionCount(reqs.length);
-  const g7Count = sectionCount((g7 || []).length);
-  // SPDX 는 **매핑 수**를 센다. 체인 단계는 한 매핑 안에서의 이동이지 매핑이 늘어난 게 아니다 —
-  // specVersion 은 SpdxDocument.creationInfo → CreationInfo.specVersion 두 단계지만 매핑은 하나다.
+  // SPDX 는 **매핑 수**를 센다. 체인 단계는 한 매핑 안에서의 이동이지 매핑이 늘어난 게 아니다.
   const spdxCount = sectionCount(mappingCount(spdxFields));
   const cdxCount = sectionCount(cdxFields.length);
 
-  // CycloneDX 가 기준이고 나머지 세 절이 그 이유가 되는 판이라, 그 뜻을 맨 위에 한 번 적는다 —
-  // 1.7 에서 같은 패널은 좌우 대칭인 대응 관계라 이 줄이 없다.
-  const banner = from === "cdx" && (cdxFields || []).some(f => f.isNew)
-    ? `<div class="detail-banner">AI-BOM v0.5 가 더한 필드다. 아래 SPDX·G7·Requirement 가 그것을 더한 이유다.</div>`
+  // v0.6 추가 필드면 맨 위에 그 사실과 근거 조항을 적는다. 기존 필드에는 근거라는 개념이 없다.
+  const isNew = (cdxFields || []).some(f => f.isNew) || (spdxFields || []).some(f => f.isNew);
+  const seen = new Set();
+  const basis = (origins || []).filter(o => o.source && !isSpdxSource(o.source) && !isG7Source(o.source))
+    .map(o => `${o.source} ${o.reference}`.trim()).filter(t => !seen.has(t) && seen.add(t));
+  const banner = isNew
+    ? `<div class="detail-banner">AI-BOM v0.6 이 더한 필드다.` +
+      (basis.length ? ` 근거: ${escapeHtml(basis.join(" · "))}` : "") + `</div>`
+    : "";
+  const props = properties || [];
+  const propsHtml = props.length
+    ? `<div class="detail-section section-props"><h4>properties 키${sectionCount(props.length)}</h4>` +
+      props.map(propertyBlockHtml).join("") + `</div>`
     : "";
 
   const html = banner + `
     <div class="detail-section section-cdx"><h4>CycloneDX${cdxCount}</h4>${cdxHtml}</div>
     <div class="detail-section section-spdx"><h4>SPDX${spdxCount}</h4>${spdxHtml}</div>
-    <div class="detail-section section-g7"><h4>G7 Element${g7Count}</h4>${g7Html}</div>
-    <div class="detail-section section-req"><h4>Requirement Coverage${reqCount}</h4>${reqHtml}</div>
+    ${propsHtml}
+    <div class="detail-section section-req"><h4>규제 요구사항${reqCount}</h4>${reqHtml}</div>
   `;
   detailBody.innerHTML = html;
   wirePanelJumps();
   setDetailPanelOpen(true);
+}
+
+/** --spec 1.7 로 낼 때의 properties 키. 같은 값을 v0.6 필드 대신 이 이름으로 적는다. */
+function propertyBlockHtml(p) {
+  return `<div class="field-block">` +
+    `<div class="field-name"><code class="prop-key">${escapeHtml(p.key)}</code></div>` +
+    (p.description_ko ? `<div class="field-desc">${escapeHtml(p.description_ko)}</div>` : "") +
+    (p.allowed ? `<div class="field-desc">허용값: ${escapeHtml(p.allowed)}</div>` : "") +
+    `</div>`;
 }
 
 const sectionCount = n => n > 1 ? `<span class="section-count">${n}</span>` : "";
@@ -1125,8 +1131,8 @@ function requirementBlockHtml(r) {
   return `
     <div class="req-block">
       <div class="req-meta">
-        ${cell("Document", r.source || "—", "req-doc")}
-        ${cell("Clause", r.id || "—", "req-id")}
+        ${cell("규제", r.source || "", "req-doc")}
+        ${cell("조항", r.id || "", "req-id")}
       </div>
       <div class="req-text">${text}</div>
     </div>
@@ -1141,12 +1147,11 @@ function fieldBlockHtml(f) {
     ? `<span class="hop-badge jumpable cand-${(f.badge.candidateIndex || 0) % CANDIDATE_COLORS}"${jump}` +
       ` title="트리에서 이 자리로">${f.badge.hopIndex}</span>`
     : "";
-  const mark = f.isNew ? `<span class="new-badge">NEW</span>` : "";
+  const mark = f.isNew ? `<span class="new-badge">v0.6</span>` : "";
   return `
     <div class="field-block">
       <div class="field-name">${badge}${escapeHtml(f.name)}${mark}</div>
       ${f.descKo || f.desc ? `<div class="field-desc">${escapeHtml(f.descKo || f.desc)}</div>` : ""}
-      ${f.mismatch ? `<div class="field-flags"><span class="mismatch-flag">Type Mismatch</span></div>` : ""}
     </div>
   `;
 }
@@ -1272,27 +1277,34 @@ function expandAncestors(li) {
 }
 
 // ── 검색 필터 ───────────────────────────────────────────────────────────
-function applyFilter(query) {
+function applyFilter() {
+  const query = searchEl.value.trim().toLowerCase();
+  const addedOnly = !!(addedOnlyEl && addedOnlyEl.checked);
   for (const treeEl of [cdxTreeEl, spdxTreeEl]) {
     const rootUl = treeEl.querySelector(":scope > ul.tree-list");
-    if (rootUl) filterList(rootUl, query);
+    if (rootUl) filterList(rootUl, query, addedOnly);
   }
 }
 
-function filterList(ul, query) {
+/** 검색어에 맞는 행과 그 조상만 남긴다. "추가 필드만" 이면 v0.6 추가 필드(와 그 조상)만. 둘 다 없으면 전부 접어 둔다. */
+function filterList(ul, query, addedOnly) {
+  const active = query || addedOnly;
   let anyVisible = false;
   for (const li of ul.children) {
     const div = li.querySelector(":scope > .node-row");
-    const selfMatch = !query || (div.dataset.searchText || "").includes(query);
+    // 공용 타입은 여러 자리에 접붙여져 같은 추가 필드가 수십 곳에 나타난다. "추가 필드만" 은 각 필드의 대표 자리(가장 얕은 곳)만 남긴다.
+    const representative = !li.dataset.path || representativeLis.has(li);
+    const selfMatch = (!query || (div.dataset.searchText || "").includes(query))
+      && (!addedOnly || (div.classList.contains("is-new") && representative));
     const childUl = li.querySelector(":scope > ul.tree-list");
-    const childMatch = childUl ? filterList(childUl, query) : false;
+    const childMatch = childUl ? filterList(childUl, query, addedOnly) : false;
     const visible = selfMatch || childMatch;
     li.style.display = visible ? "" : "none";
-    if (visible && query) {
+    if (visible && active) {
       li.classList.remove("collapsed");
       const toggle = div.querySelector(".toggle");
       if (toggle && toggle.textContent) toggle.textContent = "▼";
-    } else if (!query) {
+    } else if (!active) {
       li.classList.add("collapsed");
       const toggle = div.querySelector(".toggle");
       if (toggle && toggle.textContent) toggle.textContent = "▶";

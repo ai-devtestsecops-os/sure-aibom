@@ -1,0 +1,524 @@
+[
+ {
+  "path": "component.modelCard.considerations.explainabilityMethods",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "ai_modelExplainability"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "component.modelCard.considerations.safetyRiskAssessment",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "ai_safetyRiskAssessment"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "component.modelCard.considerations.sensitivePersonalInformation",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "ai_useSensitivePersonalInformation"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "component.modelCard.modelParameters.hyperparameters",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "ai_hyperparameter"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "component.modelCard.modelParameters.hyperparameters.name",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "ai_hyperparameter"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "component.modelCard.modelParameters.hyperparameters.value",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "ai_hyperparameter"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "component.modelCard.modelParameters.trainingTechniques",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "ai_informationAboutTraining"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "component.modelCard.quantitativeAnalysis.performanceMetrics.decisionThreshold",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "ai_metricDecisionThreshold"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "componentData.anonymizationMethods",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "dataset_anonymizationMethodUsed"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "componentData.collectionProcess",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "dataset_dataCollectionProcess"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "componentData.contents.availability",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "dataset_datasetAvailability"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "componentData.intendedUse",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "dataset_intendedUse"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "componentData.knownBias.name",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "dataset_knownBias"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "componentData.modality",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "dataset_datasetType"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "componentData.noise",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "dataset_datasetNoise"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "componentData.preprocessing",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "dataset_dataPreprocessing"
+   },
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "ai_modelDataPreprocessing"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "componentData.size",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "dataset_datasetSize"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "componentData.updateMechanism",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "dataset_datasetUpdateMechanism"
+   }
+  ],
+  "source": "spdx-base"
+ },
+ {
+  "path": "component.modelCard.quantitativeAnalysis.performanceMetrics.slice",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_metricSlice"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.modelParameters.task",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_task"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.modelParameters.architectureFamily",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_architectureFamily"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.modelParameters.modelArchitecture",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_modelArchitecture"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.modelParameters.inputs",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_inputs"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "inputOutputMLParameters.maxSize",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_inputMaxSize"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.modelParameters.outputs",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_outputs"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "inputOutputMLParameters.maxSize",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_outputMaxSize"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.modelParameters.parameterCount",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_parameterCount"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.modelParameters.designChoices",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_designChoices"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.modelParameters.optimizationTarget",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_optimizationTarget"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.modelParameters.trainingCompute",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_trainingCompute"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.modelParameters.trainingTime",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_trainingTime"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.considerations.users",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_users"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.considerations.useCases",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_useCases"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.considerations.ethicalConsiderations.name",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_ethicalConsiderations"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_ethicalConsiderationsMitigationStrategy"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.considerations.fairnessAssessments.groupAtRisk",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_fairnessAssessments"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.considerations.fairnessAssessments.benefits",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_fairnessAssessmentBenefits"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.considerations.fairnessAssessments.harms",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_fairnessAssessmentHarms"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "component.modelCard.considerations.limitationIdentificationMethods",
+  "targets": [
+   {
+    "profile": "AI",
+    "class": "AIPackage",
+    "property": "aibom_limitationIdentificationMethods"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "componentData.knownBias.detectionMethod",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "aibom_knownBiasDetectionMethod"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "componentData.knownBias.mitigationStrategy",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "aibom_knownBiasMitigationStrategy"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "componentData.originalCollectionPurpose",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "aibom_originalCollectionPurpose"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "componentData.designChoices",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "aibom_designChoices"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "componentData.representationAssumptions",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "aibom_representationAssumptions"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "componentData.knownGaps.name",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "aibom_knownGaps"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "componentData.knownGaps.mitigationStrategy",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "aibom_knownGapsMitigationStrategy"
+   }
+  ],
+  "source": "spdx-added"
+ },
+ {
+  "path": "componentData.statistics",
+  "targets": [
+   {
+    "profile": "Dataset",
+    "class": "DatasetPackage",
+    "property": "aibom_statistics"
+   }
+  ],
+  "source": "spdx-added"
+ }
+]

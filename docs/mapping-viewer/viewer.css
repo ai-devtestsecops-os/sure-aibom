@@ -27,7 +27,7 @@
   --sans: "Inter", -apple-system, "Segoe UI", "Malgun Gothic", sans-serif;}
 .mapping-viewer * {box-sizing: border-box;}
 .mapping-viewer {font-family: var(--sans);
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text);
   background: var(--bg);
   display: flex;
@@ -39,7 +39,7 @@
   background: var(--bg);
   border-bottom: 1px solid var(--border);
   flex: 0 0 auto;}
-.mapping-viewer #topbar h1 {font-size: 14px;
+.mapping-viewer #topbar h1 {font-size: 16px;
   font-weight: 600;
   margin: 0;
   color: var(--text);
@@ -73,7 +73,7 @@
   background: var(--bg);
   color: var(--text-muted);
   font-family: var(--sans);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
@@ -90,7 +90,7 @@
   background: transparent;
   color: var(--text);
   font-family: var(--sans);
-  font-size: 13px;
+  font-size: 15px;
   outline: none;}
 .mapping-viewer #search::placeholder {color: var(--text-muted);}
 .mapping-viewer #panes {flex: 1 1 auto;
@@ -112,18 +112,18 @@
   position: absolute;
   top: 0; bottom: 0;
   left: -3px; right: -3px;}
-.mapping-viewer .pane-title {font-size: 13px; font-weight: 700; color: var(--text);}
+.mapping-viewer .pane-title {font-size: 15px; font-weight: 700; color: var(--text);}
 .mapping-viewer .pane-ver {margin-left: 8px; padding: 3px 9px;
   border: 1px solid var(--accent); border-radius: 5px;
   background: var(--accent); color: #fff;
-  font-size: 11px; font-weight: 600;}
+  font-size: 12.5px; font-weight: 600;}
 .mapping-viewer .pane h2 {margin: 0;
   height: 38px;
   box-sizing: border-box;
   display: flex;
   align-items: center;
   padding: 0 14px;
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text);
   background: var(--bg-subtle);
@@ -156,12 +156,12 @@
   color: var(--text-muted);
   user-select: none;
   cursor: pointer;
-  font-size: 10px;}
+  font-size: 11.5px;}
 .mapping-viewer .node-row .label {font-family: var(--mono);
-  font-size: 12.5px;
+  font-size: 14.5px;
   word-break: break-word;}
 .mapping-viewer .node-row .sub {color: var(--text-muted);
-  font-size: 11px;
+  font-size: 12.5px;
   font-family: var(--mono);
   word-break: break-word;}
 .mapping-viewer .enum-chips {display: flex;
@@ -170,7 +170,7 @@
   flex-basis: 100%;
   margin-left: 17px;}
 .mapping-viewer .enum-chip {font-family: var(--mono);
-  font-size: 10.5px;
+  font-size: 12px;
   color: var(--text-muted);
   background: var(--bg-subtle);
   border: 1px dashed var(--border); 
@@ -183,7 +183,7 @@
   font-weight: 600;}
 .mapping-viewer .badge {display: inline-block;
   font-family: var(--sans);
-  font-size: 9.5px;
+  font-size: 11px;
   font-weight: 700;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -196,7 +196,7 @@
 .mapping-viewer .badge-datatype {background: var(--badge-type-bg); color: var(--badge-type-fg);}
 .mapping-viewer .badge-required {background: var(--badge-req-bg); color: var(--badge-req-fg);}
 .mapping-viewer .node-row.profile-header {font-weight: 700;
-  font-size: 11px;
+  font-size: 12.5px;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--text);
@@ -230,7 +230,7 @@
   border-radius: 50%;
   background: var(--accent);
   color: #fff;
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 700;
   font-family: var(--sans);
   flex: 0 0 auto;}
@@ -242,8 +242,8 @@
 .mapping-viewer .hop-badge.cand-2 {background: #1a7f37;}
 .mapping-viewer .hop-badge.cand-3 {background: #bf3989;}
 .mapping-viewer .tree-pager {display: inline-flex; align-items: center; gap: 3px; flex: 0 0 auto;}
-.mapping-viewer .tree-pager .pager-btn {width: 16px; height: 16px; font-size: 11px;}
-.mapping-viewer .tree-pager .pager-now {font-size: 10px;}
+.mapping-viewer .tree-pager .pager-btn {width: 16px; height: 16px; font-size: 12.5px;}
+.mapping-viewer .tree-pager .pager-now {font-size: 11.5px;}
 .mapping-viewer .collapsed > ul.tree-list {display: none;}
 .mapping-viewer #detail-panel {flex: 0 0 340px;
   min-width: 220px;
@@ -266,12 +266,12 @@
   background: var(--bg-subtle);
   border-bottom: 1px solid var(--border);}
 .mapping-viewer #detail-panel-header h3 {margin: 0;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text);}
 .mapping-viewer #detail-close {border: none;
   background: none;
-  font-size: 13px;
+  font-size: 15px;
   cursor: pointer;
   color: var(--text-muted);}
 .mapping-viewer #detail-close:hover {color: var(--text);}
@@ -282,7 +282,7 @@
   padding: 12px 14px;
   margin-bottom: 12px;}
 .mapping-viewer .detail-section > h4 {margin: 0 0 10px;
-  font-size: 11px;
+  font-size: 12.5px;
   color: var(--accent);
   font-weight: 700;}
 .mapping-viewer .detail-section > h4 .section-count {margin-left: 6px;
@@ -290,7 +290,7 @@
   border-radius: 8px;
   background: var(--bg-subtle);
   color: var(--text-muted);
-  font-size: 10px;
+  font-size: 11.5px;
   font-weight: 600;}
 .mapping-viewer .tag-list {display: flex; flex-wrap: wrap; gap: 6px;}
 .mapping-viewer .badge-g7 {background: var(--bg-subtle); color: var(--text); border: 1px solid var(--border);}
@@ -307,10 +307,10 @@
   border-radius: 6px;
   overflow: hidden;}
 .mapping-viewer .req-cell {display: flex; flex-direction: column; gap: 2px; padding: 5px 8px; background: var(--bg-subtle);}
-.mapping-viewer .req-label {font-size: 9.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-muted);}
-.mapping-viewer .req-doc {font-size: 12px; font-weight: 600; color: var(--text);}
-.mapping-viewer .req-id {font-family: var(--mono); font-size: 12px; font-weight: 600; color: var(--text);}
-.mapping-viewer .req-text {margin-top: 7px; font-size: 12px; line-height: 1.6; color: var(--text);}
+.mapping-viewer .req-label {font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-muted);}
+.mapping-viewer .req-doc {font-size: 14px; font-weight: 600; color: var(--text);}
+.mapping-viewer .req-id {font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--text);}
+.mapping-viewer .req-text {margin-top: 7px; font-size: 14px; line-height: 1.6; color: var(--text);}
 .mapping-viewer .req-hl {color: var(--accent); font-weight: 600;}
 .mapping-viewer .chain {margin-bottom: 10px;}
 .mapping-viewer .chain .field-block {margin-bottom: 0;}
@@ -329,31 +329,31 @@
 .mapping-viewer .field-block {margin-bottom: 10px;}
 .mapping-viewer .field-block:last-child {margin-bottom: 0;}
 .mapping-viewer .field-name {font-family: var(--mono);
-  font-size: 12.5px;
+  font-size: 14.5px;
   font-weight: 600;
   color: var(--text);
   word-break: break-word;}
 .mapping-viewer .field-name .hop-badge {margin-right: 5px; vertical-align: middle;}
 .mapping-viewer .hop-badge.jumpable {cursor: pointer;}
 .mapping-viewer .hop-badge.jumpable:hover {outline: 2px solid currentColor; outline-offset: 1px;}
-.mapping-viewer .field-name .sub {margin-left: 6px; font-size: 11px; color: var(--text-muted); font-family: var(--mono); font-weight: 400;}
-.mapping-viewer .field-desc {margin-top: 5px; font-size: 12px; line-height: 1.5; color: var(--text);}
-.mapping-viewer .field-desc-ko {margin-top: 3px; font-size: 12px; line-height: 1.5; color: var(--text);}
+.mapping-viewer .field-name .sub {margin-left: 6px; font-size: 12.5px; color: var(--text-muted); font-family: var(--mono); font-weight: 400;}
+.mapping-viewer .field-desc {margin-top: 5px; font-size: 14px; line-height: 1.5; color: var(--text);}
+.mapping-viewer .field-desc-ko {margin-top: 3px; font-size: 14px; line-height: 1.5; color: var(--text);}
 .mapping-viewer .detail-banner {margin: 0 0 12px; padding: 7px 9px; border-radius: 6px;
   background: #f0fdf4; border: 1px solid #bbf7d0;
-  font-size: 11.5px; line-height: 1.6; color: #15803d;}
-.mapping-viewer .field-empty {font-size: 12px; color: var(--text-muted); font-style: italic;}
+  font-size: 13px; line-height: 1.6; color: #15803d;}
+.mapping-viewer .field-empty {font-size: 14px; color: var(--text-muted); font-style: italic;}
 .mapping-viewer .field-flags {margin-top: 6px; display: flex; gap: 6px; flex-wrap: wrap;}
-.mapping-viewer #detail-body .row {margin: 5px 0; line-height: 1.5; font-size: 12px;}
+.mapping-viewer #detail-body .row {margin: 5px 0; line-height: 1.5; font-size: 14px;}
 .mapping-viewer #detail-body .k {color: var(--text-muted);
   display: inline-block;
   min-width: 78px;
   vertical-align: top;
-  font-size: 10px;
+  font-size: 11.5px;
   letter-spacing: 0.04em;
   text-transform: uppercase;}
-.mapping-viewer #detail-body .v {display: inline-block; max-width: calc(100% - 82px); vertical-align: top; white-space: normal; font-family: var(--mono); font-size: 12px;}
-.mapping-viewer #detail-body .mismatch-flag {color: var(--flag); font-weight: 700; font-family: var(--sans); font-size: 11px;}
+.mapping-viewer #detail-body .v {display: inline-block; max-width: calc(100% - 82px); vertical-align: top; white-space: normal; font-family: var(--mono); font-size: 14px;}
+.mapping-viewer #detail-body .mismatch-flag {color: var(--flag); font-weight: 700; font-family: var(--sans); font-size: 12.5px;}
 .mapping-viewer .hidden {display: none;}
 .mapping-viewer #panes.hidden, .mapping-viewer #search-box.hidden, .mapping-viewer #detail-toggle.hidden, .mapping-viewer #generator-view.hidden {display: none;}
 .mapping-viewer #tabs {display: flex;
@@ -369,7 +369,7 @@
   background: transparent;
   color: var(--text-muted);
   font-family: var(--sans);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   height: 26px;
   padding: 0 12px;
@@ -393,7 +393,7 @@
   border: 1px solid var(--border);
   border-radius: 6px;
   font-family: var(--sans);
-  font-size: 13px;
+  font-size: 15px;
   color: var(--text);
   background: var(--bg);}
 .mapping-viewer #gen-source {flex: 0 0 auto; padding: 0 8px;}
@@ -409,7 +409,7 @@
 .mapping-viewer #gen-run:hover {opacity: .92;}
 .mapping-viewer #gen-run:disabled {opacity: .5; cursor: default;}
 .mapping-viewer #gen-status {margin-top: 10px;
-  font-size: 12px;
+  font-size: 14px;
   min-height: 1.4em;}
 .mapping-viewer #gen-status.error {color: var(--flag);}
 .mapping-viewer #gen-status.loading {color: var(--text-muted);}
@@ -419,7 +419,7 @@
   margin: 22px 0 8px;}
 .mapping-viewer #gen-result-title {margin: 0;
   font-family: var(--mono);
-  font-size: 13px;
+  font-size: 15px;
   font-weight: 700;
   flex: 1;
   word-break: break-word;}
@@ -431,7 +431,7 @@
   background: var(--accent);
   color: #fff;
   font-family: var(--sans);
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 700;
   cursor: pointer;}
 .mapping-viewer #gen-export:hover {opacity: .9;}
@@ -448,7 +448,7 @@
   background: transparent;
   color: var(--text-muted);
   font-family: var(--sans);
-  font-size: 11.5px;
+  font-size: 13px;
   font-weight: 600;
   height: 24px;
   padding: 0 10px;
@@ -466,49 +466,45 @@
   background: var(--bg-subtle);
   color: var(--text);
   font-family: var(--mono);
-  font-size: 12px;
+  font-size: 14px;
   line-height: 1.6;
   white-space: pre;}
 .mapping-viewer #gen-summary {display: flex; flex-direction: column; gap: 14px;}
 .mapping-viewer .sum-head {padding: 14px 16px;
   border: 1px solid var(--border); border-radius: 8px;
   background: var(--bg-subtle);}
-.mapping-viewer .sum-name {font-family: var(--mono); font-size: 15px; font-weight: 700; word-break: break-all;}
+.mapping-viewer .sum-name {font-family: var(--mono); font-size: 17px; font-weight: 700; word-break: break-all;}
 .mapping-viewer .sum-badges {display: flex; flex-wrap: wrap; gap: 5px; margin-top: 8px;}
 .mapping-viewer .sum-badge {padding: 2px 8px; border-radius: 10px;
   background: var(--accent-soft); color: var(--accent);
-  font-size: 11px; font-weight: 600;}
-.mapping-viewer .sum-sub {margin-top: 7px; font-size: 11.5px; color: var(--text-muted);}
+  font-size: 12.5px; font-weight: 600;}
+.mapping-viewer .sum-sub {margin-top: 7px; font-size: 13px; color: var(--text-muted);}
 .mapping-viewer .sum-cards {display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; align-items: start;}
 .mapping-viewer .sum-card {border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px;}
 .mapping-viewer .sum-card > h4 {margin: 0 0 9px;
-  font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase;
   color: var(--text-muted);}
 .mapping-viewer .sum-rows {display: grid; grid-template-columns: max-content 1fr; gap: 6px 12px; margin: 0;}
-.mapping-viewer .sum-rows dt {font-size: 11.5px; color: var(--text-muted);}
-.mapping-viewer .sum-rows dd {margin: 0; font-size: 12.5px; font-family: var(--mono); word-break: break-word;}
+.mapping-viewer .sum-rows dt {font-size: 13px; color: var(--text-muted);}
+.mapping-viewer .sum-rows dd {margin: 0; font-size: 14.5px; font-family: var(--mono); word-break: break-word;}
 .mapping-viewer .sum-rows dd a {color: var(--accent);}
 .mapping-viewer .sum-chips {display: flex; flex-wrap: wrap; gap: 5px;}
 .mapping-viewer .sum-chip {padding: 2px 8px; border: 1px solid var(--border); border-radius: 10px;
-  font-family: var(--mono); font-size: 11.5px;}
+  font-family: var(--mono); font-size: 13px;}
 .mapping-viewer .sum-table {border-collapse: collapse; width: 100%;}
 .mapping-viewer .sum-table tr + tr th, .mapping-viewer .sum-table tr + tr td {border-top: 1px solid var(--bg-subtle);}
-.mapping-viewer .sum-table th {text-align: left; font-weight: 400; font-size: 11.5px; color: var(--text-muted);
+.mapping-viewer .sum-table th {text-align: left; font-weight: 400; font-size: 13px; color: var(--text-muted);
   padding: 5px 10px 5px 0; word-break: break-word;}
 .mapping-viewer .sum-table td {padding: 5px 0;}
-.mapping-viewer .sum-num {font-family: var(--mono); font-size: 12.5px; font-weight: 700; white-space: nowrap;}
-.mapping-viewer .sum-slice {font-size: 11px; color: var(--text-muted); padding-left: 8px; white-space: nowrap;}
-.mapping-viewer #version-toggle {display: inline-flex; margin-left: 8px; border: 1px solid var(--border); border-radius: 5px; overflow: hidden;}
-.mapping-viewer #version-toggle .ver-btn {border: 0; background: transparent; cursor: pointer; padding: 3px 9px;
-  font: inherit; font-size: 11px; font-weight: 600; color: var(--text-muted);}
-.mapping-viewer #version-toggle .ver-btn + .ver-btn {border-left: 1px solid var(--border);}
-.mapping-viewer #version-toggle .ver-btn.active {background: var(--accent, #2563eb); color: #fff;}
+.mapping-viewer .sum-num {font-family: var(--mono); font-size: 14.5px; font-weight: 700; white-space: nowrap;}
+.mapping-viewer .sum-slice {font-size: 12.5px; color: var(--text-muted); padding-left: 8px; white-space: nowrap;}
+  font: inherit; font-size: 12.5px; font-weight: 600; color: var(--text-muted);}
 .mapping-viewer .new-badge {margin-left: 6px; padding: 0 5px; border-radius: 3px;
-  font-size: 9.5px; font-weight: 700; letter-spacing: .02em;
+  font-size: 11px; font-weight: 700; letter-spacing: .02em;
   background: #16a34a; color: #fff; vertical-align: 1px;}
 .mapping-viewer .node-row.is-new > .label {font-weight: 600;}
 .mapping-viewer .new-count {margin-left: 4px; padding: 0 5px; border-radius: 8px;
-  font-family: var(--sans); font-size: 9.5px; font-weight: 700;
+  font-family: var(--sans); font-size: 11px; font-weight: 700;
   background: #dcfce7; color: #15803d; flex: 0 0 auto;}
 
 /* 페이지 안에서의 틀: 안쪽 스크롤 없이 페이지와 함께 흐른다 (cyclonedx.org 의 스키마 문서처럼). 트리가 길어지면 페이지가 길어지고,
@@ -523,7 +519,10 @@
 .mapping-viewer #panes { align-items: flex-start; }
 .mapping-viewer .pane { overflow: visible; }
 .mapping-viewer .pane h2 { top: calc(2.4rem + var(--toolbar-h)); z-index: 3; }
-.mapping-viewer .tree { overflow: visible; }
+.mapping-viewer .tree { overflow-x: auto; overflow-y: hidden; }     /* 세로는 페이지가, 가로는 트리가 스크롤 */
+.mapping-viewer .tree > ul.tree-list { min-width: max-content; }
+.mapping-viewer .node-row { white-space: nowrap; }
+.mapping-viewer .new-badge { white-space: nowrap; }
 .mapping-viewer .resizer { align-self: stretch; }
 .mapping-viewer #detail-panel { position: sticky; top: calc(2.4rem + var(--toolbar-h)); max-height: calc(100vh - 2.4rem - var(--toolbar-h)); }
 
@@ -543,3 +542,34 @@
   --badge-type-bg:  rgba(148, 163, 184, .25); --badge-type-fg:  #cbd5e1;
   --badge-req-bg:   rgba(248, 113, 113, .25); --badge-req-fg:   #fecaca;
 }
+
+/* v0.6 추가 필드: 구조 그림과 같은 빨간 표시. 배지와 글자 모두 */
+.mapping-viewer .new-badge, .md-typeset .new-badge {
+  margin-left: 6px; padding: 0 5px; border-radius: 3px; font-family: var(--mono); font-size: 11.5px; font-weight: 700;
+  color: var(--badge-req-fg); background: var(--badge-req-bg); border: 1px solid var(--badge-req-fg); vertical-align: middle;
+}
+.mapping-viewer .node-row.is-new > .label { color: var(--badge-req-fg); font-weight: 600; }
+.md-typeset .mapping-viewer h2::after { display: none; }   /* 문서 절 제목의 파란 밑줄은 트리 머리줄에 그리지 않는다 */
+.mapping-viewer #added-only-box { display: flex; align-items: center; gap: 5px; font-size: 14px; color: var(--text-muted); cursor: pointer; white-space: nowrap; }
+.mapping-viewer #added-only-box input { margin: 0; accent-color: var(--accent); }
+.mapping-viewer .prop-key { font-family: var(--mono); font-size: 14px; color: var(--text); }
+.mapping-viewer .detail-section.section-props h4 { text-transform: none; }
+
+/* 페이지의 일부처럼: 머리줄·상세 패널의 회색 바탕과 굵은 구분선을 없애고, 가는 선과 글자만 남긴다 */
+.mapping-viewer .pane h2 { background: transparent; border-bottom: 1px solid var(--border); height: auto; padding: 0 6px 8px; }
+.mapping-viewer .pane-title { font-size: 15px; }
+.mapping-viewer .resizer { background: transparent; }
+.mapping-viewer .resizer::before { content: ""; position: absolute; top: 0; bottom: 0; left: 2px; width: 1px; background: var(--border); }
+.mapping-viewer .resizer:hover, .mapping-viewer .resizer.dragging { background: var(--accent-soft); }
+.mapping-viewer #detail-panel { flex-basis: 300px; background: var(--bg); }
+.mapping-viewer #detail-panel-header { background: transparent; padding: 0 10px; }
+.mapping-viewer #detail-body { padding: 10px; }
+.mapping-viewer #topbar { border-bottom: 0; }
+
+/* 트리 머리줄과 상세 패널 머리줄은 같은 높이·같은 밑선 */
+.mapping-viewer { --head-h: 36px; }
+.mapping-viewer .pane h2, .mapping-viewer #detail-panel-header {
+  height: var(--head-h); box-sizing: border-box; display: flex; align-items: center; padding: 0 8px; margin: 0;
+  border-bottom: 1px solid var(--border);
+}
+.mapping-viewer #detail-panel-header h3 { font-size: 15px; font-weight: 700; margin: 0; }
