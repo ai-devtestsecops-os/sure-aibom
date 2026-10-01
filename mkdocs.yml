@@ -3,11 +3,28 @@ site_description: AI-BOM 생성 CLI 문서
 docs_dir: docs
 theme:
   name: material
+  custom_dir: overrides
   language: ko
-  palette:
-    scheme: default
-    primary: blue
-    accent: blue
+  favicon: "data:,"          # 브라우저 탭 아이콘 없음 (기본 로고 대신 브라우저 기본 아이콘)
+  palette:                        # 상단 바 메뉴: 라이트 · 다크 · 시스템 (overrides/partials/palette.html). 시스템이 첫 항목이라 기본값
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/circle-half-full
+        name: System
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/white-balance-sunny
+        name: Light
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: blue
+      accent: blue
+      toggle:
+        icon: material/weather-night
+        name: Dark
   font:
     text: Noto Sans KR
     code: JetBrains Mono
@@ -20,6 +37,8 @@ extra:
   generator: false
 extra_css:
   - stylesheets/extra.css
+extra_javascript:
+  - javascripts/palette-menu.js
 markdown_extensions:
   - tables
   - admonition

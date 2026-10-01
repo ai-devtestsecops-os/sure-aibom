@@ -19,3 +19,36 @@
 /* 기본 로고 아이콘은 뺀다. 이름만 둔다 */
 .md-header__button.md-logo { display: none; }
 .md-nav__title .md-nav__button.md-logo { display: none; }
+
+/* 색 모드: 토글 대신 메뉴 (라이트 · 다크 · 시스템). 현재 모드는 radio 입력의 :checked 로 고른다 */
+.palette-menu { position: relative; order: 10; margin-left: .2rem; }             /* 상단 바 맨 오른쪽 */
+.md-header__button.palette-menu__button:not([hidden]) { display: inline-flex; align-items: center; padding: .4rem .2rem; margin: 0 .2rem 0 0; }  /* Material 의 inline-block 보다 우선 */
+.palette-menu__button .palette-menu__current svg { width: .95rem; height: .95rem; }   /* 아이콘은 작게 */
+.palette-menu__caret svg { width: .8rem; height: .8rem; margin-left: -.1rem; }        /* 열린다는 표시 */
+.palette-menu__legacy { display: none !important; }
+.palette-menu__current { display: none; }
+.palette-menu__current[data-md-color-media="(prefers-color-scheme)"] { display: inline; }   /* 아무것도 안 골랐을 때의 기본 */
+input[data-md-color-media="(prefers-color-scheme: light)"]:checked ~ .palette-menu__button .palette-menu__current,
+input[data-md-color-media="(prefers-color-scheme: dark)"]:checked ~ .palette-menu__button .palette-menu__current { display: none; }
+input[data-md-color-media="(prefers-color-scheme: light)"]:checked ~ .palette-menu__button .palette-menu__current[data-md-color-media="(prefers-color-scheme: light)"],
+input[data-md-color-media="(prefers-color-scheme: dark)"]:checked ~ .palette-menu__button .palette-menu__current[data-md-color-media="(prefers-color-scheme: dark)"] { display: inline; }
+.palette-menu__list {
+  display: none; position: absolute; right: 0; top: 100%; min-width: 8rem; padding: .3rem 0;
+  background: var(--md-default-bg-color); color: var(--md-default-fg-color);
+  border-radius: .2rem; box-shadow: var(--md-shadow-z2); z-index: 10;
+}
+.palette-menu--open .palette-menu__list { display: block; }
+.palette-menu__item {
+  display: flex; align-items: center; gap: .5rem; padding: .35rem .8rem; font-size: .7rem; cursor: pointer; white-space: nowrap;
+}
+.palette-menu__item:hover { background: var(--md-default-fg-color--lightest); }
+.palette-menu__item .md-icon svg { width: .9rem; height: .9rem; fill: currentColor; }
+.palette-menu__item[data-md-color-media="(prefers-color-scheme)"],                         /* 아무것도 안 골랐을 때는 System 이 현재 */
+input[data-md-color-media="(prefers-color-scheme: light)"]:checked ~ .palette-menu__list .palette-menu__item[data-md-color-media="(prefers-color-scheme: light)"],
+input[data-md-color-media="(prefers-color-scheme: dark)"]:checked ~ .palette-menu__list .palette-menu__item[data-md-color-media="(prefers-color-scheme: dark)"] {
+  color: var(--md-primary-fg-color); font-weight: 600;
+}
+input[data-md-color-media="(prefers-color-scheme: light)"]:checked ~ .palette-menu__list .palette-menu__item[data-md-color-media="(prefers-color-scheme)"],
+input[data-md-color-media="(prefers-color-scheme: dark)"]:checked ~ .palette-menu__list .palette-menu__item[data-md-color-media="(prefers-color-scheme)"] {
+  color: inherit; font-weight: normal;
+}

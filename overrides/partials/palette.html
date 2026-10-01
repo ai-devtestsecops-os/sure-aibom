@@ -1,0 +1,36 @@
+{#-
+  Material 의 partials/palette.html 을 덮어쓴다. 입력(radio)은 원본과 같아서 Material 의 JS 가 색 적용과 저장을 그대로
+  맡고, 토글 대신 버튼 하나와 그 아래 열리는 메뉴(라이트 · 다크 · 시스템)를 그린다. 열고 닫기는 docs/javascripts/palette-menu.js.
+-#}
+<form class="md-header__option palette-menu" data-md-component="palette">
+  {% for option in config.theme.palette %}
+    {% set scheme  = option.scheme  | d("default", true) %}
+    {% set primary = option.primary | d("indigo", true) %}
+    {% set accent  = option.accent  | d("indigo", true) %}
+    <input class="md-option" data-md-color-media="{{ option.media }}" data-md-color-scheme="{{ scheme | replace(' ', '-') }}" data-md-color-primary="{{ primary | replace(' ', '-') }}" data-md-color-accent="{{ accent | replace(' ', '-') }}" {% if option.toggle %} aria-label="{{ option.toggle.name }}" {% else %} aria-hidden="true" {% endif %} type="radio" name="__palette" id="__palette_{{ loop.index0 }}">
+    {% if option.toggle %}
+      <label class="md-header__button md-icon palette-menu__legacy" for="__palette_{{ loop.index % loop.length }}" hidden>
+        {% include ".icons/" ~ option.toggle.icon ~ ".svg" %}
+      </label>
+    {% endif %}
+  {% endfor %}
+  <button type="button" class="md-header__button md-icon palette-menu__button" title="Color mode" aria-haspopup="true" aria-expanded="false">
+    {% for option in config.theme.palette %}
+      <span class="palette-menu__current" data-md-color-media="{{ option.media }}">{% include ".icons/" ~ option.toggle.icon ~ ".svg" %}</span>
+    {% endfor %}
+    <span class="palette-menu__caret">{% include ".icons/material/menu-down.svg" %}</span>
+  </button>
+  <div class="palette-menu__list" role="menu">
+    {% set auto = "(prefers-color-scheme)" %}
+    {% for option in config.theme.palette if option.media != auto %}
+      <label class="palette-menu__item" for="__palette_{{ config.theme.palette.index(option) }}" data-md-color-media="{{ option.media }}" role="menuitem">
+        <span class="md-icon">{% include ".icons/" ~ option.toggle.icon ~ ".svg" %}</span>{{ option.toggle.name }}
+      </label>
+    {% endfor %}
+    {% for option in config.theme.palette if option.media == auto %}
+      <label class="palette-menu__item" for="__palette_{{ config.theme.palette.index(option) }}" data-md-color-media="{{ option.media }}" role="menuitem">
+        <span class="md-icon">{% include ".icons/" ~ option.toggle.icon ~ ".svg" %}</span>{{ option.toggle.name }}
+      </label>
+    {% endfor %}
+  </div>
+</form>
