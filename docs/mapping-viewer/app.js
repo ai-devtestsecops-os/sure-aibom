@@ -35,6 +35,10 @@ const detailToggle = document.getElementById("detail-toggle");
 function setDetailPanelOpen(open) {
   detailPanel.classList.toggle("hidden", !open);
   detailToggle.classList.toggle("active", open);
+  if (open && !detailBody.childElementCount) {                 // 아직 아무 필드도 안 눌렀을 때
+    detailBody.innerHTML = `<div class="detail-placeholder">왼쪽 트리에서 필드를 누르면 여기에 설명과 다른 형식의 대응 필드,
+      properties 키, 규제 요구사항이 나온다.</div>`;
+  }
 }
 document.getElementById("detail-close").addEventListener("click", () => setDetailPanelOpen(false));
 detailToggle.addEventListener("click", () => setDetailPanelOpen(detailPanel.classList.contains("hidden")));
@@ -899,19 +903,18 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
 // ── 오른쪽 패널 공통 렌더러: 어느 쪽에서 클릭했든 CycloneDX/SPDX/G7 Element 세
 // 칸으로 항상 같은 구조를 보여준다 ───────────────────────────────────────
 function renderDetailPanel({ cdxFields, spdxFields, properties, origins, requirements, from }) {
-  const cdxHtml = cdxFields.length ? cdxFields.map(fieldBlockHtml).join("")
-    : `<div class="field-empty">대응 없음</div>`;
+  // 비어 있는 절은 문장 대신 제목 옆의 작은 "없음" 표로. 절 자체는 남긴다 (없다는 것도 정보다)
+  const none = `<span class="section-none">없음</span>`;
+  const cdxHtml = cdxFields.length ? cdxFields.map(fieldBlockHtml).join("") : "";
   // 매핑이 없으면 fieldBlocksHtml 이 안 불린다. 그러면 지난 필드의 단계 목록이 남아서 그 자리에 색과 페이저가
   // 그대로 서 있게 된다. 여기서 비워 준다.
-  const spdxHtml = spdxFields.length ? fieldBlocksHtml(spdxFields)
-    : (panelChains = new Map(), `<div class="field-empty">대응 없음</div>`);
+  const spdxHtml = spdxFields.length ? fieldBlocksHtml(spdxFields) : (panelChains = new Map(), "");
   const reqs = requirements || [];
-  const reqHtml = reqs.length ? reqs.map(requirementBlockHtml).join("")
-    : `<div class="field-empty">요구사항 없음</div>`;
-  const reqCount = sectionCount(reqs.length);
+  const reqHtml = reqs.length ? reqs.map(requirementBlockHtml).join("") : "";
+  const reqCount = reqs.length ? sectionCount(reqs.length) : none;
   // SPDX 는 **매핑 수**를 센다. 체인 단계는 한 매핑 안에서의 이동이지 매핑이 늘어난 게 아니다.
-  const spdxCount = sectionCount(mappingCount(spdxFields));
-  const cdxCount = sectionCount(cdxFields.length);
+  const spdxCount = spdxFields.length ? sectionCount(mappingCount(spdxFields)) : none;
+  const cdxCount = cdxFields.length ? sectionCount(cdxFields.length) : none;
 
   // v0.6 추가 필드면 맨 위에 그 사실과 근거 조항을 적는다. 기존 필드에는 근거라는 개념이 없다.
   const isNew = (cdxFields || []).some(f => f.isNew) || (spdxFields || []).some(f => f.isNew);
