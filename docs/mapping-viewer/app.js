@@ -69,9 +69,11 @@ async function init() {
     fetch(LINKS_URL).then(r => r.json()),
   ]);
 
+  // 그릇(hyperparameters)에는 그 안의 키 전부가, 칸(hyperparameters.name)에는 제 키 하나가 붙는다
+  const addProp = (path, p) => { if (!propsByPath.has(path)) propsByPath.set(path, []); propsByPath.get(path).push(p); };
   for (const p of propRows) {
-    if (!propsByPath.has(p.path)) propsByPath.set(p.path, []);
-    propsByPath.get(p.path).push(p);
+    addProp(p.path, p);
+    if (p.child) addProp(`${p.path}.${p.child}`, p);
   }
   spdxRowByKey = new Map(spdxRows.map(r => [keyFor(r.class, r.property), r]));
   ({ reqByCdxPath, reqBySpdxKey, reqByAibomField } = buildRequirementIndex(reqRows));
@@ -91,7 +93,11 @@ async function init() {
   countNewFields(cdxRows);
   for (const path of cdxNodeIndex.keys()) representativeLis.add(shallowestLi(path));
 
-  searchEl.addEventListener("input", applyFilter);
+  buildFilterIndex();
+  buildSuggestIndex();
+  searchEl.addEventListener("input", debounce(() => { applyFilter(); showSuggestions(); }, 150));
+  searchEl.addEventListener("keydown", onSearchKey);
+  searchEl.addEventListener("blur", () => setTimeout(hideSuggestions, 150));
   if (addedOnlyEl) addedOnlyEl.addEventListener("change", applyFilter);
   initResizers();
   syncToolbarHeight();
@@ -739,7 +745,7 @@ function selectCdxRow(row, mapping, sourceDiv, scroll = true) {
   pinChips(fixedVocabChips(mapping));
 
   // renderDetailPanel 안의 paintTree 도 가지를 펼치므로 그것까지 끝난 지금 스크롤한다.
-  if (scroll && scrollTo) scrollTo.scrollIntoView({ block: "center", behavior: "smooth" });
+  if (scroll && scrollTo) (scrollTo.querySelector(".label") || scrollTo).scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
 }
 
 /** 그 필드를 더한 근거 (출처, 지시자) 쌍. 1.7 필드는 빈 배열이다. */
@@ -887,7 +893,7 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
     from: "spdx",
   });
 
-  if (scroll && scrollTo) scrollTo.scrollIntoView({ block: "center", behavior: "smooth" });
+  if (scroll && scrollTo) (scrollTo.querySelector(".label") || scrollTo).scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
 }
 
 // ── 오른쪽 패널 공통 렌더러: 어느 쪽에서 클릭했든 CycloneDX/SPDX/G7 Element 세
@@ -937,7 +943,6 @@ function renderDetailPanel({ cdxFields, spdxFields, properties, origins, require
 function propertyBlockHtml(p) {
   return `<div class="field-block">` +
     `<div class="field-name"><code class="prop-key">${escapeHtml(p.key)}</code></div>` +
-    (p.description_ko ? `<div class="field-desc">${escapeHtml(p.description_ko)}</div>` : "") +
     (p.allowed ? `<div class="field-desc">허용값: ${escapeHtml(p.allowed)}</div>` : "") +
     `</div>`;
 }
@@ -1069,7 +1074,7 @@ function treePager(cand, total) {
 /** 그 행으로 스크롤하고 잠깐 밝힌다 — 건너뛴 자리를 눈이 따라가게. */
 function flashRow(row) {
   if (!row) return;
-  row.scrollIntoView({ block: "center", behavior: "smooth" });
+  (row.querySelector(".label") || row).scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
   row.classList.add("hop-flash");
   setTimeout(() => row.classList.remove("hop-flash"), 700);
 }
@@ -1296,41 +1301,117 @@ function expandAncestors(li) {
 }
 
 // ── 검색 필터 ───────────────────────────────────────────────────────────
+function debounce(fn, ms) {
+  let timer = null;
+  return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); };
+}
+
+/* 필터 색인. 트리가 9만 줄이라 글자마다 DOM 을 훑으면 멈춘다. li 마다 글자·표시 상태를 한 번 모아 두고, 검색은 이 배열만 돌며
+   DOM 은 보이기가 바뀌는 자리만 쓴다. */
+let filterIndex = [];
+function buildFilterIndex() {
+  const walk = ul => [...ul.children].map(li => {
+    const div = li.querySelector(":scope > .node-row");
+    const childUl = li.querySelector(":scope > ul.tree-list");
+    return { li, div, toggle: div.querySelector(":scope > .toggle"), text: div.dataset.searchText || "",
+             isNew: div.classList.contains("is-new"), rep: !li.dataset.path || representativeLis.has(li),
+             children: childUl ? walk(childUl) : [], shown: true };
+  });
+  filterIndex = [cdxTreeEl, spdxTreeEl].map(t => t.querySelector(":scope > ul.tree-list")).filter(Boolean).map(walk);
+}
+
 function applyFilter() {
   const query = searchEl.value.trim().toLowerCase();
   const addedOnly = !!(addedOnlyEl && addedOnlyEl.checked);
-  for (const treeEl of [cdxTreeEl, spdxTreeEl]) {
-    const rootUl = treeEl.querySelector(":scope > ul.tree-list");
-    if (rootUl) filterList(rootUl, query, addedOnly);
-  }
+  for (const nodes of filterIndex) filterNodes(nodes, query, addedOnly, !!(query || addedOnly));
 }
 
-/** 검색어에 맞는 행과 그 조상만 남긴다. "추가 필드만" 이면 v0.6 추가 필드(와 그 조상)만. 둘 다 없으면 전부 접어 둔다. */
-function filterList(ul, query, addedOnly) {
-  const active = query || addedOnly;
-  let anyVisible = false;
-  for (const li of ul.children) {
-    const div = li.querySelector(":scope > .node-row");
-    // 공용 타입은 여러 자리에 접붙여져 같은 추가 필드가 수십 곳에 나타난다. "추가 필드만" 은 각 필드의 대표 자리(가장 얕은 곳)만 남긴다.
-    const representative = !li.dataset.path || representativeLis.has(li);
-    const selfMatch = (!query || (div.dataset.searchText || "").includes(query))
-      && (!addedOnly || (div.classList.contains("is-new") && representative));
-    const childUl = li.querySelector(":scope > ul.tree-list");
-    const childMatch = childUl ? filterList(childUl, query, addedOnly) : false;
-    const visible = selfMatch || childMatch;
-    li.style.display = visible ? "" : "none";
-    if (visible && active) {
-      li.classList.remove("collapsed");
-      const toggle = div.querySelector(".toggle");
-      if (toggle && toggle.textContent) toggle.textContent = "▼";
-    } else if (!active) {
-      li.classList.add("collapsed");
-      const toggle = div.querySelector(".toggle");
-      if (toggle && toggle.textContent) toggle.textContent = "▶";
+/** 검색어에 맞는 행과 그 조상만 남긴다. "추가 필드만" 이면 v0.6 추가 필드(대표 자리)와 그 조상만. 필터가 없으면 전부 접어 둔다. */
+function filterNodes(nodes, query, addedOnly, active) {
+  let any = false;
+  for (const n of nodes) {
+    const self = (!query || n.text.includes(query)) && (!addedOnly || (n.isNew && n.rep));
+    const child = n.children.length ? filterNodes(n.children, query, addedOnly, active) : false;
+    const visible = self || child;
+    if (visible !== n.shown) { n.li.style.display = visible ? "" : "none"; n.shown = visible; }
+    if (n.children.length) {
+      const collapse = !(visible && active);
+      if (n.li.classList.contains("collapsed") !== collapse) {
+        n.li.classList.toggle("collapsed", collapse);
+        if (n.toggle && n.toggle.textContent) n.toggle.textContent = collapse ? "▶" : "▼";
+      }
     }
-    anyVisible = anyVisible || visible;
+    any = any || visible;
   }
-  return anyVisible;
+  return any;
+}
+
+/* 검색 제안: 입력하는 동안 이름이 맞는 필드를 몇 개 보여 주고, 각 항목에 다른 형식의 대응 필드를 함께 적는다.
+   고르면 필터를 비우고 그 자리로 가서 누른 것과 같이 동작한다. */
+let suggestItems = [];
+const suggestEl = document.getElementById("suggest");
+function buildSuggestIndex() {
+  const items = [];
+  for (const [path, row] of cdxRowByPath) {
+    if (row.parent === "" || row.parent === "(공용 타입)" || !row.name) continue;
+    const m = mappingByPath.get(path);
+    const targets = m ? getTargets(m) : [];
+    items.push({ side: "cdx", key: path, name: row.name, path, isNew: !!row.added,
+                 to: targets.map(t => `${t.cls}${t.property ? "." + t.property : ""}`).slice(0, 2) });
+  }
+  for (const [key, row] of spdxRowByKey) {
+    if (!row.property) continue;
+    const back = (spdxToCdx.get(key) || []).map(m => m.cdxPath);
+    items.push({ side: "spdx", key, name: row.property, path: `${row.class}.${row.property}`, isNew: !!row.added,
+                 to: [...new Set(back)].slice(0, 2) });
+  }
+  suggestItems = items;
+}
+
+function showSuggestions() {
+  if (!suggestEl) return;
+  const q = searchEl.value.trim().toLowerCase();
+  if (q.length < 2) return hideSuggestions();
+  const rank = it => { const n = it.name.toLowerCase(); return n === q ? 0 : n.startsWith(q) ? 1 : n.includes(q) ? 2 : it.path.toLowerCase().includes(q) ? 3 : 9; };
+  const hits = suggestItems.map(it => [rank(it), it]).filter(([r]) => r < 9).sort((a, b) => a[0] - b[0] || a[1].name.length - b[1].name.length).slice(0, 8);
+  if (!hits.length) return hideSuggestions();
+  suggestEl.innerHTML = hits.map(([, it], i) =>
+    `<div class="suggest-item${i === 0 ? " active" : ""}" data-side="${it.side}" data-key="${escapeHtml(it.key)}">` +
+    `<span class="suggest-side">${it.side === "cdx" ? "CycloneDX" : "SPDX"}</span>` +
+    `<span class="suggest-name">${escapeHtml(it.name)}</span>${it.isNew ? `<span class="new-badge">v0.6</span>` : ""}` +
+    `<span class="suggest-path">${escapeHtml(it.path)}</span>` +
+    `<span class="suggest-to">${it.to.length ? "→ " + escapeHtml(it.to.join(", ")) : "대응 없음"}</span></div>`).join("");
+  suggestEl.classList.remove("hidden");
+  for (const el of suggestEl.querySelectorAll(".suggest-item")) {
+    el.addEventListener("mousedown", e => { e.preventDefault(); jumpTo(el.dataset.side, el.dataset.key); });
+  }
+}
+function hideSuggestions() { if (suggestEl) { suggestEl.classList.add("hidden"); suggestEl.innerHTML = ""; } }
+function onSearchKey(e) {
+  if (!suggestEl || suggestEl.classList.contains("hidden")) return;
+  const items = [...suggestEl.querySelectorAll(".suggest-item")];
+  const cur = items.findIndex(el => el.classList.contains("active"));
+  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+    e.preventDefault();
+    const next = (cur + (e.key === "ArrowDown" ? 1 : -1) + items.length) % items.length;
+    items.forEach((el, i) => el.classList.toggle("active", i === next));
+  } else if (e.key === "Enter" && cur >= 0) {
+    e.preventDefault(); jumpTo(items[cur].dataset.side, items[cur].dataset.key);
+  } else if (e.key === "Escape") {
+    hideSuggestions();
+  }
+}
+/** 제안 항목으로 이동: 필터를 비우고 그 행을 펼쳐 누른다 (대응 필드가 필터에 가려지지 않게). */
+function jumpTo(side, key) {
+  hideSuggestions();
+  searchEl.value = "";
+  applyFilter();
+  const li = side === "cdx" ? shallowestLi(key) : spdxNodeIndex.get(key);
+  if (!li) return;
+  expandAncestors(li);
+  const div = li.querySelector(":scope > .node-row");
+  div.click();
+  (div.querySelector(".label") || div).scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
 }
 
 })();

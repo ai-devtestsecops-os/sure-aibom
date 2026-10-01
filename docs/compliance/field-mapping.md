@@ -8,7 +8,8 @@ AI-BOM 의 필드를 세 가지로 본다. 이 값이 BOM 의 어디에 들어�
 <div id="topbar">
     <div id="search-box" class="mapping-only">
     <svg id="search-icon" viewBox="0 0 16 16" width="14" height="14"><path fill="currentColor" d="M11.03 9.62a4.7 4.7 0 1 0-1.41 1.41l3.02 3.02 1.41-1.41-3.02-3.02ZM4 6.7a2.7 2.7 0 1 1 5.4 0 2.7 2.7 0 0 1-5.4 0Z"/></svg>
-    <input id="search" type="text" placeholder="필드 이름이나 설명으로 찾기">
+    <input id="search" type="text" placeholder="필드 이름이나 설명으로 찾기" autocomplete="off">
+    <div id="suggest" class="hidden"></div>
   </div>
   <label id="added-only-box" title="AI-BOM v0.6 이 더한 필드와 그 조상만 남긴다"><input id="added-only" type="checkbox"> v0.6 추가 필드만</label>
   <button id="detail-toggle" class="mapping-only" title="상세 패널 열기/닫기">
