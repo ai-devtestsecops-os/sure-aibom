@@ -644,9 +644,19 @@
 .mapping-viewer .detail-section > h4 .section-count { line-height: 16px; }
 .mapping-viewer .section-none { margin-left: 6px; padding: 0 6px; border-radius: 8px; font-size: 11.5px; font-weight: 600; line-height: 16px;
   background: var(--bg-subtle); color: var(--text-muted); }                                  /* 개수 표와 같은 옅은 회색 채움 */
-.mapping-viewer .detail-section > h4 .section-count, .mapping-viewer .section-none { transform: translateY(1px); }   /* 글자 기준선에 맞춰 1px 내림 */
 .mapping-viewer .detail-section h4:has(.section-none) { margin-bottom: 0; }
 
 /* DATATYPE 표는 회색 대신 살구색. 회색은 "없음"·개수 표가 쓴다 */
 .mapping-viewer { --badge-type-bg: #ffedd5; --badge-type-fg: #9a3412; }
 [data-md-color-scheme="slate"] .mapping-viewer { --badge-type-bg: rgba(249, 115, 22, .22); --badge-type-fg: #fdba74; }
+
+/* 선택한 행도 대응 행과 같은 하늘색. 회색은 "비활성" 으로 읽힌다 */
+.mapping-viewer .node-row.selected, .mapping-viewer .node-row.selected:hover { background: var(--accent-soft); }
+
+/* 두 트리와 상세 패널은 각자 스크롤한다 (화면 높이에 맞춤). 한쪽 대응 행으로 가도 다른 쪽 트리는 그대로다.
+   flex 항목은 내용보다 작아지지 않으려 해서(min-height: auto) height 만으론 트리가 내용만큼 늘어난다 */
+.mapping-viewer { --tree-h: max(320px, calc(100vh - 2.4rem - var(--toolbar-h) - var(--head-h) - 2.5rem)); }
+.mapping-viewer .tree { flex: 0 0 var(--tree-h); height: var(--tree-h); min-height: 0; overflow: auto; }
+.mapping-viewer .pane { max-height: calc(var(--tree-h) + var(--head-h)); }
+.mapping-viewer #detail-panel { position: static; max-height: calc(var(--tree-h) + var(--head-h)); }
+.mapping-viewer .section-none { transform: translateY(-.5px); }   /* 글자 중심보다 0.5px 낮게 앉는다 */

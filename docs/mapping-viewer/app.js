@@ -749,7 +749,7 @@ function selectCdxRow(row, mapping, sourceDiv, scroll = true) {
   pinChips(fixedVocabChips(mapping));
 
   // renderDetailPanel 안의 paintTree 도 가지를 펼치므로 그것까지 끝난 지금 스크롤한다.
-  if (scroll && scrollTo) (scrollTo.querySelector(".label") || scrollTo).scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
+  if (scroll && scrollTo) revealInTree(scrollTo);
 }
 
 /** 그 필드를 더한 근거 (출처, 지시자) 쌍. 1.7 필드는 빈 배열이다. */
@@ -775,12 +775,15 @@ function requirementsFor(path, origins, targets = []) {
   const clauses = new Set(origins.filter(o => !isSpdxSource(o.source) && !isG7Source(o.source))
                                  .map(o => o.reference));
   for (const r of reqByCdxPath.get(path) || []) push(r);
-  // 요구사항 표가 SPDX 쪽 속성에만 걸어 둔 행이 있다 (1.7 에 자리가 없던 값은 SPDX 로만 충족했으므로). 이 필드와 대응하는
-  // SPDX 속성의 행도 같은 요구사항이다. v0.6 추가 필드면 그 필드의 근거 조항인 행만 든다 — 넓은 속성에 걸린 다른 조항까지
-  // 끌어오면 우리가 하지 않은 판단이 된다.
-  for (const t of targets) {
-    for (const r of reqBySpdxKey.get(keyFor(t.cls, t.property || "")) || []) {
-      if (!clauses.size || clauses.has(r.id)) push(r);
+  // 요구사항 표가 SPDX 쪽 속성에만 걸어 둔 행이 있다 (1.7 에 자리가 없던 값은 SPDX 로만 충족했으므로). v0.6 추가 필드는
+  // 그 필드의 근거 조항인 행을 대응 SPDX 속성에서 가져온다. 기존 필드는 가져오지 않는다. 대응이 Sbom.creationInfo 같은
+  // 중간 단계를 거치는데, 거기 걸린 조항은 그 단계 전체의 것이라 이 필드의 요구사항이 아니다 (timestamp 가 C(1)·C(2) 를 얻는 식).
+  // 같은 이유로 추가 필드도 체인의 마지막 속성만 본다.
+  if (clauses.size) {
+    const last = new Map();                       // 후보마다 마지막 단계
+    for (const t of targets) if (!last.has(t.candidateIndex) || last.get(t.candidateIndex).hopIndex < t.hopIndex) last.set(t.candidateIndex, t);
+    for (const t of last.values()) {
+      for (const r of reqBySpdxKey.get(keyFor(t.cls, t.property || "")) || []) if (clauses.has(r.id)) push(r);
     }
   }
   // aibom_field 로 걸린 행은 **그 조항이 이 필드를 만든 근거일 때만** 싣는다. SPDX 속성 하나가
@@ -897,7 +900,7 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
     from: "spdx",
   });
 
-  if (scroll && scrollTo) (scrollTo.querySelector(".label") || scrollTo).scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
+  if (scroll && scrollTo) revealInTree(scrollTo);
 }
 
 // ── 오른쪽 패널 공통 렌더러: 어느 쪽에서 클릭했든 CycloneDX/SPDX/G7 Element 세
@@ -1074,10 +1077,24 @@ function treePager(cand, total) {
   return box;
 }
 
+/** 행을 그 트리 안에서만 가운데로 스크롤한다. scrollIntoView 는 페이지까지 움직여서
+ *  누른 행이 화면 밖으로 밀려난다. 가로는 보이지 않을 때만 끌어온다. */
+function revealInTree(el) {
+  const label = el.querySelector(".label") || el;
+  const tree = el.closest(".tree");
+  if (!tree) { label.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" }); return; }
+  const t = tree.getBoundingClientRect(), r = label.getBoundingClientRect();
+  const top = tree.scrollTop + (r.top - t.top) - (tree.clientHeight - r.height) / 2;
+  let left = tree.scrollLeft;
+  if (r.left < t.left) left += r.left - t.left - 8;
+  else if (r.right > t.left + tree.clientWidth) left += r.right - (t.left + tree.clientWidth) + 8;
+  tree.scrollTo({ top: Math.max(0, top), left: Math.max(0, left), behavior: "smooth" });
+}
+
 /** 그 행으로 스크롤하고 잠깐 밝힌다 — 건너뛴 자리를 눈이 따라가게. */
 function flashRow(row) {
   if (!row) return;
-  (row.querySelector(".label") || row).scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
+  revealInTree(row);
   row.classList.add("hop-flash");
   setTimeout(() => row.classList.remove("hop-flash"), 700);
 }
@@ -1414,7 +1431,7 @@ function jumpTo(side, key) {
   expandAncestors(li);
   const div = li.querySelector(":scope > .node-row");
   div.click();
-  (div.querySelector(".label") || div).scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
+  revealInTree(div);
 }
 
 })();
