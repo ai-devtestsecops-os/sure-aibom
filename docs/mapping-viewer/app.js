@@ -94,6 +94,15 @@ async function init() {
   searchEl.addEventListener("input", applyFilter);
   if (addedOnlyEl) addedOnlyEl.addEventListener("change", applyFilter);
   initResizers();
+  syncToolbarHeight();
+  window.addEventListener("resize", syncToolbarHeight);
+}
+
+/** 트리 머리줄과 상세 패널이 붙는 자리는 검색 줄 바로 아래다. 검색 줄의 실제 높이를 CSS 변수로 넘긴다 (글자 크기·줄바꿈에 따라 달라진다). */
+function syncToolbarHeight() {
+  const viewer = document.querySelector(".mapping-viewer");
+  const topbar = document.getElementById("topbar");
+  if (viewer && topbar) viewer.style.setProperty("--toolbar-h", `${topbar.offsetHeight}px`);
 }
 
 /** v0.6 추가 필드의 대응 행을 기존 매핑 행 모양으로. 대상이 둘이면 서로 다른 대안(alt)으로 둔다. */

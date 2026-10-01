@@ -573,3 +573,17 @@
   border-bottom: 1px solid var(--border);
 }
 .mapping-viewer #detail-panel-header h3 { font-size: 15px; font-weight: 700; margin: 0; }
+
+/* 페이저 둥근 단추: 화살표 글자를 가운데에 */
+.mapping-viewer .pager-btn, .mapping-viewer .tree-pager .pager-btn {
+  display: inline-flex; align-items: center; justify-content: center; line-height: 1; padding: 0 0 2px;
+  font-family: var(--mono);
+}
+
+/* 위에 붙는 머리줄은 바탕을 불투명하게. 투명하면 스크롤한 행이 글자 뒤로 비친다 */
+.mapping-viewer .pane h2 { background: var(--md-default-bg-color); }
+.mapping-viewer #detail-panel, .mapping-viewer #detail-panel-header { background: var(--md-default-bg-color); }
+
+/* 두 트리는 같은 높이로 늘린다. 짧은 쪽 트리가 먼저 끝나면 그 머리줄이 위로 밀려 검색 줄과 겹쳐 보인다 */
+.mapping-viewer #panes { align-items: stretch; }
+.mapping-viewer #detail-panel { align-self: flex-start; }
