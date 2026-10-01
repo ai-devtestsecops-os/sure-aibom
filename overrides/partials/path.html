@@ -1,0 +1,26 @@
+{#-
+  Material 의 partials/path.html 을 덮어쓴다. 원본은 조상이 둘 이상일 때만 경로를 그리고 현재 페이지는 뺀다.
+  여기서는 홈 바로 아래 페이지에도 그리고(홈 › 소개), 끝에 현재 페이지를 붙인다(홈 › 가이드 › 스캔 대상).
+  맨 앞은 늘 홈이고, 섹션의 첫 페이지(index.md)는 조상 조각이 이미 그 페이지라 다시 붙이지 않는다. 홈에서는 그리지 않는다.
+-#}
+{% import "partials/path-item.html" as item with context %}
+{% if page.meta and page.meta.hide %}
+  {% set hidden = "hidden" if "path" in page.meta.hide %}
+{% endif %}
+{% set crumbs = page.ancestors | reverse | list %}
+{% if not page.is_homepage %}
+  <nav class="md-path" aria-label="{{ lang.t('nav') }}" {{ hidden }}>
+    <ol class="md-path__list">
+      {% if nav.homepage %}
+        {{ item.render(nav.homepage) }}
+      {% endif %}
+      {% set links = crumbs[:-1] if page.is_index else crumbs %}   {# 섹션 첫 페이지면 마지막 조상이 곧 현재 페이지 #}
+      {% for nav_item in links %}
+        {{ item.render(nav_item) }}
+      {% endfor %}
+      <li class="md-path__item md-path__item--current">
+        <span class="md-path__link md-ellipsis">{{ crumbs[-1].title if page.is_index else page.title }}</span>
+      </li>
+    </ol>
+  </nav>
+{% endif %}

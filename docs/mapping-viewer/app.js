@@ -1,3 +1,5 @@
+// 필드 매핑 뷰어. docs/field-mapping.md 에 직접 넣은 HTML 을 채운다. 다른 페이지에서는 (뷰어 요소가 없으니) 아무것도 하지 않는다.
+if (document.querySelector(".mapping-viewer")) (() => {
 // CycloneDX <-> SPDX 매핑 뷰어 (프로토타입)
 // 데이터는 build 스텝 없이 data/*.json 을 그대로 fetch 해서 쓴다 (ai-bom/data 의 복사본).
 //
@@ -9,16 +11,17 @@
 //   requirement_field_mapping.json: NIST AI RMF·ISO 42001 요구사항이 어느 필드로 충족되는지
 //                        — cdx_ref(CDX 경로)·spdx_ref("Class.property")가 위 두 트리로의 조인 키
 
-const CDX_URL = "data/cyclonedx.json";
-const CDX_REFS_URL = "data/cyclonedx_refs.json";
-const SPDX_URL = "data/spdx.json";
-const MAPPING_URL = "data/cdx_spdx_mapping.json";
+const BASE = document.querySelector(".mapping-viewer").dataset.base || "data/";   // 페이지 기준 상대 경로
+const CDX_URL = BASE + "cyclonedx.json";
+const CDX_REFS_URL = BASE + "cyclonedx_refs.json";
+const SPDX_URL = BASE + "spdx.json";
+const MAPPING_URL = BASE + "cdx_spdx_mapping.json";
 // AI-BOM v0.5 — CycloneDX 1.7 트리에 새 필드를 꽂은 형식과 그 SPDX 매핑. 탭을 늘리지 않고
 // 왼쪽 트리를 갈아 끼운다(v0.5 는 1.7 의 상위집합이라 나란히 두면 대비가 안 된다).
-const V05_URL = "data/aibom_v0.5.json";
-const V05_MAPPING_URL = "data/aibom_v0.5_spdx_mapping.json";
-const REQ_URL = "data/requirement_field_mapping.json";
-const G7_URL = "data/g7_aibom.json";
+const V05_URL = BASE + "aibom_v0.5.json";
+const V05_MAPPING_URL = BASE + "aibom_v0.5_spdx_mapping.json";
+const REQ_URL = BASE + "requirement_field_mapping.json";
+const G7_URL = BASE + "g7_aibom.json";
 
 const PROFILE_ORDER = ["Core", "Software", "AI", "Dataset", "Security",
   "Expanded Licensing", "Simple Licensing", "Build", "Extension"];
@@ -1298,3 +1301,5 @@ function filterList(ul, query) {
   }
   return anyVisible;
 }
+
+})();

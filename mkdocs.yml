@@ -1,4 +1,4 @@
-site_name: AI-BOM CLI
+site_name: aibom-cli
 site_description: AI-BOM 생성 CLI 문서
 docs_dir: docs
 theme:
@@ -29,7 +29,8 @@ theme:
     text: Noto Sans KR
     code: JetBrains Mono
   features:
-    - navigation.sections
+    - navigation.indexes      # 섹션 제목이 곧 그 섹션의 첫 페이지
+    - navigation.path         # 제목 위 경로 (aibom-cli / 가이드 / 스캔 대상)
     - navigation.footer
     - search.highlight
     - content.code.copy
@@ -37,13 +38,21 @@ extra:
   generator: false
 extra_css:
   - stylesheets/extra.css
+  - mapping-viewer/viewer.css
 extra_javascript:
   - javascripts/palette-menu.js
+  - mapping-viewer/app.js
 markdown_extensions:
   - tables
   - admonition
   - pymdownx.superfences
 nav:
-  - Home: index.md
-  - 스캔 대상: scan-targets.md
-  - 필드 매핑 뷰어: field-mapping.md
+  - 홈: index.md
+  - 소개: about.md
+  - 가이드:
+      - guides/index.md                           # 섹션 이름을 누르면 이 페이지, 화살표로 펼침
+      - 스캔 대상: guides/scan-targets.md
+  - 규제 준수:
+      - compliance/index.md
+      - AI-BOM v0.6: compliance/aibom-v0.6.md
+      - 필드 매핑: compliance/field-mapping.md

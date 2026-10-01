@@ -1,6 +1,7 @@
 /* 본문을 넓게 (기본 61rem), 왼쪽 메뉴는 좁게. 오른쪽 목차는 그대로 둔다 */
 .md-grid { max-width: 90rem; }
-.md-sidebar--primary { width: 11rem; }
+.md-sidebar--primary { width: 9rem; }
+.md-sidebar--secondary { width: 10rem; }
 
 /* 상단 바는 스크롤해도 사이트 이름을 그대로 둔다 (기본은 페이지 제목으로 바뀜) */
 .md-header__title--active .md-header__topic:first-child {
@@ -75,5 +76,17 @@ html { scrollbar-gutter: stable; }
 /* 상단 바 정렬: 제목은 왼쪽 메뉴 글자와 같은 x 에서 시작하고, 검색창은 오른쪽 목차 글자의 시작부터 오른쪽 끝까지 */
 [dir=ltr] .md-header__title, .md-header__title { margin-left: .6rem; }    /* Material 의 [dir=ltr] 규칙보다 우선 */
 @media screen and (min-width: 60em) {
-  .md-search__inner { width: 11.1rem; }
+  .md-search__inner { width: 9.0rem; }
 }
+
+/* 왼쪽 메뉴: 첫 단계(홈, 소개, 가이드, 규제 준수)는 검정 굵게, 그 안의 페이지는 회색, 현재 페이지만 파랗게.
+   섹션은 화살표로 펼치고(현재 페이지가 든 섹션은 열려 있다) 하위 항목은 들여쓴다 */
+.md-nav--primary .md-nav__link { color: var(--md-default-fg-color--light); }
+.md-nav--primary .md-nav__link:hover { color: var(--md-default-fg-color); }
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link,
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__container > .md-nav__link { color: var(--md-default-fg-color); font-weight: 700; }
+.md-nav--primary .md-nav__link--active, .md-nav--primary .md-nav__link--active:hover { color: var(--md-primary-fg-color) !important; }
+.md-nav--primary .md-nav__item--nested .md-nav { padding-left: .6rem; }
+
+/* 경로 표시: 현재 페이지 조각은 링크가 아니라 글자 색으로 */
+.md-path__item--current .md-path__link { color: var(--md-default-fg-color); font-weight: 700; cursor: default; }

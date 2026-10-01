@@ -1,17 +1,10 @@
-<!doctype html>
-<html lang="en">
-<head>
-<meta charset="utf-8">
-<title>AI-BOM 필드 매핑 뷰어</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
-</head>
-<body>
-<header id="topbar">
-  <h1>AI-BOM 필드 매핑</h1>
-  <div id="search-box" class="mapping-only">
+# 필드 매핑
+
+CycloneDX 1.7 과 SPDX 3.0.1 의 필드 대응, 규제(NIST AI RMF, ISO/IEC 42001) 요구사항을 채우는 필드, AI-BOM 이 더한 필드. 검색창에 필드 이름을 넣으면 양쪽 트리에서 찾는다.
+
+<div class="mapping-viewer" data-base="../../mapping-viewer/data/">
+<div id="topbar">
+    <div id="search-box" class="mapping-only">
     <svg id="search-icon" viewBox="0 0 16 16" width="14" height="14"><path fill="currentColor" d="M11.03 9.62a4.7 4.7 0 1 0-1.41 1.41l3.02 3.02 1.41-1.41-3.02-3.02ZM4 6.7a2.7 2.7 0 1 1 5.4 0 2.7 2.7 0 0 1-5.4 0Z"/></svg>
     <input id="search" type="text" placeholder="Search fields, classes, properties…">
   </div>
@@ -22,9 +15,8 @@
     </svg>
     <span>Details</span>
   </button>
-</header>
-
-<main id="panes" class="tab-view">
+</div>
+<div id="panes" class="tab-view">
   <section class="pane" id="cdx-pane">
     <h2>
       <span class="pane-title">CycloneDX</span>
@@ -47,8 +39,5 @@
     </div>
     <div id="detail-body"></div>
   </aside>
-</main>
-
-<script src="app.js"></script>
-</body>
-</html>
+</div>
+</div>
