@@ -21,7 +21,7 @@
 .md-nav__title .md-nav__button.md-logo { display: none; }
 
 /* 색 모드: 토글 대신 메뉴 (라이트 · 다크 · 시스템). 현재 모드는 radio 입력의 :checked 로 고른다 */
-.palette-menu { position: relative; order: 10; margin-left: .2rem; }             /* 상단 바 맨 오른쪽 */
+.palette-menu { position: relative; margin-right: .2rem; }                         /* 검색창 왼쪽 */
 .md-header__button.palette-menu__button:not([hidden]) { display: inline-flex; align-items: center; padding: .4rem .2rem; margin: 0 .2rem 0 0; }  /* Material 의 inline-block 보다 우선 */
 .palette-menu__button .palette-menu__current svg { width: .95rem; height: .95rem; }   /* 아이콘은 작게 */
 .palette-menu__caret svg { width: .8rem; height: .8rem; margin-left: -.1rem; }        /* 열린다는 표시 */
@@ -71,3 +71,9 @@ html { scrollbar-gutter: stable; }
 .md-nav--secondary .md-nav__link { color: var(--md-default-fg-color--light); }
 .md-nav--secondary .md-nav__link:hover { color: var(--md-default-fg-color); }
 .md-nav--secondary .md-nav__link--active { color: var(--md-primary-fg-color); }
+
+/* 상단 바 정렬: 제목은 왼쪽 메뉴 글자와 같은 x 에서 시작하고, 검색창은 오른쪽 목차 글자의 시작부터 오른쪽 끝까지 */
+[dir=ltr] .md-header__title, .md-header__title { margin-left: .6rem; }    /* Material 의 [dir=ltr] 규칙보다 우선 */
+@media screen and (min-width: 60em) {
+  .md-search__inner { width: 11.1rem; }
+}
