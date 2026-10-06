@@ -102,7 +102,7 @@ aibom-cli scan ./project -o bom.cdx.json --spec v0.6   # v0.6 필드로
 
 ## 검증
 
-만든 BOM 을 같은 스키마로 다시 검증할 수 있다. `--spec` 은 필수다.
+생성된 AI-BOM 을 같은 스키마로 다시 검증할 수 있다. `--spec` 은 필수다.
 
 ```bash
 aibom-cli validate bom.cdx.json --spec 1.7
