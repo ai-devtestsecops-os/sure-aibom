@@ -1,4 +1,7 @@
-# AI-BOM v0.6
+# AI-BOM v0.6 필드
+
+규제 값을 넣는 두 방식 가운데 `--spec v0.6` 이 고르는 쪽이다. 기존 표준에 더한 전용 필드에 값을 적고, 그 필드의 타입과 허용값을
+스키마로 검증한다. 다른 방식인 `--spec 1.7` 은 같은 값을 기존 `properties` 배열에 적는다. 그쪽 키는 [properties 키](regulation-fields.md)에 있다.
 
 AI-BOM v0.6 은 규제(EU AI Act, ISO/IEC 42001, NIST AI RMF)가 요구하지만 기존 표준에 담을 자리가 없는 값을 위해
 CycloneDX 1.7 과 SPDX 3.0.1 에 각각 필드를 더한 스키마 2종이다. 기존 필드의 이름, 타입, 필수 여부는 바꾸지 않고
@@ -43,4 +46,4 @@ v0.6 이 정의한 필드 가운데 aibom-cli 0.1.0 이 실제로 값을 채우�
 | 모델 | inputs maxSize, technicalRequirements | cdxgen 이 읽은 모델 카드와 코드 |
 | 데이터셋 | size, modality, availability, provenance, statistics | HuggingFace Hub API (허브 데이터셋), 파일 분석 (로컬 데이터) |
 
-키 이름과 설명, 허용값은 [규제 필드](regulation-fields.md)에, 필드가 어디에 붙고 기존 표준의 어느 필드와 대응하는지는 [필드 레퍼런스](field-mapping.md)에 있다.
+properties 로 낼 때의 키 이름과 설명, 허용값은 [properties 키](regulation-fields.md)에, 필드가 어디에 붙고 기존 표준의 어느 필드와 대응하는지는 [필드 탐색기](field-mapping.md)에 있다.

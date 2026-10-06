@@ -58,6 +58,7 @@ const cdxChipIndex = new Map();         // "cdxPath::value" -> [<span class=enum
 const spdxChipIndex = new Map();        // "cls::value" -> [<span class=enum-chip>, ...]
 let currentHighlighted = [];
 let propsByPath = new Map();            // CycloneDX 경로 -> [properties 키 행, ...] (v0.6 추가 필드만)
+let siteAlias = new Map();              // 접붙인 자리의 경로(…inputs.maxSize) -> 공용 타입 행(inputOutputMLParameters.maxSize)
 let representativeLis = new Set();      // 경로마다 가장 얕은 자리의 <li> 하나 ("추가 필드만" 필터가 남기는 자리)
 const addedOnlyEl = document.getElementById("added-only");
 
@@ -90,6 +91,8 @@ async function init() {
   mappingByPath = mapping;
   spdxToCdx = buildReverseIndex(mappingRows);
   cdxRowByPath = new Map(cdxRows.map(r => [r.path, r]));
+  // 공용 타입의 필드가 접붙인 자리마다 다른 SPDX 속성에 대응하면 (inputs 와 outputs 의 maxSize), 그 자리의 경로로 찾는다
+  for (const r of mappingRows) if (r.defPath && cdxRowByPath.has(r.defPath)) siteAlias.set(r.path, cdxRowByPath.get(r.defPath));
   ({ cdxEnumIndex, spdxEnumIndex } = buildEnumIndex(mappingRows));
 
   spdxTreeEl.appendChild(renderChildren(buildSpdxTree(spdxRows).children, renderSpdxProfileNode, 0));
@@ -171,6 +174,7 @@ function addedMappingRows(linkRows) {
   return linkRows.map(l => {
     const t = l.targets;
     const row = { path: l.path, parent: "v0.6", spdx: t.map(x => `${x.class}.${x.property}`).join(", ") };
+    if (l.site) { row.defPath = l.path; row.path = l.site + l.path.slice(l.path.indexOf(".")); }   // 접붙인 자리의 경로로
     if (t.length > 1) {
       row.spdx_multi = t.map(x => ({ profile: x.profile, class: x.class, property: x.property, kind: "Property" }));
       row.spdx_multi_kind = "alt";
@@ -179,6 +183,31 @@ function addedMappingRows(linkRows) {
     }
     return row;
   });
+}
+
+/** 접붙인 자리의 경로(metadata.component.modelCard…, components.modelCard…)가 공용 타입 안의 경로(component.modelCard…)와
+ *  같은 자리인가. 공용 타입은 트리에 제 이름으로 서지 않고 쓰이는 자리마다 다른 이름(components, metadata.component) 밑에
+ *  붙으므로, 타입 이름(첫 마디)을 뗀 나머지가 자리 경로의 끝과 같으면 같은 자리로 본다. */
+function atSite(sitePath, path) {
+  if (sitePath === path) return true;
+  const head = path.slice(0, path.indexOf("."));
+  const def = cdxRowByPath.get(head);
+  const tail = def && def.parent === "(공용 타입)" ? path.slice(head.length + 1) : path;
+  return sitePath === tail || sitePath.endsWith("." + tail);
+}
+
+/** properties 키는 접붙인 자리의 경로(component.modelCard.modelParameters.inputs.format)에 걸려 있다. 공용 타입 행의 경로
+ *  (inputOutputMLParameters.format)로는 안 잡히므로 자리 경로로 찾는다. */
+function propsFor(sitePath, defPath) {
+  if (propsByPath.has(defPath)) return propsByPath.get(defPath);
+  for (const [k, v] of propsByPath) if (atSite(sitePath, k)) return v;
+  return [];
+}
+
+/** 접붙인 자리가 자리별 대응을 가진 경로(…modelParameters.inputs.maxSize)의 자리면 그 경로 */
+function siteKeyFor(sitePath) {
+  for (const a of siteAlias.keys()) if (atSite(sitePath, a)) return a;
+  return null;
 }
 
 /** 공용 타입은 트리 여러 자리에 접붙여진다. 그중 가장 얕은 한 곳이 그 필드의 대표 자리다. */
@@ -550,14 +579,17 @@ function buildCdxTree(rows) {
   return root;
 }
 
-function renderCdxNode(node, depth, ancestors) {
+function renderCdxNode(node, depth, ancestors, parentPath) {
   const row = node.row;
   const isBranch = row.name === "";
+  // 접붙인 자리의 실제 경로. 공용 타입의 필드는 자리마다 대응이 다를 수 있어서 (inputs.maxSize 와 outputs.maxSize), 그런 자리는 이 경로로 찾는다
+  const sitePath = parentPath && row.name ? `${parentPath}.${row.name}` : (parentPath || row.path);
+  const key = siteKeyFor(sitePath) || row.path;
   // CDX 스키마엔 진짜 재귀 구조가 있다(component.components/pedigree.* 가 다시 component를
   // 참조하는 식) — ref 접붙이기와 만나면 같은 노드가 자기 자손으로 다시 나타나 무한
   // 렌더링에 빠질 수 있다. 지금 조상 경로에 이미 나온 path면 더 안 펼치고 leaf로 멈춘다.
   const isRecursive = ancestors.has(row.path);
-  const mapping = mappingByPath.get(row.path);
+  const mapping = mappingByPath.get(key);
   const hasMapping = !!(mapping && mapping.spdx && mapping.spdx !== "-" && mapping.spdx !== "");
   const li = document.createElement("li");
   li.className = "collapsed";
@@ -585,14 +617,18 @@ function renderCdxNode(node, depth, ancestors) {
 
   if (!isBranch) {
     div.addEventListener("click", () => {
-      selectCdxRow(row, mapping, div);
+      selectCdxRow(row, mapping, div, true, key, sitePath);
     });
   }
-  if (enumInfo) wireEnumChips(div, "cdx", row.path, () => selectCdxRow(row, mapping, div, false));
+  if (enumInfo) wireEnumChips(div, "cdx", row.path, () => selectCdxRow(row, mapping, div, false, key, sitePath));
   li.appendChild(div);
 
   if (!cdxNodeIndex.has(row.path)) cdxNodeIndex.set(row.path, []);
   cdxNodeIndex.get(row.path).push(li);
+  if (key !== row.path) {                                 // 자리 경로로도 찾는다 (SPDX 쪽에서 되짚어 올 때)
+    if (!cdxNodeIndex.has(key)) cdxNodeIndex.set(key, []);
+    cdxNodeIndex.get(key).push(li);
+  }
 
   if (node.children.length && !isRecursive) {
     div.classList.add("expandable");          // 두 트리 공통: 펼칠 수 있는 행은 조금 굵게 (SPDX 의 클래스 행과 같은 규칙)
@@ -605,7 +641,7 @@ function renderCdxNode(node, depth, ancestors) {
     });
     const childAncestors = new Set(ancestors);
     childAncestors.add(row.path);
-    li.appendChild(renderChildren(node.children, renderCdxNode, depth + 1, childAncestors));
+    li.appendChild(renderChildren(node.children, renderCdxNode, depth + 1, childAncestors, sitePath));
   }
   return li;
 }
@@ -702,10 +738,10 @@ function renderSpdxPropertyNode(node) {
 }
 
 // ── 공통 렌더 헬퍼 ──────────────────────────────────────────────────────
-function renderChildren(children, renderFn, depth, ancestors) {
+function renderChildren(children, renderFn, depth, ancestors, parentPath) {
   const ul = document.createElement("ul");
   ul.className = "tree-list";
-  for (const child of children) ul.appendChild(renderFn(child, depth, ancestors));
+  for (const child of children) ul.appendChild(renderFn(child, depth, ancestors, parentPath));
   return ul;
 }
 
@@ -741,7 +777,7 @@ function applyHighlight(targetDiv) {
 // 그래서 근거를 **그것이 원래 속한 절로 흘려보낸다**: SPDX 출처는 SPDX 절, G7 출처는 G7 절,
 // 조항 출처는 Requirement Coverage. 어느 절에 놓이든 초록 v0.5 표시가 "이것 때문에 더했다"를
 // 뜻하고, 필드 자체가 새것이라는 사실은 CycloneDX 절의 NEW 배지가 든다.
-function selectCdxRow(row, mapping, sourceDiv, scroll = true) {
+function selectCdxRow(row, mapping, sourceDiv, scroll = true, key = row.path, sitePath = key) {
   clearHighlight();
   markSelected(sourceDiv);
   const targets = mapping ? getTargets(mapping) : [];
@@ -778,7 +814,7 @@ function selectCdxRow(row, mapping, sourceDiv, scroll = true) {
   });
   renderDetailPanel({
     cdxFields: [{
-      name: row.path,
+      name: key,
       type: row.type || "",
       desc: row.description || "",
       descKo: row.description_ko || "",
@@ -789,7 +825,7 @@ function selectCdxRow(row, mapping, sourceDiv, scroll = true) {
     // 든다 — g7_element 칸은 요소 축의 추적성이라 필드마다 검토된 적이 없고(사라지는 격차
     // 행에서 상속되기도 한다), 그것을 여기 실으면 근거가 아닌 것이 근거로 읽힌다.
     // 1.7 필드에는 근거라는 개념이 없으므로 그 칸을 그대로 든다.
-    properties: propsByPath.get(row.path) || [],
+    properties: propsFor(sitePath, row.path),
     origins,
     ...requirementsFor(row.path, origins, targets),
     from: "cdx",
@@ -911,7 +947,7 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
       applyHighlight(targetDiv);
       if (first) { scrollTo = targetDiv; first = false; }
     }
-    const cdxRow = cdxRowByPath.get(m.cdxPath);
+    const cdxRow = cdxRowByPath.get(m.cdxPath) || siteAlias.get(m.cdxPath);
     properties.push(...(propsByPath.get(m.cdxPath) || []));
     originList.push(...originsOf(cdxRow));
     cdxFields.push({
@@ -938,7 +974,8 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
   // 경우(spdx_ref 없음)에도 그 CDX 필드와 이어진 SPDX 속성을 누르면 보이게 하기 위함.
   const reqs = [...(reqBySpdxKey.get(key) || [])];
   for (const m of matches) {
-    const { requirements } = requirementsFor(m.cdxPath, originsOf(cdxRowByPath.get(m.cdxPath)));
+    const cdxRow = cdxRowByPath.get(m.cdxPath) || siteAlias.get(m.cdxPath);
+    const { requirements } = requirementsFor(cdxRow ? cdxRow.path : m.cdxPath, originsOf(cdxRow));
     for (const r of requirements) if (!reqs.some(x => x.row_key === r.row_key)) reqs.push(r);
   }
 
@@ -1424,7 +1461,8 @@ let suggestItems = [];
 const suggestEl = document.getElementById("suggest");
 function buildSuggestIndex() {
   const items = [];
-  for (const [path, row] of cdxRowByPath) {
+  const sited = new Set([...siteAlias.values()].map(r => r.path));   // 자리마다 따로 싣는 공용 타입 필드
+  for (const [path, row] of [...cdxRowByPath].filter(([p]) => !sited.has(p)).concat([...siteAlias])) {
     if (row.parent === "" || row.parent === "(공용 타입)" || !row.name) continue;
     const m = mappingByPath.get(path);
     const targets = m ? getTargets(m) : [];

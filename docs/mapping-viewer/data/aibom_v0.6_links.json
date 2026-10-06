@@ -266,7 +266,8 @@
     "property": "aibom_inputMaxSize"
    }
   ],
-  "source": "spdx-added"
+  "source": "spdx-added",
+  "site": "component.modelCard.modelParameters.inputs"
  },
  {
   "path": "component.modelCard.modelParameters.outputs",
@@ -288,7 +289,8 @@
     "property": "aibom_outputMaxSize"
    }
   ],
-  "source": "spdx-added"
+  "source": "spdx-added",
+  "site": "component.modelCard.modelParameters.outputs"
  },
  {
   "path": "component.modelCard.modelParameters.parameterCount",

@@ -51,9 +51,10 @@ nav:
   - 소개: about.md
   - 가이드:
       - guides/index.md                           # 섹션 이름을 누르면 이 페이지, 화살표로 펼침
+      - 시작하기: guides/getting-started.md
       - 스캔 대상: guides/scan-targets.md
   - 규제 준수:
       - compliance/index.md
-      - AI-BOM v0.6: compliance/aibom-v0.6.md
-      - 규제 필드: compliance/regulation-fields.md
-      - 필드 레퍼런스: compliance/field-mapping.md
+      - AI-BOM v0.6 필드: compliance/aibom-v0.6.md
+      - properties 키: compliance/regulation-fields.md
+      - 필드 탐색기: compliance/field-mapping.md

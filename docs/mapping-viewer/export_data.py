@@ -60,8 +60,14 @@ def links():
             out.append({"path": path, "targets": targets, "source": "spdx-base"})
     for r in load("aibom_v0.6_spdx.json"):               # SPDX 에 더한 속성은 자기 CycloneDX 경로를 안다
         if r.get("added") and r.get("path") and r.get("property"):
-            out.append({"path": r["path"], "targets": [{"profile": r["profile"], "class": r["class"], "property": r["property"]}],
-                        "source": "spdx-added"})
+            link = {"path": r["path"], "targets": [{"profile": r["profile"], "class": r["class"], "property": r["property"]}],
+                    "source": "spdx-added"}
+            # 공용 타입의 필드(inputOutputMLParameters.maxSize)는 트리 여러 자리에 접붙여지고, SPDX 속성은 그중 한 자리의
+            # 것이다 (inputs 의 maxSize 는 aibom_inputMaxSize, outputs 의 것은 aibom_outputMaxSize). 그 자리를 site 로 적는다.
+            site = r.get("sort_path")
+            if site and not r["path"].startswith(site):
+                link["site"] = site
+            out.append(link)
     return out
 
 
