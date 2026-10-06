@@ -17,8 +17,8 @@ aibom-cli 는 `scan <target>` 의 `<target>` 모양을 보고 입력의 종류�
 | 찾는 것 | 누가 | 어디서 |
 |---|---|---|
 | 소프트웨어 패키지 | syft | 패키지 매니페스트와 설치된 패키지 (`requirements.txt`, `package-lock.json`, `pyproject.toml` 등). 매니페스트 파일은 `file` 컴포넌트로도 남는다 |
-| 모델 | cdxgen | 파이썬 소스와 노트북의 `from_pretrained("owner/name")` 호출, 받아 둔 모델 폴더(`config.json`, `adapter_config.json`, 모델 카드 README.md), `*.gguf`, Ollama `Modelfile` |
-| 모델 카드의 데이터셋 참조 | cdxgen | 받아 둔 모델 폴더의 README.md 앞머리 `datasets:` |
+| 모델 | cdxgen | 파이썬 소스와 노트북의 `from_pretrained("owner/name")` 호출, 로컬 모델(`config.json`, `adapter_config.json`, 모델 카드 README.md), `*.gguf`, Ollama `Modelfile`. 가중치 파일(`.safetensors`, `.bin`, `.pt`)만 있는 폴더는 모델로 잡지 않는다 |
+| 모델 카드의 데이터셋 참조 | cdxgen | 로컬 모델의 README.md 앞머리 `datasets:` |
 | 코드의 데이터셋 참조 | aibom-cli | 파이썬 소스의 `load_dataset("owner/name")` 호출. 첫 인자가 로컬 빌더(`csv`, `json`, `parquet` …)이거나 경로이면 허브 참조가 아니라 넘긴다 |
 | 모델의 하이퍼파라미터 · 파라미터 수 | aibom-cli | cdxgen 이 찾은 모델의 `config.json`, `*.gguf` 헤더, 같은 폴더의 `*.safetensors` 헤더 |
 

@@ -96,3 +96,6 @@ html { scrollbar-gutter: stable; }
 .md-footer__title { margin-bottom: .3rem; font-size: .8rem; }
 .md-footer__direction { font-size: .6rem; }
 .md-copyright { padding: .2rem 0; }     /* 아래 메타 띠(저작권·생성기 자리, 지금은 비어 있다)도 얇게 */
+
+/* 표: 마우스를 올려도 행을 회색으로 칠하지 않는다 (Material 기본은 hover 에 옅은 회색) */
+.md-typeset table:not([class]) tbody tr:hover { background-color: transparent; box-shadow: none; }

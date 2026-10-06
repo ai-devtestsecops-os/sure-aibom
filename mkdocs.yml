@@ -48,7 +48,7 @@ markdown_extensions:
   - pymdownx.superfences
 nav:
   - 홈: index.md
-  - 소개: about.md
+  - 작동 방식: about.md
   - 가이드:
       - guides/index.md                           # 섹션 이름을 누르면 이 페이지, 화살표로 펼침
       - 시작하기: guides/getting-started.md

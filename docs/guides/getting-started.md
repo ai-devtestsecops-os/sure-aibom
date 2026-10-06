@@ -58,9 +58,10 @@ aibom-cli scan ./project -o bom.cdx.json --data ./dataset --data ./more/train.cs
 스캔은 네 단계로 돈다. syft 와 cdxgen 이 각각 S-BOM 과 M-BOM 을 만들고, aibom-cli 가 둘을 합친 뒤 데이터셋과 규제 필드를
 채우고, 마지막으로 스키마 검증을 한다. 단계마다 무엇을 찾는지는 [스캔 대상](scan-targets.md)에 있다.
 
-## 결과 살펴보기
+## 출력 확인
 
-결과는 CycloneDX 1.7 JSON 이다. 컴포넌트의 `type` 으로 셋을 가른다.
+결과는 CycloneDX 1.7 JSON 이다. 루트 컴포넌트(`metadata.component`)는 디렉터리면 `application`, 이미지면 `container` 이고,
+그 아래 `components[]` 는 `type` 으로 가른다.
 
 | `type` | 뜻 | 누가 만드나 |
 |---|---|---|
@@ -83,7 +84,7 @@ jq '[.components[].type] | group_by(.) | map({(.[0]): length}) | add' bom.cdx.js
 
 모델 카드 정보는 모델 컴포넌트의 `modelCard` 에, 데이터셋 정보는 데이터셋 컴포넌트의 `data` 에 들어 있다.
 
-## 규제 필드를 넣는 두 가지 방식
+## 규제 필드 방식
 
 규제가 요구하지만 CycloneDX 1.7 에 자리가 없는 값(하이퍼파라미터, 파라미터 수, 데이터셋 크기와 출처 등)은 `--spec` 에 따라 두 방식 중 하나로 적는다.
 

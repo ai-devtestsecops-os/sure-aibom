@@ -36,13 +36,13 @@ SPDX 3.0.1 기반
 
 ![AI-BOM v0.6 구조 (SPDX 3.0.1 기반)](../images/aibom_v0.6_spdx_anatomy.png)
 
-## aibom-cli 가 지금 채우는 필드
+## 채우는 필드
 
 v0.6 이 정의한 필드 가운데 aibom-cli 0.1.0 이 실제로 값을 채우는 것은 아홉 개다.
 
 | 대상 | 필드 | 값의 출처 |
 |---|---|---|
-| 모델 | hyperparameters, parameterCount | 받아 둔 모델의 `config.json`, gguf 헤더, safetensors 헤더 |
+| 모델 | hyperparameters, parameterCount | 로컬 모델의 `config.json`, gguf 헤더, safetensors 헤더 |
 | 모델 | inputs maxSize, technicalRequirements | cdxgen 이 읽은 모델 카드와 코드 |
 | 데이터셋 | size, modality, availability, provenance, statistics | HuggingFace Hub API (허브 데이터셋), 파일 분석 (로컬 데이터) |
 
