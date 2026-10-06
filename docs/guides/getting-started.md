@@ -6,29 +6,29 @@ AI-BOM 은 AI 시스템을 이루는 소프트웨어 패키지(S-BOM), 모델(M-
 
 ## 설치
 
-aibom-cli 가 부르는 도구([syft](https://github.com/anchore/syft), [cdxgen](https://github.com/CycloneDX/cdxgen), crane)는 conda 환경 하나로 받는다.
-그 위에 aibom-cli 와 [OWASP aibom-generator](https://github.com/GenAI-Security-Project/aibom-generator) 를 더한다.
+실행에 필요한 도구는 conda 환경으로 받고, 그 위에 aibom-cli 를 설치한다.
+OWASP aibom-generator 는 패키지로 배포되지 않아 저장소를 받아 두고, 그 위치를 환경 변수로 알려 준다.
 
 ```bash
-# 1. 도구 환경
+# 1. 도구 환경 세팅
 conda env create -f environment.yml
 conda activate aibom-cli
 
-# 2. aibom-cli
+# 2. aibom-cli 설치
 pip install aibom_cli-0.1.0-py3-none-any.whl
 
-# 3. OWASP aibom-generator (허브 모델 정보를 받아 M-BOM 을 채운다. 커밋 9b8056a 고정)
+# 3. OWASP aibom-generator 설치 (커밋 9b8056a 고정)
 git clone https://github.com/GenAI-Security-Project/aibom-generator
 git -C aibom-generator checkout 9b8056a66c03d4f6cf707059b83b21f97923c27b
 pip install -r aibom-generator/requirements.txt
 
-# 4. aibom-generator 위치를 환경에 적고, 환경을 다시 켜서 반영
+# 4. aibom-generator 위치를 환경 변수에 저장 (환경을 다시 켜서 반영)
 conda env config vars set AIBOM_GENERATOR_DIR=$PWD/aibom-generator
 conda deactivate
 conda activate aibom-cli
 ```
 
-설치가 됐는지 본다.
+설치를 확인한다.
 
 ```bash
 aibom-cli --version
