@@ -55,8 +55,8 @@ aibom-cli scan image.tar -o image.cdx.json
 aibom-cli scan ./project -o bom.cdx.json --data ./dataset --data ./more/train.csv
 ```
 
-스캔은 네 단계로 돈다. syft 와 cdxgen 이 각각 S-BOM 과 M-BOM 을 만들고, aibom-cli 가 둘을 합친 뒤 데이터셋과 규제 필드를
-채우고, 마지막으로 스키마 검증을 한다. 단계마다 무엇을 찾는지는 [스캔 대상](scan-targets.md)에 있다.
+스캔은 세 단계로 돈다. syft 와 cdxgen 이 각각 S-BOM 과 M-BOM 을 만들고, aibom-cli 가 둘을 합친 뒤 데이터셋과 규제 필드를
+채운다. 검증은 아래 `validate` 명령으로 따로 한다. 단계마다 무엇을 찾는지는 [스캔 대상](scan-targets.md)에 있다.
 
 ## 출력 확인
 
