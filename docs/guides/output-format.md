@@ -9,8 +9,8 @@ CycloneDX 1.7 에 자리가 없는 값을 어디에 적느냐다.
 | `v0.6` | AI-BOM v0.6 (CycloneDX) | AI-BOM v0.6 이 더한 전용 필드 | AI-BOM v0.6 (CycloneDX) | 값의 타입과 허용값을 스키마로 묶고 싶을 때 |
 
 ```bash
-aibom-cli scan ./project -o bom.cdx.json               # 1.7: properties 로
-aibom-cli scan ./project -o bom.cdx.json --spec v0.6   # v0.6: 전용 필드로
+aibom-cli scan ./project -o bom.cdx.json --spec 1.7    # 기본값. properties 로
+aibom-cli scan ./project -o bom.cdx.json --spec v0.6   # 전용 필드로
 ```
 
 ## 공통 구조
@@ -20,7 +20,7 @@ aibom-cli scan ./project -o bom.cdx.json --spec v0.6   # v0.6: 전용 필드로
 
 | `type` | 뜻 | 누가 만드나 |
 |---|---|---|
-| `library` | 소프트웨어 패키지 | syft, cdxgen |
+| `library` | 소프트웨어 패키지 | syft |
 | `file` | 패키지 매니페스트, 모델·설정 파일 | syft, cdxgen |
 | `machine-learning-model` | 모델 | cdxgen, OWASP aibom-generator |
 | `data` | 데이터셋 | aibom-cli |
@@ -30,7 +30,7 @@ aibom-cli scan ./project -o bom.cdx.json --spec v0.6   # v0.6: 전용 필드로
 
 ## 규제 필드 자리
 
-같은 모델의 하이퍼파라미터가 두 포맷에서 이렇게 달라진다. 어느 쪽이든 `specVersion` 은 `1.7` 이다.
+하이퍼파라미터를 예로 들면, 같은 모델의 값이 두 포맷에서 이렇게 달라진다.
 
 ```jsonc
 // --spec 1.7: modelCard.properties
@@ -48,4 +48,4 @@ aibom-cli scan ./project -o bom.cdx.json --spec v0.6   # v0.6: 전용 필드로
 ]
 ```
 
-규제 필드 하나하나의 뜻과 두 포맷에서의 이름은 [규제 준수](../compliance/index.md)에 있다.
+각 규제 필드의 뜻과 두 포맷에서의 이름은 [규제 준수](../compliance/index.md)에 있다.
