@@ -53,6 +53,7 @@ nav:
       - guides/index.md                           # 섹션 이름을 누르면 이 페이지, 화살표로 펼침
       - 시작하기: guides/getting-started.md
       - 스캔 대상: guides/scan-targets.md
+      - 출력 포맷: guides/output-format.md
   - 규제 준수:
       - compliance/index.md
       - AI-BOM v0.6 필드: compliance/aibom-v0.6.md
