@@ -1,33 +1,23 @@
 # properties 키
 
-규제 값을 넣는 두 방식 가운데 `--spec 1.7` (기본) 이 고르는 쪽이다. 새 필드를 만들지 않고 기존 `properties` 배열에 `aibom:` 으로
-시작하는 키로 값을 적어, 공식 CycloneDX 1.7 스키마를 그대로 통과한다. 다른 방식인 `--spec v0.6` 은 같은 값을 전용 필드에 적는다.
-그쪽 구조는 [AI-BOM v0.6 필드](aibom-v0.6.md)에 있다.
+`--spec 1.7` 로 낼 때 규제 값을 적는 키의 규격이다. 새 필드를 만들지 않고 기존 `properties` 배열에 `aibom:` 으로 시작하는 키로 값을
+적으므로, 결과는 공식 CycloneDX 1.7 스키마를 그대로 통과한다. 키는 AI-BOM v0.6 이 더한 필드와 하나씩 대응한다.
 
-아래는 AI-BOM v0.6 이 규제 대응으로 더한 필드 하나하나에 대응하는 키와 설명, 허용값이다. aibom-cli 는 `--spec 1.7` 로 낼 때 이 키 그대로 properties 에 적는다.
-
-규제가 요구하는 값 가운데 CycloneDX 1.7 · SPDX 3.0.1 어느 쪽에도 담을 자리가 없는 것을
-두 표준이 각자 마련해 둔 **확장 지점**에 같은 이름·값으로 싣기 위한 규격이다.
-
----
-
-## 1. 자리
+## 1. 확장 지점
 
 | | CycloneDX 1.7 | SPDX 3.0.1 |
 |---|---|---|
 | 모델 | `component.modelCard.properties` | `ai_AIPackage.extension` |
 | 데이터셋 | `component.properties  (type=data)` | `dataset_DatasetPackage.extension` |
 
-CycloneDX 의 `componentData` 에는 properties 슬롯이 없어 **데이터셋 값만 한 계층 위**로
-올라간다.
+CycloneDX 의 `componentData` 에는 properties 슬롯이 없어 데이터셋 값만 한 계층 위로 올라간다.
 
-## 2. Key 규칙
+## 2. 표기 규칙
 
-값은 **전부 문자열이다.**
-
-여러 값을 담는 키는 **끝에 몇 번째인지를 붙여** 하나씩 적는다. 항목이 여러 칸으로 이루어진
-키는 그 뒤에 칸 이름을 붙인다. 아래 표의 `<i>` 가 그 자리다. syft 의 `syft:location:0:path`
-와 같은 관례다.
+- 값은 전부 문자열이다.
+- 여러 값을 담는 키는 끝에 순번을 붙여 하나씩 적는다. 항목이 여러 칸으로 이루어진 키는 순번 뒤에 칸 이름을 붙인다. 아래 표의 `<i>` 가 순번 자리다.
+  syft 의 `syft:location:0:path` 와 같은 관례다.
+- 허용값이 적힌 키는 그 목록 중 하나만 쓴다.
 
 ```jsonc
 { "name": "aibom:model:designChoices:0",        "value": "임베딩과 출력 투영의 가중치를 분리" }
@@ -36,11 +26,9 @@ CycloneDX 의 `componentData` 에는 properties 슬롯이 없어 **데이터셋 
 { "name": "aibom:model:hyperparameters:0:value", "value": "32" }
 ```
 
-**허용값이 적힌 키는 그 목록 중 하나만 쓴다.**
-
 ## 3. 모델
 
-| Key | 설명 | 허용값 |
+| 키 | 설명 | 허용값 |
 |---|---|---|
 | `aibom:model:task` | 입력 및/또는 출력에 직접 영향을 준다. 예: 분류, 회귀, 군집화 등. |  |
 | `aibom:model:architectureFamily` | 트랜스포머 네트워크, 합성곱신경망(CNN), 잔차신경망(ResNet), LSTM 신경망 등 모델 아키텍처 계열. |  |
@@ -74,7 +62,7 @@ CycloneDX 의 `componentData` 에는 properties 슬롯이 없어 **데이터셋 
 
 ## 4. 데이터셋
 
-| Key | 설명 | 허용값 |
+| 키 | 설명 | 허용값 |
 |---|---|---|
 | `aibom:dataset:availability` | 이 데이터셋의 가용성. | clickthrough, direct-download, query, registration, scraping-script |
 | `aibom:dataset:collectionProcess` | 이 데이터셋을 수집한 과정(예: 긁어 온 소스, 사용한 인터뷰 프로토콜). |  |
