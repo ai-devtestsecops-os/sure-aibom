@@ -9,25 +9,11 @@
 | 이미지 .tar | `<target>` | `.tar`, `.tar.gz`, `.tgz` 로 끝나는 파일 | `aibom-cli scan image.tar` |
 | 로컬 데이터 | `--data <path>` | 폴더 또는 파일. 여러 번 줄 수 있다 | `aibom-cli scan ./project --data ./dataset` |
 
+컨테이너 이미지와 이미지 .tar 는 디렉터리로 푼 뒤 디렉터리와 같은 규칙으로 훑는다. 그 안에서 무엇을 찾는지는 [수집 항목](collected-items.md)에 있다.
+
 ## 디렉터리
 
-프로젝트 폴더 하나를 애플리케이션 하나로 본다. 루트 컴포넌트는 `application <폴더 이름>` 이다. 폴더 안에서 도구마다 보는 것이 다르다.
-
-| 찾는 것 | 누가 | 어디서 |
-|---|---|---|
-| 소프트웨어 패키지 | syft | 패키지 매니페스트와 설치된 패키지 (`requirements.txt`, `package-lock.json`, `pyproject.toml` 등). 매니페스트 파일은 `file` 컴포넌트로도 남는다 |
-| 모델 | cdxgen | 파이썬 소스와 노트북의 `from_pretrained("owner/name")` 호출, 로컬 모델(`config.json`, `adapter_config.json`, 모델 카드 README.md), `*.gguf`, Ollama `Modelfile`. 가중치 파일(`.safetensors`, `.bin`, `.pt`)만 있는 폴더는 모델로 잡지 않는다 |
-| 모델 카드의 데이터셋 참조 | cdxgen | 로컬 모델의 README.md 앞머리 `datasets:` |
-| 코드의 데이터셋 참조 | aibom-cli | 파이썬 소스의 `load_dataset("owner/name")` 호출. 첫 인자가 로컬 빌더(`csv`, `json`, `parquet` …)이거나 경로이면 허브 참조가 아니라 넘긴다 |
-| 모델의 하이퍼파라미터 · 파라미터 수 | aibom-cli | cdxgen 이 찾은 모델의 `config.json`, `*.gguf` 헤더, 같은 폴더의 `*.safetensors` 헤더 |
-
-찾은 HuggingFace 데이터셋은 허브 API 로 정보를 받아 채운다 (정식 id, 커밋, 라이선스, 크기, 모달리티, 열 통계). 데이터셋 파일을 내려받지는 않는다.
-
-건너뛰는 곳이 있다.
-
-- aibom-cli 의 소스 훑기와 데이터 경로 훑기: `node_modules`, `.git`, `venv`, `.venv`, `site-packages`, `dist-packages`, `__pycache__` 와 점으로 시작하는 폴더
-- cdxgen: 경로에 `test`, `tests`, `fixture(s)`, `example(s)`, `sample(s)` 조각이 있는 소스
-- syft: 버전을 고정하지 않은 `requirements.txt` 항목은 기본으로 세지 않는다
+프로젝트 폴더 하나를 애플리케이션 하나로 본다. 루트 컴포넌트는 `application <폴더 이름>` 이다.
 
 ## 컨테이너 이미지
 
@@ -57,13 +43,6 @@
 
 - 경로는 폴더든 파일 하나든 되고, 옵션을 여러 번 써서 더한다 (`--data ./dataset --data ./more/train.csv`).
 - 경로마다 데이터셋 컴포넌트 하나가 생기고, 그 안의 데이터 파일이 `data[]` 항목이 된다. 같은 파일은 먼저 지정한 쪽에만 들어간다.
-- 데이터 파일로 치는 확장자: `csv`, `tsv`, `parquet`, `arrow`, `feather`, `npy`, `npz`, `jsonl`, `ndjson`, `json`, `txt`, `png`, `jpg`, `jpeg`, `webp`, `wav`, `mp3`, `flac`. `requirements*.txt`, `README*`, `LICENSE*`, `*config.json`, `dataset_info.json` 같은 문서·설정 이름은 뺀다.
-- 표 형식 파일(csv, tsv, json, jsonl, parquet, arrow, feather)은 열마다 통계를 낸다. 64 MB 까지만 통계를 내고, 2 GB 를 넘는 파일은 크기만 적는다.
 - 지정한 경로 밖을 가리키는 심볼릭 링크는 따라가지 않는다.
 
-## 찾지 않는 것
-
-- `--data` 로 주지 않은 로컬 데이터
-- 코드에서 허브 모델을 부를 때 그 모델의 허브 모델 카드에 적힌 데이터셋 (OWASP 보강이 모델 카드 안에 inline 으로 적어 주지만 데이터셋 컴포넌트로는 만들지 않는다)
-- 설정 파일 없이 `.pt`, `.pth`, `.onnx` 만 있는 체크포인트 (cdxgen 이 모델로 보지 않는다)
-- 변수로 모델 이름을 넘기는 코드 (`from_pretrained(model_name)`)
+어떤 파일을 데이터로 치고 무엇을 읽는지는 [수집 항목](collected-items.md#d-bom)에 있다.

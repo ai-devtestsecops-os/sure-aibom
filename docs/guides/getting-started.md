@@ -48,8 +48,8 @@ aibom-cli scan ./project -o bom.cdx.json
 aibom-cli scan python:3.12-slim -o python.cdx.json
 ```
 
-입력으로 무엇을 줄 수 있고 그 안에서 무엇을 찾는지는 [스캔 대상](scan-targets.md)에, 결과 문서의 구조와 `--spec` 으로 고르는
-두 가지 규제 필드 자리는 [출력 포맷](output-format.md)에 있다.
+입력으로 무엇을 줄 수 있는지는 [스캔 대상](scan-targets.md)에, 그 안에서 무엇을 찾는지는 [수집 항목](collected-items.md)에,
+결과 문서의 구조와 `--spec` 으로 고르는 두 가지 규제 필드 자리는 [출력 포맷](output-format.md)에 있다.
 
 ## 출력 확인
 
