@@ -1,8 +1,8 @@
 # 필드 탐색기
 
-AI-BOM 의 필드를 세 가지로 본다. 이 값이 BOM 의 어디에 들어가는지(구조), CycloneDX 와 SPDX 중 어느 쪽을 써도 같은 정보가 어디로 가는지(형식 대응),
-그리고 규제 조항이 어느 필드로 채워지는지(규제와 필드). 각 트리는 표준 그대로에 AI-BOM v0.6 이 더한 필드를 <span class="new-badge">v0.6</span> 로 표시한다.
-필드를 누르면 다른 형식의 대응 필드가 켜지고 오른쪽 상세에 설명, 대응, properties 키, 근거 조항이 나온다.
+AI-BOM v0.6 의 필드를 CycloneDX 1.7 과 SPDX 3.0.1 트리에서 찾아본다. 필드가 BOM 의 어디에 들어가는지, 다른 표준의 대응 필드는 무엇인지,
+어느 규제 조항에 근거하는지를 한 화면에서 본다. 트리는 표준 그대로이고, AI-BOM v0.6 이 더한 필드는 <span class="new-badge">v0.6</span> 로 표시한다.
+필드를 누르면 다른 표준의 대응 필드가 켜지고, 오른쪽 상세에 설명, 대응 필드, properties 키, 근거 조항이 나온다.
 
 <div class="mapping-viewer" data-base="../../mapping-viewer/data/">
 <div id="topbar">
