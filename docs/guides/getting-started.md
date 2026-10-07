@@ -42,7 +42,7 @@ aibom-cli --version
 aibom-cli scan ./project -o bom.cdx.json
 ```
 
-컨테이너 이미지는 이름이나 `.tar` 파일을 그대로 준다.
+컨테이너 이미지는 이름이나 아카이브(`.tar`)를 그대로 준다.
 
 ```bash
 aibom-cli scan python:3.12-slim -o python.cdx.json
