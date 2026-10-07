@@ -1,14 +1,13 @@
 # 스캔 대상
 
-aibom-cli 는 `scan <target>` 의 `<target>` 모양을 보고 입력의 종류를 정한다. 따로 옵션은 없다.
+`scan` 은 스캔 대상 `<target>` 하나와 로컬 데이터 옵션 `--data` 를 받는다. `<target>` 의 종류는 값의 형태로 판별하며 따로 지정하는 옵션은 없다.
 
-| 입력 | 판별 | 예 |
-|---|---|---|
-| 디렉터리 | 존재하는 디렉터리 경로 | `aibom-cli scan ./project` |
-| 컨테이너 이미지 | 경로도 .tar 도 아닌 것 (이미지 참조) | `aibom-cli scan python:3.12-slim`, `aibom-cli scan ghcr.io/org/app@sha256:…` |
-| 이미지 .tar | `.tar`, `.tar.gz`, `.tgz` 로 끝나는 파일 | `aibom-cli scan image.tar` |
-
-여기에 `--data <path>` 로 로컬 데이터 경로를 몇 개든 더할 수 있다. 경로처럼 생긴 대상(`./`, `/`, `~` 로 시작하거나 `.tar` 로 끝남)이 없으면 이미지 이름으로 넘기지 않고 `error: target not found` 로 끝난다 (종료 코드 2).
+| 입력 | 인자 | 판별 | 예 |
+|---|---|---|---|
+| 디렉터리 | `<target>` | 존재하는 디렉터리 경로 | `aibom-cli scan ./project` |
+| 컨테이너 이미지 | `<target>` | 경로도 `.tar` 도 아닌 값. 이미지 참조로 본다 | `aibom-cli scan python:3.12-slim`, `aibom-cli scan ghcr.io/org/app:1.0` |
+| 이미지 .tar | `<target>` | `.tar`, `.tar.gz`, `.tgz` 로 끝나는 파일 | `aibom-cli scan image.tar` |
+| 로컬 데이터 | `--data <path>` | 폴더 또는 파일. 여러 번 줄 수 있다 | `aibom-cli scan ./project --data ./dataset` |
 
 ## 디렉터리
 

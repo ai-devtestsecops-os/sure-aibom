@@ -53,7 +53,7 @@ aibom-cli scan python:3.12-slim -o python.cdx.json
 
 ## 출력 확인
 
-결과는 CycloneDX 1.7 JSON 이다. `jq` 로 컴포넌트 이름만 뽑아 보면 무엇이 잡혔는지 바로 보인다.
+생성된 BOM 은 JSON 파일이라 [jq](https://jqlang.org/) 로 원하는 정보만 간단히 꺼내 볼 수 있다. 컴포넌트 이름을 뽑으면 무엇이 잡혔는지 바로 보인다.
 
 ```bash
 jq '.components[].name' bom.cdx.json
@@ -62,8 +62,6 @@ jq '.components[].name' bom.cdx.json
 ```
 "numpy"
 "transformers"
-"/requirements.txt"
-"stories260K.gguf"
 "llama"
 "bert-base-uncased"
 "bookcorpus"
@@ -71,7 +69,7 @@ jq '.components[].name' bom.cdx.json
 ...
 ```
 
-패키지, 파일, 모델, 데이터셋이 한 목록에 섞여 있다. `type` 을 같이 보면 갈린다.
+`type` 을 함께 출력하면 패키지, 모델, 데이터셋이 구분된다.
 
 ```bash
 jq -r '.components[] | "\(.type)\t\(.name)"' bom.cdx.json
@@ -80,8 +78,6 @@ jq -r '.components[] | "\(.type)\t\(.name)"' bom.cdx.json
 ```
 library                 numpy
 library                 transformers
-file                    /requirements.txt
-file                    stories260K.gguf
 machine-learning-model  llama
 machine-learning-model  bert-base-uncased
 data                    bookcorpus
