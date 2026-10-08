@@ -14,8 +14,11 @@
        (확장자만으로 추측하면 웹앱의 아이콘 같은 것도 데이터셋이 된다).
        경로 하나가 컴포넌트 하나 (bom-ref "data:local/<폴더 이름>@", 이름이 겹치면 -2, -3 을 붙인다). 파일 하나를 지목하면
        그 파일만으로 만든다. 같은 경로를 두 번 주면 한 번만 읽는다.
-       data[] 에 데이터 확장자 파일마다 componentData 하나 {type: dataset, name: <폴더 이름>/<상대 경로>,
-       contents.properties: 크기·sha256·형식·행·열}. 지목한 곳이라 json·txt 도 데이터로 치되, README·LICENSE·*config.json·
+       data[] 의 단위는 파일 종류에 따라 둘이다. 표·레코드 파일(csv, parquet, jsonl, npy …)은 파일마다 componentData 하나
+       {type: dataset, name: <폴더 이름>/<상대 경로>, contents.properties: 크기·sha256·형식·행·열}. 매체 파일(이미지·오디오)은
+       폴더와 형식 단위로 하나 {name: <폴더 이름>/<하위 폴더>/*.<형식>, contents.properties: 파일 수·크기 합·형식} — 이미지
+       수십만 장이 원소 수십만 개가 되지 않게, 그리고 CycloneDX 의 componentData 가 "데이터의 모음" 단위이기 때문이다. 매체
+       파일은 내용을 읽지 않는다 (크기만 센다). 지목한 곳이라 json·txt 도 데이터로 치되, README·LICENSE·*config.json·
        dataset_info.json 같은 잘 알려진 메타데이터 이름은 뺀다. 점으로 시작하는 폴더·파일, SKIP_DIRS, 지목한 경로 밖으로
        나가는 심볼릭 링크는 건너뛴다.
        규제 필드는 size·modality·statistics 셋만 채운다 — 출처(provenance)와 가용성(availability)은 파일만 보고 알 수 없다.
@@ -73,6 +76,8 @@ MODALITY_BY_EXTENSION: dict[str, str] = {
     "wav": "audio", "mp3": "audio", "flac": "audio",
 }
 DATA_EXTENSIONS = frozenset(MODALITY_BY_EXTENSION)
+MEDIA_EXTENSIONS = frozenset({"png", "jpg", "jpeg", "webp", "wav", "mp3", "flac"})   # 폴더·형식 단위로 묶는 파일. 나머지는 파일마다
+FORMAT_ALIASES = {"jpeg": "jpg"}                                                      # 같은 형식의 다른 확장자는 한 묶음으로
 # 데이터 경로 안에 있어도 데이터가 아닌 잘 알려진 이름 (문서·설정·datasets 의 save_to_disk 메타데이터)
 _NON_DATA_NAME = re.compile(r"^(requirements[\w.-]*\.txt|readme.*|license.*|notice.*|changelog.*|package(-lock)?\.json"
                             r"|tsconfig\.json|.*config\.json|manifest\.json|composer\.json"
@@ -311,11 +316,33 @@ def _data_components(paths: Iterable[str], log, empty: list[str]) -> list[dict]:
         claimed.update(path.resolve() for path, _ in files)
         analyses = []
         for path, rel in files:
+            if _extension(path.name) in MEDIA_EXTENSIONS:
+                continue
             a = _analyze_file(path, f"{name}/{rel}" if base.is_dir() else rel, log)
             a["key"] = PurePosixPath(rel).with_suffix("").as_posix()        # 통계 이름 앞머리 (파일이 여럿일 때)
             analyses.append(a)
+        analyses += _media_groups([(p, r) for p, r in files if _extension(p.name) in MEDIA_EXTENSIONS], name if base.is_dir() else None)
+        analyses.sort(key=lambda a: a["path"])
         out.append(_data_component(ref, name, analyses))
     return out
+
+
+def _media_groups(files: list[tuple[Path, str]], prefix: str | None) -> list[dict]:
+    """매체 파일을 (폴더, 형식) 단위로 묶는다. 묶음 하나가 data[] 원소 하나: 파일 수와 크기 합만 적고 내용은 읽지 않는다.
+    이름은 <prefix>/<폴더>/*.<형식> (폴더 바로 아래면 <prefix>/*.<형식>). 파일 하나를 지목했으면(prefix 없음) 그 파일 이름."""
+    groups: dict[tuple[str, str], dict] = {}
+    for path, rel in files:
+        fmt = FORMAT_ALIASES.get(_extension(path.name), _extension(path.name))
+        folder = PurePosixPath(rel).parent.as_posix()
+        if prefix is None:
+            display = rel
+        else:
+            display = f"{prefix}/{folder}/*.{fmt}" if folder != "." else f"{prefix}/*.{fmt}"
+        g = groups.setdefault((folder, fmt), {"path": display, "format": fmt, "modality": MODALITY_BY_EXTENSION[fmt],
+                                              "count": 0, "size": 0, "group": True})
+        g["count"] += 1
+        g["size"] += path.stat().st_size
+    return list(groups.values())
 
 
 def _data_files(base: Path, log) -> list[tuple[Path, str]]:
@@ -349,6 +376,10 @@ def _data_component(ref: str, name: str, analyses: list[dict]) -> dict:
 
 
 def _component_data(a: dict) -> dict:
+    if a.get("group"):
+        props = [{"name": FILE_PREFIX + "count", "value": str(a["count"])}, {"name": FILE_PREFIX + "size", "value": str(a["size"])},
+                 {"name": FILE_PREFIX + "format", "value": a["format"]}]
+        return {"type": "dataset", "name": a["path"], "contents": {"properties": props}}
     props = [{"name": FILE_PREFIX + "size", "value": str(a["size"])}, {"name": FILE_PREFIX + "format", "value": a["format"]}]
     if a.get("sha256"):
         props.append({"name": FILE_PREFIX + "sha256", "value": a["sha256"]})

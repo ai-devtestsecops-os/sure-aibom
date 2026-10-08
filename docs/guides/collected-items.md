@@ -30,10 +30,11 @@ S-BOM 만 syft 가 이미지를 직접 읽는다.
 | 허브 데이터셋 정보 | aibom-cli | [Hub API](https://huggingface.co/docs/hub/api)에서 정식 id, 커밋, 라이선스, 모달리티를, [datasets-server](https://huggingface.co/docs/dataset-viewer)에서 크기와 열 통계를 받는다. 데이터셋 파일을 내려받지는 않는다 |
 | 로컬 데이터 | aibom-cli | `--data` 로 지정한 경로의 데이터 파일 |
 
-로컬 데이터는 확장자로 가른다.
+로컬 데이터는 확장자로 가르고, 파일 종류에 따라 `data[]` 에 적는 단위가 다르다.
 
 - 데이터 파일로 치는 확장자: `csv`, `tsv`, `parquet`, `arrow`, `feather`, `npy`, `npz`, `jsonl`, `ndjson`, `json`, `txt`, `png`, `jpg`, `jpeg`, `webp`, `wav`, `mp3`, `flac`. `requirements*.txt`, `README*`, `LICENSE*`, `*config.json`, `dataset_info.json` 같은 문서·설정 이름은 뺀다.
-- 표 형식 파일(csv, tsv, json, jsonl, parquet, arrow, feather)은 열마다 통계를 낸다. 64 MB 까지만 통계를 내고, 2 GB 를 넘는 파일은 크기만 적는다.
+- 표·레코드 파일(csv, tsv, parquet, arrow, feather, npy, npz, jsonl, ndjson, json, txt)은 파일마다 항목 하나다. 크기, 형식, sha256, 행 수, 열 이름을 적고, 표 형식(csv, tsv, json, jsonl, parquet, arrow, feather)은 열마다 통계를 낸다. 64 MB 까지만 통계를 내고, 2 GB 를 넘는 파일은 크기만 적는다.
+- 이미지·오디오 파일(png, jpg, webp, wav, mp3, flac)은 폴더와 형식 단위로 항목 하나다 (`images/cat/*.jpg`). 파일 수, 크기 합, 형식만 적고 내용은 읽지 않는다. 이미지 수십만 장이 항목 수십만 개가 되지 않게 하기 위해서다.
 
 ## 건너뛰는 곳
 

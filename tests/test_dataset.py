@@ -276,6 +276,34 @@ def test_a_single_file_data_path_is_its_own_component(tmp_path, online):
     assert "provenance:0" not in facts and "availability" not in facts       # 로컬 파일로는 출처·가용성을 알 수 없다
 
 
+def test_media_files_are_grouped_by_folder_and_format(tmp_path, online):
+    """이미지·오디오는 파일마다가 아니라 (폴더, 형식) 단위로 data[] 원소 하나다. 내용은 읽지 않아 sha256 이 없고 파일 수와 크기 합만 적는다.
+    표 파일은 지금처럼 파일마다 하나이고 통계도 표 파일에서만 나온다."""
+    for rel, content in (("data/images/cat/a.jpg", b"\xff\xd8" + b"a" * 10), ("data/images/cat/b.jpeg", b"\xff\xd8" + b"b" * 20),   # jpeg 는 jpg 와 한 묶음
+                         ("data/images/dog/c.png", b"\x89PNG" + b"c" * 5), ("data/audio/x.wav", b"RIFF" + b"x" * 4)):
+        (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / rel).write_bytes(content)
+    write(tmp_path, "data/train.csv", "a,b\n1,2\n")
+    local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "data")]))["data:local/data@"]
+    assert [d["name"] for d in local["data"]] == ["data/audio/*.wav", "data/images/cat/*.jpg", "data/images/dog/*.png", "data/train.csv"]
+    cat = {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]}
+    assert cat == {"aibom-cli:file:count": "2", "aibom-cli:file:size": str(12 + 22), "aibom-cli:file:format": "jpg"}
+    train = {p["name"]: p["value"] for p in local["data"][3]["contents"]["properties"]}
+    assert "aibom-cli:file:sha256" in train and "aibom-cli:file:count" not in train
+    facts = internal(local)
+    assert facts["size"] == str(12 + 22 + 9 + 8 + 8)
+    assert [facts[f"modality:{i}"] for i in range(3)] == ["audio", "image", "structured"]
+    assert all(v.startswith("train:") for k, v in facts.items() if k.endswith(":type"))         # 통계는 train.csv 것뿐
+
+
+def test_a_single_media_file_data_path_keeps_its_file_name(tmp_path, online):
+    (tmp_path / "photo.jpg").write_bytes(b"\xff\xd8" + b"p" * 3)
+    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "photo.jpg")]))
+    items = found["data:local/photo@"]["data"]
+    assert [d["name"] for d in items] == ["photo.jpg"]
+    assert {p["name"]: p["value"] for p in items[0]["contents"]["properties"]} == {"aibom-cli:file:count": "1", "aibom-cli:file:size": "5", "aibom-cli:file:format": "jpg"}
+
+
 def test_data_files_in_the_target_are_not_read_without_a_data_path(tmp_path, monkeypatch):
     """로컬 데이터는 --data 로 지목한 곳에서만 읽는다. 확장자만 보고 추측하면 아이콘 같은 것도 데이터셋이 된다."""
     monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("조회할 것이 없는데 네트워크를 봤다"))
