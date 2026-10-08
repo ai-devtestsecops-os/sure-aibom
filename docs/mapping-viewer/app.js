@@ -477,8 +477,6 @@ function parseEnum(typeStr) {
 }
 
 function enumChipsHtml(values, side, contextKey) {
-  return "";                                  // 값 단위 대응은 설계 분석용이라 사용자 뷰어에서는 그리지 않는다
-  // eslint-disable-next-line no-unreachable
   const index = side === "cdx" ? cdxEnumIndex : spdxEnumIndex;
   const chips = values.map(v => {
     const matched = index.has(`${contextKey}::${v}`);
