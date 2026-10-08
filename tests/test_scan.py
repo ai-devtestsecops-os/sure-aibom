@@ -1,5 +1,6 @@
 """tests/data/project 를 실제 syft·cdxgen 으로 스캔해 병합 결과를 확인한다.
-두 도구가 없으면 건너뛴다. owasp 보강은 네트워크가 필요해 skip_reason 을 패치해 뺀다 (enrich 자체는 test_enrich 가 본다).
+두 도구가 없으면 건너뛴다. owasp 보강은 네트워크와 클론이 필요해, 실제로 돌려 녹화해 둔 tests/data/owasp/ 의 출력으로 바꿔 끼운다
+(허브 모델은 bert-base-uncased 하나다). 보강 로직의 세부는 test_enrich 가 본다.
 모델 네 개가 서로 다른 경로로 들어온다: 소스의 from_pretrained (허브 참조, 파일 없음) · 받아 둔 HF 모델 디렉터리 ·
 gguf 파일 하나 · LoRA 어댑터. 규제 필드는 cdxgen 프로퍼티와 우리가 읽은 config.json·gguf·safetensors 헤더에서 온다.
 데이터셋의 허브 조회도 네트워크가 필요해, 닿는 것으로 치고 tests/data/hf_api/ 에 기록해 둔 실제 응답으로 답한다.
@@ -15,6 +16,7 @@ from pathlib import Path
 import pytest
 
 import aibom_cli.dataset as ds
+from aibom_cli.runners._proc import RunnerError
 from aibom_cli.cli import main
 
 FIXTURE = Path(__file__).parent / "data" / "project"
@@ -45,9 +47,21 @@ def recorded(kind: str, hf_id: str, *rest: str) -> dict | None:
     return json.loads(path.read_text(encoding="utf-8")) if path.exists() else None
 
 
+OWASP = Path(__file__).parent / "data" / "owasp"
+
+
+def recorded_owasp(hf_id: str, workdir) -> dict:
+    """실제 aibom-generator 를 돌려 녹화한 출력. 없는 모델이면 도구가 실패한 것처럼 RunnerError."""
+    path = OWASP / (hf_id.rsplit("/", 1)[-1] + ".cdx.json")
+    if not path.exists():
+        raise RunnerError(f"no recorded aibom-generator output for {hf_id}")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
 @pytest.fixture(autouse=True)
 def offline(monkeypatch):
-    monkeypatch.setattr("aibom_cli.enrich.skip_reason", lambda: "테스트")                                # 보강은 네트워크가 필요해 강제 생략
+    monkeypatch.setattr("aibom_cli.enrich.skip_reason", lambda: None)                                     # 보강은 녹화본으로 돌린다
+    monkeypatch.setattr("aibom_cli.enrich.run_aibom_generator", recorded_owasp)
     monkeypatch.setattr(ds, "hf_reachable", lambda: True)
     monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))
     monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: recorded("size", hf_id))
@@ -138,11 +152,16 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert gguf_card["aibom:model:hyperparameters:7:name"] == "vocab_size" and "aibom:model:hyperparameters:8:name" not in gguf_card
     assert gguf_card["aibom:model:parameterCount"] == "292800" and gguf_card["aibom:model:technicalRequirements:0"] == "llama.cpp"
 
-    # 소스의 from_pretrained: 파일이 없어 하이퍼파라미터·파라미터 수가 없다 (허브 보강은 여기서 끈다).
-    # technicalRequirements 만 cdxgen 이 소스의 import 에서 읽는다.
+    # 소스의 from_pretrained: 로컬 파일이 없으니 하이퍼파라미터·파라미터 수·maxSize 는 aibom-generator 가 허브에서 받은 값(녹화본)에서 온다.
+    # technicalRequirements 는 cdxgen 이 소스의 import 에서 읽은 것과 aibom-generator 의 runtimeRequirement 를 합친다.
     bert = next(c for c in doc["components"] if c["name"] == "bert-base-uncased")
     assert bert["purl"] == "pkg:huggingface/google-bert/bert-base-uncased"
-    assert {p["name"] for p in bert["modelCard"]["properties"]} == {"aibom:model:technicalRequirements:0"}
+    bert_card = {p["name"]: p["value"] for p in bert["modelCard"]["properties"]}
+    recorded = {p["name"]: p["value"] for p in recorded_owasp("google-bert/bert-base-uncased", None)["components"][0]["modelCard"]["properties"]}
+    assert bert_card["aibom:model:parameterCount"] == recorded["safetensors_total_parameters"]
+    assert bert_card["aibom:model:inputs:0:maxSize"] == recorded["genai:aibom:modelcard:contextLength"]
+    assert bert_card["aibom:model:hyperparameters:0:name"] and "aibom:model:technicalRequirements:0" in bert_card
+    assert "genai:aibom:trainingDataAvailable" in bert_card and "safetensors_total_parameters" not in bert_card   # 승격한 원본은 지우고 나머지는 남긴다
 
     # adapter_config.json: 베이스 모델 계보만 나온다 (config.json 이 없으니 하이퍼파라미터는 없다)
     adapter = next(c for c in doc["components"] if c["name"] == "tiny-gpt2-lora")
@@ -166,7 +185,7 @@ def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
         "[aibom-cli] Generating S-BOM (syft)", "[aibom-cli] Generating M-BOM (cdxgen)", "[aibom-cli] Generating D-BOM",
         "[aibom-cli] Enriching M-BOM (aibom-generator)", "[aibom-cli] Adding regulation fields"]
     assert lines[1].endswith(" 4 packages, 1 file") and lines[2].endswith(" 5 models, 2 files")   # cdxgen 의 데이터셋 참조는 D-BOM 에서 센다
-    assert lines[3].endswith(" 3 datasets") and lines[4].endswith(" skipped: 테스트") and lines[5].endswith(" done")
+    assert lines[3].endswith(" 3 datasets") and lines[4].endswith(" 1 hub model") and lines[5].endswith(" done")
     # 마지막 줄은 다 만든 BOM 을 다시 센 것 — 묶음을 더하면 전체와 같다
     total, groups, deps = re.fullmatch(rf"\[aibom-cli\] Wrote {re.escape(str(cdx))} \((\d+) components: (.+); (\d+) dependencies\)", lines[-1]).groups()
     assert groups == "4 packages, 5 models, 3 datasets, 3 files"
