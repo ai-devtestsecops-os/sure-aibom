@@ -21,7 +21,7 @@
        {name: <폴더 이름>/<하위 폴더>/*.<형식>} — 이미지 수십만 장이 원소 수십만 개가 되지 않게, 그리고 CycloneDX 의
        componentData 가 "데이터의 모음" 단위이기 때문이다. 원소에는 type 과 name 만 적는다. 파일별 크기·해시·행 수 같은 도구 사실은
        정의서(aibom:dataset:*)에 없는 키라 출력에 넣지 않는다. 값은 전부 컴포넌트의 규제 필드로 모은다: 크기 합은 size, 확장자는
-       modality, 표 파일의 열 통계와 매체 파일의 헤더(이미지 너비, 오디오 길이) 분포는 statistics — datasets-server 가 image·audio
+       modality, 표 파일의 열 통계와 매체 파일의 헤더(이미지 너비·높이, 오디오 길이) 분포는 statistics — datasets-server 가 image·audio
        열에 주는 것과 같은 종류다. 지목한 곳이라 json·txt 도 데이터로 치되, README·LICENSE·*config.json·
        dataset_info.json 같은 잘 알려진 메타데이터 이름은 뺀다. 점으로 시작하는 폴더·파일, SKIP_DIRS, 지목한 경로 밖으로
        나가는 심볼릭 링크는 건너뛴다.
@@ -470,12 +470,13 @@ def _merge_class_folders(parent: str, fmt: str, children: list[dict]) -> dict:
 
 
 # ── 매체 헤더 ────────────────────────────────────────────────────────────────
-# 이미지는 너비(px), 오디오는 길이(초)의 분포를 낸다. datasets-server 가 image 열에 width, audio 열에 duration 을 주는 것과 같다.
+# 이미지는 너비·높이(px), 오디오는 길이(초)의 분포를 낸다. datasets-server 가 image 열에 width, audio 열에 duration 을 주는 것과 같고,
+# 높이는 허브에 없지만 헤더에 같이 있어 더 낸다.
 # 파일 내용은 읽지 않고 헤더만 본다 (PNG IHDR, JPEG SOF, WebP VP8/VP8L/VP8X, WAV fmt·data, FLAC STREAMINFO, MP3 프레임 헤더와 Xing).
 
 MEDIA_HEADER_BYTES = 64 * 1024
 MEDIA_HEADER_LIMIT = 4 * 1024 * 1024                          # JPEG 는 EXIF 뒤에 SOF 가 올 수 있어 여기까지 더 읽는다
-MEASURE_BY_MODALITY = {"image": "width", "audio": "duration"}
+MEASURES_BY_MODALITY = {"image": ("width", "height"), "audio": ("duration",)}   # 통계로 내는 측정값과 그 순서
 _JPEG_SOF = frozenset({0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7, 0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF})
 _MP3_BITRATES = {"1": (0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320),
                  "2": (0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160)}
@@ -483,48 +484,58 @@ _MP3_SAMPLE_RATES = {"1": (44100, 48000, 32000), "2": (22050, 24000, 16000), "2.
 
 
 def _media_statistics(paths: list[Path], fmt: str) -> list[tuple[str, str]]:
-    """묶음 안 파일들의 너비(이미지) 또는 길이(오디오) 분포. 헤더를 못 읽는 파일은 뺀다. 하나도 못 읽으면 빈 목록."""
-    measure = MEASURE_BY_MODALITY.get(MODALITY_BY_EXTENSION.get(fmt, ""))
-    if not measure:
+    """묶음 안 파일들의 너비·높이(이미지) 또는 길이(오디오) 분포. 헤더를 못 읽는 파일은 뺀다. 하나도 못 읽으면 빈 목록."""
+    modality = MODALITY_BY_EXTENSION.get(fmt, "")
+    measures = MEASURES_BY_MODALITY.get(modality)
+    if not measures:
         return []
-    values: list[float] = []
+    values: dict[str, list[float]] = {m: [] for m in measures}
     for path in paths:
         try:
-            v = _media_measure(path, fmt)
+            measured = _media_measure(path, fmt) or {}
         except (OSError, struct.error, IndexError, KeyError, ValueError, ZeroDivisionError):
-            v = None
-        if v is not None and math.isfinite(v) and v > 0:
-            values.append(v)
-    modality = MODALITY_BY_EXTENSION[fmt]                      # 허브의 열 이름 자리에 모달리티를 쓴다: train:image:width:min
-    return [(f"{modality}:{measure}:{kind}", value) for kind, value in _numeric_statistics(values)] if values else []
+            measured = {}
+        for m in measures:
+            v = measured.get(m)
+            if v is not None and math.isfinite(v) and v > 0:
+                values[m].append(v)
+    # 허브의 열 이름 자리에 모달리티를 쓴다: train:image:width:min
+    return [(f"{modality}:{m}:{kind}", value) for m in measures if values[m] for kind, value in _numeric_statistics(values[m])]
 
 
-def _media_measure(path: Path, fmt: str) -> float | None:
+def _media_measure(path: Path, fmt: str) -> dict[str, float] | None:
+    """헤더에서 읽은 측정값. 이미지는 {width, height} (px), 오디오는 {duration} (초). 못 읽으면 None."""
     with path.open("rb") as fh:
         head = fh.read(MEDIA_HEADER_BYTES)
         if fmt == "png":
-            return _png_width(head)
-        if fmt == "jpg":
-            return _jpeg_width(fh, head)
-        if fmt == "webp":
-            return _webp_width(head)
+            size = _png_size(head)
+        elif fmt == "jpg":
+            size = _jpeg_size(fh, head)
+        elif fmt == "webp":
+            size = _webp_size(head)
+        else:
+            size = None
+        if size is not None:
+            return {"width": float(size[0]), "height": float(size[1])}
         if fmt == "wav":
-            return _wav_duration(head, path.stat().st_size)
-        if fmt == "flac":
-            return _flac_duration(head)
-        if fmt == "mp3":
-            return _mp3_duration(head, path.stat().st_size)
-    return None
+            duration = _wav_duration(head, path.stat().st_size)
+        elif fmt == "flac":
+            duration = _flac_duration(head)
+        elif fmt == "mp3":
+            duration = _mp3_duration(head, path.stat().st_size)
+        else:
+            duration = None
+        return {"duration": duration} if duration is not None else None
 
 
-def _png_width(b: bytes) -> float | None:
+def _png_size(b: bytes) -> tuple[int, int] | None:
     if b[:8] != b"\x89PNG\r\n\x1a\n" or b[12:16] != b"IHDR" or len(b) < 24:
         return None
-    return float(struct.unpack(">I", b[16:20])[0])
+    return struct.unpack(">II", b[16:24])
 
 
-def _jpeg_width(fh, head: bytes) -> float | None:
-    """마커를 따라가며 SOF(프레임 헤더)의 너비. APP 세그먼트(EXIF 등)가 길면 더 읽는다."""
+def _jpeg_size(fh, head: bytes) -> tuple[int, int] | None:
+    """마커를 따라가며 SOF(프레임 헤더)의 (너비, 높이). APP 세그먼트(EXIF 등)가 길면 더 읽는다."""
     if head[:2] != b"\xff\xd8":
         return None
     data, pos = head, 2
@@ -547,20 +558,23 @@ def _jpeg_width(fh, head: bytes) -> float | None:
             return None
         length = struct.unpack(">H", data[pos + 2:pos + 4])[0]
         if marker in _JPEG_SOF:
-            return float(struct.unpack(">H", data[pos + 7:pos + 9])[0])
+            height, width = struct.unpack(">HH", data[pos + 5:pos + 9])
+            return width, height
         pos += 2 + length
 
 
-def _webp_width(b: bytes) -> float | None:
+def _webp_size(b: bytes) -> tuple[int, int] | None:
     if b[:4] != b"RIFF" or b[8:12] != b"WEBP" or len(b) < 30:
         return None
     chunk = b[12:16]
     if chunk == b"VP8 " and b[23:26] == b"\x9d\x01\x2a":
-        return float(struct.unpack("<H", b[26:28])[0] & 0x3FFF)
+        width, height = struct.unpack("<HH", b[26:30])
+        return width & 0x3FFF, height & 0x3FFF
     if chunk == b"VP8L" and b[20] == 0x2F:
-        return float((struct.unpack("<I", b[21:25])[0] & 0x3FFF) + 1)
+        bits = struct.unpack("<I", b[21:25])[0]
+        return (bits & 0x3FFF) + 1, ((bits >> 14) & 0x3FFF) + 1
     if chunk == b"VP8X":
-        return float((b[24] | (b[25] << 8) | (b[26] << 16)) + 1)
+        return (b[24] | (b[25] << 8) | (b[26] << 16)) + 1, (b[27] | (b[28] << 8) | (b[29] << 16)) + 1
     return None
 
 

@@ -115,7 +115,6 @@ def write(root: Path, rel: str, text: str) -> Path:
 def project(tmp_path: Path) -> Path:
     """tests/data/project 와 같은 모양의 임시 프로젝트. 로컬 데이터는 data/ 에 있고 --data 로 지목한다."""
     write(tmp_path, "data/train.csv", 'id,text,label\n1,"good movie",1\n2,"bad movie",0\n3,"fine",1\n4,"meh",0\n5,"great",1\n')
-    write(tmp_path, "data/labels.jsonl", '{"id":1,"label":"pos"}\n{"id":2,"label":"neg"}\n{"id":3,"label":"pos"}\n')
     write(tmp_path, "src/train.py", 'from datasets import load_dataset\nfrom transformers import AutoModel\n'
                                     'bert = AutoModel.from_pretrained("google-bert/bert-base-uncased")\n'
                                     'imdb = load_dataset("stanfordnlp/imdb")\n')
@@ -215,17 +214,13 @@ def test_discover_builds_one_component_per_data_path_and_links_from_root(tmp_pat
     assert set(found) == {"data:local/data@", IMDB_REF}
 
     local = found["data:local/data@"]
-    assert local["name"] == "data" and [d["name"] for d in local["data"]] == ["data/labels.jsonl", "data/train.csv"]
-    assert local["data"][1] == {"type": "dataset", "name": "data/train.csv"}                 # 원소는 종류와 이름뿐
-    # 열 통계: 파일이 둘이라 파일 이름이 앞에 붙는다. 열마다 nan_count 가 먼저. labels.jsonl 의 label 은 범주(pos 2, neg 1),
-    # train.csv 의 text 는 글(길이 통계), label 0/1 은 숫자로 읽힌다
-    assert internal(local) == {"size": str(80 + 69), "modality:0": "text", "modality:1": "structured", **stats_props([
-                                   ("labels:id:nan_count", "0"), ("labels:id:min", "1"), ("labels:id:max", "3"), ("labels:id:mean", "2"), ("labels:id:median", "2"), ("labels:id:std", "1"),
-                                   ("labels:label:nan_count", "0"), ("labels:label:n_unique", "2"), ("labels:label:mode", "pos"), ("labels:label:frequencies", "pos=2,neg=1"),
-                                   ("train:id:nan_count", "0"), ("train:id:min", "1"), ("train:id:max", "5"), ("train:id:mean", "3"), ("train:id:median", "3"), ("train:id:std", "1.58114"),
-                                   ("train:text:nan_count", "0"), ("train:text:length:min", "3"), ("train:text:length:max", "10"), ("train:text:length:mean", "6.2"),
-                                   ("train:text:length:median", "5"), ("train:text:length:std", "3.11448"),
-                                   ("train:label:nan_count", "0"), ("train:label:min", "0"), ("train:label:max", "1"), ("train:label:mean", "0.6"), ("train:label:median", "1"), ("train:label:std", "0.54772")])}
+    assert local["name"] == "data" and local["data"] == [{"type": "dataset", "name": "data/train.csv"}]      # 원소는 종류와 이름뿐
+    # 열 통계: 열마다 nan_count 가 먼저. text 는 글(길이 통계), label 0/1 은 숫자로 읽힌다. 원소가 하나라 파일 이름을 앞에 붙이지 않는다
+    assert internal(local) == {"size": "80", "modality:0": "structured", **stats_props([
+                                   ("id:nan_count", "0"), ("id:min", "1"), ("id:max", "5"), ("id:mean", "3"), ("id:median", "3"), ("id:std", "1.58114"),
+                                   ("text:nan_count", "0"), ("text:length:min", "3"), ("text:length:max", "10"), ("text:length:mean", "6.2"),
+                                   ("text:length:median", "5"), ("text:length:std", "3.11448"),
+                                   ("label:nan_count", "0"), ("label:min", "0"), ("label:max", "1"), ("label:mean", "0.6"), ("label:median", "1"), ("label:std", "0.54772")])}
 
     hf = found[IMDB_REF]
     assert hf["group"] == "stanfordnlp" and hf["name"] == "imdb" and hf["purl"] == IMDB_REF
@@ -374,14 +369,16 @@ def test_media_statistics_come_from_file_headers(tmp_path, online):
     local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "media")]))["data:local/media@"]
     stats = stats_of(local)
     assert (stats["img:image:width:min"], stats["img:image:width:max"], stats["img:image:width:mean"], stats["img:image:width:std"]) == ("320", "640", "480", "226.27417")
+    assert (stats["img:image:height:min"], stats["img:image:height:max"]) == ("10", "10")                     # png() 는 높이 10 으로 만든다
     assert (stats["snd:audio:duration:min"], stats["snd:audio:duration:max"], stats["snd:audio:duration:mean"], stats["snd:audio:duration:std"]) == ("1", "2", "1.5", "0.70711")
     assert stats["media:image:width:min"] in ("800", "300") and stats["media:audio:duration:min"] in ("2", "1")   # 묶음이 파일 하나뿐이면 값 하나
     assert [d["name"] for d in local["data"]] == ["media/c.jpg", "media/d.webp", "media/e.flac", "media/f.mp3", "media/img/*.png", "media/snd/*.wav"]
     assert all(set(d) == {"type", "name"} for d in local["data"])
 
 
-@pytest.mark.parametrize("make, fmt, expected", [(png, "png", 640.0), (jpeg, "jpg", 800.0), (webp, "webp", 300.0),
-                                                 (wav, "wav", 2.0), (flac, "flac", 2.0), (mp3, "mp3", 1.0)])
+@pytest.mark.parametrize("make, fmt, expected", [(png, "png", {"width": 640.0, "height": 10.0}), (jpeg, "jpg", {"width": 800.0, "height": 600.0}),
+                                                 (webp, "webp", {"width": 300.0, "height": 10.0}),
+                                                 (wav, "wav", {"duration": 2.0}), (flac, "flac", {"duration": 2.0}), (mp3, "mp3", {"duration": 1.0})])
 def test_media_header_parsers(tmp_path, make, fmt, expected):
     arg = {"png": 640, "jpg": 800, "webp": 300, "wav": 2.0, "flac": 2.0, "mp3": 1.0}[fmt]
     path = tmp_path / f"x.{fmt}"
@@ -742,7 +739,8 @@ def test_properties_form_moves_facts_to_aibom_dataset_keys(discovered):
     assert not any(k.startswith(INTERNAL_PREFIX) for k in p) and "aibom-internal" not in json.dumps(out)
     assert "size" not in hf["data"][0] and "availability" not in hf["data"][0]["contents"]                  # typed 필드는 건드리지 않는다
     local = datasets(out)["data:local/data@"]
-    assert props(local)["aibom:dataset:size"] == "149" and props(local)["aibom:dataset:statistics:8:value"] == "pos"          # labels:label:mode
+    assert props(local)["aibom:dataset:size"] == "80" and props(local)["aibom:dataset:statistics:0:type"] == "id:nan_count"
+    assert "aibom:dataset:statistics:17:type" in props(local) and "aibom:dataset:statistics:18:type" not in props(local)       # 열 셋 × 6개
     assert validate_cdx(out, "1.7", log=print) and validate_cdx(out, "v0.6", log=print)
 
 
@@ -756,7 +754,7 @@ def test_typed_form_fills_componentdata_fields_on_data0(discovered):
     assert entry["statistics"][:9] == [{"type": t, "value": v} for t, v in IMDB_TRAIN_STATS] and len(entry["statistics"]) == 27
     assert "properties" not in hf                                                     # 내부 키만 있었으니 목록째 사라진다
     local = datasets(out)["data:local/data@"]
-    assert local["data"][0]["size"] == 149 and local["data"][0]["modality"] == ["text", "structured"] and "size" not in local["data"][1]
+    assert local["data"][0]["size"] == 80 and local["data"][0]["modality"] == ["structured"] and len(local["data"]) == 1
     assert "contents" not in local["data"][0] and "properties" not in local["data"][0]              # 원소에 도구 속성은 없다
     assert "aibom-internal" not in json.dumps(out) and "aibom:dataset:" not in json.dumps(out)
     assert validate_cdx(out, "v0.6", log=print)

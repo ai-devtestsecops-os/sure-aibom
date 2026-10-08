@@ -22,7 +22,7 @@ HF_API = Path(__file__).parent / "data" / "hf_api"
 HUB_REDIRECTS = {"bookcorpus": "bookcorpus/bookcorpus"}      # 허브가 307 로 정식 id 에 돌려보내는 옛 이름
 IMDB_REF = "pkg:huggingface/datasets/stanfordnlp/imdb"
 LOCAL_REF = "data:local/data@"
-LOCAL_SIZE = 80 + 69 + 1644 + 74 + 73 + 71 + 76          # train.csv, labels.jsonl, audio/x.wav, 세 png, images/metadata.csv (주석도 크기에 든다)
+LOCAL_SIZE = 80 + 1644 + 74 + 73 + 71 + 76               # train.csv, audio/x.wav, 세 png, images/metadata.csv (주석도 크기에 든다)
 BOOK_REF = "pkg:huggingface/datasets/bookcorpus/bookcorpus"   # 모델 카드의 bookcorpus 가 정식 id 로 바뀐다
 OUT = Path(__file__).parents[1] / "out" / "test_scan"      # 스캔 결과를 남겨 둔다. .gitignore 의 out/ 라 올라가지 않는다
 
@@ -92,14 +92,15 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert set(datasets) == {BOOK_REF, IMDB_REF, LOCAL_REF}
     local = datasets[LOCAL_REF]
     # 표 파일은 파일마다, 매체는 묶어서: audio/x.wav 하나는 그 이름, images/train/{cat,dog}/*.png 는 클래스 폴더라 train 하나로. metadata.csv 는 주석
-    assert [d["name"] for d in local["data"]] == ["data/audio/x.wav", "data/images/train/*.png", "data/labels.jsonl", "data/train.csv"]
+    assert [d["name"] for d in local["data"]] == ["data/audio/x.wav", "data/images/train/*.png", "data/train.csv"]
     props = {p["name"]: p["value"] for p in local["properties"]}
     assert props["aibom:dataset:size"] == str(LOCAL_SIZE)
-    assert [props[f"aibom:dataset:modality:{i}"] for i in range(4)] == ["audio", "image", "text", "structured"]
+    assert [props[f"aibom:dataset:modality:{i}"] for i in range(3)] == ["audio", "image", "structured"]
     assert not any(k.startswith("aibom:dataset:provenance") or k == "aibom:dataset:availability" for k in props)
     assert all(set(d) == {"type", "name"} for d in local["data"])                                                # 원소는 종류와 이름뿐
     stats = {props[k]: props[k.replace(":type", ":value")] for k in props if k.startswith("aibom:dataset:statistics") and k.endswith(":type")}
     assert stats["images/train:label:frequencies"] == "cat=2,dog=1" and stats["images/train:image:width:max"] == "4"     # 클래스 폴더 라벨, PNG 헤더 너비
+    assert stats["images/train:image:height:min"] == "2" and stats["images/train:image:height:max"] == "4"               # 높이도 헤더에서
     assert stats["images:label:frequencies"] == "cat=2,dog=1" and stats["audio:audio:duration:min"] == "0.1"               # metadata.csv 의 label, WAV 길이
     imdb = datasets[IMDB_REF]
     props = {p["name"]: p["value"] for p in imdb["properties"]}
@@ -187,7 +188,7 @@ def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
     assert imdb["size"] == 133190302 and imdb["modality"] == ["text"] and imdb["contents"]["availability"] == "direct-download"
     assert imdb["statistics"][:2] == [{"type": "train:label:nan_count", "value": "0"}, {"type": "train:label:n_unique", "value": "2"}]
     assert imdb["provenance"] == ["https://huggingface.co/datasets/stanfordnlp/imdb"]
-    assert local["size"] == LOCAL_SIZE and local["modality"] == ["audio", "image", "text", "structured"]
+    assert local["size"] == LOCAL_SIZE and local["modality"] == ["audio", "image", "structured"]
     assert "provenance" not in local and "availability" not in local.get("contents", {})       # 로컬은 셋만 채운다
     assert "size" not in datasets[LOCAL_REF]["data"][1]                          # 디렉터리 값은 data[0] 에만
     assert datasets[BOOK_REF]["data"][0]["size"] == 4853859824 and "statistics" not in datasets[BOOK_REF]["data"][0]

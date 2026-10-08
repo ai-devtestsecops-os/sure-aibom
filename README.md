@@ -86,15 +86,25 @@ Exit codes:
 
 ### 0.2.0
 
-- 로컬 데이터셋 구조 인식 (`--data`)
-  - 이미지·오디오는 파일마다가 아니라 폴더·형식 단위로 `data[]` 원소 하나 (`images/train/*.jpg`)
-  - `data[]` 원소는 종류와 이름만 적는다. 0.1.0 의 파일별 도구 속성(`aibom-cli:file:*`)은 정의서에 없는 키라 제거하고, 값은 규제 필드(size, modality, statistics)로 모은다
-  - 분할 샤드 병합 (`train-00001-of-00004.parquet` → `train-*.parquet`), 클래스 폴더 병합과 라벨 분포 (`train/cat`, `train/dog` → `train`)
-  - `metadata.csv/jsonl`, `labels/`, `annotations/` 는 주석으로 분류 (원소가 아니라 통계와 크기에만 반영)
-- 통계 추출 범위 확대: 이미지 너비·오디오 길이 분포를 파일 헤더에서 추출 (PNG, JPEG, WebP, WAV, FLAC, MP3)
-- 규제 필드 추가 (9개 → 11개)
-  - D-BOM: intendedUse, collectionProcess (허브 데이터셋 카드), provenance 에 상위 데이터셋(source_datasets) 추가
-- OWASP aibom-generator 의 성능 지표(modelCard.quantitativeAnalysis.performanceMetrics) 병합
+추가
+
+- statistics 필드 확대
+  - 이미지 너비·높이, 오디오 길이 분포 (지원 포맷: PNG, JPEG, WebP, WAV, FLAC, MP3)
+  - 클래스 폴더와 주석 표의 라벨 분포
+- 규제 필드 2개 추가, 1개 보완
+  - D-BOM: intendedUse, collectionProcess 추가, provenance 에 상위 데이터셋 보완
+- M-BOM: 허브 모델의 성능 지표(performanceMetrics) 추가
+
+변경
+
+- 로컬 데이터셋 구조 인식
+  - 이미지·오디오를 파일 단위가 아니라 폴더·형식 단위로 기록
+  - 분할 샤드 병합, 클래스 폴더 구조 인식
+  - 데이터 파일과 주석 파일 구분 (예: metadata.csv, labels/, annotations/)
+
+삭제
+
+- 로컬 데이터 파일별 속성(aibom-cli:file:*)
 
 ### 0.1.0
 
