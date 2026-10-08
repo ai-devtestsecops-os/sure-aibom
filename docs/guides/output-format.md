@@ -25,8 +25,9 @@ aibom-cli scan ./project -o bom.cdx.json --spec v0.6   # 전용 필드로
 | `machine-learning-model` | 모델 | cdxgen, OWASP aibom-generator |
 | `data` | 데이터셋 | aibom-cli |
 
-모델 카드 정보는 모델 컴포넌트의 `modelCard` 에, 데이터셋 정보는 데이터셋 컴포넌트의 `data` 에 들어 있다.
-컴포넌트 사이의 관계는 `dependencies` 에 있다.
+모델 카드 정보는 모델 컴포넌트의 `modelCard` 에, 데이터셋 정보는 데이터셋 컴포넌트의 `data[]` 에 들어 있다. `data[]` 의 원소 하나는
+데이터의 한 묶음이다. 허브 데이터셋은 데이터셋 전체가 원소 하나이고, 로컬 데이터는 표 파일 하나, 또는 폴더·형식 단위로 묶은 이미지·오디오가
+원소 하나다. 어떤 단위로 묶는지는 [수집 항목](collected-items.md#d-bom)에 있다. 컴포넌트 사이의 관계는 `dependencies` 에 있다.
 
 ## 규제 필드 자리
 
