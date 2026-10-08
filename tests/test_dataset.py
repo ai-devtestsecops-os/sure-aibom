@@ -285,7 +285,7 @@ def test_media_files_are_grouped_by_folder_and_format(tmp_path, online):
         (tmp_path / rel).write_bytes(content)
     write(tmp_path, "data/train.csv", "a,b\n1,2\n")
     local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "data")]))["data:local/data@"]
-    assert [d["name"] for d in local["data"]] == ["data/audio/*.wav", "data/images/cat/*.jpg", "data/images/dog/*.png", "data/train.csv"]
+    assert [d["name"] for d in local["data"]] == ["data/audio/x.wav", "data/images/cat/*.jpg", "data/images/dog/c.png", "data/train.csv"]   # 파일 하나뿐인 묶음은 그 이름
     cat = {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]}
     assert cat == {"aibom-cli:file:count": "2", "aibom-cli:file:size": str(12 + 22), "aibom-cli:file:format": "jpg"}
     train = {p["name"]: p["value"] for p in local["data"][3]["contents"]["properties"]}
@@ -302,6 +302,50 @@ def test_a_single_media_file_data_path_keeps_its_file_name(tmp_path, online):
     items = found["data:local/photo@"]["data"]
     assert [d["name"] for d in items] == ["photo.jpg"]
     assert {p["name"]: p["value"] for p in items[0]["contents"]["properties"]} == {"aibom-cli:file:count": "1", "aibom-cli:file:size": "5", "aibom-cli:file:format": "jpg"}
+
+
+def stats_of(comp: dict) -> dict[str, str]:
+    facts = internal(comp)
+    return {facts[k]: facts[k.replace(":type", ":value")] for k in facts if k.endswith(":type")}
+
+
+def test_shards_of_one_split_are_merged_into_one_entry(tmp_path, online):
+    """train-00000-of-00002 처럼 크기 때문에 나뉜 조각은 분할 하나로 합친다. 행 수·크기는 합, 통계는 조각을 이어 붙여 낸다.
+    조각이 하나뿐이면 보통 파일이되 통계 앞머리는 분할 이름이다."""
+    a, b, t = "a,b\n1,x\n2,y\n", "a,b\n3,z\n", "a,b\n9,q\n"
+    write(tmp_path, "data/train-00000-of-00002.csv", a)
+    write(tmp_path, "data/train-00001-of-00002.csv", b)
+    write(tmp_path, "data/test-00000-of-00001.csv", t)
+    local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "data")]))["data:local/data@"]
+    assert [d["name"] for d in local["data"]] == ["data/test-00000-of-00001.csv", "data/train-*.csv"]
+    train = {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]}
+    assert train == {"aibom-cli:file:count": "2", "aibom-cli:file:size": str(len(a) + len(b)), "aibom-cli:file:format": "csv",
+                     "aibom-cli:file:rows": "3", "aibom-cli:file:columns": "a,b"}
+    stats = stats_of(local)
+    assert (stats["train:a:min"], stats["train:a:max"], stats["train:a:mean"]) == ("1", "3", "2")
+    assert stats["test:a:min"] == "9"
+    assert internal(local)["size"] == str(len(a) + len(b) + len(t))
+
+
+def test_class_folders_merge_into_one_entry_with_label_statistics(tmp_path, online):
+    """train/cat, train/dog 처럼 하위 폴더가 둘 이상 같은 형식의 매체만 들고 있으면 그 폴더(train) 하나로 합치고 폴더 이름이 라벨이 된다.
+    test/cat 하나뿐인 쪽은 합치지 않는다. metadata.csv 는 원소가 아니라 주석 표라 label 열 통계만 보태고, labels/ 아래는 주석 파일이라 세지 않는다."""
+    for rel in ("imgset/train/cat/0.jpg", "imgset/train/cat/1.jpg", "imgset/train/dog/0.jpg", "imgset/test/cat/0.jpg"):
+        (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / rel).write_bytes(b"\xff\xd8" + bytes(10))
+    meta = "file_name,label\ntrain/cat/0.jpg,cat\ntrain/cat/1.jpg,cat\ntrain/dog/0.jpg,dog\n"
+    write(tmp_path, "imgset/metadata.csv", meta)
+    write(tmp_path, "imgset/labels/0.txt", "0 0.5 0.5 0.1 0.1\n")
+    local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "imgset")]))["data:local/imgset@"]
+    assert [d["name"] for d in local["data"]] == ["imgset/test/cat/0.jpg", "imgset/train/*.jpg"]
+    train = {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]}
+    assert train == {"aibom-cli:file:count": "3", "aibom-cli:file:size": "36", "aibom-cli:file:format": "jpg"}
+    stats = stats_of(local)
+    assert (stats["train:label:n_unique"], stats["train:label:mode"], stats["train:label:frequencies"]) == ("2", "cat", "cat=2,dog=1")
+    assert (stats["imgset:label:n_unique"], stats["imgset:label:frequencies"]) == ("2", "cat=2,dog=1")       # metadata.csv 의 label 열
+    assert not any(k.startswith("imgset:file_name") for k in stats)                                           # 파일을 가리키는 열은 통계 없음
+    assert internal(local)["size"] == str(4 * 12 + len(meta) + len("0 0.5 0.5 0.1 0.1\n"))                   # 주석도 데이터셋 크기에는 든다
+    assert internal(local)["modality:0"] == "image" and "modality:1" not in internal(local)
 
 
 def test_data_files_in_the_target_are_not_read_without_a_data_path(tmp_path, monkeypatch):

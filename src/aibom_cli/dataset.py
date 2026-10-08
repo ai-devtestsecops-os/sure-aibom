@@ -78,6 +78,11 @@ MODALITY_BY_EXTENSION: dict[str, str] = {
 DATA_EXTENSIONS = frozenset(MODALITY_BY_EXTENSION)
 MEDIA_EXTENSIONS = frozenset({"png", "jpg", "jpeg", "webp", "wav", "mp3", "flac"})   # 폴더·형식 단위로 묶는 파일. 나머지는 파일마다
 FORMAT_ALIASES = {"jpeg": "jpg"}                                                      # 같은 형식의 다른 확장자는 한 묶음으로
+# 샤드: 한 분할을 크기 때문에 여러 조각으로 나눈 파일. train-00001-of-00004.parquet, part-0001.csv. 조각들은 원소 하나로 합친다
+_SHARD_STEM = re.compile(r"^(?P<stem>.+?)-\d+-of-\d+$|^(?P<stem2>.+?)[-_]\d{4,}$")
+METADATA_NAMES = frozenset({"metadata.csv", "metadata.jsonl"})       # Hugging Face imagefolder·audiofolder 의 주석 표. file_name 열이 있어야 한다
+FILE_COLUMNS = frozenset({"file_name", "file", "filename", "path", "filepath", "image", "audio"})   # 주석 표에서 파일을 가리키는 열 (통계 안 냄)
+ANNOTATION_DIRS = frozenset({"labels", "annotations"})                # YOLO labels/*.txt, COCO annotations/*.json. 데이터가 아니라 주석
 # 데이터 경로 안에 있어도 데이터가 아닌 잘 알려진 이름 (문서·설정·datasets 의 save_to_disk 메타데이터)
 _NON_DATA_NAME = re.compile(r"^(requirements[\w.-]*\.txt|readme.*|license.*|notice.*|changelog.*|package(-lock)?\.json"
                             r"|tsconfig\.json|.*config\.json|manifest\.json|composer\.json"
@@ -314,35 +319,156 @@ def _data_components(paths: Iterable[str], log, empty: list[str]) -> list[dict]:
             ref, n = f"{name}-{n}", n + 1
         used.add(ref)
         claimed.update(path.resolve() for path, _ in files)
-        analyses = []
-        for path, rel in files:
-            if _extension(path.name) in MEDIA_EXTENSIONS:
-                continue
-            a = _analyze_file(path, f"{name}/{rel}" if base.is_dir() else rel, log)
-            a["key"] = PurePosixPath(rel).with_suffix("").as_posix()        # 통계 이름 앞머리 (파일이 여럿일 때)
-            analyses.append(a)
-        analyses += _media_groups([(p, r) for p, r in files if _extension(p.name) in MEDIA_EXTENSIONS], name if base.is_dir() else None)
+        prefix = name if base.is_dir() else None
+        tables, media, metadata, annotations = _classify(files, log)
+        analyses = _table_entries(tables, prefix, log) + _media_groups(media, prefix, name)
         analyses.sort(key=lambda a: a["path"])
-        out.append(_data_component(ref, name, analyses))
+        extra_stats = _metadata_statistics(metadata, name, log)
+        extra_size = sum(path.stat().st_size for path, _ in metadata + annotations)
+        if annotations:
+            log(f"[dataset] {name}: 주석 파일 {len(annotations)}개는 데이터로 세지 않는다 ({', '.join(sorted(ANNOTATION_DIRS))})")
+        out.append(_data_component(ref, name, analyses, extra_size, extra_stats))
     return out
 
 
-def _media_groups(files: list[tuple[Path, str]], prefix: str | None) -> list[dict]:
+def _classify(files: list[tuple[Path, str]], log) -> tuple[list, list, list, list]:
+    """(표·레코드 파일, 매체 파일, 주석 표, 주석 파일). 주석 표는 file_name 열이 있는 metadata.csv/jsonl, 주석 파일은
+    labels/·annotations/ 폴더 아래의 파일이다. 둘 다 data[] 원소가 되지 않는다 — 데이터가 아니라 데이터에 대한 설명이다."""
+    tables, media, metadata, annotations = [], [], [], []
+    for path, rel in files:
+        parts = PurePosixPath(rel).parts
+        if any(part.lower() in ANNOTATION_DIRS for part in parts[:-1]):
+            annotations.append((path, rel))
+        elif path.name.lower() in METADATA_NAMES and _has_file_column(path):
+            metadata.append((path, rel))
+        elif _extension(path.name) in MEDIA_EXTENSIONS:
+            media.append((path, rel))
+        else:
+            tables.append((path, rel))
+    return tables, media, metadata, annotations
+
+
+def _has_file_column(path: Path) -> bool:
+    try:
+        columns = _columns_of(path, _extension(path.name)) if path.stat().st_size <= STATISTICS_FILE_LIMIT else {}
+    except _READ_ERRORS:
+        return False
+    return any(c.lower() in FILE_COLUMNS for c in columns)
+
+
+def _table_entries(files: list[tuple[Path, str]], prefix: str | None, log) -> list[dict]:
+    """표·레코드 파일은 파일마다 원소 하나. 샤드(train-00001-of-00004.parquet)는 같은 분할끼리 원소 하나로 합친다."""
+    shards: dict[tuple[str, str, str], list[tuple[Path, str]]] = {}
+    out: list[dict] = []
+    for path, rel in files:
+        stem, ext = PurePosixPath(rel).stem, _extension(path.name)
+        m = _SHARD_STEM.match(stem)
+        if m:
+            shards.setdefault((PurePosixPath(rel).parent.as_posix(), m.group("stem") or m.group("stem2"), ext), []).append((path, rel))
+            continue
+        a = _analyze_file(path, f"{prefix}/{rel}" if prefix else rel, log)
+        a["key"] = PurePosixPath(rel).with_suffix("").as_posix()            # 통계 이름 앞머리 (원소가 여럿일 때)
+        out.append(a)
+    for (folder, stem, ext), group in shards.items():
+        if len(group) == 1:                                                  # 혼자면 그냥 파일이다. 통계 앞머리는 분할 이름
+            path, rel = group[0]
+            a = _analyze_file(path, f"{prefix}/{rel}" if prefix else rel, log)
+            a["key"] = f"{folder}/{stem}" if folder != "." else stem
+            out.append(a)
+            continue
+        out.append(_analyze_shards(sorted(group, key=lambda f: f[1]), folder, stem, ext, prefix, log))
+    return out
+
+
+def _analyze_shards(group: list[tuple[Path, str]], folder: str, stem: str, ext: str, prefix: str | None, log) -> dict:
+    """샤드 묶음 하나. 크기·행 수는 합치고 열은 첫 조각 것, 통계는 조각들의 열 값을 이어 붙여 낸다 (합쳐서 64 MB 까지)."""
+    rel_dir = f"{folder}/" if folder != "." else ""
+    display = f"{prefix}/{rel_dir}{stem}-*.{ext}" if prefix else f"{rel_dir}{stem}-*.{ext}"
+    out: dict = {"path": display, "format": ext, "modality": MODALITY_BY_EXTENSION.get(ext, "other"), "group": True,
+                 "count": len(group), "size": sum(p.stat().st_size for p, _ in group), "key": f"{rel_dir}{stem}"}
+    rows, columns, merged = 0, None, {}
+    try:
+        for path, rel in group:
+            shape = _shape(path, ext)
+            rows += shape.get("rows") or 0
+            columns = columns or shape.get("columns")
+            if out["size"] <= STATISTICS_FILE_LIMIT:
+                for col, values in _columns_of(path, ext).items():
+                    merged.setdefault(col, []).extend(values)
+        out["rows"] = rows
+        if columns:
+            out["columns"] = columns
+        if merged:
+            out["statistics"] = [(f"{col}:{kind}", value) for col, values in merged.items() for kind, value in _values_statistics(values)]
+    except _READ_ERRORS as e:
+        log(f"[dataset] {display}: 내용을 읽지 못해 크기·조각 수만 적는다 ({e.__class__.__name__})")
+    return out
+
+
+def _media_groups(files: list[tuple[Path, str]], prefix: str | None, name: str) -> list[dict]:
     """매체 파일을 (폴더, 형식) 단위로 묶는다. 묶음 하나가 data[] 원소 하나: 파일 수와 크기 합만 적고 내용은 읽지 않는다.
-    이름은 <prefix>/<폴더>/*.<형식> (폴더 바로 아래면 <prefix>/*.<형식>). 파일 하나를 지목했으면(prefix 없음) 그 파일 이름."""
+    이름은 <prefix>/<폴더>/*.<형식> (폴더 바로 아래면 <prefix>/*.<형식>). 파일 하나를 지목했으면(prefix 없음) 그 파일 이름.
+    한 폴더 아래 하위 폴더 둘 이상이 같은 형식의 매체만 들고 있으면 클래스 폴더(train/cat, train/dog)로 보고 그 폴더 하나로
+    합치며, 하위 폴더 이름이 라벨이 되어 label 통계(n_unique·mode·frequencies)를 낸다."""
     groups: dict[tuple[str, str], dict] = {}
     for path, rel in files:
         fmt = FORMAT_ALIASES.get(_extension(path.name), _extension(path.name))
         folder = PurePosixPath(rel).parent.as_posix()
-        if prefix is None:
-            display = rel
-        else:
-            display = f"{prefix}/{folder}/*.{fmt}" if folder != "." else f"{prefix}/*.{fmt}"
-        g = groups.setdefault((folder, fmt), {"path": display, "format": fmt, "modality": MODALITY_BY_EXTENSION[fmt],
-                                              "count": 0, "size": 0, "group": True})
+        g = groups.setdefault((folder, fmt), {"folder": folder, "format": fmt, "modality": MODALITY_BY_EXTENSION[fmt],
+                                              "count": 0, "size": 0, "group": True, "file": rel})
         g["count"] += 1
         g["size"] += path.stat().st_size
-    return list(groups.values())
+    # 클래스 폴더 합치기: 깊은 폴더부터 올라가며, 부모에 직접 든 매체가 없고 자식 묶음이 둘 이상이면 부모 하나로
+    changed = True
+    while changed:
+        changed = False
+        for parent in sorted({PurePosixPath(f).parent.as_posix() for f, _ in groups if f != "."}, key=lambda p: -p.count("/")):
+            for fmt in {fmt for _, fmt in groups}:
+                children = [(f, fmt) for f, ff in groups if ff == fmt and f != "." and PurePosixPath(f).parent.as_posix() == parent]
+                if len(children) < 2 or (parent, fmt) in groups:
+                    continue
+                merged = {"folder": parent, "format": fmt, "modality": MODALITY_BY_EXTENSION[fmt], "group": True, "count": 0, "size": 0,
+                          "labels": {}}
+                for key in sorted(children):
+                    child = groups.pop(key)
+                    merged["count"] += child["count"]
+                    merged["size"] += child["size"]
+                    merged["labels"][PurePosixPath(key[0]).name] = child["count"]
+                groups[(parent, fmt)] = merged
+                changed = True
+    out = []
+    for (folder, fmt), g in groups.items():
+        if prefix is None:
+            g["path"] = g.get("file", f"*.{fmt}")
+        elif g["count"] == 1 and "file" in g and "labels" not in g:
+            g["path"] = f"{prefix}/{g['file']}"                              # 파일 하나뿐이면 그 이름 그대로
+        else:
+            g["path"] = f"{prefix}/{folder}/*.{fmt}" if folder != "." else f"{prefix}/*.{fmt}"
+        g["key"] = folder if folder != "." else name                        # 통계 이름 앞머리
+        if g.get("labels"):
+            g["statistics"] = [(f"label:{kind}", value) for kind, value in _label_statistics(len(g["labels"]), g["labels"])]
+        g.pop("file", None)
+        g.pop("folder", None)
+        out.append(g)
+    return out
+
+
+def _metadata_statistics(metadata: list[tuple[Path, str]], name: str, log) -> list[tuple[str, str]]:
+    """주석 표(metadata.csv/jsonl)의 열 통계. 파일을 가리키는 열은 빼고, 표가 있는 폴더 이름(맨 위면 데이터셋 이름)을 앞에 붙인다."""
+    out: list[tuple[str, str]] = []
+    for path, rel in sorted(metadata, key=lambda f: f[1]):
+        folder = PurePosixPath(rel).parent.as_posix()
+        key = folder if folder != "." else name
+        try:
+            columns = _columns_of(path, _extension(path.name))
+        except _READ_ERRORS as e:
+            log(f"[dataset] {rel}: 주석 표를 읽지 못한다 ({e.__class__.__name__})")
+            continue
+        for col, values in columns.items():
+            if col.lower() in FILE_COLUMNS:
+                continue
+            out += [(f"{key}:{col}:{kind}", value) for kind, value in _values_statistics(values)]
+    return out
 
 
 def _data_files(base: Path, log) -> list[tuple[Path, str]]:
@@ -363,13 +489,13 @@ def _data_files(base: Path, log) -> list[tuple[Path, str]]:
     return sorted(found, key=lambda item: item[1])
 
 
-def _data_component(ref: str, name: str, analyses: list[dict]) -> dict:
+def _data_component(ref: str, name: str, analyses: list[dict], extra_size: int = 0, extra_stats: list[tuple[str, str]] = ()) -> dict:
     comp: dict = {"type": DATA_TYPE, "name": name, "bom-ref": f"{LOCAL_REF_PREFIX}{ref}@"}
     comp["data"] = [_component_data(a) for a in analyses]
     facts = {                                                     # provenance·availability 는 비운다: 파일이 어디서 왔는지,
-        "size": sum(a["size"] for a in analyses),                 # 공개 데이터셋을 어떻게 받는지는 로컬 파일만 보고 알 수 없다
+        "size": sum(a["size"] for a in analyses) + extra_size,    # 공개 데이터셋을 어떻게 받는지는 로컬 파일만 보고 알 수 없다
         "modality": _unique(a["modality"] for a in analyses),
-        "statistics": _local_statistics(analyses),
+        "statistics": _local_statistics(analyses, bool(extra_stats)) + list(extra_stats),
     }
     comp["properties"] = internal_properties(facts)
     return comp
@@ -379,6 +505,10 @@ def _component_data(a: dict) -> dict:
     if a.get("group"):
         props = [{"name": FILE_PREFIX + "count", "value": str(a["count"])}, {"name": FILE_PREFIX + "size", "value": str(a["size"])},
                  {"name": FILE_PREFIX + "format", "value": a["format"]}]
+        if a.get("rows") is not None:
+            props.append({"name": FILE_PREFIX + "rows", "value": str(a["rows"])})
+        if a.get("columns"):
+            props.append({"name": FILE_PREFIX + "columns", "value": ",".join(a["columns"])})
         return {"type": "dataset", "name": a["path"], "contents": {"properties": props}}
     props = [{"name": FILE_PREFIX + "size", "value": str(a["size"])}, {"name": FILE_PREFIX + "format", "value": a["format"]}]
     if a.get("sha256"):
@@ -390,9 +520,10 @@ def _component_data(a: dict) -> dict:
     return {"type": "dataset", "name": a["path"], "contents": {"properties": props}}
 
 
-def _local_statistics(analyses: list[dict]) -> list[tuple[str, str]]:
-    """파일별 열 통계를 모은다. 파일이 둘 이상이면 폴더 기준 경로(확장자 뺀)를 앞에 붙여 허브의 split 자리처럼 쓴다."""
-    many = len(analyses) > 1
+def _local_statistics(analyses: list[dict], force_prefix: bool = False) -> list[tuple[str, str]]:
+    """원소별 열 통계를 모은다. 원소가 둘 이상이면(또는 주석 통계가 따로 있으면) 폴더 기준 경로(확장자 뺀)를 앞에 붙여
+    허브의 split 자리처럼 쓴다."""
+    many = len(analyses) > 1 or force_prefix
     out: list[tuple[str, str]] = []
     for a in analyses:
         key = a.get("key") or PurePosixPath(a["path"]).stem
