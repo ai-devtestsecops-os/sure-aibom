@@ -18,7 +18,8 @@
        {type: dataset, name: <폴더 이름>/<상대 경로>, contents.properties: 크기·sha256·형식·행·열}. 매체 파일(이미지·오디오)은
        폴더와 형식 단위로 하나 {name: <폴더 이름>/<하위 폴더>/*.<형식>, contents.properties: 파일 수·크기 합·형식} — 이미지
        수십만 장이 원소 수십만 개가 되지 않게, 그리고 CycloneDX 의 componentData 가 "데이터의 모음" 단위이기 때문이다. 매체
-       파일은 내용을 읽지 않는다 (크기만 센다). 지목한 곳이라 json·txt 도 데이터로 치되, README·LICENSE·*config.json·
+       파일은 헤더만 읽어 이미지는 너비(width), 오디오는 길이(duration, 초)의 분포를 통계로 낸다 — datasets-server 가 image·audio
+       열에 주는 것과 같은 종류다. 지목한 곳이라 json·txt 도 데이터로 치되, README·LICENSE·*config.json·
        dataset_info.json 같은 잘 알려진 메타데이터 이름은 뺀다. 점으로 시작하는 폴더·파일, SKIP_DIRS, 지목한 경로 밖으로
        나가는 심볼릭 링크는 건너뛴다.
        규제 필드는 size·modality·statistics 셋만 채운다 — 출처(provenance)와 가용성(availability)은 파일만 보고 알 수 없다.
@@ -41,6 +42,7 @@ import json
 import math
 import os
 import re
+import struct
 import zipfile
 from collections import Counter
 from io import BufferedIOBase
@@ -415,9 +417,10 @@ def _media_groups(files: list[tuple[Path, str]], prefix: str | None, name: str) 
         fmt = FORMAT_ALIASES.get(_extension(path.name), _extension(path.name))
         folder = PurePosixPath(rel).parent.as_posix()
         g = groups.setdefault((folder, fmt), {"folder": folder, "format": fmt, "modality": MODALITY_BY_EXTENSION[fmt],
-                                              "count": 0, "size": 0, "group": True, "file": rel})
+                                              "count": 0, "size": 0, "group": True, "file": rel, "paths": []})
         g["count"] += 1
         g["size"] += path.stat().st_size
+        g["paths"].append(path)
     # 클래스 폴더 합치기: 깊은 폴더부터 올라가며, 부모에 직접 든 매체가 없고 자식 묶음이 둘 이상이면 부모 하나로
     changed = True
     while changed:
@@ -427,15 +430,18 @@ def _media_groups(files: list[tuple[Path, str]], prefix: str | None, name: str) 
                 children = [(f, fmt) for f, ff in groups if ff == fmt and f != "." and PurePosixPath(f).parent.as_posix() == parent]
                 if len(children) < 2 or (parent, fmt) in groups:
                     continue
-                merged = {"folder": parent, "format": fmt, "modality": MODALITY_BY_EXTENSION[fmt], "group": True, "count": 0, "size": 0,
-                          "labels": {}}
-                for key in sorted(children):
-                    child = groups.pop(key)
-                    merged["count"] += child["count"]
-                    merged["size"] += child["size"]
-                    merged["labels"][PurePosixPath(key[0]).name] = child["count"]
-                groups[(parent, fmt)] = merged
+                groups[(parent, fmt)] = _merge_class_folders(parent, fmt, [groups.pop(key) for key in sorted(children)])
                 changed = True
+    # 형제 분할 중 하나가 클래스 폴더로 합쳐졌으면(train/cat, train/dog → train), 클래스가 하나뿐인 형제(test/cat)도 같은 꼴로 합친다
+    for (folder, fmt), g in list(groups.items()):
+        if "labels" not in g or folder == ".":
+            continue
+        grand = PurePosixPath(folder).parent.as_posix()
+        for (f2, fmt2), g2 in list(groups.items()):
+            parent2 = PurePosixPath(f2).parent.as_posix()
+            if fmt2 == fmt and "labels" not in g2 and f2 != "." and parent2 != "." and PurePosixPath(parent2).parent.as_posix() == grand \
+                    and parent2 != folder and (parent2, fmt) not in groups:
+                groups[(parent2, fmt)] = _merge_class_folders(parent2, fmt, [groups.pop((f2, fmt2))])
     out = []
     for (folder, fmt), g in groups.items():
         if prefix is None:
@@ -445,12 +451,173 @@ def _media_groups(files: list[tuple[Path, str]], prefix: str | None, name: str) 
         else:
             g["path"] = f"{prefix}/{folder}/*.{fmt}" if folder != "." else f"{prefix}/*.{fmt}"
         g["key"] = folder if folder != "." else name                        # 통계 이름 앞머리
+        stats: list[tuple[str, str]] = []
         if g.get("labels"):
-            g["statistics"] = [(f"label:{kind}", value) for kind, value in _label_statistics(len(g["labels"]), g["labels"])]
+            stats += [(f"label:{kind}", value) for kind, value in _label_statistics(len(g["labels"]), g["labels"])]
+        stats += _media_statistics(g.pop("paths"), fmt)
+        if stats:
+            g["statistics"] = stats
         g.pop("file", None)
         g.pop("folder", None)
         out.append(g)
     return out
+
+
+def _merge_class_folders(parent: str, fmt: str, children: list[dict]) -> dict:
+    """하위 폴더 묶음들을 부모 폴더 하나로. 하위 폴더 이름이 라벨이고 값은 파일 수다."""
+    merged = {"folder": parent, "format": fmt, "modality": MODALITY_BY_EXTENSION[fmt], "group": True, "count": 0, "size": 0,
+              "labels": {}, "paths": []}
+    for child in children:
+        merged["count"] += child["count"]
+        merged["size"] += child["size"]
+        merged["paths"] += child["paths"]
+        merged["labels"][PurePosixPath(child["folder"]).name] = child["count"]
+    return merged
+
+
+# ── 매체 헤더 ────────────────────────────────────────────────────────────────
+# 이미지는 너비(px), 오디오는 길이(초)의 분포를 낸다. datasets-server 가 image 열에 width, audio 열에 duration 을 주는 것과 같다.
+# 파일 내용은 읽지 않고 헤더만 본다 (PNG IHDR, JPEG SOF, WebP VP8/VP8L/VP8X, WAV fmt·data, FLAC STREAMINFO, MP3 프레임 헤더와 Xing).
+
+MEDIA_HEADER_BYTES = 64 * 1024
+MEDIA_HEADER_LIMIT = 4 * 1024 * 1024                          # JPEG 는 EXIF 뒤에 SOF 가 올 수 있어 여기까지 더 읽는다
+MEASURE_BY_MODALITY = {"image": "width", "audio": "duration"}
+_JPEG_SOF = frozenset({0xC0, 0xC1, 0xC2, 0xC3, 0xC5, 0xC6, 0xC7, 0xC9, 0xCA, 0xCB, 0xCD, 0xCE, 0xCF})
+_MP3_BITRATES = {"1": (0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320),
+                 "2": (0, 8, 16, 24, 32, 40, 48, 56, 64, 80, 96, 112, 128, 144, 160)}
+_MP3_SAMPLE_RATES = {"1": (44100, 48000, 32000), "2": (22050, 24000, 16000), "2.5": (11025, 12000, 8000)}
+
+
+def _media_statistics(paths: list[Path], fmt: str) -> list[tuple[str, str]]:
+    """묶음 안 파일들의 너비(이미지) 또는 길이(오디오) 분포. 헤더를 못 읽는 파일은 뺀다. 하나도 못 읽으면 빈 목록."""
+    measure = MEASURE_BY_MODALITY.get(MODALITY_BY_EXTENSION.get(fmt, ""))
+    if not measure:
+        return []
+    values: list[float] = []
+    for path in paths:
+        try:
+            v = _media_measure(path, fmt)
+        except (OSError, struct.error, IndexError, KeyError, ValueError, ZeroDivisionError):
+            v = None
+        if v is not None and math.isfinite(v) and v > 0:
+            values.append(v)
+    modality = MODALITY_BY_EXTENSION[fmt]                      # 허브의 열 이름 자리에 모달리티를 쓴다: train:image:width:min
+    return [(f"{modality}:{measure}:{kind}", value) for kind, value in _numeric_statistics(values)] if values else []
+
+
+def _media_measure(path: Path, fmt: str) -> float | None:
+    with path.open("rb") as fh:
+        head = fh.read(MEDIA_HEADER_BYTES)
+        if fmt == "png":
+            return _png_width(head)
+        if fmt == "jpg":
+            return _jpeg_width(fh, head)
+        if fmt == "webp":
+            return _webp_width(head)
+        if fmt == "wav":
+            return _wav_duration(head, path.stat().st_size)
+        if fmt == "flac":
+            return _flac_duration(head)
+        if fmt == "mp3":
+            return _mp3_duration(head, path.stat().st_size)
+    return None
+
+
+def _png_width(b: bytes) -> float | None:
+    if b[:8] != b"\x89PNG\r\n\x1a\n" or b[12:16] != b"IHDR" or len(b) < 24:
+        return None
+    return float(struct.unpack(">I", b[16:20])[0])
+
+
+def _jpeg_width(fh, head: bytes) -> float | None:
+    """마커를 따라가며 SOF(프레임 헤더)의 너비. APP 세그먼트(EXIF 등)가 길면 더 읽는다."""
+    if head[:2] != b"\xff\xd8":
+        return None
+    data, pos = head, 2
+    while True:
+        while len(data) < pos + 9:
+            more = fh.read(MEDIA_HEADER_BYTES)
+            if not more or len(data) > MEDIA_HEADER_LIMIT:
+                return None
+            data += more
+        if data[pos] != 0xFF:
+            return None
+        marker = data[pos + 1]
+        if marker == 0xFF:                                   # 채움 바이트
+            pos += 1
+            continue
+        if marker in (0x01, 0xD8) or 0xD0 <= marker <= 0xD7:  # 길이 없는 마커
+            pos += 2
+            continue
+        if marker in (0xD9, 0xDA):                           # 끝 또는 스캔 시작: SOF 를 못 찾았다
+            return None
+        length = struct.unpack(">H", data[pos + 2:pos + 4])[0]
+        if marker in _JPEG_SOF:
+            return float(struct.unpack(">H", data[pos + 7:pos + 9])[0])
+        pos += 2 + length
+
+
+def _webp_width(b: bytes) -> float | None:
+    if b[:4] != b"RIFF" or b[8:12] != b"WEBP" or len(b) < 30:
+        return None
+    chunk = b[12:16]
+    if chunk == b"VP8 " and b[23:26] == b"\x9d\x01\x2a":
+        return float(struct.unpack("<H", b[26:28])[0] & 0x3FFF)
+    if chunk == b"VP8L" and b[20] == 0x2F:
+        return float((struct.unpack("<I", b[21:25])[0] & 0x3FFF) + 1)
+    if chunk == b"VP8X":
+        return float((b[24] | (b[25] << 8) | (b[26] << 16)) + 1)
+    return None
+
+
+def _wav_duration(b: bytes, size: int) -> float | None:
+    if b[:4] != b"RIFF" or b[8:12] != b"WAVE":
+        return None
+    pos, byte_rate, data_size = 12, None, None
+    while pos + 8 <= len(b):
+        chunk, length = b[pos:pos + 4], struct.unpack("<I", b[pos + 4:pos + 8])[0]
+        if chunk == b"fmt " and pos + 20 <= len(b):
+            byte_rate = struct.unpack("<I", b[pos + 16:pos + 20])[0]
+        elif chunk == b"data":
+            data_size = length if length not in (0, 0xFFFFFFFF) else max(size - pos - 8, 0)   # 스트리밍 WAV 는 길이를 안 적는다
+            break
+        pos += 8 + length + (length & 1)
+    if not byte_rate or data_size is None:
+        return None
+    return data_size / byte_rate
+
+
+def _flac_duration(b: bytes) -> float | None:
+    if b[:4] != b"fLaC" or len(b) < 42 or b[4] & 0x7F != 0:   # 첫 메타데이터 블록은 STREAMINFO(0) 여야 한다
+        return None
+    v = int.from_bytes(b[18:26], "big")                       # STREAMINFO 10~17 바이트: 샘플 레이트 20비트, 채널 3, 비트 5, 총 샘플 36
+    sample_rate, total = v >> 44, v & ((1 << 36) - 1)
+    return total / sample_rate if sample_rate and total else None
+
+
+def _mp3_duration(b: bytes, size: int) -> float | None:
+    """ID3v2 태그를 건너뛰고 첫 프레임 헤더를 읽는다. Xing/Info 헤더가 있으면 프레임 수로, 없으면 고정 비트레이트로 본다."""
+    pos = 0
+    if b[:3] == b"ID3" and len(b) >= 10:
+        pos = 10 + (((b[6] & 0x7F) << 21) | ((b[7] & 0x7F) << 14) | ((b[8] & 0x7F) << 7) | (b[9] & 0x7F)) + (10 if b[5] & 0x10 else 0)
+    while pos + 4 <= len(b):
+        h = b[pos:pos + 4]
+        if h[0] == 0xFF and (h[1] & 0xE0) == 0xE0:
+            version_bits, layer_bits = (h[1] >> 3) & 3, (h[1] >> 1) & 3
+            bitrate_index, rate_index = h[2] >> 4, (h[2] >> 2) & 3
+            if version_bits != 1 and layer_bits == 1 and 0 < bitrate_index < 15 and rate_index != 3:      # Layer III 만
+                version = {3: "1", 2: "2", 0: "2.5"}[version_bits]
+                bitrate = _MP3_BITRATES["1" if version == "1" else "2"][bitrate_index] * 1000
+                sample_rate = _MP3_SAMPLE_RATES[version][rate_index]
+                mono = (h[3] >> 6) == 3
+                samples = 1152 if version == "1" else 576
+                side = (17 if mono else 32) if version == "1" else (9 if mono else 17)
+                x = pos + 4 + side
+                if b[x:x + 4] in (b"Xing", b"Info") and len(b) >= x + 12 and struct.unpack(">I", b[x + 4:x + 8])[0] & 1:
+                    return struct.unpack(">I", b[x + 8:x + 12])[0] * samples / sample_rate
+                return (size - pos) * 8 / bitrate
+        pos += 1
+    return None
 
 
 def _metadata_statistics(metadata: list[tuple[Path, str]], name: str, log) -> list[tuple[str, str]]:

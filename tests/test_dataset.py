@@ -329,7 +329,8 @@ def test_shards_of_one_split_are_merged_into_one_entry(tmp_path, online):
 
 def test_class_folders_merge_into_one_entry_with_label_statistics(tmp_path, online):
     """train/cat, train/dog 처럼 하위 폴더가 둘 이상 같은 형식의 매체만 들고 있으면 그 폴더(train) 하나로 합치고 폴더 이름이 라벨이 된다.
-    test/cat 하나뿐인 쪽은 합치지 않는다. metadata.csv 는 원소가 아니라 주석 표라 label 열 통계만 보태고, labels/ 아래는 주석 파일이라 세지 않는다."""
+    형제 분할이 합쳐졌으면 클래스가 하나뿐인 test/cat 도 test 로 합친다. metadata.csv 는 원소가 아니라 주석 표라 label 열 통계만 보태고,
+    labels/ 아래는 주석 파일이라 세지 않는다."""
     for rel in ("imgset/train/cat/0.jpg", "imgset/train/cat/1.jpg", "imgset/train/dog/0.jpg", "imgset/test/cat/0.jpg"):
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
         (tmp_path / rel).write_bytes(b"\xff\xd8" + bytes(10))
@@ -337,15 +338,76 @@ def test_class_folders_merge_into_one_entry_with_label_statistics(tmp_path, onli
     write(tmp_path, "imgset/metadata.csv", meta)
     write(tmp_path, "imgset/labels/0.txt", "0 0.5 0.5 0.1 0.1\n")
     local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "imgset")]))["data:local/imgset@"]
-    assert [d["name"] for d in local["data"]] == ["imgset/test/cat/0.jpg", "imgset/train/*.jpg"]
+    assert [d["name"] for d in local["data"]] == ["imgset/test/*.jpg", "imgset/train/*.jpg"]    # train 이 합쳐졌으니 클래스 하나뿐인 test 도 같은 꼴로
     train = {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]}
     assert train == {"aibom-cli:file:count": "3", "aibom-cli:file:size": "36", "aibom-cli:file:format": "jpg"}
     stats = stats_of(local)
     assert (stats["train:label:n_unique"], stats["train:label:mode"], stats["train:label:frequencies"]) == ("2", "cat", "cat=2,dog=1")
+    assert (stats["test:label:n_unique"], stats["test:label:frequencies"]) == ("1", "cat=1")
+    assert not any(":width:" in k for k in stats)                                                            # 가짜 jpg 라 헤더를 못 읽어 너비 통계는 없다
     assert (stats["imgset:label:n_unique"], stats["imgset:label:frequencies"]) == ("2", "cat=2,dog=1")       # metadata.csv 의 label 열
     assert not any(k.startswith("imgset:file_name") for k in stats)                                           # 파일을 가리키는 열은 통계 없음
     assert internal(local)["size"] == str(4 * 12 + len(meta) + len("0 0.5 0.5 0.1 0.1\n"))                   # 주석도 데이터셋 크기에는 든다
     assert internal(local)["modality:0"] == "image" and "modality:1" not in internal(local)
+
+
+def png(width: int) -> bytes:
+    return b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + b"IHDR" + struct.pack(">II", width, 10) + bytes(5) + bytes(4)
+
+
+def jpeg(width: int) -> bytes:
+    app0 = b"\xff\xe0" + struct.pack(">H", 16) + b"JFIF\x00" + bytes(9)                    # 길이 16 짜리 APP0 세그먼트
+    sof0 = b"\xff\xc0" + struct.pack(">HBHHB", 17, 8, 600, width, 3) + bytes(9)
+    return b"\xff\xd8" + app0 + sof0 + b"\xff\xd9"
+
+
+def webp(width: int) -> bytes:
+    w = (width - 1).to_bytes(3, "little")
+    return b"RIFF" + struct.pack("<I", 22) + b"WEBP" + b"VP8X" + struct.pack("<I", 10) + bytes(4) + w + (9).to_bytes(3, "little")
+
+
+def wav(seconds: float, byte_rate: int = 16000) -> bytes:
+    data = bytes(int(seconds * byte_rate))
+    fmt = b"fmt " + struct.pack("<IHHIIHH", 16, 1, 1, 8000, byte_rate, 2, 16)
+    return b"RIFF" + struct.pack("<I", 4 + len(fmt) + 8 + len(data)) + b"WAVE" + fmt + b"data" + struct.pack("<I", len(data)) + data
+
+
+def flac(seconds: float, sample_rate: int = 44100) -> bytes:
+    packed = (sample_rate << 44) | (1 << 41) | (15 << 36) | int(seconds * sample_rate)       # 2채널, 16비트
+    streaminfo = struct.pack(">HH", 4096, 4096) + bytes(6) + packed.to_bytes(8, "big") + bytes(16)
+    return b"fLaC" + bytes([0x80]) + (34).to_bytes(3, "big") + streaminfo
+
+
+def mp3(seconds: float) -> bytes:
+    header = bytes([0xFF, 0xFB, 0x90, 0x00])                                               # MPEG1 Layer III, 128 kbps, 44.1 kHz, 스테레오
+    return header + bytes(int(seconds * 128000 / 8) - 4)                                    # Xing 없음 → 고정 비트레이트로 본다
+
+
+def test_media_statistics_come_from_file_headers(tmp_path, online):
+    """이미지는 너비, 오디오는 길이의 분포. 헤더만 읽는다. 이름은 허브의 image·audio 열 통계와 같은 꼴(train:image:width:min)이다."""
+    files = {"media/img/a.png": png(640), "media/img/b.png": png(320), "media/snd/a.wav": wav(2.0), "media/snd/b.wav": wav(1.0),
+             "media/c.jpg": jpeg(800), "media/d.webp": webp(300), "media/e.flac": flac(2.0), "media/f.mp3": mp3(1.0)}
+    for rel, content in files.items():
+        (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / rel).write_bytes(content)
+    local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "media")]))["data:local/media@"]
+    stats = stats_of(local)
+    assert (stats["img:image:width:min"], stats["img:image:width:max"], stats["img:image:width:mean"], stats["img:image:width:std"]) == ("320", "640", "480", "226.27417")
+    assert (stats["snd:audio:duration:min"], stats["snd:audio:duration:max"], stats["snd:audio:duration:mean"], stats["snd:audio:duration:std"]) == ("1", "2", "1.5", "0.70711")
+    assert stats["media:image:width:min"] in ("800", "300") and stats["media:audio:duration:min"] in ("2", "1")   # 묶음이 파일 하나뿐이면 값 하나
+    assert [d["name"] for d in local["data"]] == ["media/c.jpg", "media/d.webp", "media/e.flac", "media/f.mp3", "media/img/*.png", "media/snd/*.wav"]
+    assert all("sha256" not in p["name"] for d in local["data"] for p in d["contents"]["properties"])   # 매체는 해시를 안 낸다
+
+
+@pytest.mark.parametrize("make, fmt, expected", [(png, "png", 640.0), (jpeg, "jpg", 800.0), (webp, "webp", 300.0),
+                                                 (wav, "wav", 2.0), (flac, "flac", 2.0), (mp3, "mp3", 1.0)])
+def test_media_header_parsers(tmp_path, make, fmt, expected):
+    arg = {"png": 640, "jpg": 800, "webp": 300, "wav": 2.0, "flac": 2.0, "mp3": 1.0}[fmt]
+    path = tmp_path / f"x.{fmt}"
+    path.write_bytes(make(arg))
+    assert ds._media_measure(path, fmt) == pytest.approx(expected)
+    (tmp_path / f"bad.{fmt}").write_bytes(b"garbage" * 10)
+    assert ds._media_statistics([tmp_path / f"bad.{fmt}"], fmt) == []                        # 못 읽는 파일은 통계에서 빠진다
 
 
 def test_data_files_in_the_target_are_not_read_without_a_data_path(tmp_path, monkeypatch):
