@@ -1,0 +1,4 @@
+file_name,label
+train/cat/a.png,cat
+train/cat/b.png,cat
+train/dog/c.png,dog
