@@ -84,6 +84,17 @@ Exit codes:
 
 ## Updates
 
+### 0.2.0
+
+- 로컬 데이터셋 구조 인식 (`--data`)
+  - 이미지·오디오는 파일마다가 아니라 폴더·형식 단위로 `data[]` 원소 하나 (`images/train/*.jpg`: 파일 수, 크기 합)
+  - 분할 샤드 병합 (`train-00001-of-00004.parquet` → `train-*.parquet`), 클래스 폴더 병합과 라벨 분포 (`train/cat`, `train/dog` → `train`)
+  - `metadata.csv/jsonl`, `labels/`, `annotations/` 는 주석으로 분류 (원소가 아니라 통계와 크기에만 반영)
+- 통계 추출 범위 확대: 이미지 너비·오디오 길이 분포를 파일 헤더에서 추출 (PNG, JPEG, WebP, WAV, FLAC, MP3)
+- 규제 필드 추가 (9개 → 11개)
+  - D-BOM: intendedUse, collectionProcess (허브 데이터셋 카드), provenance 에 상위 데이터셋(source_datasets) 추가
+- OWASP aibom-generator 의 성능 지표(modelCard.quantitativeAnalysis.performanceMetrics) 병합
+
 ### 0.1.0
 
 - syft, cdxgen, OWASP aibom-generator 결과를 병합해 CycloneDX 1.7 로 출력
@@ -97,7 +108,6 @@ Exit codes:
 
 - SPDX 3.0.1 출력
 - 규제 완성도: 규제별로 요구 필드 중 채워진 것과 빈 것 표시
-- 스캔 대상 문서: 디렉터리와 컨테이너 이미지에서 무엇을 어떻게 찾는지에 대한 상세 설명
 
 ## 출처
 
