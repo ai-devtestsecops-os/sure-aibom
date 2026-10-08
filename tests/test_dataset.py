@@ -454,7 +454,9 @@ def test_hub_info_fills_component_and_facts(imdb):
     assert comp["externalReferences"] == [{"type": "distribution", "url": "https://huggingface.co/datasets/stanfordnlp/imdb"},
                                           {"type": "website", "url": "https://paperswithcode.com/dataset/imdb-movie-reviews"}]
     assert internal(comp) == {"size": "133190302", "modality:0": "text", "availability": "direct-download",
-                              "provenance:0": "https://huggingface.co/datasets/stanfordnlp/imdb"}          # 통계 응답이 없으면 statistics 도 없다
+                              "provenance:0": "https://huggingface.co/datasets/stanfordnlp/imdb",
+                              "intendedUse": "text-classification, sentiment-classification",             # task_categories + task_ids
+                              "collectionProcess": "annotations expert-generated; language expert-generated"}   # 통계 응답이 없으면 statistics 도 없다
     # datasets-server 통계를 주면 split:열:통계 로 들어간다. 라벨 열은 n_unique·frequencies, 글 열은 길이의 min·max·mean·median·std
     comp = ds._new_hf_component(IMDB)
     ds.apply_hub_info(comp, IMDB, imdb, imdb_size(), [("plain_text", "train", imdb_statistics("plain_text", "train"))])
@@ -467,8 +469,16 @@ def test_hub_facts_variants():
                                                                                {"config_name": "y", "dataset_size": 5}]}})
     assert gated["availability"] == "registration" and gated["size"] == 15 and gated["modality"] == ["image", "audio", "structured", "other"]
     assert gated["statistics"] == []                                                       # 행 수·feature 수·config 수는 통계가 아니다
+    assert gated["intendedUse"] == "image-classification, audio-classification, tabular-regression, weird" and gated["collectionProcess"] is None
     empty = ds.hub_facts("a/b", {"id": "a/b"})
     assert empty["size"] is None and empty["modality"] == [] and empty["statistics"] == [] and empty["availability"] == "direct-download"
+    assert empty["intendedUse"] is None and empty["collectionProcess"] is None and empty["provenance"] == ["https://huggingface.co/datasets/a/b"]
+    # source_datasets: 상위 데이터셋은 provenance 에 더한다. original·extended 는 id 가 아니고, extended|<id> 는 id 만
+    card = {"source_datasets": ["original", "extended|squad", "rajpurkar/squad_v2", "extended"], "annotations_creators": ["crowdsourced", "crowdsourced"],
+            "language_creators": ["found"]}
+    facts = ds.hub_facts("a/b", {"id": "a/b", "cardData": card})
+    assert facts["provenance"] == ["https://huggingface.co/datasets/a/b", "https://huggingface.co/datasets/squad", "https://huggingface.co/datasets/rajpurkar/squad_v2"]
+    assert facts["collectionProcess"] == "annotations crowdsourced; language found"
     # README 앞머리에 크기가 없으면 datasets-server /size 의 원본 파일 바이트. 앞머리에 있으면 그것이 이긴다
     assert ds.hub_facts("a/b", {"id": "a/b"}, imdb_size())["size"] == 83446840
     assert ds.hub_facts("a/b", {"id": "a/b", "cardData": {"dataset_info": {"dataset_size": 7}}}, imdb_size())["size"] == 7

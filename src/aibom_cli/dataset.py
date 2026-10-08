@@ -6,6 +6,8 @@
        - 스캔 대상 디렉터리의 파이썬 소스에서 load_dataset("owner/name") — 첫 위치 인자가 허브 id 모양일 때만.
          load_dataset("csv", data_files=…) 같은 로컬 빌더와 파일 경로는 허브 id 가 아니라 넘긴다.
        네트워크가 닿으면 GET {HF_ENDPOINT}/api/datasets/<id> 로 채우고, 닿지 않으면 이름·purl 만 두고 한 번 알린다.
+       규제 필드는 size·modality·availability·provenance·statistics 에 더해 intendedUse(task_categories·task_ids),
+       collectionProcess(annotations_creators·language_creators)를 카드 머리말에서 읽고, provenance 에는 source_datasets 의 상위 데이터셋도 넣는다.
        datasets-server 의 /size(README 앞머리에 크기가 없을 때의 바이트 크기)와 /statistics(config·split 별 열 통계)도 본다.
        컴포넌트가 없으면 만들고(bom-ref = purl pkg:huggingface/datasets/<id>), 있으면 제자리에서 채운다.
        허브가 돌려준 id 가 정식 id 다: 옛 이름(imdb → stanfordnlp/imdb)이나 두 이름(bookcorpus, bookcorpus/bookcorpus)으로 부른
@@ -1214,10 +1216,43 @@ def hub_facts(hf_id: str, info: dict, size: dict | None = None, statistics: list
         "modality": _unique(MODALITY_BY_TAG.get(t, "other") for t in tag_modalities if t) if tag_modalities
                     else _unique(_modality_of_task(t) for t in _as_list(card.get("task_categories")) if isinstance(t, str)),
         "availability": "registration" if info.get("gated") else "direct-download",
-        "provenance": [_hub_url(hf_id)],
+        "provenance": _unique([_hub_url(hf_id)] + [_hub_url(s) for s in _source_datasets(card)]),
+        "intendedUse": _intended_use(card),
+        "collectionProcess": _collection_process(card),
         "statistics": _hub_statistics(statistics),
     }
     return facts
+
+
+def _intended_use(card: dict) -> str | None:
+    """데이터셋 카드의 task_categories(용도)와 task_ids(세부 용도)를 쉼표로 잇는다. 둘 다 Hugging Face tasks 어휘다."""
+    tasks = _unique(str(t).strip() for key in ("task_categories", "task_ids") for t in _as_list(card.get(key)) if isinstance(t, str) and t.strip())
+    return ", ".join(tasks) or None
+
+
+def _collection_process(card: dict) -> str | None:
+    """데이터셋 카드의 annotations_creators(주석을 만든 방식)와 language_creators(내용을 만든 방식). 정해진 어휘다
+    (crowdsourced, expert-generated, machine-generated, found, no-annotation …)."""
+    parts = []
+    for key, label in (("annotations_creators", "annotations"), ("language_creators", "language")):
+        values = _unique(str(v).strip() for v in _as_list(card.get(key)) if isinstance(v, str) and v.strip())
+        if values:
+            parts.append(f"{label} {', '.join(values)}")
+    return "; ".join(parts) or None
+
+
+def _source_datasets(card: dict) -> list[str]:
+    """source_datasets 가운데 상위 데이터셋 id. 'original' 과 'extended' 는 id 가 아니고, 'extended|<id>' 는 id 만 남긴다."""
+    out = []
+    for s in _as_list(card.get("source_datasets")):
+        if not isinstance(s, str):
+            continue
+        s = s.strip()
+        if s.lower().startswith("extended|"):
+            s = s.split("|", 1)[1].strip()
+        if s and s.lower() not in ("original", "extended") and _HF_ID.match(s):
+            out.append(s)
+    return out
 
 
 def _modality_of_task(task: str) -> str:
@@ -1289,6 +1324,9 @@ def internal_properties(facts: dict) -> list[dict]:
         props.append({"name": f"{INTERNAL_PREFIX}modality:{i}", "value": m})
     if facts.get("availability"):
         props.append({"name": INTERNAL_PREFIX + "availability", "value": facts["availability"]})
+    for field in ("intendedUse", "collectionProcess"):
+        if facts.get(field):
+            props.append({"name": INTERNAL_PREFIX + field, "value": facts[field]})
     for i, p in enumerate(facts.get("provenance") or []):
         props.append({"name": f"{INTERNAL_PREFIX}provenance:{i}", "value": p})
     for i, (kind, value) in enumerate(facts.get("statistics") or []):

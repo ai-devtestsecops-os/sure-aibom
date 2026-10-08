@@ -165,6 +165,18 @@ def test_description_and_considerations_come_from_owasp_when_missing(monkeypatch
         assert comp["modelCard"]["considerations"] == src["modelCard"]["considerations"]
 
 
+def test_performance_metrics_are_copied_when_missing():
+    from aibom_cli.enrich import _apply
+    metrics = [{"type": "accuracy", "value": "0.91", "slice": "glue/cola"}]
+    dst = {"modelCard": {"quantitativeAnalysis": {"performanceMetrics": [{"type": "f1", "value": "0.5"}]}}}
+    _apply(dst, {"modelCard": {"quantitativeAnalysis": {"performanceMetrics": metrics, "graphics": {"collection": []}}}}, {})
+    assert dst["modelCard"]["quantitativeAnalysis"]["performanceMetrics"] == [{"type": "f1", "value": "0.5"}]     # 있던 것이 이긴다
+    assert dst["modelCard"]["quantitativeAnalysis"]["graphics"] == {"collection": []}                            # 없던 하위 키만 들어온다
+    dst = {}
+    _apply(dst, {"modelCard": {"quantitativeAnalysis": {"performanceMetrics": metrics}}}, {})
+    assert dst["modelCard"]["quantitativeAnalysis"]["performanceMetrics"] == metrics
+
+
 def test_document_level_score_properties_move_to_the_component(monkeypatch, owasp):
     owasp["metadata"]["properties"] = [{"name": "aibom:completeness:score", "value": "83"},
                                        {"name": "generated_at", "value": "2026-01-01"}]

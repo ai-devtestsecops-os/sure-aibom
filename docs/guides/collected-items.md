@@ -27,7 +27,7 @@ S-BOM 만 syft 가 이미지를 직접 읽는다.
 |---|---|---|
 | 모델 카드의 데이터셋 참조 | cdxgen | 로컬 모델의 README.md 앞머리 `datasets:` |
 | 코드의 데이터셋 참조 | aibom-cli | 파이썬 소스의 `load_dataset("owner/name")` 호출. 첫 인자가 로컬 빌더(`csv`, `json`, `parquet` …)이거나 경로이면 허브 참조가 아니라 넘긴다 |
-| 허브 데이터셋 정보 | aibom-cli | [Hub API](https://huggingface.co/docs/hub/api)에서 정식 id, 커밋, 라이선스, 모달리티를, [datasets-server](https://huggingface.co/docs/dataset-viewer)에서 크기와 열 통계를 받는다. 데이터셋 파일을 내려받지는 않는다 |
+| 허브 데이터셋 정보 | aibom-cli | [Hub API](https://huggingface.co/docs/hub/api)에서 정식 id, 커밋, 라이선스, 모달리티, 용도(task_categories), 수집 방식(annotations_creators, language_creators), 상위 데이터셋(source_datasets)을, [datasets-server](https://huggingface.co/docs/dataset-viewer)에서 크기와 열 통계를 받는다. 데이터셋 파일을 내려받지는 않는다 |
 | 로컬 데이터 | aibom-cli | `--data` 로 지정한 경로의 데이터 파일 |
 
 로컬 데이터는 확장자로 가르고, 파일 종류에 따라 `data[]` 에 적는 단위가 다르다.

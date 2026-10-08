@@ -22,12 +22,16 @@ SPDX 3.0.1 기반
 
 ## 지원 현황
 
-v0.6 이 정의한 필드 가운데 aibom-cli 0.1.0 이 스캔 결과로 값을 채우는 것은 아홉 개다. 나머지 필드는 순차적으로 지원할 예정이다.
+v0.6 이 정의한 필드 가운데 aibom-cli 가 스캔 결과로 값을 채우는 것은 열한 개다. 나머지 필드는 순차적으로 지원할 예정이다.
 
 | 대상 | 필드 | 값의 출처 |
 |---|---|---|
 | 모델 | hyperparameters, parameterCount | 로컬 모델의 `config.json`, gguf 헤더, safetensors 헤더 |
 | 모델 | inputs maxSize, technicalRequirements | cdxgen 이 읽은 모델 카드와 코드 |
 | 데이터셋 | size, modality, availability, provenance, statistics | Hub API 와 datasets-server (허브 데이터셋), 파일 분석 (로컬 데이터) |
+| 데이터셋 | intendedUse, collectionProcess | 허브 데이터셋 카드의 `task_categories`·`task_ids`, `annotations_creators`·`language_creators` (허브 데이터셋만) |
+
+규제 필드는 아니지만 허브 모델의 평가 결과(모델 카드 `model-index`)도 OWASP aibom-generator 를 거쳐 CycloneDX 의
+`modelCard.quantitativeAnalysis.performanceMetrics` 로 들어온다.
 
 각 필드가 어디에 붙는지, 기존 표준의 어느 필드와 대응하는지, 어느 규제 조항에 근거하는지는 [필드 탐색기](field-mapping.md)에서 볼 수 있다.

@@ -1,7 +1,7 @@
 """OWASP aibom-generator 결과로 병합 문서의 HF 모델 컴포넌트를 보강한다.
 
 가져오는 것: modelCard.properties[genai:aibom:* / owasp:aibom:* 와 접두어 없는 safetensors_total_parameters],
-             modelCard.considerations, metadata.properties[] 의 완전성 점수.
+             modelCard.considerations, modelCard.quantitativeAnalysis(performanceMetrics), metadata.properties[] 의 완전성 점수.
 유지하는 것: cdxgen 이 준 component.name / version / purl.
 매칭 키:    purl 의 pkg:huggingface/<ns>/<name> (리비전 제외 — 두 도구가 버전 표기를 달리 한다)
 """
@@ -112,6 +112,11 @@ def _apply(dst: dict, src: dict, src_metadata: dict) -> None:
         dst_p = dst_card.setdefault("modelParameters", {})
         for k, v in src_card["modelParameters"].items():
             dst_p.setdefault(k, v)
+    # quantitativeAnalysis: 모델 카드의 평가 결과(model-index)를 aibom-generator 가 performanceMetrics 로 바꿔 둔 것. 없는 하위 키만
+    if src_card.get("quantitativeAnalysis"):
+        dst_q = dst_card.setdefault("quantitativeAnalysis", {})
+        for k, v in src_card["quantitativeAnalysis"].items():
+            dst_q.setdefault(k, v)
 
     # 완전성 점수 등 문서 단위 프로퍼티 → 컴포넌트 프로퍼티로 옮기며 접두어를 붙인다
     score_props = [p for p in (src_metadata.get("properties") or []) if "score" in p.get("name", "").lower()]

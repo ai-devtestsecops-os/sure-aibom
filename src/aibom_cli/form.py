@@ -18,6 +18,8 @@
     size                      size (integer)                                 aibom:dataset:size
     modality                  modality[] (enum)                              aibom:dataset:modality:<i>
     availability              contents.availability (enum)                   aibom:dataset:availability
+    intendedUse               intendedUse (string)                           aibom:dataset:intendedUse
+    collectionProcess         collectionProcess (string)                     aibom:dataset:collectionProcess
     provenance                provenance[]                                   aibom:dataset:provenance:<i>
     statistics                statistics[]{type,value}                       aibom:dataset:statistics:<i>:type / :value
 
@@ -241,7 +243,7 @@ def _apply_dataset(comp: dict, form: str, log) -> None:
     facts = _Bag(internal, INTERNAL_PREFIX)
     target = (_DatasetTypedTarget if form == "typed" else _DatasetPropertiesTarget)(comp)
 
-    for field, valid in (("size", None), ("availability", AVAILABILITIES)):
+    for field, valid in (("size", None), ("availability", AVAILABILITIES), ("intendedUse", None), ("collectionProcess", None)):
         value = facts.scalar(field)
         if value is None:
             continue
@@ -250,7 +252,7 @@ def _apply_dataset(comp: dict, form: str, log) -> None:
             if value is None:
                 log(f"[form] {label}: size={facts.scalar(field)!r} 는 음이 아닌 정수가 아니어서 승격하지 않는다")
                 continue
-        elif value not in valid:
+        elif valid and value not in valid:
             log(f"[form] {label}: {field}={value!r} 는 허용값이 아니어서 승격하지 않는다")
             continue
         existing = target.get_scalar(field)
@@ -482,7 +484,7 @@ class _PropertiesTarget(_PropertyBag, _Target):
 # ── 데이터셋 목표 — 두 형태를 같은 인터페이스로 ───────────────────────────────
 
 class _DatasetTarget:
-    """스칼라(size, availability)는 비어 있을 때만, 목록(modality, provenance, statistics)은 뒤에 덧붙인다."""
+    """스칼라(size, availability, intendedUse, collectionProcess)는 비어 있을 때만, 목록(modality, provenance, statistics)은 뒤에 덧붙인다."""
 
     def get_scalar(self, field: str) -> object | None: ...
     def set_scalar(self, field: str, value) -> None: ...
