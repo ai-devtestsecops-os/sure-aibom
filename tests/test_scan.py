@@ -97,8 +97,7 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert props["aibom:dataset:size"] == str(LOCAL_SIZE)
     assert [props[f"aibom:dataset:modality:{i}"] for i in range(4)] == ["audio", "image", "text", "structured"]
     assert not any(k.startswith("aibom:dataset:provenance") or k == "aibom:dataset:availability" for k in props)
-    assert {p["name"]: p["value"] for p in local["data"][3]["contents"]["properties"]}["aibom-cli:file:columns"] == "id,text,label"
-    assert {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]} == {"aibom-cli:file:count": "3", "aibom-cli:file:size": "218", "aibom-cli:file:format": "png"}
+    assert all(set(d) == {"type", "name"} for d in local["data"])                                                # 원소는 종류와 이름뿐
     stats = {props[k]: props[k.replace(":type", ":value")] for k in props if k.startswith("aibom:dataset:statistics") and k.endswith(":type")}
     assert stats["images/train:label:frequencies"] == "cat=2,dog=1" and stats["images/train:image:width:max"] == "4"     # 클래스 폴더 라벨, PNG 헤더 너비
     assert stats["images:label:frequencies"] == "cat=2,dog=1" and stats["audio:audio:duration:min"] == "0.1"               # metadata.csv 의 label, WAV 길이

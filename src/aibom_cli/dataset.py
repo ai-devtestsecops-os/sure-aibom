@@ -17,10 +17,11 @@
        경로 하나가 컴포넌트 하나 (bom-ref "data:local/<폴더 이름>@", 이름이 겹치면 -2, -3 을 붙인다). 파일 하나를 지목하면
        그 파일만으로 만든다. 같은 경로를 두 번 주면 한 번만 읽는다.
        data[] 의 단위는 파일 종류에 따라 둘이다. 표·레코드 파일(csv, parquet, jsonl, npy …)은 파일마다 componentData 하나
-       {type: dataset, name: <폴더 이름>/<상대 경로>, contents.properties: 크기·sha256·형식·행·열}. 매체 파일(이미지·오디오)은
-       폴더와 형식 단위로 하나 {name: <폴더 이름>/<하위 폴더>/*.<형식>, contents.properties: 파일 수·크기 합·형식} — 이미지
-       수십만 장이 원소 수십만 개가 되지 않게, 그리고 CycloneDX 의 componentData 가 "데이터의 모음" 단위이기 때문이다. 매체
-       파일은 헤더만 읽어 이미지는 너비(width), 오디오는 길이(duration, 초)의 분포를 통계로 낸다 — datasets-server 가 image·audio
+       {type: dataset, name: <폴더 이름>/<상대 경로>}. 매체 파일(이미지·오디오)은 폴더와 형식 단위로 하나
+       {name: <폴더 이름>/<하위 폴더>/*.<형식>} — 이미지 수십만 장이 원소 수십만 개가 되지 않게, 그리고 CycloneDX 의
+       componentData 가 "데이터의 모음" 단위이기 때문이다. 원소에는 type 과 name 만 적는다. 파일별 크기·해시·행 수 같은 도구 사실은
+       정의서(aibom:dataset:*)에 없는 키라 출력에 넣지 않는다. 값은 전부 컴포넌트의 규제 필드로 모은다: 크기 합은 size, 확장자는
+       modality, 표 파일의 열 통계와 매체 파일의 헤더(이미지 너비, 오디오 길이) 분포는 statistics — datasets-server 가 image·audio
        열에 주는 것과 같은 종류다. 지목한 곳이라 json·txt 도 데이터로 치되, README·LICENSE·*config.json·
        dataset_info.json 같은 잘 알려진 메타데이터 이름은 뺀다. 점으로 시작하는 폴더·파일, SKIP_DIRS, 지목한 경로 밖으로
        나가는 심볼릭 링크는 건너뛴다.
@@ -39,7 +40,6 @@ from __future__ import annotations
 
 import ast
 import csv
-import hashlib
 import json
 import math
 import os
@@ -47,7 +47,6 @@ import re
 import struct
 import zipfile
 from collections import Counter
-from io import BufferedIOBase
 from statistics import fmean, median, stdev
 from pathlib import Path, PurePosixPath
 from typing import Iterable
@@ -62,7 +61,6 @@ from .validate import SCHEMA_DIR
 
 DATA_TYPE = "data"
 DATASET_KIND = "dataset"       # data[].type 의 다섯 값 중 D-BOM 으로 치는 것
-FILE_PREFIX = "aibom-cli:file:"                 # componentData.contents.properties 의 파일 사실
 LOCAL_REF_PREFIX = "data:local/"
 
 HF_DATASETS_PURL = "pkg:huggingface/datasets/"
@@ -112,10 +110,8 @@ MODALITY_BY_TASK: tuple[tuple[str, str], ...] = (
 LOCAL_BUILDERS = frozenset({"csv", "json", "jsonl", "parquet", "text", "arrow", "pandas", "imagefolder", "audiofolder",
                             "videofolder", "webdataset", "xml", "sql", "generator", "spark", "polars"})
 
-HASH_LIMIT = 2 * 1024 ** 3                      # 이보다 큰 파일은 크기만 적는다
 JSON_PARSE_LIMIT = 64 * 1024 ** 2               # json 배열 길이를 세려고 통째로 읽는 상한
 CSV_FIELD_LIMIT = 2 ** 31 - 1                   # csv 모듈 기본값 131072 는 문서 하나가 한 칸인 NLP 표에 모자란다
-NPY_HEADER_LIMIT = 1024 ** 2                    # 이보다 긴 npy 헤더는 믿지 않는다
 # 파일 하나를 읽다 나는 예외 — 크기·해시만 적고 계속 간다
 _READ_ERRORS = (OSError, ValueError, UnicodeDecodeError, zipfile.BadZipFile, csv.Error, SyntaxError, TypeError, AttributeError)
 FETCH_TIMEOUT = 15.0
@@ -385,27 +381,23 @@ def _table_entries(files: list[tuple[Path, str]], prefix: str | None, log) -> li
 
 
 def _analyze_shards(group: list[tuple[Path, str]], folder: str, stem: str, ext: str, prefix: str | None, log) -> dict:
-    """샤드 묶음 하나. 크기·행 수는 합치고 열은 첫 조각 것, 통계는 조각들의 열 값을 이어 붙여 낸다 (합쳐서 64 MB 까지)."""
+    """샤드 묶음 하나. 크기는 합치고, 통계는 조각들의 열 값을 이어 붙여 낸다 (합쳐서 64 MB 까지)."""
     rel_dir = f"{folder}/" if folder != "." else ""
     display = f"{prefix}/{rel_dir}{stem}-*.{ext}" if prefix else f"{rel_dir}{stem}-*.{ext}"
     out: dict = {"path": display, "format": ext, "modality": MODALITY_BY_EXTENSION.get(ext, "other"), "group": True,
                  "count": len(group), "size": sum(p.stat().st_size for p, _ in group), "key": f"{rel_dir}{stem}"}
-    rows, columns, merged = 0, None, {}
+    if out["size"] > STATISTICS_FILE_LIMIT:
+        return out
+    merged: dict[str, list] = {}
     try:
         for path, rel in group:
-            shape = _shape(path, ext)
-            rows += shape.get("rows") or 0
-            columns = columns or shape.get("columns")
-            if out["size"] <= STATISTICS_FILE_LIMIT:
-                for col, values in _columns_of(path, ext).items():
-                    merged.setdefault(col, []).extend(values)
-        out["rows"] = rows
-        if columns:
-            out["columns"] = columns
-        if merged:
-            out["statistics"] = [(f"{col}:{kind}", value) for col, values in merged.items() for kind, value in _values_statistics(values)]
+            for col, values in _columns_of(path, ext).items():
+                merged.setdefault(col, []).extend(values)
     except _READ_ERRORS as e:
-        log(f"[dataset] {display}: 내용을 읽지 못해 크기·조각 수만 적는다 ({e.__class__.__name__})")
+        log(f"[dataset] {display}: 내용을 읽지 못해 크기만 적는다 ({e.__class__.__name__})")
+        return out
+    if merged:
+        out["statistics"] = [(f"{col}:{kind}", value) for col, values in merged.items() for kind, value in _values_statistics(values)]
     return out
 
 
@@ -671,22 +663,8 @@ def _data_component(ref: str, name: str, analyses: list[dict], extra_size: int =
 
 
 def _component_data(a: dict) -> dict:
-    if a.get("group"):
-        props = [{"name": FILE_PREFIX + "count", "value": str(a["count"])}, {"name": FILE_PREFIX + "size", "value": str(a["size"])},
-                 {"name": FILE_PREFIX + "format", "value": a["format"]}]
-        if a.get("rows") is not None:
-            props.append({"name": FILE_PREFIX + "rows", "value": str(a["rows"])})
-        if a.get("columns"):
-            props.append({"name": FILE_PREFIX + "columns", "value": ",".join(a["columns"])})
-        return {"type": "dataset", "name": a["path"], "contents": {"properties": props}}
-    props = [{"name": FILE_PREFIX + "size", "value": str(a["size"])}, {"name": FILE_PREFIX + "format", "value": a["format"]}]
-    if a.get("sha256"):
-        props.append({"name": FILE_PREFIX + "sha256", "value": a["sha256"]})
-    if a.get("rows") is not None:
-        props.append({"name": FILE_PREFIX + "rows", "value": str(a["rows"])})
-    if a.get("columns"):
-        props.append({"name": FILE_PREFIX + "columns", "value": ",".join(a["columns"])})
-    return {"type": "dataset", "name": a["path"], "contents": {"properties": props}}
+    """data[] 원소: 종류와 이름뿐이다. 파일 사실(크기·해시·행 수)은 정의서에 없는 키라 적지 않고, 값은 컴포넌트의 규제 필드로 모은다."""
+    return {"type": "dataset", "name": a["path"]}
 
 
 def _local_statistics(analyses: list[dict], force_prefix: bool = False) -> list[tuple[str, str]]:
@@ -701,117 +679,19 @@ def _local_statistics(analyses: list[dict], force_prefix: bool = False) -> list[
 
 
 def _analyze_file(path: Path, rel: str, log) -> dict:
-    """표준 라이브러리로 읽는 파일 사실. 2 GB 를 넘으면 크기만."""
+    """표준 라이브러리로 읽는 파일 사실: 크기·형식·모달리티와, 표 형식이면 열 통계 (64 MB 까지). 내용을 못 읽으면 크기만."""
     ext = _extension(path.name)
     out: dict = {"path": rel, "size": path.stat().st_size, "format": ext, "modality": MODALITY_BY_EXTENSION.get(ext, "other")}
-    if out["size"] > HASH_LIMIT:
-        log(f"[dataset] {rel}: 2 GB 를 넘어 크기만 적는다")
+    if out["size"] > STATISTICS_FILE_LIMIT:
         return out
     try:
-        out["sha256"] = _sha256(path)
-    except OSError as e:
-        log(f"[dataset] {rel}: 읽을 수 없어 크기만 적는다 ({e.__class__.__name__})")
-        return out
-    try:
-        out.update(_shape(path, ext))
-        if out["size"] <= STATISTICS_FILE_LIMIT:
-            out["statistics"] = _file_statistics(path, ext)
+        statistics = _file_statistics(path, ext)
     except _READ_ERRORS as e:
-        log(f"[dataset] {rel}: 내용을 읽지 못해 크기·해시만 적는다 ({e.__class__.__name__})")
+        log(f"[dataset] {rel}: 내용을 읽지 못해 크기만 적는다 ({e.__class__.__name__})")
+        return out
+    if statistics:
+        out["statistics"] = statistics
     return out
-
-
-def _shape(path: Path, ext: str) -> dict:
-    """형식별 행·열. 모르는 형식은 빈 dict."""
-    if ext in ("csv", "tsv"):
-        return _csv_shape(path, "\t" if ext == "tsv" else ",")
-    if ext in ("jsonl", "ndjson", "txt"):
-        with path.open(encoding="utf-8", errors="replace") as fh:
-            return {"rows": sum(1 for line in fh if line.strip())}
-    if ext == "json":
-        if path.stat().st_size > JSON_PARSE_LIMIT:
-            return {}
-        with path.open(encoding="utf-8", errors="replace") as fh:
-            parsed = json.load(fh)
-        return {"rows": len(parsed)} if isinstance(parsed, list) else {}
-    if ext == "npy":
-        with path.open("rb") as fh:
-            return _npy_shape(fh)
-    if ext == "npz":
-        return _npz_shape(path)
-    if ext == "parquet":
-        return _parquet_shape(path)
-    if ext in ("arrow", "feather"):
-        return _arrow_shape(path)
-    return {}
-
-
-def _csv_shape(path: Path, delimiter: str) -> dict:
-    csv.field_size_limit(max(csv.field_size_limit(), CSV_FIELD_LIMIT))
-    with path.open(encoding="utf-8", errors="replace", newline="") as fh:
-        reader = csv.reader(fh, delimiter=delimiter)
-        header = next(reader, None)
-        if header is None:
-            return {"rows": 0}
-        return {"rows": sum(1 for row in reader if row), "columns": [h.strip() for h in header]}
-
-
-def _npy_shape(fh: BufferedIOBase) -> dict:
-    """npy 헤더 (형식 문서 그대로): magic, 버전, 헤더 길이, 파이썬 dict 리터럴. 첫 축이 행이다.
-    길이 필드만큼 정확히 읽는다 (구조체 dtype 헤더는 512 바이트를 쉽게 넘는다). 헤더가 이상하면 빈 dict."""
-    head = fh.read(12)
-    if not head.startswith(b"\x93NUMPY") or len(head) < 10:
-        return {}
-    if head[6] == 1:
-        length, tail = int.from_bytes(head[8:10], "little"), head[10:12]
-    else:
-        length, tail = int.from_bytes(head[8:12], "little"), b""
-    if length > NPY_HEADER_LIMIT:
-        return {}
-    text = (tail + fh.read(length - len(tail))).decode("latin-1").strip()
-    try:
-        header = ast.literal_eval(text)
-    except (SyntaxError, ValueError, TypeError, MemoryError, RecursionError):
-        return {}
-    if not isinstance(header, dict):
-        return {}
-    shape = header.get("shape")
-    return {"rows": int(shape[0])} if isinstance(shape, tuple) and shape else {}
-
-
-def _npz_shape(path: Path) -> dict:
-    """npz 는 npy 들의 zip — 배열이 하나일 때만 그 행 수."""
-    with zipfile.ZipFile(path) as zf:
-        members = [m for m in zf.namelist() if m.endswith(".npy")]
-        if len(members) != 1:
-            return {}
-        with zf.open(members[0]) as fh:
-            return _npy_shape(fh)
-
-
-def _parquet_shape(path: Path) -> dict:
-    try:
-        import pyarrow.parquet as pq
-    except ImportError:
-        return {}
-    meta = pq.ParquetFile(str(path))
-    return {"rows": meta.metadata.num_rows, "columns": list(meta.schema_arrow.names)}
-
-
-def _arrow_shape(path: Path) -> dict:
-    try:
-        import pyarrow as pa
-        import pyarrow.feather as feather
-    except ImportError:
-        return {}
-    try:
-        with pa.memory_map(str(path)) as source:
-            reader = pa.ipc.open_file(source)
-            rows = sum(reader.get_batch(i).num_rows for i in range(reader.num_record_batches))
-            return {"rows": rows, "columns": list(reader.schema.names)}
-    except pa.ArrowInvalid:                                       # feather v1 은 IPC 파일이 아니다
-        table = feather.read_table(str(path), memory_map=True)
-        return {"rows": table.num_rows, "columns": list(table.schema.names)}
 
 
 def _file_statistics(path: Path, ext: str) -> list[tuple[str, str]]:
@@ -969,14 +849,6 @@ def _number(v) -> str:
             return str(v)
         return str(int(v)) if v.is_integer() else str(round(v, 5))
     return str(v)
-
-
-def _sha256(path: Path) -> str:
-    h = hashlib.sha256()
-    with path.open("rb") as fh:
-        for chunk in iter(lambda: fh.read(1024 * 1024), b""):
-            h.update(chunk)
-    return h.hexdigest()
 
 
 # ── Hugging Face 허브 ────────────────────────────────────────────────────────

@@ -30,11 +30,12 @@ S-BOM 만 syft 가 이미지를 직접 읽는다.
 | 허브 데이터셋 정보 | aibom-cli | [Hub API](https://huggingface.co/docs/hub/api)에서 정식 id, 커밋, 라이선스, 모달리티, 용도(task_categories), 수집 방식(annotations_creators, language_creators), 상위 데이터셋(source_datasets)을, [datasets-server](https://huggingface.co/docs/dataset-viewer)에서 크기와 열 통계를 받는다. 데이터셋 파일을 내려받지는 않는다 |
 | 로컬 데이터 | aibom-cli | `--data` 로 지정한 경로의 데이터 파일 |
 
-로컬 데이터는 확장자로 가르고, 파일 종류에 따라 `data[]` 에 적는 단위가 다르다.
+로컬 데이터는 확장자로 가르고, 파일 종류에 따라 `data[]` 에 적는 단위가 다르다. 항목에는 종류(`dataset`)와 이름만 적고, 값은 전부
+컴포넌트의 규제 필드(size, modality, statistics)로 모은다. 파일별 크기나 해시 같은 도구 사실은 정의서에 없는 키라 적지 않는다.
 
 - 데이터 파일로 치는 확장자: `csv`, `tsv`, `parquet`, `arrow`, `feather`, `npy`, `npz`, `jsonl`, `ndjson`, `json`, `txt`, `png`, `jpg`, `jpeg`, `webp`, `wav`, `mp3`, `flac`. `requirements*.txt`, `README*`, `LICENSE*`, `*config.json`, `dataset_info.json` 같은 문서·설정 이름은 뺀다.
-- 표·레코드 파일(csv, tsv, parquet, arrow, feather, npy, npz, jsonl, ndjson, json, txt)은 파일마다 항목 하나다. 크기, 형식, sha256, 행 수, 열 이름을 적고, 표 형식(csv, tsv, json, jsonl, parquet, arrow, feather)은 열마다 통계를 낸다. 64 MB 까지만 통계를 내고, 2 GB 를 넘는 파일은 크기만 적는다. `train-00001-of-00004.parquet` 처럼 크기 때문에 나뉜 조각(샤드)은 분할 하나로 합쳐 항목 하나(`train-*.parquet`)로 적고, 행 수는 합치고 통계는 조각을 이어 붙여 낸다.
-- 이미지·오디오 파일(png, jpg, webp, wav, mp3, flac)은 폴더와 형식 단위로 항목 하나다 (`images/cat/*.jpg`). 파일 수, 크기 합, 형식을 적고, 헤더만 읽어 이미지는 너비, 오디오는 길이(초)의 분포(min, max, mean, median, std)를 통계로 낸다. 허브의 image·audio 열 통계와 같은 종류이고 이름도 같은 꼴이다(`train:image:width:mean`). 내용은 읽지 않으므로 해시는 없다. 이미지 수십만 장이 항목 수십만 개가 되지 않게 하기 위해서다. `train/cat/`, `train/dog/` 처럼 하위 폴더 둘 이상이 같은 형식의 매체만 들고 있으면 클래스 폴더로 보고 그 폴더(`train/*.jpg`) 하나로 합치며, 폴더 이름을 라벨로 삼아 라벨 분포(n_unique, mode, frequencies)를 통계로 낸다. 형제 분할이 그렇게 합쳐졌으면 클래스가 하나뿐인 분할(`test/cat/`)도 같은 꼴로 합친다.
+- 표·레코드 파일(csv, tsv, parquet, arrow, feather, npy, npz, jsonl, ndjson, json, txt)은 파일마다 항목 하나다. 표 형식(csv, tsv, json, jsonl, parquet, arrow, feather)은 열마다 통계를 내며 64 MB 까지만 낸다. `train-00001-of-00004.parquet` 처럼 크기 때문에 나뉜 조각(샤드)은 분할 하나로 합쳐 항목 하나(`train-*.parquet`)로 적고, 통계는 조각을 이어 붙여 낸다.
+- 이미지·오디오 파일(png, jpg, webp, wav, mp3, flac)은 폴더와 형식 단위로 항목 하나다 (`images/cat/*.jpg`). 헤더만 읽어 이미지는 너비, 오디오는 길이(초)의 분포(min, max, mean, median, std)를 통계로 낸다. 허브의 image·audio 열 통계와 같은 종류이고 이름도 같은 꼴이다(`train:image:width:mean`). 이미지 수십만 장이 항목 수십만 개가 되지 않게 하기 위해서다. `train/cat/`, `train/dog/` 처럼 하위 폴더 둘 이상이 같은 형식의 매체만 들고 있으면 클래스 폴더로 보고 그 폴더(`train/*.jpg`) 하나로 합치며, 폴더 이름을 라벨로 삼아 라벨 분포(n_unique, mode, frequencies)를 통계로 낸다. 형제 분할이 그렇게 합쳐졌으면 클래스가 하나뿐인 분할(`test/cat/`)도 같은 꼴로 합친다.
 - 주석은 데이터 항목이 되지 않는다. `file_name` 열이 있는 `metadata.csv`, `metadata.jsonl`(Hugging Face imagefolder·audiofolder 규칙)은 파일을 가리키는 열을 뺀 나머지 열의 통계만 보태고, `labels/`, `annotations/` 폴더 아래 파일(YOLO, COCO 규칙)은 세지 않는다. 둘 다 크기는 데이터셋 크기에 든다.
 
 ## 건너뛰는 곳

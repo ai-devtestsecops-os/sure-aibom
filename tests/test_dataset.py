@@ -178,43 +178,33 @@ def test_unparsable_python_is_skipped_with_a_log(tmp_path):
 
 # -- 로컬 파일 분석 ------------------------------------------------------------------
 def test_file_analysis_by_format(tmp_path):
+    """파일 사실은 크기·형식·모달리티와 표 형식의 열 통계뿐이다. 해시·행 수·열 이름은 정의서에 없는 값이라 내지 않는다."""
     csv_path = write(tmp_path, "t.csv", 'a,b\n1,"x\ny"\n2,z\n\n')
     a = ds._analyze_file(csv_path, "t.csv", log=print)
-    assert a["rows"] == 2 and a["columns"] == ["a", "b"] and a["format"] == "csv" and a["modality"] == "structured"
-    assert a["sha256"] == hashlib.sha256(csv_path.read_bytes()).hexdigest() and a["size"] == csv_path.stat().st_size
-    assert ds._analyze_file(write(tmp_path, "t.tsv", "a\tb\n1\t2\n"), "t.tsv", log=print)["columns"] == ["a", "b"]
-    assert ds._analyze_file(write(tmp_path, "l.jsonl", '{"a":1}\n\n{"a":2}\n'), "l.jsonl", log=print)["rows"] == 2
-    assert ds._analyze_file(write(tmp_path, "arr.json", "[1, 2, 3]"), "arr.json", log=print)["rows"] == 3
-    assert "rows" not in ds._analyze_file(write(tmp_path, "obj.json", '{"a": 1}'), "obj.json", log=print)
-    assert ds._analyze_file(write(tmp_path, "w.txt", "a\nb\n\nc\n"), "w.txt", log=print)["rows"] == 3
+    assert a["format"] == "csv" and a["modality"] == "structured" and a["size"] == csv_path.stat().st_size
+    assert a["statistics"][:3] == [("a:nan_count", "0"), ("a:min", "1"), ("a:max", "2")]
+    assert set(a) == {"path", "size", "format", "modality", "statistics"}
+    assert ds._analyze_file(write(tmp_path, "l.jsonl", '{"a":1}\n\n{"a":2}\n'), "l.jsonl", log=print)["statistics"][0] == ("a:nan_count", "0")
+    assert "statistics" not in ds._analyze_file(write(tmp_path, "obj.json", '{"a": 1}'), "obj.json", log=print)       # 객체 하나는 표가 아니다
+    assert "statistics" not in ds._analyze_file(write(tmp_path, "w.txt", "a\nb\n\nc\n"), "w.txt", log=print)       # 글 파일은 열이 없다
     png = tmp_path / "i.png"
     png.write_bytes(b"\x89PNG\r\n\x1a\n" + b"\0" * 16)
     i = ds._analyze_file(png, "i.png", log=print)
-    assert i["modality"] == "image" and "rows" not in i and i["sha256"]
+    assert i["modality"] == "image" and set(i) == {"path", "size", "format", "modality"}
 
 
-def test_npy_header_is_parsed_without_numpy(tmp_path):
-    header = "{'descr': '<f8', 'fortran_order': False, 'shape': (7, 3), }"
-    header = header + " " * (64 - (10 + len(header) + 1) % 64) + "\n"
-    npy = tmp_path / "e.npy"
-    npy.write_bytes(b"\x93NUMPY\x01\x00" + struct.pack("<H", len(header)) + header.encode("latin-1") + b"\0" * (7 * 3 * 8))
-    assert ds._analyze_file(npy, "e.npy", log=print)["rows"] == 7
-    assert "rows" not in ds._analyze_file(write(tmp_path, "not.npy", "nope"), "not.npy", log=print)
-
-
-def test_unreadable_content_falls_back_to_size_and_hash(tmp_path):
+def test_unreadable_content_falls_back_to_size(tmp_path):
     logs: list[str] = []
     bad = tmp_path / "bad.json"
     bad.write_text("{not json", encoding="utf-8")
     a = ds._analyze_file(bad, "bad.json", log=logs.append)
-    assert a["sha256"] and "rows" not in a and any("bad.json" in m for m in logs)
+    assert set(a) == {"path", "size", "format", "modality"} and any("bad.json" in m for m in logs)
 
 
 def test_large_files_record_size_only(tmp_path, monkeypatch):
-    monkeypatch.setattr(ds, "HASH_LIMIT", 10)
-    logs: list[str] = []
-    a = ds._analyze_file(write(tmp_path, "big.csv", "a,b\n" * 10), "big.csv", log=logs.append)
-    assert "sha256" not in a and "rows" not in a and a["size"] == 40 and any("2 GB" in m for m in logs)
+    monkeypatch.setattr(ds, "STATISTICS_FILE_LIMIT", 10)
+    a = ds._analyze_file(write(tmp_path, "big.csv", "a,b\n" * 10), "big.csv", log=print)
+    assert "statistics" not in a and a["size"] == 40
 
 
 # -- discover: --data 경로 + 코드 ------------------------------------------------------------
@@ -226,8 +216,7 @@ def test_discover_builds_one_component_per_data_path_and_links_from_root(tmp_pat
 
     local = found["data:local/data@"]
     assert local["name"] == "data" and [d["name"] for d in local["data"]] == ["data/labels.jsonl", "data/train.csv"]
-    train = {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]}
-    assert train["aibom-cli:file:rows"] == "5" and train["aibom-cli:file:columns"] == "id,text,label" and train["aibom-cli:file:format"] == "csv"
+    assert local["data"][1] == {"type": "dataset", "name": "data/train.csv"}                 # 원소는 종류와 이름뿐
     # 열 통계: 파일이 둘이라 파일 이름이 앞에 붙는다. 열마다 nan_count 가 먼저. labels.jsonl 의 label 은 범주(pos 2, neg 1),
     # train.csv 의 text 는 글(길이 통계), label 0/1 은 숫자로 읽힌다
     assert internal(local) == {"size": str(80 + 69), "modality:0": "text", "modality:1": "structured", **stats_props([
@@ -286,10 +275,7 @@ def test_media_files_are_grouped_by_folder_and_format(tmp_path, online):
     write(tmp_path, "data/train.csv", "a,b\n1,2\n")
     local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "data")]))["data:local/data@"]
     assert [d["name"] for d in local["data"]] == ["data/audio/x.wav", "data/images/cat/*.jpg", "data/images/dog/c.png", "data/train.csv"]   # 파일 하나뿐인 묶음은 그 이름
-    cat = {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]}
-    assert cat == {"aibom-cli:file:count": "2", "aibom-cli:file:size": str(12 + 22), "aibom-cli:file:format": "jpg"}
-    train = {p["name"]: p["value"] for p in local["data"][3]["contents"]["properties"]}
-    assert "aibom-cli:file:sha256" in train and "aibom-cli:file:count" not in train
+    assert all(set(d) == {"type", "name"} for d in local["data"])                                 # 파일 사실은 원소에 적지 않는다
     facts = internal(local)
     assert facts["size"] == str(12 + 22 + 9 + 8 + 8)
     assert [facts[f"modality:{i}"] for i in range(3)] == ["audio", "image", "structured"]
@@ -300,8 +286,8 @@ def test_a_single_media_file_data_path_keeps_its_file_name(tmp_path, online):
     (tmp_path / "photo.jpg").write_bytes(b"\xff\xd8" + b"p" * 3)
     found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "photo.jpg")]))
     items = found["data:local/photo@"]["data"]
-    assert [d["name"] for d in items] == ["photo.jpg"]
-    assert {p["name"]: p["value"] for p in items[0]["contents"]["properties"]} == {"aibom-cli:file:count": "1", "aibom-cli:file:size": "5", "aibom-cli:file:format": "jpg"}
+    assert items == [{"type": "dataset", "name": "photo.jpg"}]
+    assert internal(found["data:local/photo@"])["size"] == "5"
 
 
 def stats_of(comp: dict) -> dict[str, str]:
@@ -318,9 +304,6 @@ def test_shards_of_one_split_are_merged_into_one_entry(tmp_path, online):
     write(tmp_path, "data/test-00000-of-00001.csv", t)
     local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "data")]))["data:local/data@"]
     assert [d["name"] for d in local["data"]] == ["data/test-00000-of-00001.csv", "data/train-*.csv"]
-    train = {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]}
-    assert train == {"aibom-cli:file:count": "2", "aibom-cli:file:size": str(len(a) + len(b)), "aibom-cli:file:format": "csv",
-                     "aibom-cli:file:rows": "3", "aibom-cli:file:columns": "a,b"}
     stats = stats_of(local)
     assert (stats["train:a:min"], stats["train:a:max"], stats["train:a:mean"]) == ("1", "3", "2")
     assert stats["test:a:min"] == "9"
@@ -339,8 +322,6 @@ def test_class_folders_merge_into_one_entry_with_label_statistics(tmp_path, onli
     write(tmp_path, "imgset/labels/0.txt", "0 0.5 0.5 0.1 0.1\n")
     local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "imgset")]))["data:local/imgset@"]
     assert [d["name"] for d in local["data"]] == ["imgset/test/*.jpg", "imgset/train/*.jpg"]    # train 이 합쳐졌으니 클래스 하나뿐인 test 도 같은 꼴로
-    train = {p["name"]: p["value"] for p in local["data"][1]["contents"]["properties"]}
-    assert train == {"aibom-cli:file:count": "3", "aibom-cli:file:size": "36", "aibom-cli:file:format": "jpg"}
     stats = stats_of(local)
     assert (stats["train:label:n_unique"], stats["train:label:mode"], stats["train:label:frequencies"]) == ("2", "cat", "cat=2,dog=1")
     assert (stats["test:label:n_unique"], stats["test:label:frequencies"]) == ("1", "cat=1")
@@ -396,7 +377,7 @@ def test_media_statistics_come_from_file_headers(tmp_path, online):
     assert (stats["snd:audio:duration:min"], stats["snd:audio:duration:max"], stats["snd:audio:duration:mean"], stats["snd:audio:duration:std"]) == ("1", "2", "1.5", "0.70711")
     assert stats["media:image:width:min"] in ("800", "300") and stats["media:audio:duration:min"] in ("2", "1")   # 묶음이 파일 하나뿐이면 값 하나
     assert [d["name"] for d in local["data"]] == ["media/c.jpg", "media/d.webp", "media/e.flac", "media/f.mp3", "media/img/*.png", "media/snd/*.wav"]
-    assert all("sha256" not in p["name"] for d in local["data"] for p in d["contents"]["properties"])   # 매체는 해시를 안 낸다
+    assert all(set(d) == {"type", "name"} for d in local["data"])
 
 
 @pytest.mark.parametrize("make, fmt, expected", [(png, "png", 640.0), (jpeg, "jpg", 800.0), (webp, "webp", 300.0),
@@ -690,10 +671,9 @@ def test_local_file_statistics_for_jsonl_json_tsv_and_limits(tmp_path, monkeypat
                                                               ("h3:nan_count", "0"), ("h3:length:min", "1"), ("h3:length:max", "1"), ("h3:length:mean", "1"), ("h3:length:median", "1"), ("h3:length:std", "0")]   # 이름 없는 열은 뺀다
     assert ds._file_statistics(tmp_path / "c.tsv", "png") == [] and ds._file_statistics(write(tmp_path, "e.csv", ""), "csv") == []
     write(tmp_path, "bad.json", "{not json")
-    assert "statistics" not in ds._analyze_file(tmp_path / "bad.json", "bad.json", log=lambda m: None)             # 파싱 실패 → 크기·해시만
+    assert "statistics" not in ds._analyze_file(tmp_path / "bad.json", "bad.json", log=lambda m: None)             # 파싱 실패 → 크기만
     monkeypatch.setattr(ds, "STATISTICS_FILE_LIMIT", 10)
-    a = ds._analyze_file(tmp_path / "a.jsonl", "a.jsonl", log=lambda m: None)
-    assert a["rows"] == 3 and "statistics" not in a                                                                 # 상한을 넘으면 통계는 건너뛴다
+    assert "statistics" not in ds._analyze_file(tmp_path / "a.jsonl", "a.jsonl", log=lambda m: None)              # 상한을 넘으면 통계는 건너뛴다
 
 
 def test_local_statistics_prefix_only_when_a_directory_has_several_files(tmp_path):
@@ -777,7 +757,7 @@ def test_typed_form_fills_componentdata_fields_on_data0(discovered):
     assert "properties" not in hf                                                     # 내부 키만 있었으니 목록째 사라진다
     local = datasets(out)["data:local/data@"]
     assert local["data"][0]["size"] == 149 and local["data"][0]["modality"] == ["text", "structured"] and "size" not in local["data"][1]
-    assert local["data"][0]["contents"]["properties"][0]["name"] == "aibom-cli:file:size"          # 파일 사실은 그대로
+    assert "contents" not in local["data"][0] and "properties" not in local["data"][0]              # 원소에 도구 속성은 없다
     assert "aibom-internal" not in json.dumps(out) and "aibom:dataset:" not in json.dumps(out)
     assert validate_cdx(out, "v0.6", log=print)
     logs: list[str] = []
@@ -848,7 +828,7 @@ def test_unknown_extensions_are_not_data_and_the_analyser_accepts_them(tmp_path,
     out = ds.discover(doc_of(), str(tmp_path), log=lambda m: None, report=report, data_paths=data_of(tmp_path))
     assert datasets(out) == {} and report["empty_data_paths"] == data_of(tmp_path)
     a = ds._analyze_file(tmp_path / "data/train.dat", "data/train.dat", log=print)
-    assert a["modality"] == "other" and a["format"] == "dat" and a["sha256"] and "rows" not in a
+    assert a == {"path": "data/train.dat", "size": 8, "format": "dat", "modality": "other"}
 
 
 def test_a_symlink_leaving_the_data_path_is_skipped(tmp_path, monkeypatch, online):
@@ -886,56 +866,18 @@ def test_unreadable_file_records_size_only(tmp_path, online):
         secret.chmod(0o644)
 
 
-def test_csv_with_a_very_wide_field_still_counts_rows(tmp_path, monkeypatch):
+def test_csv_with_a_very_wide_field_still_yields_statistics(tmp_path, monkeypatch):
     """csv 모듈 기본 칸 한도(131072)를 넘는 문서 한 칸이 _csv.Error 로 스캔을 죽였다. 한도를 올리고, 그래도 나는 csv.Error 는 잡는다."""
     big = write(tmp_path, "big.csv", "a,b\n1," + "x" * 200000 + "\n")
     a = ds._analyze_file(big, "big.csv", log=print)
-    assert a["rows"] == 1 and a["columns"] == ["a", "b"]
+    assert ("b:length:max", "200000") in a["statistics"]
 
     def boom(path, ext):
         raise csv.Error("field larger than field limit")
-    monkeypatch.setattr(ds, "_shape", boom)
+    monkeypatch.setattr(ds, "_file_statistics", boom)
     logs: list[str] = []
     a = ds._analyze_file(big, "big.csv", log=logs.append)
-    assert a["sha256"] and "rows" not in a and any("Error" in m for m in logs)
-
-
-def npy_bytes(header: str, payload: bytes = b"") -> bytes:
-    """npy v1 파일: magic, 버전, 헤더 길이(리틀 엔디언 2 바이트), 헤더."""
-    return b"\x93NUMPY\x01\x00" + struct.pack("<H", len(header)) + header.encode("latin-1") + payload
-
-
-def test_npy_headers_longer_than_512_bytes_and_malformed_headers(tmp_path):
-    """구조체 dtype 의 헤더는 512 바이트를 쉽게 넘는데 그만큼만 읽어 SyntaxError 로 죽었다. 깨진 헤더도 죽였다."""
-    descr = "[" + ", ".join(f"('field_{i:03d}', '<f8')" for i in range(40)) + "]"
-    header = f"{{'descr': {descr}, 'fortran_order': False, 'shape': (3,), }}"
-    header = header + " " * (64 - (10 + len(header) + 1) % 64) + "\n"
-    assert len(header) > 512
-    struct_npy = tmp_path / "s.npy"
-    struct_npy.write_bytes(npy_bytes(header, b"\0" * (3 * 40 * 8)))
-    assert ds._analyze_file(struct_npy, "s.npy", log=print)["rows"] == 3
-
-    try:
-        import numpy as np
-    except ImportError:
-        np = None
-    if np is not None:                                                         # 실제 numpy 가 쓴 파일도 같다
-        real = tmp_path / "real.npy"
-        np.save(real, np.zeros(5, dtype=np.dtype([(f"f{i:03d}", "<f8") for i in range(40)])))
-        assert ds._analyze_file(real, "real.npy", log=print)["rows"] == 5
-
-    for name, header in (("garbage.npy", "garbage((("), ("int.npy", "123 "), ("list.npy", "[1, 2]"), ("short.npy", "{'shape': ()}")):
-        bad = tmp_path / name
-        bad.write_bytes(npy_bytes(header))
-        a = ds._analyze_file(bad, name, log=print)
-        assert "rows" not in a and a["sha256"]
-    truncated = tmp_path / "trunc.npy"
-    truncated.write_bytes(b"\x93NUMPY\x01\x00" + struct.pack("<H", 900) + b"{'shape': (1,)")
-    assert "rows" not in ds._analyze_file(truncated, "trunc.npy", log=print)
-    npz = tmp_path / "s.npz"
-    with zipfile.ZipFile(npz, "w") as zf:
-        zf.writestr("arr.npy", npy_bytes(header if False else f"{{'descr': {descr}, 'fortran_order': False, 'shape': (9,), }}" + "\n"))
-    assert ds._analyze_file(npz, "s.npz", log=print)["rows"] == 9
+    assert "statistics" not in a and any("Error" in m for m in logs)
 
 
 @pytest.mark.parametrize("text, expected", [
