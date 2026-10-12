@@ -8,36 +8,37 @@
 syft 가 만든다. 설치된 패키지는 어디서든 읽지만 패키지 매니페스트는 디렉터리에서만 읽는다. 이미지에서는 설치된 결과가 사실이고
 매니페스트는 선언일 뿐이라고 보는 syft 의 기본 동작이다.
 
-### 디렉터리
-
-| 도구 | 읽는 곳 |
-|---|---|
-| syft | 패키지 매니페스트: `requirements.txt`, `setup.py`, `poetry.lock`, `package-lock.json` 등 (버전을 `==` 로 고정하지 않은 `requirements.txt` 항목은 세지 않는다) |
-| syft | 설치된 패키지: `site-packages`, `node_modules`, dpkg·apk·rpm 데이터베이스 등 |
-
-### 컨테이너 이미지 · 이미지 아카이브
-
-| 도구 | 읽는 곳 |
-|---|---|
-| syft | 설치된 패키지: `site-packages`, `node_modules`, dpkg·apk·rpm 데이터베이스 등 |
+<table markdown>
+<thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
+<tbody markdown>
+<tr markdown><td rowspan="2">syft</td><td>디렉터리</td><td markdown>패키지 매니페스트: `requirements.txt`, `setup.py`, `poetry.lock`, `package-lock.json` 등 (버전을 `==` 로 고정하지 않은 `requirements.txt` 항목은 세지 않는다)</td></tr>
+<tr markdown><td>디렉터리, 컨테이너 이미지, 이미지 아카이브</td><td markdown>설치된 패키지: `site-packages`, `node_modules`, dpkg·apk·rpm 데이터베이스 등</td></tr>
+</tbody>
+</table>
 
 ## M-BOM
 
-| 도구 | 읽는 곳 |
-|---|---|
-| cdxgen | 파이썬 소스와 노트북의 `from_pretrained("owner/name")` 호출 |
-| cdxgen | 로컬 모델: `config.json`, `adapter_config.json`, 모델 카드 README.md 가 있는 폴더, `*.gguf`, Ollama `Modelfile`. 가중치 파일(`.safetensors`, `.bin`, `.pt`)만 있는 폴더는 모델로 보지 않는다 |
-| aibom-cli | cdxgen 이 찾은 로컬 모델의 `config.json`, `*.gguf` 헤더, 같은 폴더의 `*.safetensors` 헤더. 가중치는 읽지 않고 pickle 파일(`.bin`, `.pt`, `.pth`, `.ckpt`)은 열지 않는다 |
-| OWASP aibom-generator | 코드가 허브에서 부르는 모델의 Hugging Face Hub 저장소: 모델 정보 API, 모델 카드 README.md, `config.json`, gguf·safetensors 헤더 |
+<table markdown>
+<thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
+<tbody markdown>
+<tr markdown><td rowspan="2">cdxgen</td><td>허브 모델</td><td markdown>파이썬 소스와 노트북의 `from_pretrained("owner/name")` 호출</td></tr>
+<tr markdown><td>로컬 모델</td><td markdown>`config.json`, `adapter_config.json`, 모델 카드 README.md 가 있는 폴더, `*.gguf`, Ollama `Modelfile`. 가중치 파일(`.safetensors`, `.bin`, `.pt`)만 있는 폴더는 모델로 보지 않는다</td></tr>
+<tr markdown><td>aibom-cli</td><td>로컬 모델</td><td markdown>cdxgen 이 찾은 모델의 `config.json`, `*.gguf` 헤더, 같은 폴더의 `*.safetensors` 헤더. 가중치는 읽지 않고 pickle 파일(`.bin`, `.pt`, `.pth`, `.ckpt`)은 열지 않는다</td></tr>
+<tr markdown><td>OWASP aibom-generator</td><td>허브 모델</td><td markdown>cdxgen 이 찾은 모델의 Hugging Face Hub 저장소: 모델 정보 API, 모델 카드 README.md, `config.json`, gguf·safetensors 헤더</td></tr>
+</tbody>
+</table>
 
 ## D-BOM
 
-| 도구 | 읽는 곳 |
-|---|---|
-| cdxgen | 로컬 모델의 README.md 앞머리 `datasets:` |
-| aibom-cli | 파이썬 소스의 `load_dataset("owner/name")` 호출. 첫 인자가 로컬 빌더(`csv`, `json`, `parquet` …)이거나 경로이면 허브 참조가 아니라 넘긴다 |
-| aibom-cli | 허브 데이터셋의 [Hub API](https://huggingface.co/docs/hub/api)와 [datasets-server](https://huggingface.co/docs/dataset-viewer). 데이터셋 파일을 내려받지는 않는다 |
-| aibom-cli | `--data` 로 지정한 로컬 데이터 경로. 호스트 경로라 이미지 안의 데이터는 읽지 않는다 |
+<table markdown>
+<thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
+<tbody markdown>
+<tr markdown><td>cdxgen</td><td>허브 데이터셋</td><td markdown>로컬 모델의 README.md 앞머리 `datasets:`</td></tr>
+<tr markdown><td rowspan="3">aibom-cli</td><td rowspan="2">허브 데이터셋</td><td markdown>파이썬 소스의 `load_dataset("owner/name")` 호출. 첫 인자가 로컬 빌더(`csv`, `json`, `parquet` …)이거나 경로이면 허브 참조가 아니라 넘긴다</td></tr>
+<tr markdown><td markdown>위 두 참조의 [Hub API](https://huggingface.co/docs/hub/api)와 [datasets-server](https://huggingface.co/docs/dataset-viewer). 데이터셋 파일을 내려받지는 않는다</td></tr>
+<tr markdown><td>로컬 데이터</td><td markdown>`--data` 로 지정한 경로. 호스트 경로라 이미지 안의 데이터는 읽지 않는다</td></tr>
+</tbody>
+</table>
 
 로컬 데이터는 확장자로 가르고, 파일 종류에 따라 `data[]` 에 적는 단위가 다르다.
 

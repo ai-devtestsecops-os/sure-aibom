@@ -97,9 +97,13 @@ html { scrollbar-gutter: stable; }
 .md-footer__direction { font-size: .6rem; }
 .md-copyright { padding: .2rem 0; }     /* 아래 메타 띠(저작권·생성기 자리, 지금은 비어 있다)도 얇게 */
 
-/* 두 열짜리 표(수집 항목의 도구 | 읽는 곳)는 첫 열 폭을 고정한다. 안 그러면 표마다 첫 열의 가장 긴 이름(syft, OWASP aibom-generator)에
-   맞춰 폭이 달라진다. th:first-child:nth-last-child(2) 는 열이 정확히 둘인 표의 첫 머리칸이다 */
-.md-typeset table:not([class]) th:first-child:nth-last-child(2) { width: 10rem; white-space: nowrap; }
+/* 수집 항목의 표(도구 | 대상 | 읽는 곳)는 앞 두 열 폭을 고정한다. 안 그러면 표마다 그 열의 가장 긴 글자(syft, OWASP aibom-generator)에
+   맞춰 폭이 달라진다. S-BOM 제목 뒤에 오는 형제 요소 안의 표를 고른다. Material 이 스크립트로 표를 .md-typeset__scrollwrap >
+   .md-typeset__table 로 감싸므로 형제는 그 래퍼이고, 스크립트 전에는 표 자신이다 */
+#s-bom ~ table th:first-child, #s-bom ~ .md-typeset__scrollwrap th:first-child { width: 10rem; white-space: nowrap; }
+#s-bom ~ table th:nth-child(2), #s-bom ~ .md-typeset__scrollwrap th:nth-child(2) { width: 9rem; }
+/* 칸 안의 글은 세로 가운데에 둔다. 합친 칸(syft, cdxgen, aibom-cli)이 위에 붙어 보이지 않게. Material 기본은 위 정렬 */
+#s-bom ~ table td, #s-bom ~ .md-typeset__scrollwrap td { vertical-align: middle; }
 
 /* 표: 마우스를 올려도 행을 회색으로 칠하지 않는다 (Material 기본은 hover 에 옅은 회색) */
 .md-typeset table:not([class]) tbody tr:hover { background-color: transparent; box-shadow: none; }
