@@ -29,7 +29,7 @@
 
 ## D-BOM
 
-허브 데이터셋도 두 단계로 잡는다. cdxgen 과 aibom-cli 가 모델 카드와 코드에서 이름을 잡고, aibom-cli 가 Hub API 로 채운다.
+허브 데이터셋도 두 단계로 잡는다. cdxgen 과 aibom-cli 가 모델 카드와 코드에서 이름을 잡고, aibom-cli 가 그 이름으로 Hub API 와 datasets-server 를 읽어 채운다.
 
 <table markdown>
 <thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
