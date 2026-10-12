@@ -12,14 +12,14 @@ aibom-cli 는 검증된 오픈소스 도구를 조합해 AI-BOM 을 만든다. S
 잡을 뿐 세 도구 모두 내용을 채우지 않는다. 그래서 D-BOM 과 규제 필드는 aibom-cli 가 맡는다. 허브 데이터셋은 코드와 모델 카드의 참조에서
 찾아 Hub API 로 채우고, 로컬 데이터는 지정한 경로의 파일을 읽는다.
 
-aibom-cli 는 세 도구의 결과를 병합하고, D-BOM 을 채우고, 규제 필드를 추가한다. 병합이 먼저인 것은 cdxgen 과 aibom-generator 가
-같은 모델을 따로 내므로 하나로 모은 뒤에 채워야 하기 때문이다.
+aibom-cli 는 syft 와 cdxgen 의 결과를 하나로 병합하고, D-BOM 을 채우고, 허브 모델을 OWASP aibom-generator 로 보강하고, 규제 필드를
+추가한다. 병합이 먼저인 것은 뒤 단계가 문서 하나를 두고 돌기 때문이다.
 
 ## 단계별 세부 사항
 
 - **S-BOM 생성 (syft)**: 패키지 매니페스트와 설치된 패키지에서 소프트웨어 컴포넌트를 찾는다.  
   `syft <target> --select-catalogers -ai -o cyclonedx-json`
-- **M-BOM 생성 (cdxgen)**: 코드의 `from_pretrained` 호출, 로컬 모델(`config.json`, 모델 카드 README.md, gguf, Modelfile)에서 모델 컴포넌트를 만든다.  
+- **M-BOM 생성 (cdxgen)**: 코드의 모델 참조(`from_pretrained` 등), 로컬 모델(`config.json`, 모델 카드 README.md, gguf, Modelfile)에서 모델 컴포넌트를 만든다.  
   `cdxgen <target> -t ai --no-install-deps`
 - **병합 (aibom-cli)**: 두 문서를 하나로 합친다. 같은 컴포넌트는 purl 이나 경로로 알아보고 하나로 두며, 루트 컴포넌트 하나 아래로 관계를 잇는다.
 - **D-BOM 생성 · 보강 (aibom-cli)**: 데이터셋 참조는 두 곳에서 온다. cdxgen 이 로컬 모델의 모델 카드에서 이름만 적어 둔 데이터셋 컴포넌트와, 코드의 `load_dataset` 호출이다. 둘 다 [Hub API](https://huggingface.co/docs/hub/api) 와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 에서 받아 채운다. 지정한 로컬 데이터는 파일을 직접 읽어 컴포넌트를 만든다.

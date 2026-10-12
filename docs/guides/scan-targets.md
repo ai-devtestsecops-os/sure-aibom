@@ -9,7 +9,7 @@
 | 이미지 아카이브 | `<target>` | `.tar`, `.tar.gz`, `.tgz` 로 끝나는 파일 | `aibom-cli scan image.tar` |
 | 로컬 데이터 | `--data <path>` | 데이터 파일이 든 폴더나 데이터 파일 하나. 여러 번 줄 수 있다 | `aibom-cli scan ./project --data ./dataset` |
 
-컨테이너 이미지와 이미지 아카이브는 S-BOM 은 syft 가 직접 읽고, 모델과 데이터셋은 디렉터리로 푼 뒤 디렉터리와 같은 규칙으로 찾는다.
+컨테이너 이미지와 이미지 아카이브의 경우 S-BOM 은 syft 가 직접 읽고, 모델과 데이터셋은 디렉터리로 푼 뒤 디렉터리와 같은 규칙으로 찾는다.
 그 안에서 무엇을 찾는지는 [수집 항목](collected-items.md)에 있다.
 
 ## 디렉터리
