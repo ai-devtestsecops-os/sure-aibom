@@ -104,6 +104,8 @@ html { scrollbar-gutter: stable; }
 #s-bom ~ table th:nth-child(2), #s-bom ~ .md-typeset__scrollwrap th:nth-child(2) { width: 9rem; }
 /* 칸 안의 글은 세로 가운데에 둔다. 합친 칸(syft, cdxgen, aibom-cli)이 위에 붙어 보이지 않게. Material 기본은 위 정렬 */
 #s-bom ~ table td, #s-bom ~ .md-typeset__scrollwrap td { vertical-align: middle; }
+/* 칸 안의 예외 설명(※ …)은 옅은 색으로 */
+.md-typeset .note { color: var(--md-default-fg-color--light); }
 
 /* 표: 마우스를 올려도 행을 회색으로 칠하지 않는다 (Material 기본은 hover 에 옅은 회색) */
 .md-typeset table:not([class]) tbody tr:hover { background-color: transparent; box-shadow: none; }

@@ -5,13 +5,10 @@
 
 ## S-BOM
 
-syft 가 만든다. 설치된 패키지는 어디서든 읽지만 패키지 매니페스트는 디렉터리에서만 읽는다. 이미지에서는 설치된 결과가 사실이고
-매니페스트는 선언일 뿐이라고 보는 syft 의 기본 동작이다.
-
 <table markdown>
 <thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
 <tbody markdown>
-<tr markdown><td rowspan="2">syft</td><td>디렉터리</td><td markdown>패키지 매니페스트: `requirements.txt`, `setup.py`, `poetry.lock`, `package-lock.json` 등 (버전을 `==` 로 고정하지 않은 `requirements.txt` 항목은 세지 않는다)</td></tr>
+<tr markdown><td rowspan="2">syft</td><td>디렉터리</td><td markdown>패키지 매니페스트: `requirements.txt`, `setup.py`, `poetry.lock`, `package-lock.json` 등<br><span class="note">※ 버전을 `==` 로 고정하지 않은 `requirements.txt` 항목은 세지 않는다</span></td></tr>
 <tr markdown><td>디렉터리, 컨테이너 이미지, 이미지 아카이브</td><td markdown>설치된 패키지: `site-packages`, `node_modules`, dpkg·apk·rpm 데이터베이스 등</td></tr>
 </tbody>
 </table>
@@ -21,10 +18,10 @@ syft 가 만든다. 설치된 패키지는 어디서든 읽지만 패키지 매�
 <table markdown>
 <thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
 <tbody markdown>
-<tr markdown><td rowspan="2">cdxgen</td><td>허브 모델</td><td markdown>파이썬 소스와 노트북의 `from_pretrained("owner/name")` 호출</td></tr>
-<tr markdown><td>로컬 모델</td><td markdown>`config.json`, `adapter_config.json`, 모델 카드 README.md 가 있는 폴더, `*.gguf`, Ollama `Modelfile`. 가중치 파일(`.safetensors`, `.bin`, `.pt`)만 있는 폴더는 모델로 보지 않는다</td></tr>
-<tr markdown><td>aibom-cli</td><td>로컬 모델</td><td markdown>cdxgen 이 찾은 모델의 `config.json`, `*.gguf` 헤더, 같은 폴더의 `*.safetensors` 헤더. 가중치는 읽지 않고 pickle 파일(`.bin`, `.pt`, `.pth`, `.ckpt`)은 열지 않는다</td></tr>
-<tr markdown><td>OWASP aibom-generator</td><td>허브 모델</td><td markdown>cdxgen 이 찾은 모델의 Hugging Face Hub 저장소: 모델 정보 API, 모델 카드 README.md, `config.json`, gguf·safetensors 헤더</td></tr>
+<tr markdown><td rowspan="2">cdxgen</td><td>허브 모델</td><td markdown>파이썬·자바스크립트 소스와 노트북의 `from_pretrained("owner/name")`, `pipeline("task", "owner/name")`, `model = "owner/name"` 같은 모델 이름 지정과 huggingface.co 링크</td></tr>
+<tr markdown><td>로컬 모델</td><td markdown>`config.json`, `adapter_config.json`, 모델 카드 README.md 중 하나라도 있는 폴더, `*.gguf` 헤더, Ollama `Modelfile`<br><span class="note">※ 가중치 파일(`.safetensors`, `.bin`, `.pt`)은 보지 않는다</span></td></tr>
+<tr markdown><td>aibom-cli</td><td>로컬 모델</td><td markdown>cdxgen 이 찾은 모델의 `config.json`, `*.gguf` 헤더, `config.json` 과 같은 폴더의 `*.safetensors` 헤더<br><span class="note">※ pickle 형식 가중치(`.bin`, `.pt`, `.pth`, `.ckpt`)는 열면 안에 든 코드가 실행될 수 있어 열지 않는다</span></td></tr>
+<tr markdown><td>OWASP aibom-generator</td><td>허브 모델</td><td markdown>cdxgen 이 찾은 모델의 Hugging Face Hub 저장소: 모델 정보 API, 모델 카드 README.md, `config.json`, `tokenizer_config.json`, LICENSE 파일, gguf·safetensors 헤더</td></tr>
 </tbody>
 </table>
 
@@ -33,10 +30,10 @@ syft 가 만든다. 설치된 패키지는 어디서든 읽지만 패키지 매�
 <table markdown>
 <thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
 <tbody markdown>
-<tr markdown><td>cdxgen</td><td>허브 데이터셋</td><td markdown>로컬 모델의 README.md 앞머리 `datasets:`</td></tr>
-<tr markdown><td rowspan="3">aibom-cli</td><td rowspan="2">허브 데이터셋</td><td markdown>파이썬 소스의 `load_dataset("owner/name")` 호출. 첫 인자가 로컬 빌더(`csv`, `json`, `parquet` …)이거나 경로이면 허브 참조가 아니라 넘긴다</td></tr>
-<tr markdown><td markdown>위 두 참조의 [Hub API](https://huggingface.co/docs/hub/api)와 [datasets-server](https://huggingface.co/docs/dataset-viewer). 데이터셋 파일을 내려받지는 않는다</td></tr>
-<tr markdown><td>로컬 데이터</td><td markdown>`--data` 로 지정한 경로. 호스트 경로라 이미지 안의 데이터는 읽지 않는다</td></tr>
+<tr markdown><td>cdxgen</td><td>허브 데이터셋</td><td markdown>로컬 모델 카드(README.md) YAML 헤더의 `datasets:` 와 `model-index:`(평가 결과)에 적힌 데이터셋, 소스의 huggingface.co/datasets 링크</td></tr>
+<tr markdown><td rowspan="3">aibom-cli</td><td rowspan="2">허브 데이터셋</td><td markdown>파이썬 소스의 `load_dataset("owner/name")` 호출<br><span class="note">※ 첫 인자가 로컬 빌더(`csv`, `json`, `parquet` …)나 파일 경로인 호출은 허브 데이터셋이 아니라서 건너뛴다</span></td></tr>
+<tr markdown><td markdown>cdxgen 이 찾은 참조와 위 `load_dataset` 참조의 [Hub API](https://huggingface.co/docs/hub/api)와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 응답<br><span class="note">※ 데이터셋 파일은 내려받지 않는다</span></td></tr>
+<tr markdown><td>로컬 데이터</td><td markdown>`--data` 로 지정한 경로</td></tr>
 </tbody>
 </table>
 
