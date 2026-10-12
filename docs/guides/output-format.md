@@ -18,7 +18,7 @@ aibom-cli scan ./project -o bom.cdx.json --spec v0.6   # 전용 필드로
 루트 컴포넌트(`metadata.component`)가 스캔 대상 자체다. 디렉터리면 `application`, 이미지면 `container` 다.
 그 아래 `components[]` 는 `type` 으로 가른다.
 
-| `type` | 뜻 | 누가 만드나 |
+| `type` | 뜻 | 도구 |
 |---|---|---|
 | `library` | 소프트웨어 패키지 | syft |
 | `file` | 패키지 매니페스트, 모델·설정 파일 | syft, cdxgen |
@@ -27,8 +27,7 @@ aibom-cli scan ./project -o bom.cdx.json --spec v0.6   # 전용 필드로
 
 모델 카드 정보는 모델 컴포넌트의 `modelCard` 에, 데이터셋 정보는 데이터셋 컴포넌트의 `data[]` 에 들어 있다. `data[]` 의 원소 하나는
 데이터의 한 묶음이다. 허브 데이터셋은 데이터셋 전체가 원소 하나이고, 로컬 데이터는 표 파일 하나, 또는 폴더 단위로 묶은 이미지·오디오가
-원소 하나다. 원소에는 종류(`dataset`)와 이름만 적고, 크기·모달리티·통계 같은 값은 컴포넌트의 규제 필드에 모은다. 어떤 단위로 묶는지는
-[수집 항목](collected-items.md#d-bom)에 있다. 컴포넌트 사이의 관계는 `dependencies` 에 있다.
+원소 하나다. 어떤 단위로 묶는지는 [수집 항목](collected-items.md#d-bom)에 있다. 컴포넌트 사이의 관계는 `dependencies` 에 있다.
 
 ## 규제 필드 자리
 
