@@ -97,5 +97,9 @@ html { scrollbar-gutter: stable; }
 .md-footer__direction { font-size: .6rem; }
 .md-copyright { padding: .2rem 0; }     /* 아래 메타 띠(저작권·생성기 자리, 지금은 비어 있다)도 얇게 */
 
+/* 두 열짜리 표(수집 항목의 도구 | 읽는 곳)는 첫 열 폭을 고정한다. 안 그러면 표마다 첫 열의 가장 긴 이름(syft, OWASP aibom-generator)에
+   맞춰 폭이 달라진다. th:first-child:nth-last-child(2) 는 열이 정확히 둘인 표의 첫 머리칸이다 */
+.md-typeset table:not([class]) th:first-child:nth-last-child(2) { width: 10rem; white-space: nowrap; }
+
 /* 표: 마우스를 올려도 행을 회색으로 칠하지 않는다 (Material 기본은 hover 에 옅은 회색) */
 .md-typeset table:not([class]) tbody tr:hover { background-color: transparent; box-shadow: none; }

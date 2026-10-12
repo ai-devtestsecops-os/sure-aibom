@@ -12,14 +12,14 @@ syft 가 만든다. 설치된 패키지는 어디서든 읽지만 패키지 매�
 
 | 도구 | 읽는 곳 |
 |---|---|
-| syft | 패키지 매니페스트: `requirements.txt`, `package-lock.json`, `pyproject.toml` 등 (버전을 `==` 로 고정하지 않은 `requirements.txt` 항목은 세지 않는다) |
+| syft | 패키지 매니페스트: `requirements.txt`, `setup.py`, `poetry.lock`, `package-lock.json` 등 (버전을 `==` 로 고정하지 않은 `requirements.txt` 항목은 세지 않는다) |
 | syft | 설치된 패키지: `site-packages`, `node_modules`, dpkg·apk·rpm 데이터베이스 등 |
 
 ### 컨테이너 이미지 · 이미지 아카이브
 
 | 도구 | 읽는 곳 |
 |---|---|
-| syft | 설치된 패키지만: `site-packages`, `node_modules`, dpkg·apk·rpm 데이터베이스 등. 매니페스트는 읽지 않는다 |
+| syft | 설치된 패키지: `site-packages`, `node_modules`, dpkg·apk·rpm 데이터베이스 등 |
 
 ## M-BOM
 
