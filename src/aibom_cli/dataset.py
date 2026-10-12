@@ -17,8 +17,8 @@
        경로 하나가 컴포넌트 하나 (bom-ref "data:local/<폴더 이름>@", 이름이 겹치면 -2, -3 을 붙인다). 파일 하나를 지목하면
        그 파일만으로 만든다. 같은 경로를 두 번 주면 한 번만 읽는다.
        data[] 의 단위는 파일 종류에 따라 둘이다. 표·레코드 파일(csv, parquet, jsonl, npy …)은 파일마다 componentData 하나
-       {type: dataset, name: <폴더 이름>/<상대 경로>}. 매체 파일(이미지·오디오)은 폴더와 형식 단위로 하나
-       {name: <폴더 이름>/<하위 폴더>/*.<형식>} — 이미지 수십만 장이 원소 수십만 개가 되지 않게, 그리고 CycloneDX 의
+       {type: dataset, name: <폴더 이름>/<상대 경로>}. 매체 파일(이미지·오디오)은 폴더 단위로 하나
+       {name: <폴더 이름>/<하위 폴더>/*.<형식>, 형식이 섞이면 *.{jpg,png}} — 이미지 수십만 장이 원소 수십만 개가 되지 않게, 그리고 CycloneDX 의
        componentData 가 "데이터의 모음" 단위이기 때문이다. 원소에는 type 과 name 만 적는다. 파일별 크기·해시·행 수 같은 도구 사실은
        정의서(aibom:dataset:*)에 없는 키라 출력에 넣지 않는다. 값은 전부 컴포넌트의 규제 필드로 모은다: 크기 합은 size, 확장자는
        modality, 표 파일의 열 통계와 매체 파일의 헤더(이미지 너비·높이, 오디오 길이) 분포는 statistics — datasets-server 가 image·audio
@@ -78,12 +78,13 @@ MODALITY_BY_EXTENSION: dict[str, str] = {
     "wav": "audio", "mp3": "audio", "flac": "audio",
 }
 DATA_EXTENSIONS = frozenset(MODALITY_BY_EXTENSION)
-MEDIA_EXTENSIONS = frozenset({"png", "jpg", "jpeg", "webp", "wav", "mp3", "flac"})   # 폴더·형식 단위로 묶는 파일. 나머지는 파일마다
-FORMAT_ALIASES = {"jpeg": "jpg"}                                                      # 같은 형식의 다른 확장자는 한 묶음으로
+MEDIA_EXTENSIONS = frozenset({"png", "jpg", "jpeg", "webp", "wav", "mp3", "flac"})   # 폴더 단위(이미지끼리, 오디오끼리)로 묶는 파일. 나머지는 파일마다
+FORMAT_ALIASES = {"jpeg": "jpg"}                                                      # 같은 형식의 다른 확장자는 이름에서 하나로
 # 샤드: 한 분할을 크기 때문에 여러 조각으로 나눈 파일. train-00001-of-00004.parquet, part-0001.csv. 조각들은 원소 하나로 합친다
 _SHARD_STEM = re.compile(r"^(?P<stem>.+?)-\d+-of-\d+$|^(?P<stem2>.+?)[-_]\d{4,}$")
 METADATA_NAMES = frozenset({"metadata.csv", "metadata.jsonl"})       # Hugging Face imagefolder·audiofolder 의 주석 표. file_name 열이 있어야 한다
 FILE_COLUMNS = frozenset({"file_name", "file", "filename", "path", "filepath", "image", "audio"})   # 주석 표에서 파일을 가리키는 열 (통계 안 냄)
+SPLIT_NAMES = frozenset({"train", "training", "test", "testing", "eval", "evaluation", "validation", "valid", "val", "dev"})  # 허브의 분할 이름. 클래스 폴더가 아니다
 ANNOTATION_DIRS = frozenset({"labels", "annotations"})                # YOLO labels/*.txt, COCO annotations/*.json. 데이터가 아니라 주석
 # 데이터 경로 안에 있어도 데이터가 아닌 잘 알려진 이름 (문서·설정·datasets 의 save_to_disk 메타데이터)
 _NON_DATA_NAME = re.compile(r"^(requirements[\w.-]*\.txt|readme.*|license.*|notice.*|changelog.*|package(-lock)?\.json"
@@ -402,16 +403,21 @@ def _analyze_shards(group: list[tuple[Path, str]], folder: str, stem: str, ext: 
 
 
 def _media_groups(files: list[tuple[Path, str]], prefix: str | None, name: str) -> list[dict]:
-    """매체 파일을 (폴더, 형식) 단위로 묶는다. 묶음 하나가 data[] 원소 하나: 파일 수와 크기 합만 적고 내용은 읽지 않는다.
-    이름은 <prefix>/<폴더>/*.<형식> (폴더 바로 아래면 <prefix>/*.<형식>). 파일 하나를 지목했으면(prefix 없음) 그 파일 이름.
+    """매체 파일을 (폴더, 모달리티) 단위로 묶는다. ImageFolder 처럼 확장자를 가리지 않고 한 폴더의 이미지 전부(오디오 전부)가
+    묶음 하나이고, 묶음 하나가 data[] 원소 하나다: 파일 수와 크기 합만 적고 내용은 읽지 않는다.
+    이름은 <prefix>/<폴더>/*.<형식> (형식이 섞이면 *.{jpg,png}, 폴더 바로 아래면 <prefix>/*.<형식>). 파일 하나를 지목했으면(prefix 없음) 그 파일 이름.
     한 폴더 아래 하위 폴더 둘 이상이 같은 형식의 매체만 들고 있으면 클래스 폴더(train/cat, train/dog)로 보고 그 폴더 하나로
-    합치며, 하위 폴더 이름이 라벨이 되어 label 통계(n_unique·mode·frequencies)를 낸다."""
+    합치며, Hugging Face ImageFolder·AudioFolder 규약대로 파일 바로 위 폴더 이름이 라벨이 되어 label 통계(n_unique·mode·frequencies)를
+    낸다. train/animals/cat 처럼 깊어도 라벨은 cat 이고, 깊이가 섞이면 합치되 라벨은 내지 않는다. train·test 같은 분할 폴더는
+    클래스가 아니라 합치지 않는다."""
     groups: dict[tuple[str, str], dict] = {}
     for path, rel in files:
-        fmt = FORMAT_ALIASES.get(_extension(path.name), _extension(path.name))
+        fmt = _media_format(path)
+        modality = MODALITY_BY_EXTENSION[fmt]
         folder = PurePosixPath(rel).parent.as_posix()
-        g = groups.setdefault((folder, fmt), {"folder": folder, "format": fmt, "modality": MODALITY_BY_EXTENSION[fmt],
-                                              "count": 0, "size": 0, "group": True, "file": rel, "paths": []})
+        g = groups.setdefault((folder, modality), {"folder": folder, "modality": modality, "formats": set(),
+                                                   "count": 0, "size": 0, "group": True, "file": rel, "paths": []})
+        g["formats"].add(fmt)
         g["count"] += 1
         g["size"] += path.stat().st_size
         g["paths"].append(path)
@@ -420,35 +426,38 @@ def _media_groups(files: list[tuple[Path, str]], prefix: str | None, name: str) 
     while changed:
         changed = False
         for parent in sorted({PurePosixPath(f).parent.as_posix() for f, _ in groups if f != "."}, key=lambda p: -p.count("/")):
-            for fmt in {fmt for _, fmt in groups}:
-                children = [(f, fmt) for f, ff in groups if ff == fmt and f != "." and PurePosixPath(f).parent.as_posix() == parent]
-                if len(children) < 2 or (parent, fmt) in groups:
+            for modality in {m for _, m in groups}:
+                children = [(f, modality) for f, m in groups if m == modality and f != "." and PurePosixPath(f).parent.as_posix() == parent]
+                if len(children) < 2 or (parent, modality) in groups or any(PurePosixPath(f).name.lower() in SPLIT_NAMES for f, _ in children):
                     continue
-                groups[(parent, fmt)] = _merge_class_folders(parent, fmt, [groups.pop(key) for key in sorted(children)])
+                groups[(parent, modality)] = _merge_class_folders(parent, modality, [groups.pop(key) for key in sorted(children)])
                 changed = True
     # 형제 분할 중 하나가 클래스 폴더로 합쳐졌으면(train/cat, train/dog → train), 클래스가 하나뿐인 형제(test/cat)도 같은 꼴로 합친다
-    for (folder, fmt), g in list(groups.items()):
-        if "labels" not in g or folder == ".":
+    for (folder, modality), g in list(groups.items()):
+        if not g.get("labels") or folder == ".":
             continue
         grand = PurePosixPath(folder).parent.as_posix()
-        for (f2, fmt2), g2 in list(groups.items()):
+        for (f2, m2), g2 in list(groups.items()):
             parent2 = PurePosixPath(f2).parent.as_posix()
-            if fmt2 == fmt and "labels" not in g2 and f2 != "." and parent2 != "." and PurePosixPath(parent2).parent.as_posix() == grand \
-                    and parent2 != folder and (parent2, fmt) not in groups:
-                groups[(parent2, fmt)] = _merge_class_folders(parent2, fmt, [groups.pop((f2, fmt2))])
+            if m2 == modality and "labels" not in g2 and f2 != "." and parent2 != "." and PurePosixPath(parent2).parent.as_posix() == grand \
+                    and parent2 != folder and (parent2, modality) not in groups:
+                groups[(parent2, modality)] = _merge_class_folders(parent2, modality, [groups.pop((f2, m2))])
     out = []
-    for (folder, fmt), g in groups.items():
+    for (folder, modality), g in groups.items():
+        formats = sorted(g.pop("formats"))
+        glob = f"*.{formats[0]}" if len(formats) == 1 else "*.{" + ",".join(formats) + "}"
         if prefix is None:
-            g["path"] = g.get("file", f"*.{fmt}")
+            g["path"] = g.get("file", glob)
         elif g["count"] == 1 and "file" in g and "labels" not in g:
             g["path"] = f"{prefix}/{g['file']}"                              # 파일 하나뿐이면 그 이름 그대로
         else:
-            g["path"] = f"{prefix}/{folder}/*.{fmt}" if folder != "." else f"{prefix}/*.{fmt}"
+            g["path"] = f"{prefix}/{folder}/{glob}" if folder != "." else f"{prefix}/{glob}"
+        g["format"] = ",".join(formats)
         g["key"] = folder if folder != "." else name                        # 통계 이름 앞머리
         stats: list[tuple[str, str]] = []
         if g.get("labels"):
             stats += [(f"label:{kind}", value) for kind, value in _label_statistics(len(g["labels"]), g["labels"])]
-        stats += _media_statistics(g.pop("paths"), fmt)
+        stats += _media_statistics(g.pop("paths"), modality)
         if stats:
             g["statistics"] = stats
         g.pop("file", None)
@@ -457,15 +466,27 @@ def _media_groups(files: list[tuple[Path, str]], prefix: str | None, name: str) 
     return out
 
 
-def _merge_class_folders(parent: str, fmt: str, children: list[dict]) -> dict:
-    """하위 폴더 묶음들을 부모 폴더 하나로. 하위 폴더 이름이 라벨이고 값은 파일 수다."""
-    merged = {"folder": parent, "format": fmt, "modality": MODALITY_BY_EXTENSION[fmt], "group": True, "count": 0, "size": 0,
+def _media_format(path: Path) -> str:
+    """확장자를 형식 이름으로 (jpeg → jpg)."""
+    ext = _extension(path.name)
+    return FORMAT_ALIASES.get(ext, ext)
+
+
+def _merge_class_folders(parent: str, modality: str, children: list[dict]) -> dict:
+    """하위 폴더 묶음들을 부모 폴더 하나로. 라벨은 파일 바로 위 폴더 이름이고 값은 파일 수다(ImageFolder 규약). 이미 합쳐진 자식은
+    그 라벨을 그대로 올린다. 파일이 바로 든 자식과 합쳐진 자식이 섞여 있으면 깊이가 달라 라벨을 내지 않는다."""
+    merged = {"folder": parent, "modality": modality, "formats": set(), "group": True, "count": 0, "size": 0,
               "labels": {}, "paths": []}
     for child in children:
         merged["count"] += child["count"]
         merged["size"] += child["size"]
         merged["paths"] += child["paths"]
-        merged["labels"][PurePosixPath(child["folder"]).name] = child["count"]
+        merged["formats"] |= child["formats"]
+        labels = child["labels"] if "labels" in child else {PurePosixPath(child["folder"]).name: child["count"]}
+        for label, n in labels.items():
+            merged["labels"][label] = merged["labels"].get(label, 0) + n
+    if 0 < sum("labels" in c for c in children) < len(children):
+        merged["labels"] = {}
     return merged
 
 
@@ -483,16 +504,15 @@ _MP3_BITRATES = {"1": (0, 32, 40, 48, 56, 64, 80, 96, 112, 128, 160, 192, 224, 2
 _MP3_SAMPLE_RATES = {"1": (44100, 48000, 32000), "2": (22050, 24000, 16000), "2.5": (11025, 12000, 8000)}
 
 
-def _media_statistics(paths: list[Path], fmt: str) -> list[tuple[str, str]]:
+def _media_statistics(paths: list[Path], modality: str) -> list[tuple[str, str]]:
     """묶음 안 파일들의 너비·높이(이미지) 또는 길이(오디오) 분포. 헤더를 못 읽는 파일은 뺀다. 하나도 못 읽으면 빈 목록."""
-    modality = MODALITY_BY_EXTENSION.get(fmt, "")
     measures = MEASURES_BY_MODALITY.get(modality)
     if not measures:
         return []
     values: dict[str, list[float]] = {m: [] for m in measures}
     for path in paths:
         try:
-            measured = _media_measure(path, fmt) or {}
+            measured = _media_measure(path, _media_format(path)) or {}
         except (OSError, struct.error, IndexError, KeyError, ValueError, ZeroDivisionError):
             measured = {}
         for m in measures:

@@ -27,7 +27,3 @@ aibom-cli 는 세 도구의 결과를 병합하고, D-BOM 을 채우고, 규제 
   `python -m src.cli <owner/model>`
 - **규제 필드 추가 (aibom-cli)**: EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 필드를 `--spec` 에 따라 properties 또는 AI-BOM v0.6 필드로 넣는다. 두 방식은 [규제 준수](compliance/index.md)에 있다.
 - **검증 (aibom-cli)**: 생성된 AI-BOM 을 CycloneDX 1.7 또는 AI-BOM v0.6 (CycloneDX) 스키마로 검증한다.
-
-## 참고 자료
-
-- [Hugging Face Hub API](https://huggingface.co/docs/hub/api), [datasets-server](https://huggingface.co/docs/dataset-viewer)

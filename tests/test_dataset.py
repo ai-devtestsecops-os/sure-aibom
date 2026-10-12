@@ -260,21 +260,31 @@ def test_a_single_file_data_path_is_its_own_component(tmp_path, online):
     assert "provenance:0" not in facts and "availability" not in facts       # 로컬 파일로는 출처·가용성을 알 수 없다
 
 
-def test_media_files_are_grouped_by_folder_and_format(tmp_path, online):
-    """이미지·오디오는 파일마다가 아니라 (폴더, 형식) 단위로 data[] 원소 하나다. 내용은 읽지 않아 sha256 이 없고 파일 수와 크기 합만 적는다.
-    표 파일은 지금처럼 파일마다 하나이고 통계도 표 파일에서만 나온다."""
-    for rel, content in (("data/images/cat/a.jpg", b"\xff\xd8" + b"a" * 10), ("data/images/cat/b.jpeg", b"\xff\xd8" + b"b" * 20),   # jpeg 는 jpg 와 한 묶음
-                         ("data/images/dog/c.png", b"\x89PNG" + b"c" * 5), ("data/audio/x.wav", b"RIFF" + b"x" * 4)):
+def test_media_files_are_grouped_by_folder_and_modality(tmp_path, online):
+    """이미지·오디오는 파일마다가 아니라 (폴더, 모달리티) 단위로 data[] 원소 하나다. 확장자가 섞여도 한 폴더의 이미지는 한 묶음이고
+    이름에 형식을 나열한다. 파일 수와 크기 합만 적고 내용은 읽지 않는다. 표 파일은 파일마다 하나이고 통계도 표 파일에서만 나온다."""
+    for rel, content in (("data/images/cat/a.jpg", b"\xff\xd8" + b"a" * 10), ("data/images/cat/b.jpeg", b"\xff\xd8" + b"b" * 20),
+                         ("data/images/cat/c.png", b"\x89PNG" + b"c" * 5), ("data/photos/d.png", b"\x89PNG" + b"d" * 5),
+                         ("data/audio/x.wav", b"RIFF" + b"x" * 4)):
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
         (tmp_path / rel).write_bytes(content)
     write(tmp_path, "data/train.csv", "a,b\n1,2\n")
     local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "data")]))["data:local/data@"]
-    assert [d["name"] for d in local["data"]] == ["data/audio/x.wav", "data/images/cat/*.jpg", "data/images/dog/c.png", "data/train.csv"]   # 파일 하나뿐인 묶음은 그 이름
+    assert [d["name"] for d in local["data"]] == ["data/audio/x.wav", "data/images/cat/*.{jpg,png}", "data/photos/d.png", "data/train.csv"]   # 파일 하나뿐인 묶음은 그 이름
     assert all(set(d) == {"type", "name"} for d in local["data"])                                 # 파일 사실은 원소에 적지 않는다
     facts = internal(local)
-    assert facts["size"] == str(12 + 22 + 9 + 8 + 8)
+    assert facts["size"] == str(12 + 22 + 9 + 9 + 8 + 8)
     assert [facts[f"modality:{i}"] for i in range(3)] == ["audio", "image", "structured"]
     assert all(v.startswith("train:") for k, v in facts.items() if k.endswith(":type"))         # 통계는 train.csv 것뿐
+
+
+def test_mixed_formats_in_class_folders_are_one_dataset(tmp_path, online):
+    """ImageFolder 처럼 jpg 와 png 가 섞인 클래스 폴더도 데이터셋 하나이고 라벨 수에 전부 든다."""
+    local = fake_jpgs(tmp_path, "imgset", ["train/cat/0.jpg", "train/cat/2.jpg", "train/dog/0.jpg", "train/dog/1.jpg"])
+    (tmp_path / "imgset/train/cat/1.png").write_bytes(b"\x89PNG" + bytes(8))
+    local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "imgset")]))["data:local/imgset@"]
+    assert [d["name"] for d in local["data"]] == ["imgset/train/*.{jpg,png}"]
+    assert stats_of(local)["label:frequencies"] == "cat=3,dog=2"
 
 
 def test_a_single_media_file_data_path_keeps_its_file_name(tmp_path, online):
@@ -327,6 +337,43 @@ def test_class_folders_merge_into_one_entry_with_label_statistics(tmp_path, onli
     assert internal(local)["modality:0"] == "image" and "modality:1" not in internal(local)
 
 
+def fake_jpgs(tmp_path, root: str, rels: list[str]) -> dict:
+    for rel in rels:
+        (tmp_path / root / rel).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / root / rel).write_bytes(b"\xff\xd8" + bytes(10))
+    doc = ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / root)])
+    return datasets(doc)[f"data:local/{root}@"]
+
+
+def test_nested_class_folders_take_labels_from_the_folder_right_above_the_files(tmp_path, online):
+    """ImageFolder 규약: train/animals/cat/0.jpg 의 라벨은 animals 가 아니라 cat 이다. 중간 폴더는 거쳐 올라가기만 한다."""
+    local = fake_jpgs(tmp_path, "imgset", ["train/animals/cat/0.jpg", "train/animals/cat/1.jpg", "train/animals/dog/0.jpg",
+                                           "train/vehicles/car/0.jpg", "train/vehicles/bus/0.jpg"])
+    assert [d["name"] for d in local["data"]] == ["imgset/train/*.jpg"]
+    stats = stats_of(local)
+    assert (stats["label:n_unique"], stats["label:mode"]) == ("4", "cat")                 # 원소가 하나라 통계 이름에 폴더 접두어가 없다
+    assert stats["label:frequencies"] == "cat=2,bus=1,car=1,dog=1"
+
+
+def test_split_folders_are_never_merged_as_classes(tmp_path, online):
+    """train·test 는 분할이지 클래스가 아니다. 파일이 바로 들어 있어도 라벨 없이 분할마다 데이터셋 하나이고, 클래스 폴더를 품었어도
+    분할끼리 다시 합치지 않는다."""
+    local = fake_jpgs(tmp_path, "plain", ["train/0.jpg", "train/1.jpg", "test/0.jpg", "test/1.jpg"])
+    assert [d["name"] for d in local["data"]] == ["plain/test/*.jpg", "plain/train/*.jpg"]
+    assert not any(":label:" in k for k in stats_of(local))
+    local = fake_jpgs(tmp_path, "classed", ["train/cat/0.jpg", "train/dog/0.jpg", "test/cat/0.jpg", "test/dog/0.jpg"])
+    assert [d["name"] for d in local["data"]] == ["classed/test/*.jpg", "classed/train/*.jpg"]
+    stats = stats_of(local)
+    assert stats["train:label:frequencies"] == "cat=1,dog=1" and stats["test:label:frequencies"] == "cat=1,dog=1"
+
+
+def test_mixed_depth_class_folders_merge_without_labels(tmp_path, online):
+    """train/cat/0.jpg 와 train/animals/{dog,bird}/0.jpg 처럼 깊이가 섞이면 ImageFolder 도 라벨을 붙이지 않는다. 묶음은 train 하나다."""
+    local = fake_jpgs(tmp_path, "mixed", ["train/cat/0.jpg", "train/animals/dog/0.jpg", "train/animals/bird/0.jpg"])
+    assert [d["name"] for d in local["data"]] == ["mixed/train/*.jpg"]
+    assert not any(":label:" in k for k in stats_of(local))
+
+
 def png(width: int) -> bytes:
     return b"\x89PNG\r\n\x1a\n" + struct.pack(">I", 13) + b"IHDR" + struct.pack(">II", width, 10) + bytes(5) + bytes(4)
 
@@ -371,8 +418,9 @@ def test_media_statistics_come_from_file_headers(tmp_path, online):
     assert (stats["img:image:width:min"], stats["img:image:width:max"], stats["img:image:width:mean"], stats["img:image:width:std"]) == ("320", "640", "480", "226.27417")
     assert (stats["img:image:height:min"], stats["img:image:height:max"]) == ("10", "10")                     # png() 는 높이 10 으로 만든다
     assert (stats["snd:audio:duration:min"], stats["snd:audio:duration:max"], stats["snd:audio:duration:mean"], stats["snd:audio:duration:std"]) == ("1", "2", "1.5", "0.70711")
-    assert stats["media:image:width:min"] in ("800", "300") and stats["media:audio:duration:min"] in ("2", "1")   # 묶음이 파일 하나뿐이면 값 하나
-    assert [d["name"] for d in local["data"]] == ["media/c.jpg", "media/d.webp", "media/e.flac", "media/f.mp3", "media/img/*.png", "media/snd/*.wav"]
+    assert (stats["media:image:width:min"], stats["media:image:width:max"]) == ("300", "800")                  # 폴더 바로 아래의 jpg·webp 는 한 묶음
+    assert (stats["media:audio:duration:min"], stats["media:audio:duration:max"]) == ("1", "2")
+    assert [d["name"] for d in local["data"]] == ["media/*.{flac,mp3}", "media/*.{jpg,webp}", "media/img/*.png", "media/snd/*.wav"]
     assert all(set(d) == {"type", "name"} for d in local["data"])
 
 

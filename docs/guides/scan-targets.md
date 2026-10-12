@@ -7,7 +7,7 @@
 | 디렉터리 | `<target>` | 존재하는 디렉터리 경로 | `aibom-cli scan ./project` |
 | 컨테이너 이미지 | `<target>` | 디렉터리도 아카이브도 아닌 모든 값 | `aibom-cli scan python:3.12-slim`, `aibom-cli scan ghcr.io/org/app:1.0` |
 | 이미지 아카이브 | `<target>` | `.tar`, `.tar.gz`, `.tgz` 로 끝나는 파일 | `aibom-cli scan image.tar` |
-| 로컬 데이터 | `--data <path>` | 폴더 또는 파일 하나 | `aibom-cli scan ./project --data ./dataset` |
+| 로컬 데이터 | `--data <path>` | 데이터 파일이 든 폴더나 데이터 파일 하나. 여러 번 줄 수 있다 | `aibom-cli scan ./project --data ./dataset` |
 
 컨테이너 이미지와 이미지 아카이브는 S-BOM 은 syft 가 직접 읽고, 모델과 데이터셋은 디렉터리로 푼 뒤 디렉터리와 같은 규칙으로 찾는다.
 그 안에서 무엇을 찾는지는 [수집 항목](collected-items.md)에 있다.
@@ -32,5 +32,26 @@ zstd 로 압축된 레이어는 지원하지 않는다.
 ## 로컬 데이터
 
 로컬 데이터는 `--data <path>` 로 지정한 곳에서만 찾는다. 코드가 `pd.read_csv("data/train.csv")` 처럼 로컬 파일을 불러도 경로를 주지 않으면
-D-BOM 에 들어가지 않는다. 경로는 폴더든 파일 하나든 되고, 경로마다 데이터셋 컴포넌트 하나가 생긴다.
-어떤 파일을 데이터로 치고 무엇을 읽는지는 [수집 항목](collected-items.md#d-bom)에 있다.
+D-BOM 에 들어가지 않는다. `--data` 는 여러 번 줄 수 있고, 하나당 데이터셋 컴포넌트 하나가 만들어진다. 경로는 데이터 파일이 든 폴더나 데이터 파일 하나다.
+
+폴더는 Hugging Face 데이터셋 저장소처럼 데이터셋마다 하나씩 두고, 분할(train, test)과 클래스 폴더는 그 안에 둔 뒤 데이터셋의 최상위 폴더를
+주는 것을 권장한다. 크기, 모달리티, 통계 같은 규제 필드가 컴포넌트에 하나씩 적혀서, `./data` 처럼 데이터셋 여러 개를 품은 폴더를 주면 값이
+섞이기 때문이다.
+
+```
+data/
+├── images/              # 데이터셋 하나
+│   ├── train/
+│   │   ├── cat/         a.jpg b.jpg …
+│   │   └── dog/         c.jpg …
+│   └── test/
+│       ├── cat/         …
+│       └── dog/         …
+└── audio/               # 다른 데이터셋
+    ├── metadata.csv
+    └── x.wav y.wav …
+```
+
+```bash
+aibom-cli scan ./project --data ./data/images --data ./data/audio   # 데이터셋 여러 개 지정
+```

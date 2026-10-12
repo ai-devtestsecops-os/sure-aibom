@@ -37,21 +37,12 @@
 </tbody>
 </table>
 
-로컬 데이터는 확장자로 가르고, 파일 종류에 따라 `data[]` 에 적는 단위가 다르다.
+로컬 데이터는 읽은 파일을 데이터셋 단위로 묶어 적는다. 무엇을 데이터셋 하나로 보는지는 확장자에 따라 파일 단위와 폴더 단위로 나뉜다.
 
-- 데이터 파일로 치는 확장자: `csv`, `tsv`, `parquet`, `arrow`, `feather`, `npy`, `npz`, `jsonl`, `ndjson`, `json`, `txt`, `png`, `jpg`, `jpeg`, `webp`, `wav`, `mp3`, `flac`. `requirements*.txt`, `README*`, `LICENSE*`, `*config.json`, `dataset_info.json` 같은 문서·설정 이름은 뺀다.
-- 표·레코드 파일(csv, tsv, parquet, arrow, feather, npy, npz, jsonl, ndjson, json, txt)은 파일마다 항목 하나다. `train-00001-of-00004.parquet` 처럼 크기 때문에 나뉜 조각(샤드)은 분할 하나로 합쳐 항목 하나(`train-*.parquet`)다. 내용은 표 형식(csv, tsv, json, jsonl, parquet, arrow, feather)만 64 MB 까지 읽는다.
-- 이미지·오디오 파일(png, jpg, webp, wav, mp3, flac)은 폴더와 형식 단위로 항목 하나다 (`images/cat/*.jpg`). 이미지 수십만 장이 항목 수십만 개가 되지 않게 하기 위해서다. 파일은 헤더만 읽는다. `train/cat/`, `train/dog/` 처럼 하위 폴더 둘 이상이 같은 형식의 매체만 들고 있으면 클래스 폴더로 보고 그 폴더(`train/*.jpg`) 하나로 합치며, 형제 분할이 그렇게 합쳐졌으면 클래스가 하나뿐인 분할(`test/cat/`)도 같은 꼴로 합친다.
-- 주석은 데이터 항목이 되지 않는다. `file_name` 열이 있는 `metadata.csv`, `metadata.jsonl`(Hugging Face imagefolder·audiofolder 규칙)은 내용을 읽고, `labels/`, `annotations/` 폴더 아래 파일(YOLO, COCO 규칙)은 열지 않는다. 둘 다 크기는 데이터셋 크기에 든다.
+- 지원 확장자: `csv`, `tsv`, `json`, `jsonl`, `ndjson`, `parquet`, `arrow`, `feather`, `npy`, `npz`, `txt`, `png`, `jpg`, `jpeg`, `webp`, `wav`, `mp3`, `flac`<br><span class="note">※ `requirements*.txt`, `README*`, `LICENSE*`, `*config.json`, `dataset_info.json` 같은 문서·설정 이름은 제외한다</span>
+- 파일 단위: 표·레코드 파일(csv, tsv, json, jsonl, ndjson, parquet, arrow, feather, npy, npz, txt)은 파일 하나가 데이터셋 하나다. `train-00001-of-00004.parquet` 처럼 [허브의 파일 이름 규약](https://huggingface.co/docs/hub/datasets-file-names-and-splits)으로 나뉜 샤드는 한 분할이므로 데이터셋 하나(`train-*.parquet`)로 적는다. 내용은 표 파일(csv, tsv, json, jsonl, ndjson, parquet, arrow, feather)은 64 MB 까지 읽고, 레코드 파일(npy, npz, txt)은 크기만 본다.
+- 폴더 단위: 이미지·오디오 파일(png, jpg, webp, wav, mp3, flac)은 같은 폴더의 같은 모달리티(이미지 또는 오디오) 파일 전부가 데이터셋 하나다 (`images/cat/*.jpg`, 형식이 섞이면 `images/cat/*.{jpg,png}`). 폴더 구조는 Hugging Face 의 [ImageFolder](https://huggingface.co/docs/datasets/image_dataset#imagefolder)·[AudioFolder](https://huggingface.co/docs/datasets/audio_dataset#audiofolder) 규약을 따른다. `train/cat/`, `train/dog/` 처럼 하위 폴더 둘 이상이 같은 종류의 매체만 들고 있으면 클래스 폴더로 보고 그 폴더(`train/*.jpg`)가 데이터셋 하나이며, 파일 바로 위 폴더 이름이 라벨이다. 파일 내용은 읽지 않고 헤더만 본다.
 
-## 건너뛰는 곳
-
-- aibom-cli 의 소스 훑기와 데이터 경로 훑기: `node_modules`, `.git`, `venv`, `.venv`, `site-packages`, `dist-packages`, `__pycache__` 와 점으로 시작하는 폴더
-- cdxgen: 경로에 `test`, `tests`, `fixture(s)`, `example(s)`, `sample(s)` 조각이 있는 소스
-
-## 찾지 않는 것
-
-- `--data` 로 주지 않은 로컬 데이터
-- 코드에서 허브 모델을 부를 때 그 모델의 허브 모델 카드에 적힌 데이터셋 (OWASP 보강이 모델 카드 안에 inline 으로 적어 주지만 데이터셋 컴포넌트로는 만들지 않는다)
-- 설정 파일 없이 `.pt`, `.pth`, `.onnx` 만 있는 체크포인트 (cdxgen 이 모델로 보지 않는다)
-- 변수로 모델 이름을 넘기는 코드 (`from_pretrained(model_name)`)
+데이터를 설명하는 주석 파일은 보조 파일로 본다. `file_name` 열이 있는 `metadata.csv`, `metadata.jsonl`(Hugging Face ImageFolder·AudioFolder)과
+`labels/`, `annotations/` 폴더 아래 파일(YOLO, COCO)이다. 둘 다 데이터셋 크기 계산에는 포함되고, metadata 파일은 내용도 읽어 열 통계를 낸다. 따로 데이터셋으로 여기지는
+않는다.

@@ -90,7 +90,7 @@ Exit codes:
 
 - statistics 필드 확대
   - 이미지 너비·높이, 오디오 길이 분포 (지원 포맷: PNG, JPEG, WebP, WAV, FLAC, MP3)
-  - 클래스 폴더와 주석 표의 라벨 분포
+  - 클래스 폴더의 라벨 분포
 - 규제 필드 2개 추가, 1개 보완
   - D-BOM: intendedUse, collectionProcess 추가, provenance 에 상위 데이터셋 보완
 - M-BOM: 허브 모델의 성능 지표(performanceMetrics) 추가
@@ -98,7 +98,7 @@ Exit codes:
 변경
 
 - 로컬 데이터셋 구조 인식
-  - 이미지·오디오를 파일 단위가 아니라 폴더·형식 단위로 기록
+  - 이미지·오디오를 파일 단위가 아니라 폴더 단위로 기록
   - 분할 샤드 병합, 클래스 폴더 구조 인식
   - 데이터 파일과 주석 파일 구분 (예: metadata.csv, labels/, annotations/)
 
