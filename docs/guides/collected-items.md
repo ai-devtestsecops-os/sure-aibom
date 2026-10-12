@@ -15,6 +15,8 @@
 
 ## M-BOM
 
+허브 모델은 두 단계로 잡는다. cdxgen 이 코드에서 이름을 잡고, OWASP aibom-generator 가 그 이름으로 Hub API 와 모델 카드·설정 파일을 읽어 채운다.
+
 <table markdown>
 <thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
 <tbody markdown>
@@ -26,6 +28,8 @@
 </table>
 
 ## D-BOM
+
+허브 데이터셋도 두 단계로 잡는다. cdxgen 과 aibom-cli 가 모델 카드와 코드에서 이름을 잡고, aibom-cli 가 Hub API 로 채운다.
 
 <table markdown>
 <thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
