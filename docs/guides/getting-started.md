@@ -48,6 +48,13 @@ aibom-cli scan ./project -o bom.cdx.json
 aibom-cli scan python:3.12-slim -o python.cdx.json
 ```
 
+단계마다 한 줄씩 나오는 로그에 `-v` 를 더하면 항목별 상세가 붙는다. 어떤 파일을 왜 건너뛰었는지, 어느 값을 왜 버렸는지,
+어느 컴포넌트의 어느 규제 필드가 비었는지가 나온다.
+
+```bash
+aibom-cli scan ./project -o bom.cdx.json -v
+```
+
 입력으로 무엇을 줄 수 있는지는 [스캔 대상](scan-targets.md)에, 그 안에서 무엇을 찾는지는 [수집 항목](collected-items.md)에,
 결과 문서의 구조와 `--spec` 으로 고르는 두 가지 규제 필드 자리는 [출력 포맷](output-format.md)에 있다.
 

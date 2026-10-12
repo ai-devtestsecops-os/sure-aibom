@@ -29,6 +29,10 @@
 
 건드리는 범위는 승격한 값만이다: 목록 필드는 기존 항목 뒤에 덧붙이고(이름 없는 항목도 그대로 남긴다), 스칼라 필드는
 비어 있을 때만 쓰며, 소비해서 비어 버린 목록·modelCard 만 없앤다. 원본이 하나도 없는 컴포넌트는 바이트 단위로 같다.
+
+완성도: report 를 주면 컴포넌트마다 "채울 수 있는 규제 필드" 가운데 채운 수를 센다. 모델은 위 네 필드, 허브 데이터셋은
+위 일곱 필드, 로컬 데이터는 파일만 보고 알 수 있는 size·modality·statistics 셋이 분모다. v0.6 의 나머지 필드(aibom-cli 가
+아직 읽지 않는 것)는 세지 않는다.
 """
 from __future__ import annotations
 
@@ -66,11 +70,19 @@ TECHNICAL_REQUIREMENT_SOURCES = ("owasp:aibom:distribution:runtimeRequirement", 
 
 _NON_NEGATIVE_INT = re.compile(r"^\+?\d+$")
 
+# 완성도 — 컴포넌트 종류별로 채울 수 있는 규제 필드
+MODEL_FIELDS = ("hyperparameters", "parameterCount", "inputs maxSize", "technicalRequirements")
+DATASET_FIELDS = ("size", "modality", "availability", "provenance", "intendedUse", "collectionProcess", "statistics")
+LOCAL_DATASET_FIELDS = ("size", "modality", "statistics")        # 나머지는 파일만 보고 알 수 없다
+LOCAL_DATASET_REF = "data:local/"
+HF_DATASETS_PURL = "pkg:huggingface/datasets/"
+
 
 # ── 진입점 ──────────────────────────────────────────────────────────────────
 
-def apply(doc: dict, form: str = "properties", log=print) -> dict:
-    """문서를 제자리에서 고치고 돌려준다. form 은 "properties"(기본) 또는 "typed"."""
+def apply(doc: dict, form: str = "properties", log=print, report: dict | None = None) -> dict:
+    """문서를 제자리에서 고치고 돌려준다. form 은 "properties"(기본) 또는 "typed".
+    report 를 주면 완성도를 적는다: {"models": {"filled", "total"}, "datasets": {…}, "filled", "total"}."""
     if form not in FORMS:
         raise ValueError(f"form 은 {FORMS} 중 하나여야 한다: {form!r}")
     for comp in _walk(doc.get("components") or []):
@@ -78,7 +90,53 @@ def apply(doc: dict, form: str = "properties", log=print) -> dict:
             _apply_component(comp, form, log)
         elif comp.get("type") == DATA_TYPE:
             _apply_dataset(comp, form, log)
+    if report is not None:
+        report.update(_coverage_report(doc, form, log))
     return doc
+
+
+def coverage(comp: dict, form: str) -> tuple[list[str], list[str]] | None:
+    """컴포넌트의 규제 필드 가운데 (채운 것, 빈 것). 모델·데이터셋이 아니면 None."""
+    if comp.get("type") == MODEL_TYPE:
+        target = (_TypedTarget if form == "typed" else _PropertiesTarget)(comp)
+        fields = MODEL_FIELDS
+        filled = {"hyperparameters": bool(target.get_hyperparameters()),
+                  "parameterCount": target.get_parameter_count() is not None,
+                  "inputs maxSize": target.get_max_size() is not None,
+                  "technicalRequirements": bool(target.get_technical_requirements())}
+    elif comp.get("type") == DATA_TYPE and _is_dataset(comp):
+        target = (_DatasetTypedTarget if form == "typed" else _DatasetPropertiesTarget)(comp)
+        fields = LOCAL_DATASET_FIELDS if str(comp.get("bom-ref") or "").startswith(LOCAL_DATASET_REF) else DATASET_FIELDS
+        filled = {f: (bool(target.get_statistics()) if f == "statistics"
+                      else bool(target.get_list(f)) if f in ("modality", "provenance")
+                      else target.get_scalar(f) is not None) for f in fields}
+    else:
+        return None
+    return [f for f in fields if filled[f]], [f for f in fields if not filled[f]]
+
+
+def _is_dataset(comp: dict) -> bool:
+    """type=data 중 데이터셋 — data[] 에 dataset 항목이 있거나 허브 데이터셋 purl 이 있다 (cdxgen 의 apt 저장소 설정은 아니다)."""
+    return any(isinstance(d, dict) and d.get("type") == "dataset" for d in comp.get("data") or []) \
+        or str(comp.get("purl") or "").startswith(HF_DATASETS_PURL)
+
+
+def _coverage_report(doc: dict, form: str, log) -> dict:
+    report = {"models": {"filled": 0, "total": 0}, "datasets": {"filled": 0, "total": 0}}
+    for comp in _walk(doc.get("components") or []):
+        found = coverage(comp, form)
+        if found is None:
+            continue
+        filled, missing = found
+        bucket = report["models" if comp.get("type") == MODEL_TYPE else "datasets"]
+        bucket["filled"] += len(filled)
+        bucket["total"] += len(filled) + len(missing)
+        if missing:
+            label = comp.get("bom-ref") or comp.get("name") or "?"
+            log(f"[form] {label}: {len(filled)}/{len(filled) + len(missing)} regulation fields filled, missing {', '.join(missing)}")
+    report["filled"] = report["models"]["filled"] + report["datasets"]["filled"]
+    report["total"] = report["models"]["total"] + report["datasets"]["total"]
+    return report
 
 
 def _walk(components: Iterable[dict]):
@@ -142,8 +200,8 @@ def _resolve(existing, candidates: list[tuple[object, dict]], field: str, label:
         if value == winner:
             consumed.append(prop)
         else:
-            verb = "버린다" if prop["name"].startswith(INTERNAL_MODEL_PREFIX) else "남긴다"
-            log(f"[form] {label}: {field} 에 {prop['name']}={prop['value']!r} 는 {winner!r} 와 달라 {verb}")
+            verb = "dropped" if prop["name"].startswith(INTERNAL_MODEL_PREFIX) else "left as is"
+            log(f"[form] {label}: {field}: {prop['name']}={prop['value']!r} differs from {winner!r}, {verb}")
     return winner, consumed
 
 
@@ -165,12 +223,12 @@ def _hyperparameters(comp: dict, target: "_Target", label: str, log) -> list[dic
     for prop in _sources(comp, HYPERPARAMETER_JSON):
         parsed = _json_object(prop["value"])
         if parsed is None:
-            log(f"[form] {label}: {HYPERPARAMETER_JSON} 가 JSON 객체가 아니어서 남긴다")
+            log(f"[form] {label}: {HYPERPARAMETER_JSON} is not a JSON object, left as is")
             continue
         pairs = {k: _stringify(v) for k, v in parsed.items()}
         conflicts = {k: v for k, v in pairs.items() if k in by_name and by_name[k] != v}
         if conflicts:
-            log(f"[form] {label}: hyperparameters {sorted(conflicts)} 가 이미 있는 값과 달라 {HYPERPARAMETER_JSON} 를 남긴다")
+            log(f"[form] {label}: hyperparameters {sorted(conflicts)} differ from existing values, {HYPERPARAMETER_JSON} left as is")
             continue
         for k, v in pairs.items():
             take(k, v)
@@ -180,10 +238,10 @@ def _hyperparameters(comp: dict, target: "_Target", label: str, log) -> list[dic
             if take(name, prop["value"]):
                 consumed.append(prop)
             else:
-                log(f"[form] {label}: hyperparameters[{name}]={prop['value']!r} 는 {by_name[name]!r} 와 달라 {source} 를 남긴다")
+                log(f"[form] {label}: hyperparameters[{name}]={prop['value']!r} differs from {by_name[name]!r}, {source} left as is")
     for name, value in _Bag(_internal(comp), INTERNAL_MODEL_PREFIX).named_pairs("hyperparameters"):
         if not take(name, value):                                 # 내부 키는 뒤에 본다 — 도구가 준 값이 먼저다
-            log(f"[form] {label}: hyperparameters[{name}]={value!r} 는 {by_name[name]!r} 와 달라 버린다")
+            log(f"[form] {label}: hyperparameters[{name}]={value!r} differs from {by_name[name]!r}, dropped")
     if added:
         target.add_hyperparameters(added)
     return consumed
@@ -195,12 +253,12 @@ def _parameter_count(comp: dict, target: "_Target", label: str, log) -> list[dic
     for prop in [p for source in PARAMETER_COUNT_SOURCES for p in _sources(comp, source)] + internal:
         n = _non_negative_int(prop["value"])
         if n is None:
-            log(f"[form] {label}: {prop['name']}={prop['value']!r} 는 음이 아닌 정수가 아니어서 승격하지 않는다")
+            log(f"[form] {label}: {prop['name']}={prop['value']!r} is not a non-negative integer, not promoted")
         else:
             candidates.append((n, prop))
     existing = target.get_parameter_count()
     if existing is not None and not isinstance(existing, int) and candidates:
-        log(f"[form] {label}: 이미 있는 parameterCount={existing!r} 는 음이 아닌 정수가 아니지만 그대로 두고 원본을 남긴다")
+        log(f"[form] {label}: existing parameterCount={existing!r} is not a non-negative integer, kept as is and sources left")
     winner, consumed = _resolve(existing, candidates, "parameterCount", label, log)
     if consumed and existing is None:
         target.set_parameter_count(winner)
@@ -250,23 +308,23 @@ def _apply_dataset(comp: dict, form: str, log) -> None:
         if field == "size":
             value = _non_negative_int(value)
             if value is None:
-                log(f"[form] {label}: size={facts.scalar(field)!r} 는 음이 아닌 정수가 아니어서 승격하지 않는다")
+                log(f"[form] {label}: size={facts.scalar(field)!r} is not a non-negative integer, not promoted")
                 continue
         elif valid and value not in valid:
-            log(f"[form] {label}: {field}={value!r} 는 허용값이 아니어서 승격하지 않는다")
+            log(f"[form] {label}: {field}={value!r} is not an allowed value, not promoted")
             continue
         existing = target.get_scalar(field)
         if existing is None:
             target.set_scalar(field, value)
         elif existing != value:
-            log(f"[form] {label}: {field} 에 이미 {existing!r} 가 있어 {value!r} 를 버린다")
+            log(f"[form] {label}: {field} already has {existing!r}, {value!r} dropped")
 
     for field in ("modality", "provenance"):
         have = target.get_list(field)
         new: list[str] = []
         for value in facts.indexed(field):
             if field == "modality" and value not in MODALITIES:
-                log(f"[form] {label}: modality={value!r} 는 허용값이 아니어서 승격하지 않는다")
+                log(f"[form] {label}: modality={value!r} is not an allowed value, not promoted")
             elif value not in have and value not in new:
                 new.append(value)
         if new:
@@ -277,7 +335,7 @@ def _apply_dataset(comp: dict, form: str, log) -> None:
     for kind, value in facts.statistics():
         if kind in have_stats:
             if have_stats[kind] != value:
-                log(f"[form] {label}: statistics[{kind}] 에 이미 {have_stats[kind]!r} 가 있어 {value!r} 를 버린다")
+                log(f"[form] {label}: statistics[{kind}] already has {have_stats[kind]!r}, {value!r} dropped")
         elif kind not in dict(new_stats):
             new_stats.append((kind, value))
     if new_stats:

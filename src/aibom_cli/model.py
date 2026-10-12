@@ -115,15 +115,13 @@ def _apply(comp: dict, root: Path, root_resolved: Path, log) -> None:
     props = internal_properties(hparams, parameter_count)
     if props:
         comp["properties"] = (comp.get("properties") or []) + props
-        counted = " · 파라미터 수" if parameter_count is not None else ""
-        log(f"[model] {label}: 로컬 파일에서 하이퍼파라미터 {len(hparams)}개{counted} 를 읽었다")
 
 
 def _read(parse, path: Path, rel: str, log):
     try:
         return parse(path)
     except _READ_ERRORS as e:
-        log(f"[model] {rel}: 읽지 못해 건너뛴다 ({e.__class__.__name__}: {e})")
+        log(f"[model] {rel}: skipped, cannot read ({e.__class__.__name__}: {e})")
         return None
 
 
@@ -133,7 +131,7 @@ def _take(hparams: dict[str, str], found: dict[str, str], rel: str, label: str, 
         if name not in hparams:
             hparams[name] = value
         elif hparams[name] != value:
-            log(f"[model] {label}: hyperparameters[{name}] 에 이미 {hparams[name]!r} 가 있어 {rel} 의 {value!r} 를 버린다")
+            log(f"[model] {label}: hyperparameters[{name}] already has {hparams[name]!r}, {value!r} from {rel} dropped")
 
 
 # ── 읽을 파일 찾기 ───────────────────────────────────────────────────────────

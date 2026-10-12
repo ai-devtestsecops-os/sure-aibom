@@ -597,7 +597,7 @@ def test_same_dataset_under_two_ids_becomes_one_component_and_one_hub_call(tmp_p
     deps = deps_of(out)
     assert deps[BERT_REF] == [BOOK_CANON] and set(deps[out["metadata"]["component"]["bom-ref"]]) == {BERT_REF, BOOK_CANON}
     assert refs_in(out) <= {c["bom-ref"] for c in out["components"]} | {out["metadata"]["component"]["bom-ref"]}   # 끊긴 참조 없음
-    assert [m for m in logs if "합쳤다" in m] == ["[dataset] bookcorpus 은 bookcorpus/bookcorpus 과 같은 데이터셋, 하나로 합쳤다"]
+    assert [m for m in logs if "merged into" in m] == ["[dataset] bookcorpus: merged into bookcorpus/bookcorpus, same dataset"]
     for form in ("properties", "typed"):
         assert validate_cdx(apply(copy.deepcopy(out), form=form, log=print), "1.7" if form == "properties" else "v0.6", log=print)
 
@@ -618,7 +618,7 @@ def test_readme_only_component_is_renamed_to_the_hub_id_and_refs_follow(tmp_path
     assert bert["modelCard"]["modelParameters"]["datasets"] == [{"ref": BOOK_CANON}]
     deps = deps_of(out)
     assert deps[BERT_REF] == [BOOK_CANON] and deps[out["metadata"]["component"]["bom-ref"]] == [BERT_REF]   # 코드에서 안 불렀으니 루트 → 데이터셋 엣지는 없다
-    assert "[dataset] bookcorpus → bookcorpus/bookcorpus (허브 정식 id)" in logs
+    assert "[dataset] bookcorpus: renamed to bookcorpus/bookcorpus (canonical id)" in logs
 
 
 def test_old_hub_name_in_code_is_renamed_and_two_spellings_collapse(tmp_path, monkeypatch, imdb):
@@ -663,7 +663,7 @@ def test_statistics_requests_follow_dataset_info_then_size_and_are_capped(monkey
     got = ds._fetch_statistics("a/b", many, None, logs.append)
     assert len(calls) == ds.STATISTICS_REQUEST_LIMIT == 12 and calls[0] == ("c0", "train") and calls[-1] == ("c5", "test")
     assert [c for c, _, _ in got] == ["c0", "c0", "c1", "c1", "c2", "c2", "c3", "c3", "c4", "c4"]                    # c5 는 조회 실패
-    assert any("16개 중 앞 12개만" in m for m in logs) and sum("partial" in m for m in logs) == 2
+    assert any("first 12 of 16" in m for m in logs) and sum("partial" in m for m in logs) == 2
 
 
 def test_hub_column_statistics_by_column_type():
@@ -736,7 +736,7 @@ def test_offline_keeps_name_and_purl_and_logs_once(tmp_path, monkeypatch):
     found = datasets(out)
     assert set(found) == {IMDB_REF, "pkg:huggingface/datasets/imdb"}
     assert all("properties" not in c and "version" not in c for c in found.values())
-    assert sum("닿지 않음" in m for m in logs) == 1
+    assert sum("unreachable" in m for m in logs) == 1
     for form in ("properties", "typed"):
         doc = apply(copy.deepcopy(out), form=form, log=print)
         assert validate_cdx(doc, "1.7" if form == "properties" else "v0.6", log=print)
@@ -838,7 +838,7 @@ def test_existing_values_win_and_internal_keys_are_always_removed(form):
     out = apply({"components": [comp]}, form=form, log=logs.append)
     c = out["components"][0]
     assert not any(p["name"].startswith(INTERNAL_PREFIX) for p in c["properties"])
-    assert sum("버린다" in m for m in logs) == 2 and any("허용값" in m for m in logs)
+    assert sum("dropped" in m for m in logs) == 2 and any("not an allowed value" in m for m in logs)
     if form == "typed":
         e = c["data"][0]
         assert e["size"] == 99 and e["modality"] == ["text", "image"] and e["contents"] == {"availability": "direct-download"}
@@ -892,7 +892,7 @@ def test_a_symlink_leaving_the_data_path_is_skipped(tmp_path, monkeypatch, onlin
         assert [d["name"] for d in local["data"]] == ["data/inner.csv", "data/train.csv"]
         text = json.dumps(out)
         assert "outside_secret" not in text and str(tmp_path) not in text and ".." not in text
-        assert any("link.csv" in m and "경로 밖" in m for m in logs)
+        assert any("link.csv" in m and "outside the data path" in m for m in logs)
 
 
 @pytest.mark.skipif(not hasattr(os, "geteuid") or os.geteuid() == 0, reason="root 는 권한을 무시한다")
@@ -905,7 +905,7 @@ def test_unreadable_file_records_size_only(tmp_path, online):
         logs: list[str] = []
         a = ds._analyze_file(secret, "data/secret.csv", log=logs.append)
         assert a == {"path": "data/secret.csv", "size": 8, "format": "csv", "modality": "structured"}
-        assert any("data/secret.csv" in m and "크기만" in m for m in logs)
+        assert any("data/secret.csv" in m and "cannot read content" in m for m in logs)
         local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=data_of(tmp_path)))["data:local/data@"]
         assert [d["name"] for d in local["data"]] == ["data/ok.csv", "data/secret.csv"] and internal(local)["size"] == "12"
     finally:

@@ -59,12 +59,12 @@ def enrich(merged: dict, workdir: Path, log=print, report: dict | None = None) -
     targets = {hf: c for c in merged.get("components", []) if (hf := hf_id_of(c))}
     report.update(models=len(targets), enriched=0, failed=[], errors={}, skipped=None)
     if not targets:
-        log("[enrich] pkg:huggingface 모델 컴포넌트가 없어 보강을 건너뛴다")
+        log("[enrich] no hub model components, nothing to enrich")
         report["skipped"] = "no Hugging Face models"
         return merged
     reason = skip_reason()
     if reason:
-        log(f"[enrich] {reason} — 보강을 건너뛴다 ({len(targets)}개 모델)")
+        log(f"[enrich] skipped {len(targets)} hub model{'s' if len(targets) != 1 else ''}: {reason}")
         report["skipped"] = reason
         return merged
 
@@ -82,7 +82,6 @@ def enrich(merged: dict, workdir: Path, log=print, report: dict | None = None) -
             report["errors"][hf_id] = "no model component in the aibom-generator output"
             continue
         _apply(comp, src, owasp.get("metadata") or {})
-        log(f"[enrich] {hf_id}: 보강 완료")
         report["enriched"] += 1
     return merged
 

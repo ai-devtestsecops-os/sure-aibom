@@ -78,17 +78,17 @@ def test_nothing_to_enrich_is_left_alone(monkeypatch):
     doc = doc_of({"bom-ref": "x", "type": "library", "name": "numpy"})
     before = json.dumps(doc)
     assert json.dumps(enrich(doc, WORKDIR, logs.append)) == before
-    assert any("모델 컴포넌트가 없어" in m for m in logs)
+    assert any("no hub model components" in m for m in logs)
 
 
 def test_offline_skips_without_running_anything(monkeypatch):
-    monkeypatch.setattr(en, "skip_reason", lambda: "huggingface.co 에 닿지 않음")
+    monkeypatch.setattr(en, "skip_reason", lambda: "huggingface.co unreachable")
     stub(monkeypatch, RunnerError("불려서는 안 된다"))
     logs: list[str] = []
     doc = doc_of(bert_component())
     before = json.dumps(doc)
     assert json.dumps(enrich(doc, WORKDIR, logs.append)) == before
-    assert [m for m in logs if "건너뛴다" in m] == ["[enrich] huggingface.co 에 닿지 않음 — 보강을 건너뛴다 (1개 모델)"]
+    assert [m for m in logs if "skipped" in m] == ["[enrich] skipped 1 hub model: huggingface.co unreachable"]
 
 
 def test_skip_reason_checks_the_clone_before_the_network(tmp_path, monkeypatch):

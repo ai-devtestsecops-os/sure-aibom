@@ -185,7 +185,8 @@ def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
         "[aibom-cli] Generating S-BOM (syft)", "[aibom-cli] Generating M-BOM (cdxgen)", "[aibom-cli] Generating D-BOM",
         "[aibom-cli] Enriching M-BOM (aibom-generator)", "[aibom-cli] Adding regulation fields"]
     assert lines[1].endswith(" 4 packages, 1 file") and lines[2].endswith(" 5 models, 2 files")   # cdxgen 의 데이터셋 참조는 D-BOM 에서 센다
-    assert lines[3].endswith(" 3 datasets") and lines[4].endswith(" 1 hub model") and lines[5].endswith(" done")
+    assert lines[3].endswith(" 3 datasets") and lines[4].endswith(" 1 hub model")
+    assert lines[5].endswith(" 28 of 37 filled (models 12/20, datasets 16/17)")      # 모델 5개 × 4, 허브 데이터셋 2개 × 7 + 로컬 1개 × 3
     # 마지막 줄은 다 만든 BOM 을 다시 센 것 — 묶음을 더하면 전체와 같다
     total, groups, deps = re.fullmatch(rf"\[aibom-cli\] Wrote {re.escape(str(cdx))} \((\d+) components: (.+); (\d+) dependencies\)", lines[-1]).groups()
     assert groups == "4 packages, 5 models, 3 datasets, 3 files"

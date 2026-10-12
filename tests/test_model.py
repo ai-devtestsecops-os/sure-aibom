@@ -243,7 +243,7 @@ def test_discover_fills_hyperparameters_and_parameter_count_from_a_model_directo
     comp = model_of(out)
     assert hparams_of(comp) == BERT_HPARAMS
     assert internal(comp)["parameterCount"] == str(30522 * 768)
-    assert [m for m in logs if "[model]" in m] == [f"[model] {MODEL_REF}: 로컬 파일에서 하이퍼파라미터 6개 · 파라미터 수 를 읽었다"]
+    assert [m for m in logs if "[model]" in m] == []                                   # 잘 읽은 것은 조용하다
 
 
 def test_discover_reads_gguf_named_in_the_evidence(tmp_path):
@@ -262,7 +262,7 @@ def test_first_file_wins_when_two_files_disagree(tmp_path):
     facts = dict(hparams_of(comp))
     assert facts["block_count"] == "16" and facts["context_length"] == "99"         # a.gguf 를 먼저 읽는다 (경로 정렬)
     assert facts["embedding_length"] == "768"                                       # 겹치지 않는 값은 뒤 파일에서 온다
-    assert [m for m in logs if "버린다" in m] == [f"[model] {MODEL_REF}: hyperparameters[block_count] 에 이미 '16' 가 있어 config.json 의 '12' 를 버린다"]
+    assert [m for m in logs if "dropped" in m] == [f"[model] {MODEL_REF}: hyperparameters[block_count] already has '16', '12' from config.json dropped"]
 
 
 @pytest.mark.parametrize("component", [
@@ -289,7 +289,7 @@ def test_image_target_and_unreadable_config_change_nothing(tmp_path):
     write(tmp_path, "config.json", "{not json")
     logs: list[str] = []
     assert json.dumps(md.discover(copy.deepcopy(doc), str(tmp_path), logs.append), ensure_ascii=False) == before
-    assert any("config.json: 읽지 못해 건너뛴다" in m for m in logs)
+    assert any("config.json: skipped, cannot read" in m for m in logs)
 
 
 def test_a_symlink_pointing_outside_the_target_is_skipped(tmp_path):
@@ -350,7 +350,7 @@ def test_tool_values_win_over_local_files_and_internal_keys_always_go(discovered
     assert params["parameterCount"] == 999                                            # 허브 값이 이긴다
     assert dict((h["name"], h["value"]) for h in params["hyperparameters"])["block_count"] == "99"
     assert "aibom-internal" not in json.dumps(out)
-    assert sum("버린다" in m for m in logs) == 2
+    assert sum("dropped" in m for m in logs) == 2
 
 
 def test_applying_twice_changes_nothing(discovered):

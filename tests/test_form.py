@@ -162,7 +162,7 @@ def test_unparsable_parameter_count_is_not_promoted(form, raw):
     comp = out["components"][0]
     assert card_props(comp) == {"safetensors_total_parameters": raw}
     assert "modelParameters" not in comp["modelCard"] and "aibom:model:parameterCount" not in card_props(comp)
-    assert any("safetensors_total_parameters" in m and "승격하지 않는다" in m for m in logs)
+    assert any("safetensors_total_parameters" in m and "not promoted" in m for m in logs)
 
 
 def test_unparsable_first_source_falls_through_to_second():
@@ -183,7 +183,7 @@ def test_disagreeing_sources_keep_the_loser_and_log():
     assert params["inputs"] == [{"maxSize": "512"}] and params["parameterCount"] == 1          # 우선순위 첫 번째
     assert {p["name"]: p["value"] for p in out["components"][0]["properties"]} == {"cdx:ai:contextWindow": "4096", "cdx:ai:parameterCount": "2"}
     assert "properties" not in out["components"][0]["modelCard"]
-    assert sum("달라" in m for m in logs) == 2
+    assert sum("differs" in m for m in logs) == 2
 
 
 def test_hyperparameter_json_then_individual_keys_without_duplicates():
@@ -206,7 +206,7 @@ def test_hyperparameter_json_that_is_not_an_object_is_left_alone():
     logs: list[str] = []
     out = apply(doc_of(model(card_properties=[("genai:aibom:modelcard:hyperparameter", "[1, 2]")])), form="typed", log=logs.append)
     assert card_props(out["components"][0]) == {"genai:aibom:modelcard:hyperparameter": "[1, 2]"}
-    assert "modelParameters" not in out["components"][0]["modelCard"] and any("JSON 객체" in m for m in logs)
+    assert "modelParameters" not in out["components"][0]["modelCard"] and any("JSON object" in m for m in logs)
 
 
 def test_technical_requirements_union_is_deduplicated():
@@ -286,7 +286,7 @@ def test_properties_form_existing_unparsable_parameter_count_wins_and_is_logged(
     out = apply(doc_of(comp), form="properties", log=logs.append)
     assert card_props(out["components"][0]) == {"aibom:model:parameterCount": "seven"}
     assert names(out["components"][0]["properties"]) == ["cdx:ai:parameterCount"]
-    assert any("'seven'" in m and "그대로" in m for m in logs) and any("cdx:ai:parameterCount" in m and "달라" in m for m in logs)
+    assert any("'seven'" in m and "kept as is" in m for m in logs) and any("cdx:ai:parameterCount" in m and "differs" in m for m in logs)
 
 
 def test_existing_parameter_count_property_is_not_moved_when_source_agrees():
@@ -329,3 +329,46 @@ def test_validate_cli_requires_spec_and_names_it(tmp_path, sample, capsys):
     assert main(["validate", str(props), "--spec", "v0.6"]) == 0
     err = capsys.readouterr().err
     assert "Valid against the AI-BOM v0.6 (CycloneDX) schema" in err and "typed" not in err
+
+
+# -- (e) 완성도 ---------------------------------------------------------------
+
+def dataset(ref: str, facts: dict, hub: bool = True) -> dict:
+    name = ref.rsplit("/", 1)[-1].rstrip("@")
+    comp = {"type": "data", "name": name, "bom-ref": ref, "data": [{"type": "dataset", "name": name}],
+            "properties": [{"name": "aibom-internal:dataset:" + k, "value": v} for k, v in facts.items()]}
+    if hub:
+        comp["purl"] = ref
+    return comp
+
+
+@pytest.mark.parametrize("form", ["properties", "typed"])
+def test_report_counts_filled_regulation_fields_per_component_kind(form):
+    """모델은 네 필드, 허브 데이터셋은 일곱, 로컬 데이터는 셋이 분모다. 채운 수는 승격이 끝난 뒤의 상태로 센다."""
+    full = model(properties=(("cdx:ai:parameterCount", "110000000"),),
+                 card_properties=(("genai:aibom:modelcard:contextLength", "512"), ("genai:aibom:modelcard:vocabSize", "30522"),
+                                  ("owasp:aibom:distribution:runtimeRequirement", "python")))
+    bare = model()
+    bare["bom-ref"] = "bare"
+    hub = dataset("pkg:huggingface/datasets/x", {"size": "10", "availability": "direct-download", "modality:0": "text"})
+    local = dataset("data:local/d@", {"size": "5", "modality:0": "image", "statistics:0:type": "label:n_unique", "statistics:0:value": "2"}, hub=False)
+    report: dict = {}
+    apply(doc_of(full, bare, hub, local), form=form, log=lambda m: None, report=report)
+    assert report["models"] == {"filled": 4, "total": 8}
+    assert report["datasets"] == {"filled": 6, "total": 10}                       # 허브 3/7 + 로컬 3/3
+    assert (report["filled"], report["total"]) == (10, 18)
+
+
+def test_report_ignores_components_that_are_not_models_or_datasets():
+    apt = {"type": "data", "name": "apt", "bom-ref": "apt"}                        # cdxgen 의 저장소 설정: data[] 없는 type=data
+    lib = {"type": "library", "name": "numpy", "bom-ref": "numpy"}
+    report: dict = {}
+    apply(doc_of(apt, lib), log=lambda m: None, report=report)
+    assert report == {"models": {"filled": 0, "total": 0}, "datasets": {"filled": 0, "total": 0}, "filled": 0, "total": 0}
+
+
+def test_report_logs_the_missing_fields_of_each_component():
+    logs: list[str] = []
+    apply(doc_of(model()), log=logs.append, report={})
+    assert logs == ["[form] m: 0/4 regulation fields filled, missing hyperparameters, parameterCount, inputs maxSize, technicalRequirements"]
+

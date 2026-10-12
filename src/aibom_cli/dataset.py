@@ -223,7 +223,7 @@ def _scan_sources(root: Path, log) -> dict[str, list[str]]:
                 continue
             path = here / filename
             if not _inside(path, root_resolved):
-                log(f"[dataset] {_relative(path, root)}: 대상 밖을 가리키는 링크라 건너뛴다")
+                log(f"[dataset] {_relative(path, root)}: skipped, symlink points outside the target")
                 continue
             loc = _relative(path, root)
             for hf_id in _parse_python(path, log):
@@ -245,7 +245,7 @@ def _parse_python(path: Path, log) -> list[str]:
     try:
         tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
     except (SyntaxError, ValueError, OSError) as e:
-        log(f"[dataset] {path.name}: 파싱하지 못해 건너뛴다 ({e.__class__.__name__})")
+        log(f"[dataset] {path.name}: skipped, cannot parse ({e.__class__.__name__})")
         return []
     ids: list[str] = []
     for node in ast.walk(tree):
@@ -312,7 +312,7 @@ def _data_components(paths: Iterable[str], log, empty: list[str]) -> list[dict]:
             files = []
         files = [(path, rel) for path, rel in files if path.resolve() not in claimed]
         if not files:
-            log(f"[dataset] {raw}: 데이터 파일이 없어 건너뛴다")
+            log(f"[dataset] {raw}: skipped, no data files")
             empty.append(raw)
             continue
         ref, n = name, 2
@@ -327,7 +327,7 @@ def _data_components(paths: Iterable[str], log, empty: list[str]) -> list[dict]:
         extra_stats = _metadata_statistics(metadata, name, log)
         extra_size = sum(path.stat().st_size for path, _ in metadata + annotations)
         if annotations:
-            log(f"[dataset] {name}: 주석 파일 {len(annotations)}개는 데이터로 세지 않는다 ({', '.join(sorted(ANNOTATION_DIRS))})")
+            log(f"[dataset] {name}: {len(annotations)} annotation files not counted as data ({', '.join(sorted(ANNOTATION_DIRS))})")
         out.append(_data_component(ref, name, analyses, extra_size, extra_stats))
     return out
 
@@ -395,7 +395,7 @@ def _analyze_shards(group: list[tuple[Path, str]], folder: str, stem: str, ext: 
             for col, values in _columns_of(path, ext).items():
                 merged.setdefault(col, []).extend(values)
     except _READ_ERRORS as e:
-        log(f"[dataset] {display}: 내용을 읽지 못해 크기만 적는다 ({e.__class__.__name__})")
+        log(f"[dataset] {display}: no statistics, cannot read content ({e.__class__.__name__})")
         return out
     if merged:
         out["statistics"] = [(f"{col}:{kind}", value) for col, values in merged.items() for kind, value in _values_statistics(values)]
@@ -657,7 +657,7 @@ def _metadata_statistics(metadata: list[tuple[Path, str]], name: str, log) -> li
         try:
             columns = _columns_of(path, _extension(path.name))
         except _READ_ERRORS as e:
-            log(f"[dataset] {rel}: 주석 표를 읽지 못한다 ({e.__class__.__name__})")
+            log(f"[dataset] {rel}: no statistics, cannot read annotation table ({e.__class__.__name__})")
             continue
         for col, values in columns.items():
             if col.lower() in FILE_COLUMNS:
@@ -677,7 +677,7 @@ def _data_files(base: Path, log) -> list[tuple[Path, str]]:
                 continue
             path = here / filename
             if not _inside(path, base):
-                log(f"[dataset] {_relative(path, base)}: 데이터 경로 밖을 가리키는 링크라 건너뛴다")
+                log(f"[dataset] {_relative(path, base)}: skipped, symlink points outside the data path")
                 continue
             if path.is_file():
                 found.append((path, _relative(path, base)))
@@ -721,7 +721,7 @@ def _analyze_file(path: Path, rel: str, log) -> dict:
     try:
         statistics = _file_statistics(path, ext)
     except _READ_ERRORS as e:
-        log(f"[dataset] {rel}: 내용을 읽지 못해 크기만 적는다 ({e.__class__.__name__})")
+        log(f"[dataset] {rel}: no statistics, cannot read content ({e.__class__.__name__})")
         return out
     if statistics:
         out["statistics"] = statistics
@@ -903,17 +903,17 @@ def _get_json(url: str, hf_id: str, what: str, log) -> dict | None:
         with urlopen(req, timeout=FETCH_TIMEOUT) as resp:
             info = json.load(resp)
     except HTTPError as e:
-        log(f"[dataset] {hf_id}: {what} 응답 {e.code}")
+        log(f"[dataset] {hf_id}: {what} returned {e.code}")
         return None
     except (URLError, OSError, ValueError) as e:
-        log(f"[dataset] {hf_id}: {what} 조회 실패 ({e.__class__.__name__})")
+        log(f"[dataset] {hf_id}: {what} request failed ({e.__class__.__name__})")
         return None
     return info if isinstance(info, dict) else None
 
 
 def fetch_dataset_info(hf_id: str, log=print) -> dict | None:
     """GET {HF_ENDPOINT}/api/datasets/<id>. 실패하면 None 을 돌려주고 알린다. 테스트는 이 함수를 바꿔 끼운다."""
-    return _get_json(f"{hf_endpoint()}/api/datasets/{quote(hf_id, safe='/')}", hf_id, "허브", log)
+    return _get_json(f"{hf_endpoint()}/api/datasets/{quote(hf_id, safe='/')}", hf_id, "Hub API", log)
 
 
 def fetch_dataset_size(hf_id: str, log=print) -> dict | None:
@@ -931,7 +931,7 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log) -> bool:
     """허브 응답으로 채우고, 같은 데이터셋을 다른 id 로 부른 컴포넌트는 정식 id 의 컴포넌트 하나로 모은다.
     허브에 닿지 않으면 아무것도 하지 않고 False."""
     if not hf_reachable():
-        log(f"[dataset] huggingface.co 에 닿지 않음, 데이터셋 {len(by_hf_id)}개는 이름·purl 만 둔다")
+        log(f"[dataset] huggingface.co unreachable, {len(by_hf_id)} datasets keep name and purl only")
         return False
     info_by_canonical: dict[str, dict] = {}
     members: dict[str, list[str]] = {}             # 정식 id → 그것을 부른 id 들 (정렬 순서)
@@ -948,16 +948,15 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log) -> bool:
         for other in ids:
             if other != survivor_id:
                 _absorb(merged, comp, by_hf_id[other])
-                log(f"[dataset] {other} 은 {canonical} 과 같은 데이터셋, 하나로 합쳤다")
+                log(f"[dataset] {other}: merged into {canonical}, same dataset")
         if survivor_id != canonical:
             _rename(merged, comp, survivor_id, canonical)
-            log(f"[dataset] {survivor_id} → {canonical} (허브 정식 id)")
+            log(f"[dataset] {survivor_id}: renamed to {canonical} (canonical id)")
         info = info_by_canonical.get(canonical)
         if info:
             size = fetch_dataset_size(canonical, log)
             statistics = _fetch_statistics(canonical, info, size, log)
             apply_hub_info(comp, canonical, info, size, statistics)
-            log(f"[dataset] {canonical}: 허브 정보로 채웠다")
     return True
 
 
@@ -965,14 +964,14 @@ def _fetch_statistics(hf_id: str, info: dict, size: dict | None, log) -> list[tu
     """(config, split) 마다 datasets-server 통계를 받는다. 상한을 넘으면 앞쪽만 받고 알린다."""
     pairs = _config_splits(info, size)
     if len(pairs) > STATISTICS_REQUEST_LIMIT:
-        log(f"[dataset] {hf_id}: config·split {len(pairs)}개 중 앞 {STATISTICS_REQUEST_LIMIT}개만 통계를 조회한다")
+        log(f"[dataset] {hf_id}: statistics for the first {STATISTICS_REQUEST_LIMIT} of {len(pairs)} config/split pairs only")
         pairs = pairs[:STATISTICS_REQUEST_LIMIT]
     out: list[tuple[str, str, dict]] = []
     for config, split in pairs:
         resp = fetch_dataset_statistics(hf_id, config, split, log)
         if resp and isinstance(resp.get("statistics"), list):
             if resp.get("partial"):
-                log(f"[dataset] {hf_id}: {config}/{split} 통계는 일부 데이터 기준이다 (partial)")
+                log(f"[dataset] {hf_id}: {config}/{split} statistics are partial")
             out.append((config, split, resp))
     return out
 

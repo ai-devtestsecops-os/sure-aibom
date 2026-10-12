@@ -38,7 +38,7 @@ def _log(msg: str) -> None:
 
 
 def _quiet(msg: str) -> None:
-    """모듈의 항목별 로그는 CLI 에서 찍지 않는다 (단계마다 한 줄만 찍는다)."""
+    """모듈의 항목별 로그는 -v 없이는 찍지 않는다 (단계마다 한 줄만 찍는다)."""
 
 
 def _stage(label: str, result: str = "") -> None:
@@ -134,6 +134,7 @@ def _failed(label: str, what: str, error: Exception, failed: list[str]) -> None:
 
 
 def _scan(args: argparse.Namespace, workdir: Path) -> int:
+    detail = _log if getattr(args, "verbose", False) else _quiet     # -v: 모듈의 항목별 로그(건너뛴 것, 버린 값, 빈 필드)도 찍는다
     docs: list[dict] = []
     failed: list[str] = []
     try:
@@ -178,16 +179,16 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
     scan_dir = scan_dir or args.target                        # 이미지를 못 풀었으면 볼 디렉터리가 없다
 
     datasets: dict = {}
-    merged = discover_datasets(merged, scan_dir, log=_quiet, report=datasets, data_paths=args.data)
+    merged = discover_datasets(merged, scan_dir, log=detail, report=datasets, data_paths=args.data)
     total = _count(sum(1 for c in merged["components"] if is_dataset(c)), "dataset")
     _stage("Generating D-BOM", total + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
     for path in datasets.get("empty_data_paths") or []:
         _log(f"[aibom-cli] warning: no data files in {path}")
 
-    merged = discover_models(merged, scan_dir, log=_quiet)
+    merged = discover_models(merged, scan_dir, log=detail)
 
     enriched: dict = {}
-    merged = enrich(merged, workdir, log=_quiet, report=enriched)
+    merged = enrich(merged, workdir, log=detail, report=enriched)
     if enriched["skipped"]:
         result = f"skipped: {enriched['skipped']}"
     elif enriched["failed"]:
@@ -198,8 +199,9 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
     for hf_id, reason in enriched["errors"].items():             # 보강은 선택 단계라 종료 코드는 그대로 두고 이유만 알린다
         _log(f"[aibom-cli]   {hf_id}: {reason}")
 
-    merged = regulate(merged, form=FORM_BY_SPEC[args.spec], log=_quiet)
-    _stage("Adding regulation fields", "done")
+    regulation: dict = {}
+    merged = regulate(merged, form=FORM_BY_SPEC[args.spec], log=detail, report=regulation)
+    _stage("Adding regulation fields", _coverage_text(regulation))
 
     _emit(merged, args.output)
     # 위 줄들을 더하지 않고 다 만든 BOM 을 다시 센다 (병합·별칭 합치기로 줄어든 만큼이 여기 반영된다)
@@ -209,6 +211,14 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
         _log(f"[aibom-cli] error: {' and '.join(failed)} failed, so the BOM is incomplete")
         return EXIT_TOOL
     return 0
+
+
+def _coverage_text(report: dict) -> str:
+    """"13 of 17 filled (models 8/8, datasets 5/9)" — 채울 수 있는 규제 필드 가운데 채운 수. 종류별 괄호는 분모가 있는 것만."""
+    if not report.get("total"):
+        return "nothing to fill"
+    parts = [f"{kind} {report[kind]['filled']}/{report[kind]['total']}" for kind in ("models", "datasets") if report[kind]["total"]]
+    return f"{report['filled']} of {report['total']} filled ({', '.join(parts)})"
 
 
 def scan_root(target: str, image_name: str | None = None) -> tuple[str, str]:
@@ -264,6 +274,7 @@ Options:
                                 1.7   CycloneDX 1.7 의 properties 로 넣음
                                 v0.6  AI-BOM v0.6 (CycloneDX) 의 필드로 넣음
                               [validate] 검증할 스키마 (required)
+  -v, --verbose               [scan] 항목별 상세 로그
   --version                   버전을 보여 준다
   -h, --help                  도움말을 보여 준다
 
@@ -306,6 +317,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("-o", "--output", metavar="<path>")
     s.add_argument("--data", action="append", default=[], metavar="<path>")
     s.add_argument("--spec", choices=tuple(FORM_BY_SPEC), default="1.7", metavar="<1.7|v0.6>")
+    s.add_argument("-v", "--verbose", action="store_true")
     s.set_defaults(func=cmd_scan)
 
     v = sub.add_parser("validate", prog="aibom-cli validate", usage="aibom-cli validate <bom> --spec <1.7|v0.6>",

@@ -64,6 +64,7 @@ Options:
                                 1.7   CycloneDX 1.7 의 properties 로 넣음
                                 v0.6  AI-BOM v0.6 (CycloneDX) 의 필드로 넣음
                               [validate] 검증할 스키마 (required)
+  -v, --verbose               [scan] 항목별 상세 로그
   --version                   버전을 보여 준다
   -h, --help                  도움말을 보여 준다
 
@@ -94,6 +95,8 @@ Exit codes:
 - 규제 필드 2개 추가, 1개 보완
   - D-BOM: intendedUse, collectionProcess 추가, provenance 에 상위 데이터셋 보완
 - M-BOM: 허브 모델의 성능 지표(performanceMetrics) 추가
+- 스캔 로그에 규제 필드 완성도 표시 (채울 수 있는 필드 가운데 채운 수)
+- scan 의 -v 옵션: 건너뛴 파일, 버린 값, 비어 있는 규제 필드와 그 이유를 항목마다 표시
 
 변경
 
@@ -118,7 +121,6 @@ Exit codes:
 ## 추가 예정
 
 - SPDX 3.0.1 출력
-- 규제 완성도: 규제별로 요구 필드 중 채워진 것과 빈 것 표시
 
 ## 출처
 
