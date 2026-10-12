@@ -15,7 +15,7 @@
 
 ## M-BOM
 
-허브 모델은 두 단계로 잡는다. cdxgen 이 코드에서 이름을 잡고, OWASP aibom-generator 가 그 이름으로 Hub API 와 모델 카드·설정 파일을 읽어 채운다.
+허브 모델은 두 단계로 수집한다. cdxgen 이 코드에서 이름을 찾고, OWASP aibom-generator 가 그 이름으로 Hub API 와 모델 카드·설정 파일을 읽어 채운다.
 
 <table markdown>
 <thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
@@ -23,13 +23,13 @@
 <tr markdown><td rowspan="2">cdxgen</td><td>허브 모델</td><td markdown>파이썬·자바스크립트 소스와 노트북의 `from_pretrained("owner/name")`, `pipeline("task", "owner/name")`, `model = "owner/name"` 같은 모델 이름 지정과 huggingface.co 링크</td></tr>
 <tr markdown><td>로컬 모델</td><td markdown>`config.json`, `adapter_config.json`, 모델 카드 README.md 중 하나라도 있는 폴더, `*.gguf` 헤더, Ollama `Modelfile`<br><span class="note">※ 가중치 파일(`.safetensors`, `.bin`, `.pt`)은 보지 않는다</span></td></tr>
 <tr markdown><td>aibom-cli</td><td>로컬 모델</td><td markdown>cdxgen 이 찾은 모델의 `config.json`, `*.gguf` 헤더, `config.json` 과 같은 폴더의 `*.safetensors` 헤더<br><span class="note">※ pickle 형식 가중치(`.bin`, `.pt`, `.pth`, `.ckpt`)는 열면 안에 든 코드가 실행될 수 있어 열지 않는다</span></td></tr>
-<tr markdown><td>OWASP aibom-generator</td><td>허브 모델</td><td markdown>cdxgen 이 찾은 모델의 Hugging Face Hub 저장소: 모델 정보 API, 모델 카드 README.md, `config.json`, `tokenizer_config.json`, LICENSE 파일, gguf·safetensors 헤더</td></tr>
+<tr markdown><td>OWASP aibom-generator</td><td>허브 모델</td><td markdown>cdxgen 이 찾은 모델의 [Hub API](https://huggingface.co/docs/hub/api) 응답(safetensors 헤더 포함)과 모델 카드 README.md, `config.json`, `tokenizer_config.json`, LICENSE 파일, `*.gguf` 헤더</td></tr>
 </tbody>
 </table>
 
 ## D-BOM
 
-허브 데이터셋도 두 단계로 잡는다. cdxgen 과 aibom-cli 가 모델 카드와 코드에서 이름을 잡고, aibom-cli 가 그 이름으로 Hub API 와 datasets-server 를 읽어 채운다.
+허브 데이터셋도 두 단계로 수집한다. cdxgen 과 aibom-cli 가 모델 카드와 코드에서 이름을 찾고, aibom-cli 가 그 이름으로 Hub API 와 datasets-server 를 읽어 채운다.
 
 <table markdown>
 <thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
