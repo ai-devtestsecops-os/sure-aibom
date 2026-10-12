@@ -1,42 +1,50 @@
 # 수집 항목
 
-스캔 대상이 디렉터리든 컨테이너 이미지든 이미지 아카이브든 안을 훑는 규칙은 같다. 이미지와 아카이브는 디렉터리로 풀어서 보고,
-S-BOM 만 syft 가 이미지를 직접 읽는다.
-무엇을 어디서 찾는지를 BOM 별로 적는다.
+각 도구가 스캔 대상 안에서 무엇을 읽는지 BOM 별로 적는다. 컨테이너 이미지와 이미지 아카이브는 디렉터리로 풀어서 보므로 M-BOM 과 D-BOM 은
+스캔 대상이 무엇이든 같은 곳을 읽는다. S-BOM 만 syft 가 이미지를 직접 읽어 디렉터리와 다르다.
 
 ## S-BOM
 
-| 찾는 것 | 누가 | 어디서 |
-|---|---|---|
-| 소프트웨어 패키지 | syft | 패키지 매니페스트(`requirements.txt`, `package-lock.json`, `pyproject.toml` 등)와 설치된 패키지(`site-packages`, `node_modules`, dpkg·apk 데이터베이스 등) |
-| 매니페스트 파일 | syft | 패키지를 찾은 근거 파일을 해시와 함께 `file` 컴포넌트로 남긴다 |
+syft 가 만든다. 설치된 패키지는 어디서든 읽지만 패키지 매니페스트는 디렉터리에서만 읽는다. 이미지에서는 설치된 결과가 사실이고
+매니페스트는 선언일 뿐이라고 보는 syft 의 기본 동작이다.
 
-버전을 고정하지 않은 `requirements.txt` 항목은 기본으로 세지 않는다.
+### 디렉터리
+
+| 도구 | 읽는 곳 |
+|---|---|
+| syft | 패키지 매니페스트: `requirements.txt`, `package-lock.json`, `pyproject.toml` 등 (버전을 `==` 로 고정하지 않은 `requirements.txt` 항목은 세지 않는다) |
+| syft | 설치된 패키지: `site-packages`, `node_modules`, dpkg·apk·rpm 데이터베이스 등 |
+
+### 컨테이너 이미지 · 이미지 아카이브
+
+| 도구 | 읽는 곳 |
+|---|---|
+| syft | 설치된 패키지만: `site-packages`, `node_modules`, dpkg·apk·rpm 데이터베이스 등. 매니페스트는 읽지 않는다 |
 
 ## M-BOM
 
-| 찾는 것 | 누가 | 어디서 |
-|---|---|---|
-| 모델 컴포넌트 | cdxgen | 파이썬 소스와 노트북의 `from_pretrained("owner/name")` 호출, 로컬 모델(`config.json`, `adapter_config.json`, 모델 카드 README.md), `*.gguf`, Ollama `Modelfile`. 가중치 파일(`.safetensors`, `.bin`, `.pt`)만 있는 폴더는 모델로 잡지 않는다 |
-| 하이퍼파라미터 · 파라미터 수 | aibom-cli | cdxgen 이 찾은 모델의 `config.json`, `*.gguf` 헤더, 같은 폴더의 `*.safetensors` 헤더. 가중치는 읽지 않고 pickle 파일(`.bin`, `.pt`, `.pth`, `.ckpt`)은 열지 않는다 |
-| 허브 모델의 모델 카드 | OWASP aibom-generator | 코드가 허브에서 부르는 모델의 카드 정보를 Hugging Face Hub 에서 받는다 |
+| 도구 | 읽는 곳 |
+|---|---|
+| cdxgen | 파이썬 소스와 노트북의 `from_pretrained("owner/name")` 호출 |
+| cdxgen | 로컬 모델: `config.json`, `adapter_config.json`, 모델 카드 README.md 가 있는 폴더, `*.gguf`, Ollama `Modelfile`. 가중치 파일(`.safetensors`, `.bin`, `.pt`)만 있는 폴더는 모델로 보지 않는다 |
+| aibom-cli | cdxgen 이 찾은 로컬 모델의 `config.json`, `*.gguf` 헤더, 같은 폴더의 `*.safetensors` 헤더. 가중치는 읽지 않고 pickle 파일(`.bin`, `.pt`, `.pth`, `.ckpt`)은 열지 않는다 |
+| OWASP aibom-generator | 코드가 허브에서 부르는 모델의 Hugging Face Hub 저장소: 모델 정보 API, 모델 카드 README.md, `config.json`, gguf·safetensors 헤더 |
 
 ## D-BOM
 
-| 찾는 것 | 누가 | 어디서 |
-|---|---|---|
-| 모델 카드의 데이터셋 참조 | cdxgen | 로컬 모델의 README.md 앞머리 `datasets:` |
-| 코드의 데이터셋 참조 | aibom-cli | 파이썬 소스의 `load_dataset("owner/name")` 호출. 첫 인자가 로컬 빌더(`csv`, `json`, `parquet` …)이거나 경로이면 허브 참조가 아니라 넘긴다 |
-| 허브 데이터셋 정보 | aibom-cli | [Hub API](https://huggingface.co/docs/hub/api)에서 정식 id, 커밋, 라이선스, 모달리티, 용도(task_categories), 수집 방식(annotations_creators, language_creators), 상위 데이터셋(source_datasets)을, [datasets-server](https://huggingface.co/docs/dataset-viewer)에서 크기와 열 통계를 받는다. 데이터셋 파일을 내려받지는 않는다 |
-| 로컬 데이터 | aibom-cli | `--data` 로 지정한 경로의 데이터 파일 |
+| 도구 | 읽는 곳 |
+|---|---|
+| cdxgen | 로컬 모델의 README.md 앞머리 `datasets:` |
+| aibom-cli | 파이썬 소스의 `load_dataset("owner/name")` 호출. 첫 인자가 로컬 빌더(`csv`, `json`, `parquet` …)이거나 경로이면 허브 참조가 아니라 넘긴다 |
+| aibom-cli | 허브 데이터셋의 [Hub API](https://huggingface.co/docs/hub/api)와 [datasets-server](https://huggingface.co/docs/dataset-viewer). 데이터셋 파일을 내려받지는 않는다 |
+| aibom-cli | `--data` 로 지정한 로컬 데이터 경로. 호스트 경로라 이미지 안의 데이터는 읽지 않는다 |
 
-로컬 데이터는 확장자로 가르고, 파일 종류에 따라 `data[]` 에 적는 단위가 다르다. 항목에는 종류(`dataset`)와 이름만 적고, 값은 전부
-컴포넌트의 규제 필드(size, modality, statistics)로 모은다. 파일별 크기나 해시 같은 도구 사실은 정의서에 없는 키라 적지 않는다.
+로컬 데이터는 확장자로 가르고, 파일 종류에 따라 `data[]` 에 적는 단위가 다르다.
 
 - 데이터 파일로 치는 확장자: `csv`, `tsv`, `parquet`, `arrow`, `feather`, `npy`, `npz`, `jsonl`, `ndjson`, `json`, `txt`, `png`, `jpg`, `jpeg`, `webp`, `wav`, `mp3`, `flac`. `requirements*.txt`, `README*`, `LICENSE*`, `*config.json`, `dataset_info.json` 같은 문서·설정 이름은 뺀다.
-- 표·레코드 파일(csv, tsv, parquet, arrow, feather, npy, npz, jsonl, ndjson, json, txt)은 파일마다 항목 하나다. 표 형식(csv, tsv, json, jsonl, parquet, arrow, feather)은 열마다 통계를 내며 64 MB 까지만 낸다. `train-00001-of-00004.parquet` 처럼 크기 때문에 나뉜 조각(샤드)은 분할 하나로 합쳐 항목 하나(`train-*.parquet`)로 적고, 통계는 조각을 이어 붙여 낸다.
-- 이미지·오디오 파일(png, jpg, webp, wav, mp3, flac)은 폴더와 형식 단위로 항목 하나다 (`images/cat/*.jpg`). 헤더만 읽어 이미지는 너비와 높이, 오디오는 길이(초)의 분포(min, max, mean, median, std)를 통계로 낸다. 허브의 image·audio 열 통계와 같은 종류이고 이름도 같은 꼴이다(`train:image:width:mean`). 이미지 수십만 장이 항목 수십만 개가 되지 않게 하기 위해서다. `train/cat/`, `train/dog/` 처럼 하위 폴더 둘 이상이 같은 형식의 매체만 들고 있으면 클래스 폴더로 보고 그 폴더(`train/*.jpg`) 하나로 합치며, 폴더 이름을 라벨로 삼아 라벨 분포(n_unique, mode, frequencies)를 통계로 낸다. 형제 분할이 그렇게 합쳐졌으면 클래스가 하나뿐인 분할(`test/cat/`)도 같은 꼴로 합친다.
-- 주석은 데이터 항목이 되지 않는다. `file_name` 열이 있는 `metadata.csv`, `metadata.jsonl`(Hugging Face imagefolder·audiofolder 규칙)은 파일을 가리키는 열을 뺀 나머지 열의 통계만 보태고, `labels/`, `annotations/` 폴더 아래 파일(YOLO, COCO 규칙)은 세지 않는다. 둘 다 크기는 데이터셋 크기에 든다.
+- 표·레코드 파일(csv, tsv, parquet, arrow, feather, npy, npz, jsonl, ndjson, json, txt)은 파일마다 항목 하나다. `train-00001-of-00004.parquet` 처럼 크기 때문에 나뉜 조각(샤드)은 분할 하나로 합쳐 항목 하나(`train-*.parquet`)다. 내용은 표 형식(csv, tsv, json, jsonl, parquet, arrow, feather)만 64 MB 까지 읽는다.
+- 이미지·오디오 파일(png, jpg, webp, wav, mp3, flac)은 폴더와 형식 단위로 항목 하나다 (`images/cat/*.jpg`). 이미지 수십만 장이 항목 수십만 개가 되지 않게 하기 위해서다. 파일은 헤더만 읽는다. `train/cat/`, `train/dog/` 처럼 하위 폴더 둘 이상이 같은 형식의 매체만 들고 있으면 클래스 폴더로 보고 그 폴더(`train/*.jpg`) 하나로 합치며, 형제 분할이 그렇게 합쳐졌으면 클래스가 하나뿐인 분할(`test/cat/`)도 같은 꼴로 합친다.
+- 주석은 데이터 항목이 되지 않는다. `file_name` 열이 있는 `metadata.csv`, `metadata.jsonl`(Hugging Face imagefolder·audiofolder 규칙)은 내용을 읽고, `labels/`, `annotations/` 폴더 아래 파일(YOLO, COCO 규칙)은 열지 않는다. 둘 다 크기는 데이터셋 크기에 든다.
 
 ## 건너뛰는 곳
 
