@@ -25,4 +25,4 @@ AI 시스템의 소프트웨어 패키지(S-BOM), 모델(M-BOM), 데이터셋(D-
 - [syft](https://github.com/anchore/syft), [cdxgen](https://github.com/CycloneDX/cdxgen), [OWASP aibom-generator](https://github.com/GenAI-Security-Project/aibom-generator)
 - [CycloneDX 1.7](https://cyclonedx.org/docs/1.7/json/), [SPDX 3.0.1](https://spdx.github.io/spdx-spec/v3.0.1/)
 - EU AI Act, ISO/IEC 42001, NIST AI RMF
-- [Hugging Face Hub API](https://huggingface.co/docs/hub/api), [datasets-server](https://huggingface.co/docs/dataset-viewer), [ImageFolder](https://huggingface.co/docs/datasets/image_dataset#imagefolder)·[AudioFolder](https://huggingface.co/docs/datasets/audio_dataset#audiofolder), [파일 이름과 분할](https://huggingface.co/docs/hub/datasets-file-names-and-splits)
+- [Hugging Face Hub API](https://huggingface.co/docs/hub/api), [datasets-server](https://huggingface.co/docs/dataset-viewer), [ImageFolder](https://huggingface.co/docs/datasets/image_dataset#imagefolder)·[AudioFolder](https://huggingface.co/docs/datasets/audio_dataset#audiofolder), [File names and splits](https://huggingface.co/docs/hub/datasets-file-names-and-splits)
