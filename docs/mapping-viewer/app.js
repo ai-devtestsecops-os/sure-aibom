@@ -66,7 +66,6 @@ let propsByPath = new Map();            // CycloneDX 경로 -> [properties 키 �
 let siteAlias = new Map();              // 접붙인 자리의 경로(…inputs.maxSize) -> 공용 타입 행(inputOutputMLParameters.maxSize)
 let representativeLis = new Set();      // 경로마다 가장 얕은 자리의 <li> 하나 ("추가 필드만" 필터가 남기는 자리)
 let sourcesBySite = new Map();          // 자리 경로 -> [{tool, kinds}] (aibom-cli 출력에서 그 자리의 값을 채우는 도구)
-let sourcesBelow = new Map();           // 자리 경로 -> 그 아래 자리들을 채우는 도구 집합 (값이 없는 그릇 자리의 상세에 쓴다)
 const addedOnlyEl = document.getElementById("added-only");
 const generatedOnlyEl = document.getElementById("generated-only");
 
@@ -83,15 +82,7 @@ async function init() {
     fetch(SOURCES_URL).then(r => (r.ok ? r.json() : [])).catch(() => []),
   ]);
 
-  for (const r of sourceRows) {
-    sourcesBySite.set(r.site, r.sources);
-    const parts = r.site.split(".");
-    for (let i = 1; i < parts.length; i++) {
-      const above = parts.slice(0, i).join(".");
-      if (!sourcesBelow.has(above)) sourcesBelow.set(above, new Set());
-      for (const s of r.sources) sourcesBelow.get(above).add(s.tool);
-    }
-  }
+  for (const r of sourceRows) sourcesBySite.set(r.site, r.sources);
 
   // 그릇(hyperparameters)에는 그 안의 키 전부가, 칸(hyperparameters.name)에는 제 키 하나가 붙는다
   const addProp = (path, p) => { if (!propsByPath.has(path)) propsByPath.set(path, []); propsByPath.get(path).push(p); };
@@ -851,7 +842,6 @@ function selectCdxRow(row, mapping, sourceDiv, scroll = true, key = row.path, si
     properties: propsFor(sitePath, row.path),
     origins,
     ...requirementsFor(row.path, origins, targets),
-    sources: { exact: sourcesBySite.get(sitePath) || [], below: [...(sourcesBelow.get(sitePath) || [])] },
     from: "cdx",
   });
 
@@ -1028,26 +1018,7 @@ function sortedSources(sources) {
   return [...sources].sort((a, b) => rank(a.tool) - rank(b.tool));
 }
 
-/** 상세의 「aibom-cli 출력」 절. 이 자리를 채우는 도구와 대상 종류, 값이 없는 그릇 자리면 하위 자리를 채우는 도구. */
-function sourceSectionHtml(sources, none) {
-  if (!sources) return "";
-  let body = "";
-  let count = none;
-  if (sources.exact.length) {
-    count = sectionCount(sources.exact.length);
-    body = sortedSources(sources.exact).map(s =>
-      `<div class="source-line"><span class="tool-badge">${escapeHtml(TOOL_LABEL[s.tool] || s.tool)}</span>` +
-      `<span class="source-kinds">${escapeHtml(s.kinds.join(", "))}</span></div>`).join("");
-  } else if (sources.below.length) {
-    const tools = sortedSources(sources.below.map(tool => ({ tool }))).map(s => TOOL_LABEL[s.tool] || s.tool);
-    body = `<div class="source-note">이 자리 자체에는 값이 없고, 하위 필드를 ${escapeHtml(tools.join(", "))} 가 채운다.</div>`;
-  } else {
-    body = `<div class="source-note">aibom-cli 출력에 나오지 않는 필드다.</div>`;
-  }
-  return `<div class="detail-section section-source"><h4>aibom-cli 출력${count}</h4>${body}</div>`;
-}
-
-function renderDetailPanel({ cdxFields, spdxFields, properties, origins, requirements, sources, from }) {
+function renderDetailPanel({ cdxFields, spdxFields, properties, origins, requirements, from }) {
   // 비어 있는 절은 문장 대신 제목 옆의 작은 "없음" 표로. 절 자체는 남긴다 (없다는 것도 정보다)
   const none = `<span class="section-none">없음</span>`;
   const cdxHtml = cdxFields.length ? cdxFields.map(fieldBlockHtml).join("") : "";
@@ -1076,7 +1047,7 @@ function renderDetailPanel({ cdxFields, spdxFields, properties, origins, require
       props.map(propertyBlockHtml).join("") + `</div>`
     : "";
 
-  const html = banner + sourceSectionHtml(sources, none) + `
+  const html = banner + `
     <div class="detail-section section-cdx"><h4>CycloneDX${cdxCount}</h4>${cdxHtml}</div>
     <div class="detail-section section-spdx"><h4>SPDX${spdxCount}</h4>${spdxHtml}</div>
     ${propsHtml}

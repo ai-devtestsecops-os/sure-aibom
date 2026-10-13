@@ -39,10 +39,9 @@
 데이터셋 사실(size, modality, availability, provenance, statistics)은 aibom-internal:dataset:* 프로퍼티로 컴포넌트에 두고,
 form 이 고른 형태의 자리로 옮기며 지운다 — 출력에는 남지 않는다.
 
-관계: 로컬 데이터셋과 코드에서 찾은 HF 데이터셋은 metadata.component(루트)가 dependsOn 한다. README 의 datasets: 에서 온 것은
-cdxgen 이 준 모델 → 데이터셋 엣지를 그대로 둔다. 허브 모델 카드와 로컬 README 의 model-index 에서 온 것은 그 모델이 dependsOn 하고 모델카드
-modelParameters.datasets 에 ref 로 적는다 (루트는 잇지 않는다). 그래서 뒤의 OWASP 보강은 빈 자리만 채우는 규칙대로
-이름뿐인 목록을 넣지 않는다. 모델 카드 조회가 실패한 모델은 그대로 두며, 그때는 OWASP 의 목록이 들어간다.
+관계: 로컬 데이터셋과 코드에서 찾은 HF 데이터셋은 metadata.component(루트)가 dependsOn 한다. 허브·로컬 모델 카드의
+datasets 와 model-index, GGUF 헤더의 general.datasets 에서 온 것은 그 모델이 dependsOn 하고 모델카드
+modelParameters.datasets 에 ref 로 적는다 (루트는 잇지 않는다). 모델 카드 조회가 실패한 허브 모델은 그대로 둔다.
 """
 from __future__ import annotations
 

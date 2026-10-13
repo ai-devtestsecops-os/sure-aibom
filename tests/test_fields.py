@@ -1,6 +1,6 @@
 """fields 픽스처(tests/data/fields, make_fields.py 가 만든다)를 실제 syft·cdxgen 으로 두 번 스캔한다: project/ 디렉터리와,
 rootfs/ 와 project/ 로 만든 이미지 tar (OCI 라벨 포함). 최종 BOM 의 값 하나하나가 어느 도구에서 왔는지 따라가(fieldtrace.py)
-필드 탐색기의 「aibom-cli 출력」 데이터(docs/mapping-viewer/data/aibom_cli_sources.json)와 맞춰 본다. 다르면 탐색기가 실제
+필드 탐색기의 도구 배지 데이터(docs/mapping-viewer/data/aibom_cli_sources.json)와 맞춰 본다. 다르면 탐색기가 실제
 출력과 어긋난 것이다 — AIBOM_UPDATE_SOURCES=1 로 이 테스트를 돌려 파일을 다시 쓰고 바뀐 자리를 확인한다.
 허브 응답과 OWASP 출력은 tests/data/fields/{hf_api,owasp} 의 허구 녹화본으로 바꿔 끼운다. acme/acme-private 는 응답이 없는 비공개
 저장소이고, 허브는 옛 이름 acmecorpus 를 acme/acmecorpus 로 돌려준다."""

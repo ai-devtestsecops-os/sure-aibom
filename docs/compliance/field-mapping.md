@@ -6,8 +6,6 @@ AI-BOM v0.6 의 필드를 CycloneDX 1.7 과 SPDX 3.0.1 트리에서 찾아본다
 
 CycloneDX 트리의 <span class="tool-badge">syft</span> <span class="tool-badge">cdxgen</span> <span class="tool-badge">OWASP</span> <span class="tool-badge">aibom-cli</span>
 배지는 aibom-cli 가 내는 BOM 에서 그 필드의 값을 채우는 도구다. 배지가 없는 필드는 aibom-cli 가 내지 않는다.
-상세의 「aibom-cli 출력」 절에는 도구마다 채우는 대상(패키지, 로컬 모델, 허브 데이터셋 등)이 나오고, 「aibom-cli 가 채우는 필드만」 을 켜면 그 필드만 남는다.
-출처는 모든 필드가 나오도록 꾸민 허구의 프로젝트(저장소의 `tests/data/fields`)를 디렉터리와 이미지로 실제 스캔해 값마다 따라간 결과다.
 
 <div class="mapping-viewer" data-base="../../mapping-viewer/data/">
 <div id="topbar">
