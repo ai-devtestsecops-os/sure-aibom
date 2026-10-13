@@ -93,6 +93,7 @@ Exit codes:
   - 데이터셋 참조 수집 확대
     - 노트북(.ipynb) 코드 셀의 load_dataset
     - 코드에서 참조하는 허브 모델의 학습·평가 데이터셋 (모델 카드의 datasets, model-index)
+    - 로컬 모델 카드의 평가 데이터셋 (model-index)
   - 규제 필드 2개 추가, 1개 보완
     - intendedUse, collectionProcess 추가
     - provenance 에 상위 데이터셋 보완
@@ -113,6 +114,10 @@ Exit codes:
 삭제
 
 - 로컬 데이터 파일별 속성(aibom-cli:file:*)
+
+수정
+
+- 로컬 모델 카드에 owner/name 형식으로 적힌 허브 데이터셋이 조회되지 않고 purl 도 없던 문제
 
 ### 0.1.0
 
