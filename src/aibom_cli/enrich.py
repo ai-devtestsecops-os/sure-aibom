@@ -1,7 +1,8 @@
 """OWASP aibom-generator 결과로 병합 문서의 HF 모델 컴포넌트를 보강한다.
 
 가져오는 것: modelCard.properties[genai:aibom:* / owasp:aibom:* 와 접두어 없는 safetensors_total_parameters],
-             modelCard.considerations, modelCard.quantitativeAnalysis(performanceMetrics), metadata.properties[] 의 완전성 점수.
+             modelCard.considerations, modelCard.quantitativeAnalysis, metadata.properties[] 의 완전성 점수.
+             quantitativeAnalysis 는 지금의 aibom-generator 가 내지 않는다 (만드는 코드만 있고 원본 eval_results 를 채우는 곳이 없다).
 유지하는 것: cdxgen 이 준 component.name / version / purl.
 매칭 키:    purl 의 pkg:huggingface/<ns>/<name> (리비전 제외 — 두 도구가 버전 표기를 달리 한다)
 """
@@ -112,7 +113,7 @@ def _apply(dst: dict, src: dict, src_metadata: dict) -> None:
         dst_p = dst_card.setdefault("modelParameters", {})
         for k, v in src_card["modelParameters"].items():
             dst_p.setdefault(k, v)
-    # quantitativeAnalysis: 모델 카드의 평가 결과(model-index)를 aibom-generator 가 performanceMetrics 로 바꿔 둔 것. 없는 하위 키만
+    # quantitativeAnalysis: 없는 하위 키만. 지금의 aibom-generator 는 이 항목을 내지 않아 실제로는 아무것도 오지 않는다 (머리 설명 참고)
     if src_card.get("quantitativeAnalysis"):
         dst_q = dst_card.setdefault("quantitativeAnalysis", {})
         for k, v in src_card["quantitativeAnalysis"].items():

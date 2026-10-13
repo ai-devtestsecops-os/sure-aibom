@@ -99,8 +99,6 @@ Exit codes:
   - statistics 필드 확대
     - 이미지 너비·높이, 오디오 길이 분포 (지원 포맷: PNG, JPEG, WebP, WAV, FLAC, MP3)
     - 클래스 폴더의 라벨 분포
-- M-BOM
-  - 허브 모델의 성능 지표(performanceMetrics)
 - CLI
   - 스캔 로그에 규제 필드 완성도 표시
   - scan 의 -v 옵션: 건너뛴 파일, 버린 값, 비어 있는 규제 필드와 그 이유를 항목마다 표시
