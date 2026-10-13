@@ -5,6 +5,8 @@
        - cdxgen 이 모델 README 에서 만든 type=data 컴포넌트 (purl 또는 data[0].name "datasets/<id>" 에서 id 를 얻는다)
        - 스캔 대상 디렉터리의 파이썬 소스에서 load_dataset("owner/name") — 첫 위치 인자가 허브 id 모양일 때만.
          load_dataset("csv", data_files=…) 같은 로컬 빌더와 파일 경로는 허브 id 가 아니라 넘긴다.
+       - 코드가 부르는 허브 모델(pkg:huggingface 모델 컴포넌트)의 모델 카드. 모델마다 GET {HF_ENDPOINT}/api/models/<id> 를
+         한 번 불러 응답 cardData 의 datasets(학습)와 model-index[].results[].dataset.type(평가)을 모은다. 허브 id 꼴인 것만.
        네트워크가 닿으면 GET {HF_ENDPOINT}/api/datasets/<id> 로 채우고, 닿지 않으면 이름·purl 만 두고 한 번 알린다.
        규제 필드는 size·modality·availability·provenance·statistics 에 더해 intendedUse(task_categories·task_ids),
        collectionProcess(annotations_creators·language_creators)를 카드 머리말에서 읽고, provenance 에는 source_datasets 의 상위 데이터셋도 넣는다.
@@ -34,7 +36,9 @@
 form 이 고른 형태의 자리로 옮기며 지운다 — 출력에는 남지 않는다.
 
 관계: 로컬 데이터셋과 코드에서 찾은 HF 데이터셋은 metadata.component(루트)가 dependsOn 한다. README 에서 온 것은
-cdxgen 이 준 모델 → 데이터셋 엣지를 그대로 둔다.
+cdxgen 이 준 모델 → 데이터셋 엣지를 그대로 둔다. 허브 모델 카드에서 온 것은 그 모델이 dependsOn 하고 모델카드
+modelParameters.datasets 에 ref 로 적는다 (루트는 잇지 않는다). 그래서 뒤의 OWASP 보강은 빈 자리만 채우는 규칙대로
+이름뿐인 목록을 넣지 않는다. 모델 카드 조회가 실패한 모델은 그대로 두며, 그때는 OWASP 의 목록이 들어간다.
 """
 from __future__ import annotations
 
@@ -54,7 +58,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote
 from urllib.request import Request, urlopen
 
-from .enrich import hf_reachable
+from .enrich import hf_id_of, hf_reachable
 from .merge import fill_missing
 from .form import INTERNAL_PREFIX
 from .validate import SCHEMA_DIR
@@ -130,7 +134,7 @@ STATISTICS_FILE_LIMIT = JSON_PARSE_LIMIT                      # 로컬 파일 �
 
 def discover(merged: dict, target: str, log=print, report: dict | None = None, data_paths: Iterable[str] = ()) -> dict:
     """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다.
-    data_paths 는 로컬 데이터 경로들 (scan --data). report 를 주면 hub_unreachable(허브 데이터셋이 있는데 허브에 닿지
+    data_paths 는 로컬 데이터 경로들 (scan --data). report 를 주면 hub_unreachable(허브에 물을 것이 있는데 허브에 닿지
     않았는지)과 empty_data_paths(데이터 파일이 하나도 없던 경로)를 적는다."""
     components: list[dict] = merged.setdefault("components", [])
     by_hf_id: dict[str, dict] = {}
@@ -154,6 +158,19 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
         known = {o.get("location") for o in occurrences}
         occurrences.extend({"location": loc} for loc in code_hf_ids[hf_id] if loc not in known)
 
+    # 허브에 닿는지는 한 번만 본다. 물을 것(허브 모델의 카드, 허브 데이터셋)이 없으면 보지 않는다.
+    hub_models = [(c, model_id) for c in components if (model_id := hf_id_of(c))]
+    reachable = True
+    if hub_models or by_hf_id:
+        reachable = hf_reachable()
+        if not reachable:
+            n, m = len(by_hf_id), len(hub_models)
+            skipped = [f"{n} dataset{'s keep' if n != 1 else ' keeps'} name and purl only"] if n else []
+            skipped += [f"{m} hub model card{'s' if m != 1 else ''} not read"] if m else []
+            log(f"[dataset] huggingface.co unreachable: {', '.join(skipped)}")
+    if reachable and hub_models:
+        _datasets_from_model_cards(merged, hub_models, by_hf_id, log)
+
     empty: list[str] = []
     for comp in _data_components(data_paths, log, empty):
         components.append(comp)
@@ -161,7 +178,8 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
 
     if new_refs:
         _link_from_root(merged, new_refs)
-    reachable = _fill_from_hub(merged, by_hf_id, log) if by_hf_id else True
+    if reachable and by_hf_id:
+        _fill_from_hub(merged, by_hf_id, log)
     if report is not None:
         report["hub_unreachable"] = not reachable
         report["empty_data_paths"] = empty
@@ -273,6 +291,57 @@ def _notebook_code(text: str) -> str:
         if lines and not lines[-1].endswith("\n"):
             lines.append("\n")
     return "".join(lines)
+
+
+# ── 허브 모델 카드 ────────────────────────────────────────────────────────────
+
+def _datasets_from_model_cards(merged: dict, hub_models: list[tuple[dict, str]], by_hf_id: dict[str, dict], log) -> None:
+    """허브 모델마다 모델 카드의 데이터셋을 데이터셋 컴포넌트로 만든다. 같은 id 의 컴포넌트가 있으면 그것을 쓴다.
+    모델카드 modelParameters.datasets 에 ref 로 적고(같은 데이터셋을 이름만 적은 항목은 ref 로 바꾼다) 모델이 dependsOn 한다.
+    모델 카드를 못 읽었거나 데이터셋이 없는 모델은 손대지 않는다."""
+    components = merged["components"]
+    for model, model_id in hub_models:
+        info = fetch_model_info(model_id, log)
+        ids = model_card_dataset_ids((info or {}).get("cardData"), model_id, log)
+        if not ids:
+            continue
+        refs: list[str] = []
+        for hf_id in ids:
+            comp = by_hf_id.get(hf_id)
+            if comp is None:
+                comp = _new_hf_component(hf_id)
+                components.append(comp)
+                by_hf_id[hf_id] = comp
+            if comp["bom-ref"] not in refs:
+                refs.append(comp["bom-ref"])
+        _depend(merged, model["bom-ref"], refs)
+        params = model.setdefault("modelCard", {}).setdefault("modelParameters", {})
+        kept = [e for e in params.get("datasets") or []
+                if not (isinstance(e, dict) and not e.get("ref") and e.get("name") in ids)]
+        have = {e.get("ref") for e in kept if isinstance(e, dict)}
+        params["datasets"] = kept + [{"ref": r} for r in refs if r not in have]
+
+
+def model_card_dataset_ids(card, model_id: str, log=print) -> list[str]:
+    """모델 카드 YAML 헤더(Hub API 응답의 cardData)의 datasets 와 model-index 결과의 dataset.type. 둘 다 허브 데이터셋 id 를
+    적는 자리다. 순서는 datasets 다음 model-index, 겹치면 한 번. 허브 id 꼴이 아닌 것은 건너뛰고 알린다."""
+    if not isinstance(card, dict):
+        return []
+    names = [v for v in _as_list(card.get("datasets")) if isinstance(v, str)]
+    for entry in _as_list(card.get("model-index")):
+        for result in _as_list(entry.get("results")) if isinstance(entry, dict) else []:
+            dataset = result.get("dataset") if isinstance(result, dict) else None
+            if isinstance(dataset, dict) and isinstance(dataset.get("type"), str):
+                names.append(dataset["type"])
+    ids: list[str] = []
+    for name in (n.strip() for n in names):
+        if not name or name in ids:
+            continue
+        if _looks_like_hub_id(name):
+            ids.append(name)
+        else:
+            log(f"[dataset] {model_id}: model card dataset {name!r} is not a hub id, skipped")
+    return ids
 
 
 def _last_segment(text: str) -> str:
@@ -934,6 +1003,11 @@ def fetch_dataset_info(hf_id: str, log=print) -> dict | None:
     return _get_json(f"{hf_endpoint()}/api/datasets/{quote(hf_id, safe='/')}", hf_id, "Hub API", log)
 
 
+def fetch_model_info(hf_id: str, log=print) -> dict | None:
+    """GET {HF_ENDPOINT}/api/models/<id>. 모델 카드(cardData)의 데이터셋을 읽으려고 부른다. 실패하면 None. 테스트는 이 함수를 바꿔 끼운다."""
+    return _get_json(f"{hf_endpoint()}/api/models/{quote(hf_id, safe='/')}", hf_id, "Hub API (model)", log)
+
+
 def fetch_dataset_size(hf_id: str, log=print) -> dict | None:
     """GET datasets-server /size?dataset=<id>. 바이트 크기와 config·split 목록."""
     return _get_json(f"{datasets_server()}/size?dataset={quote(hf_id, safe='/')}", hf_id, "datasets-server /size", log)
@@ -945,12 +1019,9 @@ def fetch_dataset_statistics(hf_id: str, config: str, split: str, log=print) -> 
     return _get_json(url, hf_id, f"datasets-server /statistics {config}/{split}", log)
 
 
-def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log) -> bool:
+def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log) -> None:
     """허브 응답으로 채우고, 같은 데이터셋을 다른 id 로 부른 컴포넌트는 정식 id 의 컴포넌트 하나로 모은다.
-    허브에 닿지 않으면 아무것도 하지 않고 False."""
-    if not hf_reachable():
-        log(f"[dataset] huggingface.co unreachable, {len(by_hf_id)} datasets keep name and purl only")
-        return False
+    허브에 닿는지는 부르는 쪽(discover)이 먼저 본다."""
     info_by_canonical: dict[str, dict] = {}
     members: dict[str, list[str]] = {}             # 정식 id → 그것을 부른 id 들 (정렬 순서)
     for hf_id in sorted(by_hf_id):
@@ -1263,14 +1334,18 @@ def internal_properties(facts: dict) -> list[dict]:
 def _link_from_root(merged: dict, refs: list[str]) -> None:
     """루트(metadata.component)가 새 데이터셋 컴포넌트에 의존한다. 루트가 없으면 아무것도 하지 않는다."""
     root_ref = ((merged.get("metadata") or {}).get("component") or {}).get("bom-ref")
-    if not root_ref:
-        return
+    if root_ref:
+        _depend(merged, root_ref, refs, first=True)
+
+
+def _depend(merged: dict, ref: str, targets: list[str], first: bool = False) -> None:
+    """ref 가 targets 에 의존한다. 행이 없으면 만든다 (루트 행은 맨 앞에, 나머지는 맨 뒤에)."""
     deps: list[dict] = merged.setdefault("dependencies", [])
-    row = next((d for d in deps if d.get("ref") == root_ref), None)
+    row = next((d for d in deps if d.get("ref") == ref), None)
     if row is None:
-        row = {"ref": root_ref, "dependsOn": []}
-        deps.insert(0, row)
-    row["dependsOn"] = sorted(set(row.get("dependsOn") or []) | set(refs))
+        row = {"ref": ref, "dependsOn": []}
+        deps.insert(0, row) if first else deps.append(row)
+    row["dependsOn"] = sorted(set(row.get("dependsOn") or []) | set(targets))
 
 
 # ── 잡다한 것 ────────────────────────────────────────────────────────────────

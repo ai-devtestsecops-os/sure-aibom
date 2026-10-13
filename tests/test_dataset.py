@@ -53,6 +53,12 @@ def no_datasets_server(monkeypatch):
     monkeypatch.setattr(ds, "fetch_dataset_statistics", lambda hf_id, config, split, log=print: None)
 
 
+@pytest.fixture(autouse=True)
+def no_model_cards(monkeypatch):
+    """허브 모델 카드 조회도 기본으로 실패(None)로 친다. 모델 카드의 데이터셋을 보는 테스트가 다시 끼운다."""
+    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: None)
+
+
 @pytest.fixture
 def online(monkeypatch, imdb):
     """허브에 닿는 것으로 치고, imdb 만 픽스처(허브 정보 · /size · split 별 /statistics)로 답한다. 다른 id 는 None (조회 실패)."""
@@ -663,6 +669,84 @@ def test_alias_whose_lookup_fails_stays_a_separate_component(tmp_path, monkeypat
 
 
 # -- 통계 (datasets-server · 로컬 열) ------------------------------------------------------
+# -- 허브 모델 카드의 데이터셋 ----------------------------------------------------------
+def hub_bert(**extra) -> dict:
+    """코드의 from_pretrained 로 cdxgen 이 만드는 허브 모델. 모델 카드 값은 없다."""
+    return {"bom-ref": BERT_REF, "type": "machine-learning-model", "group": "google-bert", "name": "bert-base-uncased", "purl": BERT_REF, **extra}
+
+
+def model_info(datasets=(), evaluated=()) -> dict:
+    """GET /api/models/<id> 응답 모양. cardData 의 datasets 가 학습, model-index 결과의 dataset 이 평가 데이터셋이다."""
+    card: dict = {"datasets": list(datasets)}
+    if evaluated:
+        card["model-index"] = [{"name": "m", "results": [{"task": {"type": "x"}, "dataset": d} for d in evaluated]}]
+    return {"id": "google-bert/bert-base-uncased", "cardData": card}
+
+
+def test_hub_model_card_datasets_become_components_linked_from_the_model(tmp_path, monkeypatch, online):
+    """코드가 부르는 허브 모델의 카드에 적힌 학습·평가 데이터셋이 데이터셋 컴포넌트가 되고 허브 정보로 채워진다. 같은 id 의 컴포넌트는
+    다시 쓰고, 모델카드에는 ref 로 적고 모델이 dependsOn 한다. 루트에는 잇지 않는다. 허브 id 꼴이 아닌 이름은 건너뛰고 알린다."""
+    calls: list[str] = []
+    info = model_info(["bookcorpus", IMDB], [{"name": "GLUE SST2", "type": "glue"}, {"name": "x", "type": "./eval.csv"}, {"name": "imdb", "type": IMDB}])
+    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: calls.append(hf_id) or copy.deepcopy(info))
+    logs: list[str] = []
+    out = ds.discover(doc_of(hub_bert(), cdxgen_bookcorpus()), str(tmp_path), log=logs.append)
+    glue = "pkg:huggingface/datasets/glue"
+    assert calls == ["google-bert/bert-base-uncased"]
+    assert set(datasets(out)) == {"data:datasets/bookcorpus@", IMDB_REF, glue}            # bookcorpus 는 cdxgen 것을 다시 쓴다
+    bert = next(c for c in out["components"] if c["bom-ref"] == BERT_REF)
+    assert bert["modelCard"]["modelParameters"]["datasets"] == [{"ref": "data:datasets/bookcorpus@"}, {"ref": IMDB_REF}, {"ref": glue}]
+    deps = deps_of(out)
+    assert deps[BERT_REF] == sorted(["data:datasets/bookcorpus@", IMDB_REF, glue])
+    assert not {IMDB_REF, glue} & set(deps[out["metadata"]["component"]["bom-ref"]])     # 코드가 부른 것이 아니라 루트는 잇지 않는다
+    assert internal(datasets(out)[IMDB_REF])["size"] == "133190302"                       # 그 뒤는 허브 데이터셋과 같게 채운다
+    assert any("'./eval.csv' is not a hub id" in m for m in logs)
+    assert refs_in(out) <= {c["bom-ref"] for c in out["components"]} | {out["metadata"]["component"]["bom-ref"]}
+
+
+def test_name_only_entries_become_refs_and_a_model_card_that_cannot_be_read_changes_nothing(tmp_path, monkeypatch, online):
+    """같은 데이터셋을 이름만 적은 항목(aibom-generator 꼴)은 ref 로 바뀌어 한 번만 남고 다른 항목은 그대로다.
+    모델 카드를 못 읽은 모델은 손대지 않는다. 그때는 뒤의 보강이 지금처럼 이름뿐인 목록을 넣는다."""
+    named = hub_bert(modelCard={"modelParameters": {"datasets": [
+        {"type": "dataset", "name": "glue", "contents": {"url": "https://huggingface.co/datasets/glue"}}, {"type": "dataset", "name": "kept"}]}})
+    other = {"bom-ref": "pkg:huggingface/acme/other", "type": "machine-learning-model", "name": "other", "purl": "pkg:huggingface/acme/other",
+             "modelCard": {"modelParameters": {"datasets": [{"type": "dataset", "name": "x"}]}}}
+    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: model_info(["glue"]) if hf_id == "google-bert/bert-base-uncased" else None)
+    doc = doc_of(named, other)
+    before = json.dumps(next(c for c in doc["components"] if c["name"] == "other"))
+    out = ds.discover(doc, str(tmp_path), log=lambda m: None)
+    bert = next(c for c in out["components"] if c["bom-ref"] == BERT_REF)
+    assert bert["modelCard"]["modelParameters"]["datasets"] == [{"type": "dataset", "name": "kept"}, {"ref": "pkg:huggingface/datasets/glue"}]
+    assert json.dumps(next(c for c in out["components"] if c["name"] == "other")) == before
+
+
+def test_offline_reads_no_model_card_and_says_so_once(tmp_path, monkeypatch):
+    """허브에 닿는지는 한 번만 보고, 닿지 않으면 모델 카드도 데이터셋도 묻지 않는다. 알림도 한 줄이다."""
+    checks: list[bool] = []
+    monkeypatch.setattr(ds, "hf_reachable", lambda: checks.append(True) or False)
+    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: pytest.fail("offline 인데 모델 카드를 읽었다"))
+    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: pytest.fail("offline 인데 데이터셋을 조회했다"))
+    logs: list[str] = []
+    report: dict = {}
+    doc = doc_of(hub_bert(), cdxgen_bookcorpus())
+    before = json.dumps(doc)
+    out = ds.discover(doc, str(tmp_path), log=logs.append, report=report)
+    assert json.dumps(out) == before and report["hub_unreachable"] is True and checks == [True]
+    assert logs == ["[dataset] huggingface.co unreachable: 1 dataset keeps name and purl only, 1 hub model card not read"]
+
+
+@pytest.mark.parametrize("card, expected", [
+    (None, []),
+    ({"datasets": "glue"}, ["glue"]),                                                         # 목록이 아니라 문자열 하나여도
+    ({"datasets": ["a/b", " a/b ", "c"], "model-index": [{"results": [{"dataset": {"type": "c"}}, {"dataset": {"name": "no type"}}, "junk"]}, "junk"]},
+     ["a/b", "c"]),                                                                            # 겹치면 한 번, 모양이 다른 항목은 넘긴다
+    ({"model-index": [{"results": [{"dataset": {"name": "GLUE SST2", "type": "glue"}}]}]}, ["glue"]),     # 평가 데이터셋은 name 이 아니라 type 이 id
+    ({"datasets": ["https://example.org/data", "train.csv"]}, []),                            # 허브 id 꼴이 아닌 것
+])
+def test_model_card_dataset_ids(card, expected):
+    assert ds.model_card_dataset_ids(card, "m", log=lambda m: None) == expected
+
+
 def test_statistics_requests_follow_dataset_info_then_size_and_are_capped(monkeypatch):
     info_with_splits = {"id": "a/b", "cardData": {"dataset_info": [{"config_name": "x", "splits": [{"name": "train"}, {"name": "test"}]},
                                                                     {"config_name": "y", "splits": [{"name": "train"}]}]}}

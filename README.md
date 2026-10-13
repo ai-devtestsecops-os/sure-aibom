@@ -97,7 +97,9 @@ Exit codes:
 - M-BOM: 허브 모델의 성능 지표(performanceMetrics) 추가
 - 스캔 로그에 규제 필드 완성도 표시 (채울 수 있는 필드 가운데 채운 수)
 - scan 의 -v 옵션: 건너뛴 파일, 버린 값, 비어 있는 규제 필드와 그 이유를 항목마다 표시
-- D-BOM: 노트북(.ipynb) 코드 셀의 load_dataset 참조 수집
+- D-BOM: 데이터셋 참조 수집 확대
+  - 노트북(.ipynb) 코드 셀의 load_dataset
+  - 코드가 부르는 허브 모델의 학습·평가 데이터셋 (모델 카드의 datasets, model-index)
 
 변경
 

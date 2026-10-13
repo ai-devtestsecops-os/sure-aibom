@@ -3,7 +3,7 @@
 (허브 모델은 bert-base-uncased 하나다). 보강 로직의 세부는 test_enrich 가 본다.
 모델 네 개가 서로 다른 경로로 들어온다: 소스의 from_pretrained (허브 참조, 파일 없음) · 받아 둔 HF 모델 디렉터리 ·
 gguf 파일 하나 · LoRA 어댑터. 규제 필드는 cdxgen 프로퍼티와 우리가 읽은 config.json·gguf·safetensors 헤더에서 온다.
-데이터셋의 허브 조회도 네트워크가 필요해, 닿는 것으로 치고 tests/data/hf_api/ 에 기록해 둔 실제 응답으로 답한다.
+데이터셋과 허브 모델 카드의 조회도 네트워크가 필요해, 닿는 것으로 치고 tests/data/hf_api/ 에 기록해 둔 실제 응답으로 답한다.
 imdb 는 세 엔드포인트가 다 있고, bookcorpus 는 /api/datasets 만 있다 (실제 허브도 /size 는 501, /statistics 는 404).
 기록이 없으면 None 을 돌려준다 — 허브가 답하지 않은 것과 같다."""
 import io
@@ -21,11 +21,13 @@ from aibom_cli.cli import main
 
 FIXTURE = Path(__file__).parent / "data" / "project"
 HF_API = Path(__file__).parent / "data" / "hf_api"
-HUB_REDIRECTS = {"bookcorpus": "bookcorpus/bookcorpus"}      # 허브가 307 로 정식 id 에 돌려보내는 옛 이름
+HUB_REDIRECTS = {"bookcorpus": "bookcorpus/bookcorpus", "wikipedia": "legacy-datasets/wikipedia"}      # 허브가 307 로 정식 id 에 돌려보내는 옛 이름
 IMDB_REF = "pkg:huggingface/datasets/stanfordnlp/imdb"
 LOCAL_REF = "data:local/data@"
 LOCAL_SIZE = 80 + 1644 + 74 + 73 + 71 + 76               # train.csv, audio/x.wav, 세 png, images/metadata.csv (주석도 크기에 든다)
 BOOK_REF = "pkg:huggingface/datasets/bookcorpus/bookcorpus"   # 모델 카드의 bookcorpus 가 정식 id 로 바뀐다
+WIKI_REF = "pkg:huggingface/datasets/legacy-datasets/wikipedia"   # bert 의 허브 모델 카드가 적은 wikipedia 의 정식 id
+BERT_REF = "pkg:huggingface/google-bert/bert-base-uncased"
 OUT = Path(__file__).parents[1] / "out" / "test_scan"      # 스캔 결과를 남겨 둔다. .gitignore 의 out/ 라 올라가지 않는다
 
 
@@ -63,6 +65,7 @@ def offline(monkeypatch):
     monkeypatch.setattr("aibom_cli.enrich.skip_reason", lambda: None)                                     # 보강은 녹화본으로 돌린다
     monkeypatch.setattr("aibom_cli.enrich.run_aibom_generator", recorded_owasp)
     monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: recorded("model", hf_id))
     monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))
     monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: recorded("size", hf_id))
     monkeypatch.setattr(ds, "fetch_dataset_statistics",
@@ -95,7 +98,7 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert by_type["machine-learning-model"] == {"bert-base-uncased", "llama3.2:1b", "llama", "tiny-random-gpt2",
                                                  "tiny-gpt2-lora"}
     #   src/train.py 의 from_pretrained · Modelfile · models/stories260K.gguf · models/tiny-random-gpt2/ · 어댑터
-    assert by_type["data"] == {"bookcorpus", "imdb", "data"}                # 모델 카드 · 코드의 load_dataset · 로컬 data/
+    assert by_type["data"] == {"bookcorpus", "imdb", "data", "wikipedia"}   # 모델 카드 · 코드의 load_dataset · 로컬 data/ · 허브 모델 카드
     assert {s["name"] for s in doc["services"]} == {"ollama-service", "google-bert-service"}
 
     # 스캔 머신 경로가 어디에도 새지 않는다 (파일 컴포넌트 이름, 데이터 파일 경로, evidence)
@@ -103,7 +106,7 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert str(FIXTURE) not in text and str(FIXTURE.resolve()) not in text and "aibom-internal" not in text
 
     datasets = {c["bom-ref"]: c for c in doc["components"] if c["type"] == "data"}
-    assert set(datasets) == {BOOK_REF, IMDB_REF, LOCAL_REF}
+    assert set(datasets) == {BOOK_REF, IMDB_REF, LOCAL_REF, WIKI_REF}
     local = datasets[LOCAL_REF]
     # 표 파일은 파일마다, 매체는 묶어서: audio/x.wav 하나는 그 이름, images/train/{cat,dog}/*.png 는 클래스 폴더라 train 하나로. metadata.csv 는 주석
     assert [d["name"] for d in local["data"]] == ["data/audio/x.wav", "data/images/train/*.png", "data/train.csv"]
@@ -129,10 +132,16 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert props["aibom:dataset:modality:0"] == "text"                          # modality 태그가 없어 task_categories 로
     assert not any(k.startswith("aibom:dataset:statistics") for k in props)
     assert book["data"][0]["contents"]["url"] == "https://huggingface.co/datasets/bookcorpus/bookcorpus"   # cdxgen 의 datasets/datasets/ 가 고쳐진다
-    # 관계: 루트 → 로컬·코드 데이터셋, 모델 → README 데이터셋 (cdxgen 그대로), modelCard 링크도 살아 있다
+    # wikipedia: bert 의 허브 모델 카드(datasets)가 적은 것. 옛 이름이라 허브가 legacy-datasets/wikipedia 로 돌려준다
+    wiki = datasets[WIKI_REF]
+    props = {p["name"]: p["value"] for p in wiki["properties"]}
+    assert (wiki["group"], wiki["name"]) == ("legacy-datasets", "wikipedia") and props["aibom:dataset:availability"] == "direct-download"
+    assert props["aibom:dataset:provenance:0"] == "https://huggingface.co/datasets/legacy-datasets/wikipedia"
+    # 관계: 루트 → 로컬·코드 데이터셋, 모델 → README 데이터셋 (cdxgen 그대로), 허브 모델 → 그 카드의 데이터셋. modelCard 링크도 살아 있다
     deps = {d["ref"]: set(d["dependsOn"]) for d in doc["dependencies"]}
-    assert {LOCAL_REF, IMDB_REF} <= deps["application:/project@"] and BOOK_REF not in deps["application:/project@"]
+    assert {LOCAL_REF, IMDB_REF} <= deps["application:/project@"] and not {BOOK_REF, WIKI_REF} & deps["application:/project@"]
     assert deps["pkg:generic/huggingface/tiny-random-gpt2"] == {BOOK_REF}       # 모델 카드가 적은 데이터셋
+    assert deps[BERT_REF] == {BOOK_REF, WIKI_REF}                                # 허브 모델 카드가 적은 데이터셋
 
     # 받아 둔 HF 모델 디렉터리: config.json 의 하이퍼파라미터 6개 + model.safetensors 헤더의 파라미터 수
     gpt2 = next(c for c in doc["components"] if c["name"] == "tiny-random-gpt2")
@@ -162,6 +171,8 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert bert_card["aibom:model:inputs:0:maxSize"] == recorded["genai:aibom:modelcard:contextLength"]
     assert bert_card["aibom:model:hyperparameters:0:name"] and "aibom:model:technicalRequirements:0" in bert_card
     assert "genai:aibom:trainingDataAvailable" in bert_card and "safetensors_total_parameters" not in bert_card   # 승격한 원본은 지우고 나머지는 남긴다
+    # 모델 카드의 데이터셋은 D-BOM 이 ref 로 먼저 적어서, aibom-generator 의 이름뿐인 목록은 들어오지 않는다
+    assert bert["modelCard"]["modelParameters"]["datasets"] == [{"ref": BOOK_REF}, {"ref": WIKI_REF}]
 
     # adapter_config.json: 베이스 모델 계보만 나온다 (config.json 이 없으니 하이퍼파라미터는 없다)
     adapter = next(c for c in doc["components"] if c["name"] == "tiny-gpt2-lora")
@@ -185,11 +196,11 @@ def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
         "[aibom-cli] Generating S-BOM (syft)", "[aibom-cli] Generating M-BOM (cdxgen)", "[aibom-cli] Generating D-BOM",
         "[aibom-cli] Enriching M-BOM (aibom-generator)", "[aibom-cli] Adding regulation fields"]
     assert lines[1].endswith(" 4 packages, 1 file") and lines[2].endswith(" 5 models, 2 files")   # cdxgen 의 데이터셋 참조는 D-BOM 에서 센다
-    assert lines[3].endswith(" 3 datasets") and lines[4].endswith(" 1 hub model")
-    assert lines[5].endswith(" 28 of 37 filled (models 12/20, datasets 16/17)")      # 모델 5개 × 4, 허브 데이터셋 2개 × 7 + 로컬 1개 × 3
+    assert lines[3].endswith(" 4 datasets") and lines[4].endswith(" 1 hub model")
+    assert lines[5].endswith(" 34 of 44 filled (models 12/20, datasets 22/24)")      # 모델 5개 × 4, 허브 데이터셋 3개 × 7 + 로컬 1개 × 3
     # 마지막 줄은 다 만든 BOM 을 다시 센 것 — 묶음을 더하면 전체와 같다
     total, groups, deps = re.fullmatch(rf"\[aibom-cli\] Wrote {re.escape(str(cdx))} \((\d+) components: (.+); (\d+) dependencies\)", lines[-1]).groups()
-    assert groups == "4 packages, 5 models, 3 datasets, 3 files"
+    assert groups == "4 packages, 5 models, 4 datasets, 3 files"
     assert int(total) == len(doc["components"]) == sum(int(g.split()[0]) for g in groups.split(", "))
     assert int(deps) == len(doc["dependencies"])
     assert main(["validate", str(cdx), "--spec", "v0.6"]) == 0
@@ -309,7 +320,7 @@ def test_an_image_tar_yields_the_models_inside_it(tmp_path):
     assert (doc["metadata"]["component"]["type"], doc["metadata"]["component"]["name"]) == ("container", "aiapp:test")
     assert {c["name"] for c in doc["components"] if c["type"] == "machine-learning-model"} == {
         "bert-base-uncased", "llama3.2:1b", "llama", "tiny-random-gpt2", "tiny-gpt2-lora"}
-    assert {c["bom-ref"] for c in doc["components"] if c["type"] == "data"} == {BOOK_REF, IMDB_REF}      # --data 가 없으니 로컬 데이터는 없다
+    assert {c["bom-ref"] for c in doc["components"] if c["type"] == "data"} == {BOOK_REF, IMDB_REF, WIKI_REF}   # --data 가 없으니 로컬 데이터는 없다
     assert {c["bom-ref"] for c in doc["components"] if c["type"] == "file"} >= {"file:/app/Modelfile", "file:/app/models/stories260K.gguf"}
     gguf = next(c for c in doc["components"] if c["name"] == "llama")
     card = {p["name"]: p["value"] for p in gguf["modelCard"]["properties"]}
@@ -350,7 +361,7 @@ def test_without_data_paths_the_project_has_no_local_dataset(tmp_path):
     """로컬 데이터는 --data 로만 들어온다. 같은 프로젝트를 --data 없이 스캔하면 data/ 는 BOM 에 없다."""
     doc = scan(FIXTURE, tmp_path / "bom.json")
     assert LOCAL_REF not in {c["bom-ref"] for c in doc["components"]}
-    assert {c["name"] for c in doc["components"] if c["type"] == "data"} == {"bookcorpus", "imdb"}
+    assert {c["name"] for c in doc["components"] if c["type"] == "data"} == {"bookcorpus", "imdb", "wikipedia"}
 
 
 def test_a_data_path_without_data_files_is_a_warning(tmp_path, monkeypatch, capsys):

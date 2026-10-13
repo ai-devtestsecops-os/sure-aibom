@@ -106,7 +106,8 @@ def _apply(dst: dict, src: dict, src_metadata: dict) -> None:
         for k, v in src_card["considerations"].items():
             dst_c.setdefault(k, v)
 
-    # modelParameters: 없는 하위 키만 (task, modelArchitecture 는 cdxgen 것 유지)
+    # modelParameters: 없는 하위 키만 (task, modelArchitecture 는 cdxgen 것 유지). datasets 도 마찬가지라, D-BOM 이 허브 모델 카드의
+    # 데이터셋을 ref 로 먼저 적어 둔 모델에는 aibom-generator 의 이름뿐인 목록이 들어오지 않는다
     if src_card.get("modelParameters"):
         dst_p = dst_card.setdefault("modelParameters", {})
         for k, v in src_card["modelParameters"].items():

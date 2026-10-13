@@ -155,6 +155,18 @@ def test_cdxgen_values_are_not_overwritten(monkeypatch, owasp):
     assert out["components"][0]["description"] == "cdxgen 설명"                          # 설명도 먼저 있던 것이 이긴다
 
 
+def test_dataset_refs_written_by_the_d_bom_are_not_replaced_by_the_name_only_list(monkeypatch, owasp):
+    """D-BOM 이 허브 모델 카드의 데이터셋을 ref 로 먼저 적어 두면, 빈 자리만 채우는 규칙에 걸려 aibom-generator 의 이름뿐인 목록은
+    들어오지 않는다. 모델 카드를 못 읽어 자리가 비어 있으면 지금처럼 그 목록이 들어간다."""
+    stub(monkeypatch, owasp)
+    refs = [{"ref": "pkg:huggingface/datasets/bookcorpus/bookcorpus"}]
+    comp = bert_component()
+    comp["modelCard"]["modelParameters"]["datasets"] = copy.deepcopy(refs)
+    assert enrich(doc_of(comp), WORKDIR, log=lambda m: None)["components"][0]["modelCard"]["modelParameters"]["datasets"] == refs
+    plain = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None)["components"][0]
+    assert [e["name"] for e in plain["modelCard"]["modelParameters"]["datasets"]] == ["bookcorpus", "wikipedia"]
+
+
 def test_description_and_considerations_come_from_owasp_when_missing(monkeypatch, owasp):
     src = next(c for c in owasp["components"] if c["type"] == "machine-learning-model")
     stub(monkeypatch, owasp)

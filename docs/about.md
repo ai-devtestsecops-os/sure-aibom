@@ -22,7 +22,7 @@ aibom-cli 는 syft 와 cdxgen 의 결과를 하나로 병합하고, D-BOM 을 �
 - **M-BOM 생성 (cdxgen)**: 코드의 모델 참조(`from_pretrained` 등), 로컬 모델(`config.json`, 모델 카드 README.md, gguf, Modelfile)에서 모델 컴포넌트를 만든다.  
   `cdxgen <target> -t ai --no-install-deps`
 - **병합 (aibom-cli)**: 두 문서를 하나로 합친다. 같은 컴포넌트는 purl 이나 경로로 알아보고 하나로 두며, 루트 컴포넌트 하나 아래로 관계를 잇는다.
-- **D-BOM 생성 · 보강 (aibom-cli)**: 데이터셋 참조는 두 곳에서 온다. cdxgen 이 로컬 모델의 모델 카드에서 이름만 적어 둔 데이터셋 컴포넌트와, 코드의 `load_dataset` 호출이다. 둘 다 [Hub API](https://huggingface.co/docs/hub/api) 와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 에서 받아 채운다. 지정한 로컬 데이터는 파일을 직접 읽어 컴포넌트를 만든다.
+- **D-BOM 생성 · 보강 (aibom-cli)**: 데이터셋 참조는 세 곳에서 온다. cdxgen 이 로컬 모델의 모델 카드에서 이름만 적어 둔 데이터셋 컴포넌트, 코드가 부르는 허브 모델의 모델 카드, 코드의 `load_dataset` 호출이다. 셋 다 [Hub API](https://huggingface.co/docs/hub/api) 와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 에서 받아 채운다. 지정한 로컬 데이터는 파일을 직접 읽어 컴포넌트를 만든다.
 - **M-BOM 보강 (OWASP aibom-generator)**: 허브에서 부른 모델의 카드 정보를 받아 모델 컴포넌트를 채운다.  
   `python -m src.cli <owner/model>`
 - **규제 필드 추가 (aibom-cli)**: EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 필드를 `--spec` 에 따라 properties 또는 AI-BOM v0.6 필드로 넣고, 채울 수 있는 필드 가운데 채운 수를 로그에 적는다. 두 방식은 [규제 준수](compliance/index.md)에 있다.
