@@ -212,14 +212,14 @@ def _hub_url(hf_id: str) -> str:
 # ── 소스 코드 훑기 ────────────────────────────────────────────────────────────
 
 def _scan_sources(root: Path, log) -> dict[str, list[str]]:
-    """대상 디렉터리의 파이썬 소스에서 load_dataset 으로 부른 HF id 를 찾는다. id → 그것을 부른 소스 파일(상대 경로)."""
+    """대상 디렉터리의 파이썬 소스와 노트북에서 load_dataset 으로 부른 HF id 를 찾는다. id → 그것을 부른 소스 파일(상대 경로)."""
     hf_ids: dict[str, list[str]] = {}
     root_resolved = root.resolve()
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = sorted(d for d in dirnames if d not in SKIP_DIRS and not d.startswith("."))
         here = Path(dirpath)
         for filename in sorted(filenames):
-            if not filename.endswith(".py"):
+            if not filename.endswith((".py", ".ipynb")):
                 continue
             path = here / filename
             if not _inside(path, root_resolved):
@@ -240,11 +240,12 @@ def _inside(path: Path, root_resolved: Path) -> bool:
 
 
 def _parse_python(path: Path, log) -> list[str]:
-    """소스 하나에서 load_dataset 으로 부른 HF 데이터셋 id 들. 파싱이 안 되면 건너뛰고 알린다.
+    """소스 하나(.py 또는 .ipynb)에서 load_dataset 으로 부른 HF 데이터셋 id 들. 파싱이 안 되면 건너뛰고 알린다.
     첫 인자가 로컬 빌더(csv, json …)이거나 경로·파일 이름이면 허브 id 가 아니라 넘긴다."""
     try:
-        tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
-    except (SyntaxError, ValueError, OSError) as e:
+        text = path.read_text(encoding="utf-8", errors="replace")
+        tree = ast.parse(_notebook_code(text) if path.suffix == ".ipynb" else text)
+    except (SyntaxError, ValueError, OSError, KeyError, TypeError) as e:
         log(f"[dataset] {path.name}: skipped, cannot parse ({e.__class__.__name__})")
         return []
     ids: list[str] = []
@@ -255,6 +256,23 @@ def _parse_python(path: Path, log) -> list[str]:
         if first and first.lower() not in LOCAL_BUILDERS and _looks_like_hub_id(first) and first not in ids:
             ids.append(first)
     return ids
+
+
+def _notebook_code(text: str) -> str:
+    """노트북(.ipynb)의 코드 셀을 이어 붙인 파이썬 소스. `%magic`·`!shell` 줄은 파이썬이 아니라 뺀다."""
+    cells = json.loads(text)["cells"]
+    lines: list[str] = []
+    for cell in cells:
+        if not isinstance(cell, dict) or cell.get("cell_type") != "code":
+            continue
+        source = cell.get("source") or []
+        for line in (source if isinstance(source, list) else source.splitlines(True)):
+            if not isinstance(line, str):
+                continue
+            lines.append("\n" if line.lstrip().startswith(("%", "!")) else line)
+        if lines and not lines[-1].endswith("\n"):
+            lines.append("\n")
+    return "".join(lines)
 
 
 def _last_segment(text: str) -> str:

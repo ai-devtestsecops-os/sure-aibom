@@ -169,6 +169,22 @@ fh = open("labels.txt")
     assert ds._parse_python(src, log=print) == ["stanfordnlp/imdb", "imdb"]    # 빌더 이름 · 경로 · 다른 호출은 허브 id 가 아니다
 
 
+def test_notebook_code_cells_yield_hub_ids_like_python_source(tmp_path):
+    """노트북도 코드 셀은 파이썬이라 같은 규칙으로 찾는다. 마크다운 셀과 %magic·!shell 줄은 건너뛰고, 깨진 노트북은 건너뛰고 알린다."""
+    nb = {"cells": [
+        {"cell_type": "markdown", "source": ["load_dataset(\"not/code\")"]},
+        {"cell_type": "code", "source": ["%pip install datasets\n", "!ls\n", "from datasets import load_dataset\n"]},
+        {"cell_type": "code", "source": "ds = load_dataset(\"stanfordnlp/imdb\", split=\"train\")\nother = load_dataset(\"csv\", data_files=\"x.csv\")"},
+    ], "metadata": {}, "nbformat": 4, "nbformat_minor": 5}
+    path = write(tmp_path, "explore.ipynb", json.dumps(nb))
+    assert ds._parse_python(path, log=print) == ["stanfordnlp/imdb"]
+    logs: list[str] = []
+    assert ds._parse_python(write(tmp_path, "bad.ipynb", "{not json"), log=logs.append) == []
+    assert any("bad.ipynb" in m and "cannot parse" in m for m in logs)
+    found = ds._scan_sources(tmp_path, log=print)
+    assert found == {"stanfordnlp/imdb": ["explore.ipynb"]}
+
+
 def test_unparsable_python_is_skipped_with_a_log(tmp_path):
     logs: list[str] = []
     assert ds._parse_python(write(tmp_path, "bad.py", "def (:\n"), log=logs.append) == []

@@ -35,7 +35,7 @@
 <thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
 <tbody markdown>
 <tr markdown><td>cdxgen</td><td>허브 데이터셋</td><td markdown>로컬 모델 카드(README.md) YAML 헤더의 `datasets:` 와 `model-index:`(평가 결과)에 적힌 데이터셋, 소스의 huggingface.co/datasets 링크</td></tr>
-<tr markdown><td rowspan="3">aibom-cli</td><td rowspan="2">허브 데이터셋</td><td markdown>파이썬 소스의 `load_dataset("owner/name")` 호출<br><span class="note">※ 첫 인자가 로컬 빌더(`csv`, `json`, `parquet` …)나 파일 경로인 호출은 허브 데이터셋이 아니라서 건너뛴다</span></td></tr>
+<tr markdown><td rowspan="3">aibom-cli</td><td rowspan="2">허브 데이터셋</td><td markdown>파이썬 소스와 노트북의 `load_dataset("owner/name")` 호출<br><span class="note">※ 첫 인자가 로컬 빌더(`csv`, `json`, `parquet` …)나 파일 경로인 호출은 허브 데이터셋이 아니라서 건너뛴다</span></td></tr>
 <tr markdown><td markdown>cdxgen 이 찾은 참조와 위 `load_dataset` 참조의 [Hub API](https://huggingface.co/docs/hub/api)와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 응답<br><span class="note">※ 데이터셋 파일은 내려받지 않는다</span></td></tr>
 <tr markdown><td>로컬 데이터</td><td markdown>`--data` 로 지정한 경로</td></tr>
 </tbody>
