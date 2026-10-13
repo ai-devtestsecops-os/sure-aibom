@@ -89,17 +89,21 @@ Exit codes:
 
 추가
 
-- statistics 필드 확대
-  - 이미지 너비·높이, 오디오 길이 분포 (지원 포맷: PNG, JPEG, WebP, WAV, FLAC, MP3)
-  - 클래스 폴더의 라벨 분포
-- 규제 필드 2개 추가, 1개 보완
-  - D-BOM: intendedUse, collectionProcess 추가, provenance 에 상위 데이터셋 보완
-- M-BOM: 허브 모델의 성능 지표(performanceMetrics) 추가
-- 스캔 로그에 규제 필드 완성도 표시 (채울 수 있는 필드 가운데 채운 수)
-- scan 의 -v 옵션: 건너뛴 파일, 버린 값, 비어 있는 규제 필드와 그 이유를 항목마다 표시
-- D-BOM: 데이터셋 참조 수집 확대
-  - 노트북(.ipynb) 코드 셀의 load_dataset
-  - 코드가 부르는 허브 모델의 학습·평가 데이터셋 (모델 카드의 datasets, model-index)
+- D-BOM
+  - 데이터셋 참조 수집 확대
+    - 노트북(.ipynb) 코드 셀의 load_dataset
+    - 코드에서 참조하는 허브 모델의 학습·평가 데이터셋 (모델 카드의 datasets, model-index)
+  - 규제 필드 2개 추가, 1개 보완
+    - intendedUse, collectionProcess 추가
+    - provenance 에 상위 데이터셋 보완
+  - statistics 필드 확대
+    - 이미지 너비·높이, 오디오 길이 분포 (지원 포맷: PNG, JPEG, WebP, WAV, FLAC, MP3)
+    - 클래스 폴더의 라벨 분포
+- M-BOM
+  - 허브 모델의 성능 지표(performanceMetrics)
+- CLI
+  - 스캔 로그에 규제 필드 완성도 표시
+  - scan 의 -v 옵션: 건너뛴 파일, 버린 값, 비어 있는 규제 필드와 그 이유를 항목마다 표시
 
 변경
 
