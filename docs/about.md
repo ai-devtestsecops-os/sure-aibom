@@ -20,12 +20,12 @@ aibom-cli 는 syft 와 cdxgen 의 결과를 정리해 하나로 병합하고, D-
 ## 단계별 세부 사항
 
 - **S-BOM 생성 (syft)**: 패키지 매니페스트와 설치된 패키지에서 소프트웨어 컴포넌트를 찾는다. 버전을 못 찾은 패키지는 `UNKNOWN` 대신 버전을 비워 둔다.  
-  `SYFT_COMPLIANCE_MISSING_VERSION=keep syft <target> --select-catalogers -ai -o cyclonedx-json`
+  `SYFT_COMPLIANCE_MISSING_VERSION=keep syft <target> --select-catalogers -ai -o cyclonedx-json@1.7`
 - **M-BOM 생성 (cdxgen)**: 코드의 모델 참조(`from_pretrained` 등), 로컬 모델(`config.json`, 모델 카드 README.md, gguf, Modelfile)에서 모델 컴포넌트를 만든다.  
-  `cdxgen <target> -t ai --no-install-deps`
+  `cdxgen <target 절대경로> -t ai --spec-version 1.7 --no-install-deps`
 - **정리 · 병합 (aibom-cli)**: 두 도구 출력의 잘못된 값을 고친 뒤([출력 포맷](guides/output-format.md)의 도구 값 정리) 하나로 합친다. 같은 컴포넌트는 purl 이나 경로로 알아보고 하나로 두며, 루트 컴포넌트 하나 아래로 관계를 잇는다. 이미지의 OCI 라벨은 루트 컴포넌트의 버전·설명·라이선스·소스 저장소·베이스 이미지가 된다.
 - **D-BOM 생성 · 보강 (aibom-cli)**: 데이터셋 참조는 네 곳에서 온다. 로컬 모델의 모델 카드(학습·평가 데이터셋 모두 aibom-cli 가 직접 읽는다), 코드에서 참조하는 허브 모델의 모델 카드, gguf 헤더의 `general.datasets`, 코드의 `load_dataset` 호출과 데이터셋 링크다. 모두 [Hub API](https://huggingface.co/docs/hub/api) 와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 에서 받아 채운다. 지정한 로컬 데이터는 파일을 직접 읽어 컴포넌트를 만든다.
-- **M-BOM 보강 (aibom-cli, OWASP aibom-generator)**: 코드에서 참조하는 허브 모델의 빈 필드를 D-BOM 단계에서 받아 둔 Hub API 모델 응답으로 채운다 (버전, 라이선스, 공급자, 계보, task, 구조, 입출력, 평가 결과, 파라미터 수). OWASP aibom-generator 출력에서는 규제 필드 원본(하이퍼파라미터, 컨텍스트 길이, 파라미터 수, 런타임)만 가져온다.  
+- **M-BOM 보강 (aibom-cli, OWASP aibom-generator)**: 코드에서 참조하는 허브 모델의 빈 필드를 D-BOM 단계에서 받아 둔 Hub API 모델 응답으로 채운다 (버전, 라이선스, 설명, 공급자, 외부 참조(모델 주소, 논문), 계보, task, 구조, 입출력, 평가 결과, 파라미터 수, 컨텍스트 길이). OWASP aibom-generator 출력에서는 규제 필드 원본(하이퍼파라미터, 컨텍스트 길이, 파라미터 수, 런타임)만 가져온다.  
   `python -m src.cli <owner/model>`
 - **규제 필드 추가 (aibom-cli)**: EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 필드를 `--spec` 에 따라 properties 또는 AI-BOM v0.6 필드로 넣고, 채울 수 있는 필드 가운데 채운 수를 로그에 적는다. 두 방식은 [규제 준수](compliance/index.md)에 있다.
 - **검증 (aibom-cli)**: 생성된 AI-BOM 을 CycloneDX 1.7 또는 AI-BOM v0.6 (CycloneDX) 스키마로 검증한다.

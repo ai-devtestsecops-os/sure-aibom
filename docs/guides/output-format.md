@@ -24,8 +24,8 @@ aibom-cli scan ./project -o bom.cdx.json --spec v0.6   # 전용 필드로
 | `application` | 실행 파일(busybox 등), Hugging Face Space | syft, cdxgen |
 | `operating-system` | 이미지의 운영체제 | syft |
 | `file` | 패키지 매니페스트, 모델·설정 파일 | syft, cdxgen |
-| `machine-learning-model` | 모델 | cdxgen, aibom-cli |
-| `data` | 데이터셋 | aibom-cli |
+| `machine-learning-model` | 모델 | cdxgen |
+| `data` | 데이터셋 | cdxgen, aibom-cli |
 
 `services[]` 에는 코드가 SDK 로 부르는 외부 AI 서비스(OpenAI API 등)가 들어간다 (cdxgen).
 필드마다 어느 도구가 값을 채우는지는 [필드 탐색기](../compliance/field-mapping.md)에서 본다.

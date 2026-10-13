@@ -6,8 +6,8 @@ aibom-cli 는 디렉터리와 컨테이너 이미지를 스캔해 AI-BOM(D/M/S-B
 
 | 단계    | 작업                        | 도구                  | 커맨드                                                      |
 | ------- | --------------------------- | --------------------- | ----------------------------------------------------------- |
-| 1. 스캔 | S-BOM 생성                  | syft                  | `SYFT_COMPLIANCE_MISSING_VERSION=keep syft <target> --select-catalogers -ai -o cyclonedx-json` |
-|         | M-BOM · D-BOM 생성         | cdxgen                | `cdxgen <target> -t ai --no-install-deps`                 |
+| 1. 스캔 | S-BOM 생성                  | syft                  | `SYFT_COMPLIANCE_MISSING_VERSION=keep syft <target> --select-catalogers -ai -o cyclonedx-json@1.7` |
+|         | M-BOM · D-BOM 생성         | cdxgen                | `cdxgen <target 절대경로> -t ai --spec-version 1.7 --no-install-deps`                 |
 | 2. 병합 | 하나의 json 파일로 병합     | **aibom-cli**   |                                                             |
 | 3. 보강 | D-BOM 보강                  | **aibom-cli**   | `aibom-cli scan --data <path>`                            |
 |         | M-BOM 보강                  | **aibom-cli** (Hub API), OWASP aibom-generator | `python -m src.cli <owner/model>`                         |

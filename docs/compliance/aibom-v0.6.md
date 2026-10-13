@@ -26,8 +26,8 @@ v0.6 이 정의한 필드 가운데 aibom-cli 가 스캔 결과로 값을 채우
 
 | 대상 | 필드 | 값의 출처 |
 |---|---|---|
-| 모델 | hyperparameters, parameterCount | 로컬 모델은 `config.json`, gguf·safetensors 헤더 (aibom-cli), 허브 모델은 OWASP aibom-generator 가 Hub 에서 읽은 같은 값과 Hub API 의 파라미터 수 (aibom-cli) |
-| 모델 | inputs maxSize, technicalRequirements | cdxgen 이 읽은 gguf·Modelfile 과 코드의 import, 허브 모델은 OWASP aibom-generator 와 Hub API 의 gguf 컨텍스트 길이 (aibom-cli) |
+| 모델 | hyperparameters, parameterCount | 로컬 모델은 `config.json`, gguf·safetensors 헤더 (aibom-cli) 와 gguf 의 파라미터 수 (cdxgen), 허브 모델은 OWASP aibom-generator 가 Hub 에서 읽은 같은 값과 Hub API 의 파라미터 수 (aibom-cli) |
+| 모델 | inputs maxSize, technicalRequirements | 로컬 모델은 cdxgen 이 읽은 gguf·`config.json`·Modelfile·모델 카드, 허브 모델은 OWASP aibom-generator 와 Hub API 의 gguf 컨텍스트 길이 (aibom-cli), 코드의 import (cdxgen) |
 | 데이터셋 | size, modality, availability, provenance, statistics | Hub API 와 datasets-server (허브 데이터셋), 파일 분석 (로컬 데이터) |
 | 데이터셋 | intendedUse, collectionProcess | 허브 데이터셋 카드의 `task_categories`·`task_ids`, `annotations_creators`·`language_creators` (허브 데이터셋만) |
 

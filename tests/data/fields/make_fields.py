@@ -803,17 +803,12 @@ def owasp_outputs() -> dict[str, dict]:
     bert["components"][0]["externalReferences"][2:2] = [
         {"comment": "ArXiv Paper", "type": "documentation", "url": "https://arxiv.org/abs/2601.00001"},
         {"comment": "Training dataset: acme/reviews", "type": "distribution", "url": "https://huggingface.co/datasets/acme/reviews"}]
+    # GGUF 저장소: OWASP 가 첫 GGUF 파일의 헤더를 못 읽은 경우다. 헤더에서 오는 값(하이퍼파라미터 묶음, vocabSize, tokenizerClass,
+    # contextLength, 양자화, model_type)이 모두 없고 modelArchitecture 는 기본값이다. 파일 목록에서 오는 runtimeRequirement·modelFileSize
+    # 는 남는다. 그래서 inputs maxSize 는 aibom-cli 가 Hub API 의 gguf.context_length 로 채운다 (parameterCount 는 gguf.total).
     gguf_card = {
-        "modelParameters": {"task": "text-generation", "modelArchitecture": "llama", "inputs": [{"format": "string"}], "outputs": [{"format": "string"}]},
+        "modelParameters": {"task": "text-generation", "modelArchitecture": "transformer", "inputs": [{"format": "string"}], "outputs": [{"format": "string"}]},
         "properties": [
-            {"name": "genai:aibom:modelcard:hyperparameter", "value": json.dumps({"context_length": 2048, "embedding_length": 256, "block_count": 4,
-                                                                                  "attention_head_count": 4, "attention_head_count_kv": 2,
-                                                                                  "feed_forward_length": 768, "rope_dimension_count": 64})},
-            {"name": "genai:aibom:modelcard:vocabSize", "value": "8"},
-            {"name": "genai:aibom:modelcard:tokenizerClass", "value": "llama"},
-            {"name": "genai:aibom:modelcard:contextLength", "value": "2048"},
-            {"name": "genai:aibom:modelcard:quantizationVersion", "value": "2"},
-            {"name": "genai:aibom:modelcard:quantizationFileType", "value": "1"},
             {"name": "genai:aibom:trainingDataAvailable", "value": "false"},
             {"name": "genai:aibom:trainingDataWarning", "value": "Training data information is missing or not documented. This limits transparency and auditability of the model."},
             {"name": "owasp:aibom:distribution:modelFileSize", "value": "52000000"},
@@ -822,8 +817,7 @@ def owasp_outputs() -> dict[str, dict]:
         ],
     }
     gguf_repo = _owasp_doc("acme/acme-chat-GGUF", SHA["acme/acme-chat-GGUF"],
-                           {"licenses": [{"license": {"id": "MIT"}}], "properties": [{"name": "model_type", "value": "llama"}]},
-                           gguf_card, "job-2026-10-13-00:00:02")
+                           {"licenses": [{"license": {"id": "MIT"}}]}, gguf_card, "job-2026-10-13-00:00:02")
     # 비공개 저장소: 실제 OWASP 는 실패하지 않고 기본값으로 채운 BOM 을 낸다 (task text-generation, modelArchitecture transformer …)
     private = _owasp_doc("acme/acme-private", None, {}, {
         "modelParameters": {"task": "text-generation", "modelArchitecture": "transformer", "inputs": [{"format": "string"}], "outputs": [{"format": "string"}]},

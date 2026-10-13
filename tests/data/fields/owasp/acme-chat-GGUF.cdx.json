@@ -80,16 +80,10 @@
           }
         }
       ],
-      "properties": [
-        {
-          "name": "model_type",
-          "value": "llama"
-        }
-      ],
       "modelCard": {
         "modelParameters": {
           "task": "text-generation",
-          "modelArchitecture": "llama",
+          "modelArchitecture": "transformer",
           "inputs": [
             {
               "format": "string"
@@ -102,30 +96,6 @@
           ]
         },
         "properties": [
-          {
-            "name": "genai:aibom:modelcard:hyperparameter",
-            "value": "{\"context_length\": 2048, \"embedding_length\": 256, \"block_count\": 4, \"attention_head_count\": 4, \"attention_head_count_kv\": 2, \"feed_forward_length\": 768, \"rope_dimension_count\": 64}"
-          },
-          {
-            "name": "genai:aibom:modelcard:vocabSize",
-            "value": "8"
-          },
-          {
-            "name": "genai:aibom:modelcard:tokenizerClass",
-            "value": "llama"
-          },
-          {
-            "name": "genai:aibom:modelcard:contextLength",
-            "value": "2048"
-          },
-          {
-            "name": "genai:aibom:modelcard:quantizationVersion",
-            "value": "2"
-          },
-          {
-            "name": "genai:aibom:modelcard:quantizationFileType",
-            "value": "1"
-          },
           {
             "name": "genai:aibom:trainingDataAvailable",
             "value": "false"
