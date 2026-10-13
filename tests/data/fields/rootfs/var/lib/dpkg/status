@@ -1,0 +1,27 @@
+Package: libfoo1
+Status: install ok installed
+Priority: optional
+Section: libs
+Installed-Size: 120
+Maintainer: Debian Foo Maintainers <foo@debian.org>
+Architecture: amd64
+Multi-Arch: same
+Source: foo (1.2-3)
+Version: 1.2-3+b1
+Depends: libc6 (>= 2.14)
+Description: foo shared library
+ Longer description line for libfoo1.
+Homepage: https://foo.example.org
+
+Package: libc6
+Status: install ok installed
+Priority: optional
+Section: libs
+Installed-Size: 12000
+Maintainer: GNU Libc Maintainers <debian-glibc@lists.debian.org>
+Architecture: amd64
+Source: glibc
+Version: 2.36-9
+Description: GNU C Library: Shared libraries
+Homepage: https://www.gnu.org/software/libc/libc.html
+

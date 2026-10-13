@@ -18,6 +18,11 @@ const MAPPING_URL = BASE + "cdx_spdx_mapping.json";
 const REQ_URL = BASE + "requirement_field_mapping.json";
 const PROPS_URL = BASE + "aibom_v0.6_properties.json";
 const LINKS_URL = BASE + "aibom_v0.6_links.json";        // v0.6 추가 필드의 형식 간 대응 (export_data.py 가 만든다)
+// aibom-cli 출력에서 자리마다 값을 채우는 도구. 허구의 픽스처를 실제로 스캔해 값 하나하나의 출처를 따라간 결과다
+// (tests/test_fields.py 가 만들고 검사한다). 자리 경로는 아래 renderCdxNode 의 sitePath 와 같은 모양이다.
+const SOURCES_URL = BASE + "aibom_cli_sources.json";
+const TOOL_ORDER = ["syft", "cdxgen", "OWASP aibom-generator", "aibom-cli"];
+const TOOL_LABEL = { "syft": "syft", "cdxgen": "cdxgen", "OWASP aibom-generator": "OWASP", "aibom-cli": "aibom-cli" };
 
 const PROFILE_ORDER = ["Core", "Software", "AI", "Dataset", "Security",
   "Expanded Licensing", "Simple Licensing", "Build", "Extension"];
@@ -60,19 +65,33 @@ let currentHighlighted = [];
 let propsByPath = new Map();            // CycloneDX 경로 -> [properties 키 행, ...] (v0.6 추가 필드만)
 let siteAlias = new Map();              // 접붙인 자리의 경로(…inputs.maxSize) -> 공용 타입 행(inputOutputMLParameters.maxSize)
 let representativeLis = new Set();      // 경로마다 가장 얕은 자리의 <li> 하나 ("추가 필드만" 필터가 남기는 자리)
+let sourcesBySite = new Map();          // 자리 경로 -> [{tool, kinds}] (aibom-cli 출력에서 그 자리의 값을 채우는 도구)
+let sourcesBelow = new Map();           // 자리 경로 -> 그 아래 자리들을 채우는 도구 집합 (값이 없는 그릇 자리의 상세에 쓴다)
 const addedOnlyEl = document.getElementById("added-only");
+const generatedOnlyEl = document.getElementById("generated-only");
 
 init();
 
 async function init() {
-  const [cdxRows, spdxRows, baseMapping, reqRows, propRows, linkRows] = await Promise.all([
+  const [cdxRows, spdxRows, baseMapping, reqRows, propRows, linkRows, sourceRows] = await Promise.all([
     fetch(CDX_URL).then(r => r.json()),
     fetch(SPDX_URL).then(r => r.json()),
     fetch(MAPPING_URL).then(r => r.json()),
     fetch(REQ_URL).then(r => r.json()),
     fetch(PROPS_URL).then(r => r.json()),
     fetch(LINKS_URL).then(r => r.json()),
+    fetch(SOURCES_URL).then(r => (r.ok ? r.json() : [])).catch(() => []),
   ]);
+
+  for (const r of sourceRows) {
+    sourcesBySite.set(r.site, r.sources);
+    const parts = r.site.split(".");
+    for (let i = 1; i < parts.length; i++) {
+      const above = parts.slice(0, i).join(".");
+      if (!sourcesBelow.has(above)) sourcesBelow.set(above, new Set());
+      for (const s of r.sources) sourcesBelow.get(above).add(s.tool);
+    }
+  }
 
   // 그릇(hyperparameters)에는 그 안의 키 전부가, 칸(hyperparameters.name)에는 제 키 하나가 붙는다
   const addProp = (path, p) => { if (!propsByPath.has(path)) propsByPath.set(path, []); propsByPath.get(path).push(p); };
@@ -106,6 +125,7 @@ async function init() {
   searchEl.addEventListener("keydown", onSearchKey);
   searchEl.addEventListener("blur", () => setTimeout(hideSuggestions, 150));
   if (addedOnlyEl) addedOnlyEl.addEventListener("change", applyFilter);
+  if (generatedOnlyEl) generatedOnlyEl.addEventListener("change", applyFilter);
   initResizers();
   syncToolbarHeight();
   fitTrees();
@@ -593,12 +613,16 @@ function renderCdxNode(node, depth, ancestors, parentPath) {
   li.className = "collapsed";
   li.dataset.path = row.path;
 
+  // aibom-cli 출력에서 이 자리의 값을 채우는 도구. 갈래 행은 부모와 자리가 같으므로 배지를 달지 않는다
+  const sources = !isBranch ? sourcesBySite.get(sitePath) : null;
   const div = document.createElement("div");
   div.className = "node-row" + (isBranch ? " branch" : "") +
     (!isBranch && !hasMapping ? " no-map" : "") +
     (row.added ? " is-new" : "") +    // v0.6 이 더한 필드. 필터를 켜지 않아도 늘 눈에 띄게
+    (sources ? " is-gen" : "") +      // aibom-cli 가 값을 채우는 자리 ("생성하는 필드만" 필터가 남긴다)
     (!isBranch ? " clickable" : "");
-  div.dataset.searchText = [row.name, row.title, row.path, row.type, row.description, row.description_ko]
+  div.dataset.searchText = [row.name, row.title, row.path, row.type, row.description, row.description_ko,
+    ...(sources || []).map(s => s.tool)]
     .filter(Boolean).join(" ").toLowerCase();
 
   const label = row.name || row.title || row.path;
@@ -608,6 +632,7 @@ function renderCdxNode(node, depth, ancestors, parentPath) {
   const newBadge = row.added
     ? `<span class="new-badge" title="${escapeHtml(origins.join(" · ") || "AI-BOM v0.6 추가 필드")}">v0.6</span>` : "";
   div.innerHTML = `<span class="toggle"></span><span class="label">${escapeHtml(label)}</span>${newBadge}` +
+    (sources ? toolBadgesHtml(sources) : "") +
     (row.type ? `<span class="sub">${escapeHtml(enumInfo ? enumInfo.label : row.type)}</span>` : "") +
     (row.required === "Y" ? `<span class="badge badge-required">required</span>` : "") +
     (isRecursive ? `<span class="sub">↻ recursive</span>` : "") +
@@ -826,6 +851,7 @@ function selectCdxRow(row, mapping, sourceDiv, scroll = true, key = row.path, si
     properties: propsFor(sitePath, row.path),
     origins,
     ...requirementsFor(row.path, origins, targets),
+    sources: { exact: sourcesBySite.get(sitePath) || [], below: [...(sourcesBelow.get(sitePath) || [])] },
     from: "cdx",
   });
 
@@ -991,7 +1017,37 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
 
 // ── 오른쪽 패널 공통 렌더러: 어느 쪽에서 클릭했든 CycloneDX/SPDX/G7 Element 세
 // 칸으로 항상 같은 구조를 보여준다 ───────────────────────────────────────
-function renderDetailPanel({ cdxFields, spdxFields, properties, origins, requirements, from }) {
+/** 트리 행의 도구 배지. 도구 순서는 TOOL_ORDER, 마우스를 올리면 그 도구가 채우는 대상 종류가 나온다. */
+function toolBadgesHtml(sources) {
+  return sortedSources(sources).map(s =>
+    `<span class="tool-badge" title="${escapeHtml(`${s.tool}: ${s.kinds.join(", ")}`)}">${escapeHtml(TOOL_LABEL[s.tool] || s.tool)}</span>`).join("");
+}
+
+function sortedSources(sources) {
+  const rank = t => (TOOL_ORDER.indexOf(t) === -1 ? 99 : TOOL_ORDER.indexOf(t));
+  return [...sources].sort((a, b) => rank(a.tool) - rank(b.tool));
+}
+
+/** 상세의 「aibom-cli 출력」 절. 이 자리를 채우는 도구와 대상 종류, 값이 없는 그릇 자리면 하위 자리를 채우는 도구. */
+function sourceSectionHtml(sources, none) {
+  if (!sources) return "";
+  let body = "";
+  let count = none;
+  if (sources.exact.length) {
+    count = sectionCount(sources.exact.length);
+    body = sortedSources(sources.exact).map(s =>
+      `<div class="source-line"><span class="tool-badge">${escapeHtml(TOOL_LABEL[s.tool] || s.tool)}</span>` +
+      `<span class="source-kinds">${escapeHtml(s.kinds.join(", "))}</span></div>`).join("");
+  } else if (sources.below.length) {
+    const tools = sortedSources(sources.below.map(tool => ({ tool }))).map(s => TOOL_LABEL[s.tool] || s.tool);
+    body = `<div class="source-note">이 자리 자체에는 값이 없고, 하위 필드를 ${escapeHtml(tools.join(", "))} 가 채운다.</div>`;
+  } else {
+    body = `<div class="source-note">aibom-cli 출력에 나오지 않는 필드다.</div>`;
+  }
+  return `<div class="detail-section section-source"><h4>aibom-cli 출력${count}</h4>${body}</div>`;
+}
+
+function renderDetailPanel({ cdxFields, spdxFields, properties, origins, requirements, sources, from }) {
   // 비어 있는 절은 문장 대신 제목 옆의 작은 "없음" 표로. 절 자체는 남긴다 (없다는 것도 정보다)
   const none = `<span class="section-none">없음</span>`;
   const cdxHtml = cdxFields.length ? cdxFields.map(fieldBlockHtml).join("") : "";
@@ -1020,7 +1076,7 @@ function renderDetailPanel({ cdxFields, spdxFields, properties, origins, require
       props.map(propertyBlockHtml).join("") + `</div>`
     : "";
 
-  const html = banner + `
+  const html = banner + sourceSectionHtml(sources, none) + `
     <div class="detail-section section-cdx"><h4>CycloneDX${cdxCount}</h4>${cdxHtml}</div>
     <div class="detail-section section-spdx"><h4>SPDX${spdxCount}</h4>${spdxHtml}</div>
     ${propsHtml}
@@ -1421,7 +1477,8 @@ function buildFilterIndex() {
     const div = li.querySelector(":scope > .node-row");
     const childUl = li.querySelector(":scope > ul.tree-list");
     return { li, div, toggle: div.querySelector(":scope > .toggle"), text: div.dataset.searchText || "",
-             isNew: div.classList.contains("is-new"), rep: !li.dataset.path || representativeLis.has(li),
+             isNew: div.classList.contains("is-new"), isGen: div.classList.contains("is-gen"),
+             rep: !li.dataset.path || representativeLis.has(li),
              children: childUl ? walk(childUl) : [], shown: true };
   });
   filterIndex = [cdxTreeEl, spdxTreeEl].map(t => t.querySelector(":scope > ul.tree-list")).filter(Boolean).map(walk);
@@ -1430,15 +1487,21 @@ function buildFilterIndex() {
 function applyFilter() {
   const query = searchEl.value.trim().toLowerCase();
   const addedOnly = !!(addedOnlyEl && addedOnlyEl.checked);
-  for (const nodes of filterIndex) filterNodes(nodes, query, addedOnly, !!(query || addedOnly));
+  const generatedOnly = !!(generatedOnlyEl && generatedOnlyEl.checked);
+  // "생성하는 필드만" 은 CycloneDX 트리에만 건다 (출처는 aibom-cli 가 내는 CycloneDX 자리에만 있다)
+  filterIndex.forEach((nodes, i) => {
+    const genOnly = generatedOnly && i === 0;
+    filterNodes(nodes, query, addedOnly, genOnly, !!(query || addedOnly || genOnly));
+  });
 }
 
-/** 검색어에 맞는 행과 그 조상만 남긴다. "추가 필드만" 이면 v0.6 추가 필드(대표 자리)와 그 조상만. 필터가 없으면 전부 접어 둔다. */
-function filterNodes(nodes, query, addedOnly, active) {
+/** 검색어에 맞는 행과 그 조상만 남긴다. "추가 필드만" 이면 v0.6 추가 필드(대표 자리)와 그 조상만, "생성하는 필드만" 이면
+    aibom-cli 가 값을 채우는 자리와 그 조상만. 필터가 없으면 전부 접어 둔다. */
+function filterNodes(nodes, query, addedOnly, generatedOnly, active) {
   let any = false;
   for (const n of nodes) {
-    const self = (!query || n.text.includes(query)) && (!addedOnly || (n.isNew && n.rep));
-    const child = n.children.length ? filterNodes(n.children, query, addedOnly, active) : false;
+    const self = (!query || n.text.includes(query)) && (!addedOnly || (n.isNew && n.rep)) && (!generatedOnly || n.isGen);
+    const child = n.children.length ? filterNodes(n.children, query, addedOnly, generatedOnly, active) : false;
     const visible = self || child;
     if (visible !== n.shown) { n.li.style.display = visible ? "" : "none"; n.shown = visible; }
     if (n.children.length) {

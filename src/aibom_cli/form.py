@@ -2,8 +2,9 @@
 값을 찾아내는 일은 dataset.py · model.py · enrich.py 가 하고, 여기서는 어느 자리에 어떤 모양으로 넣을지만 정한다.
 
 모델(type=machine-learning-model): 가져오는 값은 전부 component.properties / component.modelCard.properties 에 있는
-것이다 — 조회·추론·본문 해석은 하지 않는다. hyperparameters 와 parameterCount 는 model.py 가 대상 안의 모델 파일에서
-읽어 둔 aibom-internal:model:* 도 원본으로 쓴다 (도구가 준 값이 먼저이고, 내부 키는 이기든 지든 전부 지운다).
+것이다 — 조회·추론·본문 해석은 하지 않는다. hyperparameters · parameterCount · inputs maxSize 는 model.py 가 대상 안의 모델
+파일에서, enrich.py 가 Hub API 응답에서 읽어 둔 aibom-internal:model:* 도 원본으로 쓴다 (도구가 준 값이 먼저이고, 내부 키는
+이기든 지든 전부 지운다).
 
     v0.6 필드                 typed 형 (modelCard.…)                         properties 형 (modelCard.properties)
     hyperparameters           modelParameters.hyperparameters[]{name,value}  aibom:model:hyperparameters:<i>:name / :value
@@ -25,6 +26,8 @@
 
 승격하면 소비한다: 값이 목표에 쓰인 원본 프로퍼티는 두 목록에서 모두 지운다 — 한 값이 출력에 두 번 나오지 않는다.
 쓰지 않은 프로퍼티는 그대로 둔다. 원본끼리 값이 다르면 우선순위 앞의 것을 쓰고, 진 쪽은 남기고 로그에 적는다.
+남은 도구 프로퍼티(syft:*, cdx:*, genai:*, owasp:* …)는 그 뒤 drop_tool_properties 가 출력 직전에 모두 지운다 — 출력의
+properties 는 aibom:* 뿐이다.
 목표에 이미 값이 있으면 그 값이 이긴다 (두 번 돌려도 결과가 같다 — 두 번째는 원본이 남아 있지 않다).
 
 건드리는 범위는 승격한 값만이다: 목록 필드는 기존 항목 뒤에 덧붙이고(이름 없는 항목도 그대로 남긴다), 스칼라 필드는
@@ -43,6 +46,7 @@ from typing import Iterable
 FORMS = ("properties", "typed")
 MODEL_TYPE = "machine-learning-model"
 DATA_TYPE = "data"
+OUTPUT_PREFIX = "aibom:"                                          # 출력에 남는 properties (정의서의 키)
 PREFIX = "aibom:model:"
 DATASET_PREFIX = "aibom:dataset:"
 INTERNAL_PREFIX = "aibom-internal:dataset:"                       # dataset.py 가 두는 원본 키 (정의서 키에서 접두어만 다르다)
@@ -92,6 +96,37 @@ def apply(doc: dict, form: str = "properties", log=print, report: dict | None = 
             _apply_dataset(comp, form, log)
     if report is not None:
         report.update(_coverage_report(doc, form, log))
+    return doc
+
+
+def drop_tool_properties(doc: dict) -> dict:
+    """문서 어디에 있든 properties 목록에서 aibom:* 가 아닌 항목을 지운다. 비어 버린 목록과, 그래서 비어 버린 객체(properties 만
+    있던 environmentalConsiderations 등)는 없앤다. 원래 비어 있던 것은 그대로 둔다.
+    도구가 낸 properties 가운데 믿을 만한 것은 앞 단계에서 정규 필드나 규제 필드로 옮겼다 (runners/syft.py · runners/cdxgen.py
+    · merge.py · form). 나머지는 값과 뜻을 aibom-cli 가 관리하지 않으므로 내보내지 않는다."""
+    def walk(node) -> bool:
+        """node 가 이번에 지워서 빈 객체가 되었으면 True."""
+        if isinstance(node, list):
+            for value in node:
+                walk(value)
+            return False
+        if not isinstance(node, dict):
+            return False
+        removed = False
+        props = node.get("properties")
+        if isinstance(props, list):
+            kept = [p for p in props if isinstance(p, dict) and str(p.get("name") or "").startswith(OUTPUT_PREFIX)]
+            if kept:
+                node["properties"] = kept
+            else:
+                del node["properties"]
+                removed = True
+        for key in list(node):
+            if walk(node[key]):
+                del node[key]
+                removed = True
+        return removed and not node
+    walk(doc)
     return doc
 
 
@@ -267,6 +302,7 @@ def _parameter_count(comp: dict, target: "_Target", label: str, log) -> list[dic
 
 def _max_size(comp: dict, target: "_Target", label: str, log) -> list[dict]:
     candidates = [(prop["value"], prop) for source in MAX_SIZE_SOURCES for prop in _sources(comp, source)]
+    candidates += [(p["value"], p) for p in _internal(comp) if p["name"] == INTERNAL_MODEL_PREFIX + "maxSize"]
     existing = target.get_max_size()
     winner, consumed = _resolve(existing, candidates, "inputs[0].maxSize", label, log)
     if consumed and existing is None:

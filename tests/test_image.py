@@ -47,10 +47,14 @@ def _add(t: tarfile.TarFile, name: str, data: bytes) -> None:
     t.addfile(ti, io.BytesIO(data))
 
 
-def docker_tar(path: Path, layers: list[bytes], tag: str | None = "img:test", arch: str = "amd64") -> Path:
-    """docker save · crane pull 모양: manifest.json (Config, RepoTags, Layers) + 설정 json + 레이어 tar 들."""
-    config = json.dumps({"architecture": arch, "os": "linux", "rootfs": {"type": "layers",
-                         "diff_ids": ["sha256:" + hashlib.sha256(x).hexdigest() for x in layers]}}).encode()
+def docker_tar(path: Path, layers: list[bytes], tag: str | None = "img:test", arch: str = "amd64",
+               labels: dict[str, str] | None = None) -> Path:
+    """docker save · crane pull 모양: manifest.json (Config, RepoTags, Layers) + 설정 json + 레이어 tar 들. labels 는 설정의 config.Labels."""
+    config = {"architecture": arch, "os": "linux", "rootfs": {"type": "layers",
+              "diff_ids": ["sha256:" + hashlib.sha256(x).hexdigest() for x in layers]}}
+    if labels:
+        config["config"] = {"Labels": labels}
+    config = json.dumps(config).encode()
     with tarfile.open(path, "w") as t:
         names = [f"layer{i}.tar" for i in range(len(layers))]
         _add(t, "manifest.json", json.dumps([{"Config": "config.json", "RepoTags": [tag] if tag else None, "Layers": names}]).encode())

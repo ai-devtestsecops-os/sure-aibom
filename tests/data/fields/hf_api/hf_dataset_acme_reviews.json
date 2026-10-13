@@ -1,0 +1,106 @@
+{
+  "_id": "6650aa00acme0acmereviews",
+  "id": "acme/reviews",
+  "author": "acme",
+  "sha": "c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3c3",
+  "lastModified": "2026-03-01T00:00:00.000Z",
+  "createdAt": "2026-02-01T00:00:00.000Z",
+  "private": false,
+  "disabled": false,
+  "gated": "auto",
+  "downloads": 10,
+  "likes": 0,
+  "tags": [
+    "task_categories:text-classification",
+    "language:en",
+    "language:ko",
+    "license:cc-by-4.0",
+    "size_categories:1K<n<10K",
+    "modality:text",
+    "format:parquet"
+  ],
+  "description": "Acme Reviews: product reviews labelled for sentiment.",
+  "cardData": {
+    "annotations_creators": [
+      "crowdsourced"
+    ],
+    "language_creators": [
+      "found"
+    ],
+    "language": [
+      "en",
+      "ko"
+    ],
+    "license": [
+      "cc-by-4.0"
+    ],
+    "multilinguality": [
+      "multilingual"
+    ],
+    "size_categories": [
+      "1K<n<10K"
+    ],
+    "source_datasets": [
+      "acme/raw-reviews"
+    ],
+    "task_categories": [
+      "text-classification"
+    ],
+    "task_ids": [
+      "sentiment-classification"
+    ],
+    "paperswithcode_id": "acme-reviews",
+    "pretty_name": "Acme Reviews",
+    "dataset_info": {
+      "config_name": "default",
+      "features": [
+        {
+          "name": "text",
+          "dtype": "string"
+        },
+        {
+          "name": "label",
+          "dtype": {
+            "class_label": {
+              "names": {
+                "0": "neg",
+                "1": "pos"
+              }
+            }
+          }
+        }
+      ],
+      "splits": [
+        {
+          "name": "train",
+          "num_bytes": 600000,
+          "num_examples": 4000
+        },
+        {
+          "name": "test",
+          "num_bytes": 150000,
+          "num_examples": 1000
+        }
+      ],
+      "download_size": 500000,
+      "dataset_size": 750000
+    },
+    "configs": [
+      {
+        "config_name": "default",
+        "data_files": [
+          {
+            "split": "train",
+            "path": "data/train-*"
+          },
+          {
+            "split": "test",
+            "path": "data/test-*"
+          }
+        ]
+      }
+    ]
+  },
+  "usedStorage": 1000,
+  "paperswithcode_id": "acme-reviews"
+}

@@ -372,3 +372,24 @@ def test_report_logs_the_missing_fields_of_each_component():
     apply(doc_of(model()), log=logs.append, report={})
     assert logs == ["[form] m: 0/4 regulation fields filled, missing hyperparameters, parameterCount, inputs maxSize, technicalRequirements"]
 
+
+
+# -- 도구 properties 지우기 ----------------------------------------------------------
+def test_drop_tool_properties_keeps_only_aibom_keys_everywhere():
+    from aibom_cli.form import drop_tool_properties
+    doc = {"metadata": {"component": {"name": "r", "properties": [{"name": "syft:image:labels:x", "value": "1"}]}},
+           "components": [{"name": "m", "properties": [{"name": "cdx:ai:kind", "value": "model"}, {"name": "aibom:dataset:size", "value": "3"}],
+                           "licenses": [{"license": {"id": "MIT", "properties": [{"name": "cdx:license:category", "value": "Permissive"}]}}],
+                           "modelCard": {"properties": [{"name": "genai:aibom:trainingDataAvailable", "value": "true"}],
+                                         "considerations": {"useCases": ["x"],
+                                                            "environmentalConsiderations": {"properties": [{"name": "cdx:huggingface:co2EmissionsGrams", "value": "1"}]}}},
+                           "components": [{"name": "nested", "properties": [{"name": "syft:package:type", "value": "python"}]}],
+                           "pedigree": {}, "data": [{"type": "dataset", "name": "d"}]}],
+           "services": [{"name": "s", "properties": [{"name": "cdx:ai:modelId", "value": "x"}]}]}
+    out = drop_tool_properties(doc)
+    assert out == {"metadata": {"component": {"name": "r"}},
+                   "components": [{"name": "m", "properties": [{"name": "aibom:dataset:size", "value": "3"}],
+                                   "licenses": [{"license": {"id": "MIT"}}],
+                                   "modelCard": {"considerations": {"useCases": ["x"]}},          # properties 만 있던 객체는 함께 없어진다
+                                   "components": [{"name": "nested"}], "pedigree": {}, "data": [{"type": "dataset", "name": "d"}]}],   # 원래 빈 것은 둔다
+                   "services": [{"name": "s"}]}

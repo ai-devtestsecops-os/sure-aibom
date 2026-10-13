@@ -1,0 +1,25 @@
+{
+  "_id": "6650aa00acmeacmeeval-set",
+  "id": "acme/eval-set",
+  "author": "acme",
+  "sha": "f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6f6",
+  "lastModified": "2026-03-01T00:00:00.000Z",
+  "createdAt": "2026-02-01T00:00:00.000Z",
+  "private": false,
+  "disabled": false,
+  "gated": false,
+  "downloads": 10,
+  "likes": 0,
+  "tags": [
+    "modality:text"
+  ],
+  "description": "",
+  "cardData": {
+    "license": "apache-2.0",
+    "pretty_name": "Acme Eval Set",
+    "task_categories": [
+      "fill-mask"
+    ]
+  },
+  "usedStorage": 1000
+}

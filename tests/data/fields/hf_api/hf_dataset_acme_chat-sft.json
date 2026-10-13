@@ -1,0 +1,28 @@
+{
+  "_id": "6650aa00acmeacmechat-sft",
+  "id": "acme/chat-sft",
+  "author": "acme",
+  "sha": "b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8b8",
+  "lastModified": "2026-03-01T00:00:00.000Z",
+  "createdAt": "2026-02-01T00:00:00.000Z",
+  "private": false,
+  "disabled": false,
+  "gated": false,
+  "downloads": 10,
+  "likes": 0,
+  "tags": [
+    "modality:text"
+  ],
+  "description": "",
+  "cardData": {
+    "license": "cc-by-sa-4.0",
+    "pretty_name": "Acme Chat SFT",
+    "task_categories": [
+      "text-generation"
+    ],
+    "language_creators": [
+      "machine-generated"
+    ]
+  },
+  "usedStorage": 1000
+}

@@ -6,17 +6,17 @@ aibom-cli 는 디렉터리와 컨테이너 이미지를 스캔해 AI-BOM(D/M/S-B
 
 | 단계    | 작업                        | 도구                  | 커맨드                                                      |
 | ------- | --------------------------- | --------------------- | ----------------------------------------------------------- |
-| 1. 스캔 | S-BOM 생성                  | syft                  | `syft <target> --select-catalogers -ai -o cyclonedx-json` |
+| 1. 스캔 | S-BOM 생성                  | syft                  | `SYFT_COMPLIANCE_MISSING_VERSION=keep syft <target> --select-catalogers -ai -o cyclonedx-json` |
 |         | M-BOM · D-BOM 생성         | cdxgen                | `cdxgen <target> -t ai --no-install-deps`                 |
 | 2. 병합 | 하나의 json 파일로 병합     | **aibom-cli**   |                                                             |
 | 3. 보강 | D-BOM 보강                  | **aibom-cli**   | `aibom-cli scan --data <path>`                            |
-|         | M-BOM 보강                  | OWASP aibom-generator | `python -m src.cli <owner/model>`                         |
+|         | M-BOM 보강                  | **aibom-cli** (Hub API), OWASP aibom-generator | `python -m src.cli <owner/model>`                         |
 |         | 규제 필드 추가              | **aibom-cli**   | `aibom-cli scan --spec 1.7 \| v0.6`                        |
 | 4. 검증 | CycloneDX 1.7 / AI-BOM v0.6 | **aibom-cli**   | `aibom-cli validate --spec 1.7 \| v0.6`                    |
 
 ## 주요 기능
 
-- 오픈소스 도구 활용: S-BOM 은 syft, M-BOM 은 cdxgen, 허브 모델 정보는 OWASP aibom-generator 로 생성하고 aibom-cli 가 하나로 병합
+- 오픈소스 도구 활용: S-BOM 은 syft, M-BOM 은 cdxgen 으로 생성하고 aibom-cli 가 정리해 하나로 병합. 허브 모델은 Hub API 와 OWASP aibom-generator 로 보강
 - D-BOM 생성: 코드와 모델 카드에서 찾은 HuggingFace 데이터셋은 허브 API 로, `--data` 로 지정한 로컬 데이터는 파일을 직접 읽어 데이터셋 컴포넌트 구성
 - 규제 필드 추가: EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 필드를 모델과 데이터셋에 기재
 - 출력과 검증: CycloneDX 1.7 (properties) 또는 AI-BOM v0.6 (필드) 형식으로 출력하고 같은 스키마로 검증
@@ -93,13 +93,19 @@ Exit codes:
   - 데이터셋 참조 수집 확대
     - 노트북(.ipynb) 코드 셀의 load_dataset
     - 코드에서 참조하는 허브 모델의 학습·평가 데이터셋 (모델 카드의 datasets, model-index)
-    - 로컬 모델 카드의 평가 데이터셋 (model-index)
+    - 로컬 모델 카드의 학습·평가 데이터셋
+    - GGUF 헤더의 데이터셋
   - 규제 필드 2개 추가, 1개 보완
     - intendedUse, collectionProcess 추가
     - provenance 에 상위 데이터셋 보완
   - statistics 필드 확대
     - 이미지 너비·높이, 오디오 길이 분포 (지원 포맷: PNG, JPEG, WebP, WAV, FLAC, MP3)
     - 클래스 폴더의 라벨 분포
+- M-BOM
+  - 허브 모델의 버전·라이선스·계보·구조·평가 결과를 Hub API 응답으로 채움
+- S-BOM
+  - 이미지 OCI 라벨을 루트 컴포넌트에 기록
+  - 패키지를 찾은 파일 위치를 evidence 에 기록
 - CLI
   - 스캔 로그에 규제 필드 완성도 표시
   - scan 의 -v 옵션: 건너뛴 파일, 버린 값, 비어 있는 규제 필드와 그 이유를 항목마다 표시
@@ -110,6 +116,9 @@ Exit codes:
   - 이미지·오디오를 파일 단위가 아니라 폴더 단위로 기록
   - 분할 샤드 병합, 클래스 폴더 구조 인식
   - 데이터 파일과 주석 파일 구분 (예: metadata.csv, labels/, annotations/)
+- 출력 properties 를 aibom: 키로 한정 (도구 properties 제외)
+- OWASP aibom-generator 결과는 규제 필드 원본만 사용
+- 서비스는 코드가 SDK 로 부르는 것만 기록
 
 삭제
 
@@ -118,6 +127,9 @@ Exit codes:
 수정
 
 - 로컬 모델 카드에 owner/name 형식으로 적힌 허브 데이터셋이 조회되지 않고 purl 도 없던 문제
+- Modelfile 의 로컬 GGUF 가 가짜 허브 모델로 잡히던 문제
+- 코드의 데이터셋 링크가 중복되고 조회되지 않던 문제
+- 도구 출력의 자리표시자·오류 값 (UNKNOWN 버전, sha256 라이선스, 이중 인코딩 purl 등)
 
 ### 0.1.0
 

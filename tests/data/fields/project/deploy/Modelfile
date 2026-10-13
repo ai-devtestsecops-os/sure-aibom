@@ -1,0 +1,6 @@
+FROM llama3.2:1b
+PARAMETER num_ctx 8192
+LICENSE """
+LLAMA 3.2 COMMUNITY LICENSE AGREEMENT
+Llama 3.2 Version Release Date: September 25, 2024
+"""

@@ -112,3 +112,40 @@ def test_cdxgen_purl_style_dataset_ref_is_linked_to_the_data_component():
     m2 = next(c for c in out2["components"] if c["type"] == "machine-learning-model")
     d2 = next(c for c in out2["components"] if c["type"] == "data")
     assert m2["modelCard"]["modelParameters"]["datasets"][0]["ref"] == d2["bom-ref"]
+
+
+# -- 이미지의 OCI 라벨 → 루트 ---------------------------------------------------------
+OCI = "syft:image:labels:org.opencontainers.image."
+
+
+def syft_image_doc(**labels) -> dict:
+    """syft 가 이미지를 스캔하면 설정의 Labels 를 metadata.properties 에 syft:image:labels:<키> 로 둔다."""
+    return {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": [],
+            "metadata": {"component": {"bom-ref": "x", "type": "container", "name": "img.tar"},
+                         "properties": [{"name": f"{OCI}{k}", "value": v} for k, v in labels.items()]
+                         + [{"name": "syft:image:labels:maintainer", "value": "a@b"}]}}
+
+
+def test_oci_labels_fill_the_container_root():
+    out = merge([syft_image_doc(**{"version": "1.4.0", "description": "Acme app", "vendor": "Acme Corp", "authors": "ML Team <ml@acme.example>",
+                                   "licenses": "Apache-2.0", "source": "https://github.com/acme/app", "revision": "0123abcd",
+                                   "url": "https://acme.example/app", "documentation": "https://acme.example/docs", "title": "app",
+                                   "created": "2026-10-01T00:00:00Z", "base.name": "docker.io/library/debian:12-slim",
+                                   "base.digest": "sha256:" + "d1" * 32})], root=("acme-app:1.4.0", "image"))
+    assert out["metadata"]["component"] == {
+        "type": "container", "name": "acme-app:1.4.0", "bom-ref": "container:/acme-app:1.4.0@",       # bom-ref 는 이름으로만 (라벨과 무관)
+        "version": "1.4.0", "description": "Acme app", "supplier": {"name": "Acme Corp"}, "authors": [{"name": "ML Team <ml@acme.example>"}],
+        "licenses": [{"license": {"id": "Apache-2.0"}}],
+        "externalReferences": [{"type": "vcs", "url": "https://github.com/acme/app", "comment": "revision: 0123abcd"},
+                               {"type": "website", "url": "https://acme.example/app"}, {"type": "documentation", "url": "https://acme.example/docs"}],
+        "pedigree": {"ancestors": [{"type": "container", "name": "docker.io/library/debian:12-slim",
+                                    "hashes": [{"alg": "SHA-256", "content": "d1" * 32}]}]}}
+
+
+def test_oci_license_expressions_and_partial_labels():
+    out = merge([syft_image_doc(licenses="Apache-2.0 OR MIT", **{"base.name": "alpine:3.20", "base.digest": "sha256:short"})], root=("i", "image"))
+    root = out["metadata"]["component"]
+    assert root["licenses"] == [{"expression": "Apache-2.0 OR MIT"}] and root["pedigree"] == {"ancestors": [{"type": "container", "name": "alpine:3.20"}]}
+    assert set(root) == {"type", "name", "bom-ref", "licenses", "pedigree"}
+    plain = merge([syft_image_doc()], root=("proj", "directory"))["metadata"]["component"]
+    assert plain == {"type": "application", "name": "proj", "bom-ref": "application:/proj@"}        # 라벨이 없으면 그대로 (maintainer 는 OCI 키가 아니다)

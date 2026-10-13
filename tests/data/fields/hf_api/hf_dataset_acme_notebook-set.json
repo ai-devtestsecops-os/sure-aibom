@@ -1,0 +1,24 @@
+{
+  "_id": "6650aa00acmenotebook-set",
+  "id": "acme/notebook-set",
+  "author": "acme",
+  "sha": "a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7a7",
+  "lastModified": "2026-03-01T00:00:00.000Z",
+  "createdAt": "2026-02-01T00:00:00.000Z",
+  "private": false,
+  "disabled": false,
+  "gated": false,
+  "downloads": 10,
+  "likes": 0,
+  "tags": [
+    "modality:image"
+  ],
+  "description": "",
+  "cardData": {
+    "license": "cc0-1.0",
+    "task_categories": [
+      "image-classification"
+    ]
+  },
+  "usedStorage": 1000
+}

@@ -1,25 +1,60 @@
-"""OWASP aibom-generator 결과로 병합 문서의 HF 모델 컴포넌트를 보강한다.
+"""허브 모델(코드가 부르는 Hugging Face 모델)을 보강한다. 두 단계다.
 
-가져오는 것: modelCard.properties[genai:aibom:* / owasp:aibom:* 와 접두어 없는 safetensors_total_parameters],
-             modelCard.considerations, modelCard.quantitativeAnalysis, metadata.properties[] 의 완전성 점수.
-             quantitativeAnalysis 는 지금의 aibom-generator 가 내지 않는다 (만드는 코드만 있고 원본 eval_results 를 채우는 곳이 없다).
-유지하는 것: cdxgen 이 준 component.name / version / purl.
-매칭 키:    purl 의 pkg:huggingface/<ns>/<name> (리비전 제외 — 두 도구가 버전 표기를 달리 한다)
+1) Hub API — D-BOM 이 모델 카드의 데이터셋을 읽으려고 이미 받은 GET /api/models/<id> 응답으로 비어 있는 필드만 채운다
+   (추가 호출 없음). 로컬 모델 카드에서 cdxgen 이 읽는 것과 같은 키·같은 규칙이다.
+       version                                     sha (조회 시점의 main 커밋. 허브 데이터셋과 같은 규칙)
+       licenses                                    cardData.license (other 면 license_name · license_link)
+       description                                 cardData.model_description, 없으면 cardData.description
+       supplier.name                               author (저장소 소유 계정)
+       externalReferences                          distribution https://huggingface.co/<id>, documentation arxiv:<번호> 태그의 논문
+       pedigree.ancestors · notes                  cardData.base_model (+ base_model_relation 을 notes 앞에 "Hugging Face relation: …" 로)
+       modelCard.modelParameters.task              pipeline_tag, 없으면 model-index 의 task
+                                .architectureFamily  config.model_type, 없으면 gguf.architecture
+                                .modelArchitecture   config.architectures[0]
+                                .inputs/outputs[].format   task 를 cdxgen 과 같은 표로 바꾼 것, 표에 없으면 widget 예시로
+       modelCard.quantitativeAnalysis.performanceMetrics   model-index 결과의 metrics (cdxgen 과 같은 모양: type, value, slice)
+   규제 필드 원본 (aibom-internal:model:*, form 이 옮기고 지운다): parameterCount ← safetensors.total, 없으면 gguf.total;
+   inputs maxSize ← gguf.context_length.
+2) OWASP aibom-generator — 규제 필드 원본만 가져온다 (OWASP_SOURCES: modelCard.properties 의 하이퍼파라미터 묶음과 개별 키,
+   contextLength, runtimeRequirement, safetensors_total_parameters). 나머지 출력은 버린다: 값이 없을 때 고정값(description
+   "No description available", task text-generation, modelArchitecture transformer)을 채우고, README 를 정규식으로 잘라
+   technicalLimitations·datasets 를 만들며, 허브에 없는 저장소에도 실패하지 않고 그런 BOM 을 낸다. 가져온 원본이 없으면 실패로 센다.
+
+허브 모델: purl 이 pkg:huggingface/<ns>/<name> 인 모델 컴포넌트 가운데 로컬 모델 파일(README.md, config.json, adapter_config.json,
+Modelfile, *.gguf, *.safetensors)에서 찾은 것이 아닌 것. 로컬 폴더는 그 파일들이 근거다 (config 의 _name_or_path 는 베이스 모델
+이름일 수 있어 허브 값이 그 모델의 것이 아닐 수 있다).
+매칭 키: purl 의 pkg:huggingface/<ns>/<name> (리비전 제외 — 두 도구가 버전 표기를 달리 한다)
 """
 from __future__ import annotations
 
 import os
 import re
 import socket
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from urllib.parse import urlparse
 
+from .form import HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON, INTERNAL_MODEL_PREFIX
+from .licenses import card_licenses
 from .runners import run_aibom_generator
 from .runners._proc import RunnerError
 
 _HF_PURL = re.compile(r"^pkg:huggingface/(?P<ns>[^/@]+)/(?P<name>[^/@]+)(?:@[^?#]+)?")
-_KEEP_PREFIXES = ("genai:aibom:", "owasp:aibom:")
-_KEEP_UNPREFIXED = frozenset({"safetensors_total_parameters"})     # form 의 parameterCount 원본 — 접두어 없는 키는 이것만
+_HF_ID = re.compile(r"^[A-Za-z0-9][\w.-]*(?:/[A-Za-z0-9][\w.-]*)?$")
+HUB = "https://huggingface.co"
+LOCAL_MODEL_FILES = frozenset({"readme.md", "config.json", "adapter_config.json", "modelfile"})
+LOCAL_MODEL_SUFFIXES = (".gguf", ".safetensors")
+# OWASP 출력에서 가져오는 규제 필드 원본 (form 이 읽는 키 가운데 OWASP 가 내는 것)
+OWASP_SOURCES = frozenset({HYPERPARAMETER_JSON, *HYPERPARAMETER_BY_PROPERTY, "genai:aibom:modelcard:contextLength",
+                           "owasp:aibom:distribution:runtimeRequirement", "safetensors_total_parameters"})
+# cdxgen lib/parsers/huggingfaceManifest.js 의 HUGGING_FACE_TASK_IO_FORMATS
+TASK_IO_FORMATS = {
+    "automatic-speech-recognition": ("audio", "text"), "conversational": ("text", "text"),
+    "feature-extraction": ("text", "vector"), "fill-mask": ("text", "text"), "image-classification": ("image", "text"),
+    "image-segmentation": ("image", "image"), "image-text-to-text": ("image", "text"), "image-to-image": ("image", "image"),
+    "image-to-text": ("image", "text"), "question-answering": ("text", "text"), "summarization": ("text", "text"),
+    "translation": ("text", "text"), "text-generation": ("text", "text"), "text-to-audio": ("text", "audio"),
+    "text-to-image": ("text", "image"), "text2text-generation": ("text", "text"), "token-classification": ("text", "text"),
+}
 
 
 def hf_id_of(component: dict) -> str | None:
@@ -29,9 +64,23 @@ def hf_id_of(component: dict) -> str | None:
     return f"{m['ns']}/{m['name']}"
 
 
+def hub_model_id(component: dict) -> str | None:
+    """허브 모델이면 그 id (머리 설명). 로컬 모델 파일에서 찾은 모델이면 None."""
+    hf_id = hf_id_of(component)
+    if hf_id is None:
+        return None
+    for occurrence in (component.get("evidence") or {}).get("occurrences") or []:
+        location = occurrence.get("location") if isinstance(occurrence, dict) else None
+        if isinstance(location, str):
+            name = PurePosixPath(location.split("#", 1)[0].replace("\\", "/")).name.lower()
+            if name in LOCAL_MODEL_FILES or name.endswith(LOCAL_MODEL_SUFFIXES):
+                return None
+    return hf_id
+
+
 def hf_reachable(timeout: float = 3.0) -> bool:
     """huggingface.co(또는 HF_ENDPOINT 의 호스트) 443 포트에 TCP 로 닿는지만 본다."""
-    host = urlparse(os.environ.get("HF_ENDPOINT") or "https://huggingface.co").hostname or "huggingface.co"
+    host = urlparse(os.environ.get("HF_ENDPOINT") or HUB).hostname or "huggingface.co"
     try:
         with socket.create_connection((host, 443), timeout=timeout):
             return True
@@ -40,7 +89,7 @@ def hf_reachable(timeout: float = 3.0) -> bool:
 
 
 def skip_reason() -> str | None:
-    """보강을 건너뛰어야 하면 그 이유를, 해도 되면 None 을 돌려준다. 이유는 CLI 요약에 그대로 나가므로 영어다."""
+    """OWASP 보강을 건너뛰어야 하면 그 이유를, 해도 되면 None 을 돌려준다. 이유는 CLI 요약에 그대로 나가므로 영어다."""
     repo = os.environ.get("AIBOM_GENERATOR_DIR")
     if not repo:
         return "AIBOM_GENERATOR_DIR not set"
@@ -53,22 +102,36 @@ def skip_reason() -> str | None:
     return None
 
 
-def enrich(merged: dict, workdir: Path, log=print, report: dict | None = None) -> dict:
-    """report 를 주면 결과를 적는다: models(대상 수) · enriched(성공 수) · failed(실패한 id) · errors(id → 이유 첫 줄)
-    · skipped(건너뛴 이유)."""
+def enrich(merged: dict, workdir: Path, log=print, report: dict | None = None, model_infos: dict | None = None) -> dict:
+    """model_infos 는 D-BOM 이 받아 둔 허브 모델 id → Hub API 응답 (실패면 None). 허브에 닿지 않았으면 None 을 준다.
+    report 를 주면 결과를 적는다: models(허브 모델 수) · hub(Hub API 로 채운 수) · hub_missing(응답이 없던 id) ·
+    hub_skipped(Hub API 를 쓰지 못한 이유) · enriched(OWASP 에서 원본을 가져온 수) · failed(실패한 id) ·
+    errors(id → 이유 첫 줄) · skipped(OWASP 를 건너뛴 이유)."""
     report = {} if report is None else report
-    targets = {hf: c for c in merged.get("components", []) if (hf := hf_id_of(c))}
-    report.update(models=len(targets), enriched=0, failed=[], errors={}, skipped=None)
+    targets = {hf: c for c in merged.get("components", []) if (hf := hub_model_id(c))}
+    report.update(models=len(targets), hub=0, hub_missing=[], hub_skipped=None, enriched=0, failed=[], errors={}, skipped=None)
     if not targets:
         log("[enrich] no hub model components, nothing to enrich")
-        report["skipped"] = "no Hugging Face models"
-        return merged
-    reason = skip_reason()
-    if reason:
-        log(f"[enrich] skipped {len(targets)} hub model{'s' if len(targets) != 1 else ''}: {reason}")
-        report["skipped"] = reason
+        report["skipped"] = report["hub_skipped"] = "no Hugging Face models"
         return merged
 
+    if model_infos is None:
+        report["hub_skipped"] = "huggingface.co unreachable"
+    else:
+        for hf_id, comp in targets.items():
+            info = model_infos.get(hf_id)
+            if isinstance(info, dict):
+                apply_model_info(comp, hf_id, info)
+                report["hub"] += 1
+            else:
+                report["hub_missing"].append(hf_id)
+                log(f"[enrich] {hf_id}: no Hub API model info, fields left as cdxgen wrote them")
+
+    reason = skip_reason()
+    if reason:
+        log(f"[enrich] aibom-generator skipped for {len(targets)} hub model{'s' if len(targets) != 1 else ''}: {reason}")
+        report["skipped"] = reason
+        return merged
     for hf_id, comp in targets.items():
         try:
             owasp = run_aibom_generator(hf_id, workdir)
@@ -78,53 +141,159 @@ def enrich(merged: dict, workdir: Path, log=print, report: dict | None = None) -
             report["errors"][hf_id] = (str(e).splitlines() or ["failed"])[0]
             continue
         src = next((c for c in owasp.get("components", []) if c.get("type") == "machine-learning-model"), None)
-        if not src:
+        taken = _apply(comp, src) if src else 0
+        if taken:
+            report["enriched"] += 1
+        else:
             report["failed"].append(hf_id)
-            report["errors"][hf_id] = "no model component in the aibom-generator output"
-            continue
-        _apply(comp, src, owasp.get("metadata") or {})
-        report["enriched"] += 1
+            report["errors"][hf_id] = ("no regulation values in the aibom-generator output" if src
+                                       else "no model component in the aibom-generator output")
     return merged
 
 
-def _keep_property(name: str) -> bool:
-    return name.startswith(_KEEP_PREFIXES) or name in _KEEP_UNPREFIXED
-
-
-def _apply(dst: dict, src: dict, src_metadata: dict) -> None:
-    dst_card = dst.setdefault("modelCard", {})
-    src_card = src.get("modelCard") or {}
-
-    # properties: genai:aibom:* / owasp:aibom:* 와 safetensors_total_parameters 만 가져온다
-    keep = [p for p in (src_card.get("properties") or []) if _keep_property(p.get("name", ""))]
+def _apply(dst: dict, src: dict) -> int:
+    """OWASP 출력의 modelCard.properties 가운데 규제 필드 원본만 dst 의 modelCard.properties 에 더한다. 더한(또는 이미 있던) 수."""
+    keep = [p for p in ((src.get("modelCard") or {}).get("properties") or [])
+            if isinstance(p, dict) and p.get("name") in OWASP_SOURCES and isinstance(p.get("value"), str)]
     if keep:
-        seen = {(p.get("name"), p.get("value")) for p in dst_card.get("properties", [])}
-        dst_card["properties"] = dst_card.get("properties", []) + [p for p in keep if (p.get("name"), p.get("value")) not in seen]
+        card = dst.setdefault("modelCard", {})
+        seen = {(p.get("name"), p.get("value")) for p in card.get("properties") or []}
+        card["properties"] = (card.get("properties") or []) + [p for p in keep if (p["name"], p["value"]) not in seen]
+    return len(keep)
 
-    # considerations: 없는 하위 키만
-    if src_card.get("considerations"):
-        dst_c = dst_card.setdefault("considerations", {})
-        for k, v in src_card["considerations"].items():
-            dst_c.setdefault(k, v)
 
-    # modelParameters: 없는 하위 키만 (task, modelArchitecture 는 cdxgen 것 유지). datasets 도 마찬가지라, D-BOM 이 허브 모델 카드의
-    # 데이터셋을 ref 로 먼저 적어 둔 모델에는 aibom-generator 의 이름뿐인 목록이 들어오지 않는다
-    if src_card.get("modelParameters"):
-        dst_p = dst_card.setdefault("modelParameters", {})
-        for k, v in src_card["modelParameters"].items():
-            dst_p.setdefault(k, v)
-    # quantitativeAnalysis: 없는 하위 키만. 지금의 aibom-generator 는 이 항목을 내지 않아 실제로는 아무것도 오지 않는다 (머리 설명 참고)
-    if src_card.get("quantitativeAnalysis"):
-        dst_q = dst_card.setdefault("quantitativeAnalysis", {})
-        for k, v in src_card["quantitativeAnalysis"].items():
-            dst_q.setdefault(k, v)
+# ── Hub API 응답 → 필드 ────────────────────────────────────────────────────────
 
-    # 완전성 점수 등 문서 단위 프로퍼티 → 컴포넌트 프로퍼티로 옮기며 접두어를 붙인다
-    score_props = [p for p in (src_metadata.get("properties") or []) if "score" in p.get("name", "").lower()]
-    if score_props:
-        dst.setdefault("properties", []).extend(
-            {"name": f"owasp:aibom:{p['name']}", "value": p.get("value")} for p in score_props
-        )
+def apply_model_info(comp: dict, hf_id: str, info: dict) -> None:
+    """머리 설명 1) 의 표대로 비어 있는 필드만 채운다."""
+    cid = info.get("id") if isinstance(info.get("id"), str) and _HF_ID.match(info["id"].strip("/")) else hf_id
+    hf_id = cid.strip("/")
+    card = info.get("cardData") if isinstance(info.get("cardData"), dict) else {}
+    if not comp.get("version") and isinstance(info.get("sha"), str) and info["sha"]:
+        comp["version"] = info["sha"]
+    if not comp.get("licenses") and (licenses := card_licenses(card)):
+        comp["licenses"] = licenses
+    if not comp.get("description"):
+        text = next((t for t in (card.get("model_description"), card.get("description")) if isinstance(t, str) and t.strip()), None)
+        if text:
+            comp["description"] = " ".join(text.split())
+    if not comp.get("supplier") and isinstance(info.get("author"), str) and info["author"]:
+        comp["supplier"] = {"name": info["author"]}
+    refs = [{"type": "distribution", "url": f"{HUB}/{hf_id}"}]
+    refs += [{"type": "documentation", "url": f"https://arxiv.org/abs/{t[len('arxiv:'):]}"}
+             for t in _as_list(info.get("tags")) if isinstance(t, str) and t.startswith("arxiv:") and t[len("arxiv:"):]]
+    existing = {(r.get("type"), r.get("url")) for r in comp.get("externalReferences") or []}
+    new_refs = [r for r in refs if (r["type"], r["url"]) not in existing]
+    if new_refs:
+        comp["externalReferences"] = (comp.get("externalReferences") or []) + new_refs
+    _pedigree(comp, card)
+    _model_card(comp, info, card)
+    _regulation_facts(comp, info)
 
-    if not dst.get("description") and src.get("description"):
-        dst["description"] = src["description"]
+
+def _pedigree(comp: dict, card: dict) -> None:
+    pedigree = comp.get("pedigree") or {}
+    if pedigree.get("ancestors"):
+        return
+    ancestors = []
+    for base in _as_list(card.get("base_model")):
+        base = base.strip() if isinstance(base, str) else ""
+        if base and _HF_ID.match(base):
+            group, _, name = base.rpartition("/")
+            ancestors.append({"type": "machine-learning-model", **({"group": group} if group else {}), "name": name,
+                              "purl": f"pkg:huggingface/{base}"})
+    if not ancestors:
+        return
+    pedigree["ancestors"] = ancestors
+    relation = card.get("base_model_relation")
+    notes = pedigree.get("notes") if isinstance(pedigree.get("notes"), str) else ""
+    if isinstance(relation, str) and relation.strip() and "Hugging Face relation:" not in notes:
+        pedigree["notes"] = "; ".join(n for n in (f"Hugging Face relation: {relation.strip()}", notes) if n)   # cdxgen 의 로컬 카드와 같은 모양
+    comp["pedigree"] = pedigree
+
+
+def _model_card(comp: dict, info: dict, card: dict) -> None:
+    config = info.get("config") if isinstance(info.get("config"), dict) else {}
+    gguf = info.get("gguf") if isinstance(info.get("gguf"), dict) else {}
+    task = next((t for t in (info.get("pipeline_tag"), card.get("pipeline_tag"), _model_index_task(card)) if isinstance(t, str) and t), None)
+    architectures = config.get("architectures") if isinstance(config.get("architectures"), list) else []
+    values = {
+        "task": task,
+        "architectureFamily": next((v for v in (config.get("model_type"), gguf.get("architecture")) if isinstance(v, str) and v), None),
+        "modelArchitecture": architectures[0] if architectures and isinstance(architectures[0], str) else None,
+    }
+    io = TASK_IO_FORMATS.get(task.lower()) if task else None
+    io = io or _widget_io(card.get("widget") or info.get("widgetData"))
+    have = (comp.get("modelCard") or {}).get("modelParameters") or {}
+    updates = {key: value for key, value in values.items() if value and not have.get(key)}
+    if io and not have.get("inputs") and not have.get("outputs"):
+        updates["inputs"], updates["outputs"] = [{"format": io[0]}], [{"format": io[1]}]
+    if updates:
+        comp.setdefault("modelCard", {}).setdefault("modelParameters", {}).update(updates)
+    metrics = performance_metrics(card.get("model-index") or info.get("model-index"))
+    if metrics and not ((comp.get("modelCard") or {}).get("quantitativeAnalysis") or {}).get("performanceMetrics"):
+        comp.setdefault("modelCard", {}).setdefault("quantitativeAnalysis", {})["performanceMetrics"] = metrics
+
+
+def _model_index_task(card: dict) -> str | None:
+    for entry in _as_list(card.get("model-index")):
+        for result in _as_list(entry.get("results")) if isinstance(entry, dict) else []:
+            task = (result.get("task") or {}).get("type") if isinstance(result, dict) and isinstance(result.get("task"), dict) else None
+            if isinstance(task, str) and task:
+                return task
+    return None
+
+
+def _widget_io(widgets) -> tuple[str, str] | None:
+    """cdxgen inferModelIoParameters 의 widget 규칙: 글(text·messages·sentences) → text/text, 그림(src) → image/(text|image), 표 → structured-data/text."""
+    for widget in _as_list(widgets):
+        if not isinstance(widget, dict):
+            continue
+        if widget.get("messages") or widget.get("text") or widget.get("sentences"):
+            return ("text", "text")
+        if widget.get("src"):
+            return ("image", "text" if (widget.get("output") or {}).get("text") else "image")
+        if widget.get("table") or widget.get("structured_data"):
+            return ("structured-data", "text")
+    return None
+
+
+def performance_metrics(model_index) -> list[dict]:
+    """cdxgen createPerformanceMetrics 와 같은 규칙: metric 마다 {type, value(문자열), slice "데이터셋 이름 / split"}. 값이 없으면 뺀다."""
+    out = []
+    for entry in _as_list(model_index):
+        for result in _as_list(entry.get("results")) if isinstance(entry, dict) else []:
+            if not isinstance(result, dict):
+                continue
+            dataset = result.get("dataset") if isinstance(result.get("dataset"), dict) else {}
+            slice_ = " / ".join(str(x) for x in (dataset.get("name"), dataset.get("split")) if x)
+            for metric in _as_list(result.get("metrics")):
+                if not isinstance(metric, dict) or not (metric.get("type") or metric.get("name")):
+                    continue
+                value = metric.get("value")
+                if value is None or str(value) == "":
+                    continue
+                out.append({"type": str(metric.get("type") or metric.get("name")), "value": str(value), **({"slice": slice_} if slice_ else {})})
+    return out
+
+
+def _regulation_facts(comp: dict, info: dict) -> None:
+    safetensors = info.get("safetensors") if isinstance(info.get("safetensors"), dict) else {}
+    gguf = info.get("gguf") if isinstance(info.get("gguf"), dict) else {}
+    props = []
+    count = next((v for v in (safetensors.get("total"), gguf.get("total")) if isinstance(v, int) and not isinstance(v, bool) and v >= 0), None)
+    if count is not None:
+        props.append({"name": INTERNAL_MODEL_PREFIX + "parameterCount", "value": str(count)})
+    context = gguf.get("context_length")
+    if isinstance(context, int) and not isinstance(context, bool) and context > 0:
+        props.append({"name": INTERNAL_MODEL_PREFIX + "maxSize", "value": str(context)})
+    have = comp.get("properties") or []
+    props = [p for p in props if p not in have]
+    if props:
+        comp["properties"] = have + props
+
+
+def _as_list(value) -> list:
+    if value is None:
+        return []
+    return value if isinstance(value, list) else [value]

@@ -1,0 +1,4 @@
+This is the Debian prepackaged version of the GNU C Library.
+
+It was put together by the GNU Libc Maintainers from the upstream sources.
+Copyright (C) 1991-2023 Free Software Foundation, Inc.

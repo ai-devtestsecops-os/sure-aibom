@@ -1,0 +1,11 @@
+{
+  "base_model_name_or_path": "acme/acme-local",
+  "peft_type": "LORA",
+  "task_type": "SEQ_CLS",
+  "r": 8,
+  "lora_alpha": 16,
+  "target_modules": [
+    "query",
+    "value"
+  ]
+}

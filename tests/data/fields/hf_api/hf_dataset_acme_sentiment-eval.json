@@ -1,0 +1,29 @@
+{
+  "_id": "6650aa00acmentiment-eval",
+  "id": "acme/sentiment-eval",
+  "author": "acme",
+  "sha": "e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5e5",
+  "lastModified": "2026-03-01T00:00:00.000Z",
+  "createdAt": "2026-02-01T00:00:00.000Z",
+  "private": false,
+  "disabled": false,
+  "gated": false,
+  "downloads": 10,
+  "likes": 0,
+  "tags": [
+    "modality:text"
+  ],
+  "description": "",
+  "cardData": {
+    "license": "other",
+    "license_name": "acme-eval-license",
+    "license_link": "https://acme.example/licenses/eval",
+    "task_categories": [
+      "text-classification"
+    ],
+    "annotations_creators": [
+      "expert-generated"
+    ]
+  },
+  "usedStorage": 1000
+}

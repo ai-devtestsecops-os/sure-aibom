@@ -1,0 +1,17 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    loofah (2.22.0)
+    rack (3.0.8)
+    rails-html-sanitizer (1.6.0)
+      loofah (~> 2.21)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  rack
+  rails-html-sanitizer
+
+BUNDLED WITH
+   2.4.10

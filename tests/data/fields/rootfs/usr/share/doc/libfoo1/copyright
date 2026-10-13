@@ -1,0 +1,9 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: foo
+
+Files: *
+Copyright: 2026 Foo Authors
+License: MIT
+
+License: MIT
+ Permission is hereby granted, free of charge...

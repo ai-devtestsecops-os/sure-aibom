@@ -1,0 +1,158 @@
+{
+  "_id": "6650aa00acme0000000bert1",
+  "id": "acme/acme-bert",
+  "modelId": "acme/acme-bert",
+  "author": "acme",
+  "sha": "a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1",
+  "lastModified": "2026-05-01T00:00:00.000Z",
+  "createdAt": "2026-04-01T00:00:00.000Z",
+  "private": false,
+  "disabled": false,
+  "gated": false,
+  "downloads": 120,
+  "likes": 3,
+  "library_name": "transformers",
+  "pipeline_tag": "fill-mask",
+  "mask_token": "[MASK]",
+  "tags": [
+    "transformers",
+    "safetensors",
+    "bert",
+    "fill-mask",
+    "en",
+    "dataset:acme/reviews",
+    "arxiv:2601.00001",
+    "base_model:acme/acme-base",
+    "base_model:finetune:acme/acme-base",
+    "license:apache-2.0",
+    "region:us"
+  ],
+  "cardData": {
+    "license": "apache-2.0",
+    "language": [
+      "en"
+    ],
+    "datasets": [
+      "acme/reviews"
+    ],
+    "base_model": "acme/acme-base",
+    "base_model_relation": "finetune",
+    "tags": [
+      "exbert",
+      "classification"
+    ],
+    "co2_eq_emissions": {
+      "emissions": 830,
+      "source": "CodeCarbon",
+      "training_type": "fine-tuning",
+      "geographical_location": "Busan, South Korea",
+      "hardware_used": "1 x A100"
+    },
+    "model-index": [
+      {
+        "name": "acme-bert",
+        "results": [
+          {
+            "task": {
+              "type": "fill-mask",
+              "name": "Fill Mask"
+            },
+            "dataset": {
+              "name": "Acme Eval",
+              "type": "acme/eval-set",
+              "split": "test"
+            },
+            "metrics": [
+              {
+                "type": "accuracy",
+                "value": 0.81,
+                "name": "Accuracy"
+              },
+              {
+                "type": "f1",
+                "value": 0.79,
+                "name": "F1"
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "model-index": [
+    {
+      "name": "acme-bert",
+      "results": [
+        {
+          "task": {
+            "type": "fill-mask",
+            "name": "Fill Mask"
+          },
+          "dataset": {
+            "name": "Acme Eval",
+            "type": "acme/eval-set",
+            "split": "test"
+          },
+          "metrics": [
+            {
+              "type": "accuracy",
+              "value": 0.81,
+              "name": "Accuracy"
+            },
+            {
+              "type": "f1",
+              "value": 0.79,
+              "name": "F1"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "config": {
+    "architectures": [
+      "BertForMaskedLM"
+    ],
+    "model_type": "bert",
+    "tokenizer_config": {}
+  },
+  "safetensors": {
+    "parameters": {
+      "F32": 4400000
+    },
+    "total": 4400000
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes"
+    },
+    {
+      "rfilename": "README.md"
+    },
+    {
+      "rfilename": "config.json"
+    },
+    {
+      "rfilename": "model.safetensors"
+    },
+    {
+      "rfilename": "tokenizer.json"
+    },
+    {
+      "rfilename": "vocab.txt"
+    }
+  ],
+  "spaces": [],
+  "usedStorage": 17600000,
+  "widgetData": [
+    {
+      "text": "Paris is the [MASK] of France."
+    }
+  ],
+  "transformersInfo": {
+    "auto_model": "AutoModelForMaskedLM",
+    "pipeline_tag": "fill-mask",
+    "processor": "AutoTokenizer"
+  },
+  "inference": "warm"
+}

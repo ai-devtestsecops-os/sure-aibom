@@ -1,0 +1,69 @@
+{
+  "_id": "6650aa00acme000000gguf01",
+  "id": "acme/acme-chat-GGUF",
+  "modelId": "acme/acme-chat-GGUF",
+  "author": "acme",
+  "sha": "b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2b2",
+  "lastModified": "2026-06-01T00:00:00.000Z",
+  "createdAt": "2026-05-15T00:00:00.000Z",
+  "private": false,
+  "disabled": false,
+  "gated": false,
+  "downloads": 40,
+  "likes": 1,
+  "pipeline_tag": "text-generation",
+  "tags": [
+    "gguf",
+    "text-generation",
+    "chat",
+    "en",
+    "base_model:acme/acme-tiny",
+    "base_model:quantized:acme/acme-tiny",
+    "license:mit",
+    "endpoints_compatible",
+    "region:us",
+    "conversational"
+  ],
+  "cardData": {
+    "license": "mit",
+    "language": [
+      "en"
+    ],
+    "base_model": "acme/acme-tiny",
+    "base_model_relation": "quantized",
+    "pipeline_tag": "text-generation",
+    "tags": [
+      "chat"
+    ],
+    "model_description": "GGUF quantizations of Acme Tiny Chat."
+  },
+  "gguf": {
+    "total": 15000000,
+    "architecture": "llama",
+    "context_length": 2048,
+    "chat_template": "{% for m in messages %}{{ m['content'] }}{% endfor %}",
+    "bos_token": "<s>",
+    "eos_token": "</s>"
+  },
+  "siblings": [
+    {
+      "rfilename": ".gitattributes"
+    },
+    {
+      "rfilename": "README.md"
+    },
+    {
+      "rfilename": "acme-chat-Q4_K_M.gguf"
+    },
+    {
+      "rfilename": "acme-chat-f16.gguf"
+    }
+  ],
+  "spaces": [],
+  "usedStorage": 52000000,
+  "widgetData": [
+    {
+      "text": "Hi, what can you do?"
+    }
+  ]
+}

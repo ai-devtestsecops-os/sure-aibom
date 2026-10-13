@@ -15,15 +15,17 @@
 
 ## M-BOM
 
-허브 모델은 두 단계로 수집한다. cdxgen 이 코드에서 이름을 찾고, OWASP aibom-generator 가 그 이름으로 Hub API 와 모델 카드·설정 파일을 읽어 채운다.
+허브 모델은 두 단계로 수집한다. cdxgen 이 코드에서 이름을 찾고, 그 이름으로 aibom-cli 가 Hub API 응답을, OWASP aibom-generator 가 모델 카드·설정 파일을 읽어 채운다.
+허브 모델은 코드에서 참조하는 모델이다. 로컬 폴더의 모델은 모델 카드나 `config.json` 에 허브 id 가 적혀 있어도 로컬 파일만 읽는다.
 
 <table markdown>
 <thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
 <tbody markdown>
 <tr markdown><td rowspan="2">cdxgen</td><td>허브 모델</td><td markdown>파이썬·자바스크립트 소스와 노트북의 `from_pretrained("owner/name")`, `pipeline("task", "owner/name")`, `model = "owner/name"` 같은 모델 이름 지정과 huggingface.co 링크</td></tr>
 <tr markdown><td>로컬 모델</td><td markdown>`config.json`, `adapter_config.json`, 모델 카드 README.md 중 하나라도 있는 폴더, `*.gguf` 헤더, Ollama `Modelfile`<br><span class="note">※ 가중치 파일(`.safetensors`, `.bin`, `.pt`)은 보지 않는다</span></td></tr>
-<tr markdown><td>aibom-cli</td><td>로컬 모델</td><td markdown>cdxgen 이 찾은 모델의 `config.json`, `*.gguf` 헤더, `config.json` 과 같은 폴더의 `*.safetensors` 헤더<br><span class="note">※ pickle 형식 가중치(`.bin`, `.pt`, `.pth`, `.ckpt`)는 열면 안에 든 코드가 실행될 수 있어 열지 않는다</span></td></tr>
-<tr markdown><td>OWASP aibom-generator</td><td>허브 모델</td><td markdown>cdxgen 이 찾은 모델의 [Hub API](https://huggingface.co/docs/hub/api) 응답(safetensors 헤더 포함)과 모델 카드 README.md, `config.json`, `tokenizer_config.json`, LICENSE 파일, `*.gguf` 헤더</td></tr>
+<tr markdown><td rowspan="2">aibom-cli</td><td>로컬 모델</td><td markdown>cdxgen 이 찾은 모델의 `config.json`, `*.gguf` 헤더, `config.json` 과 같은 폴더의 `*.safetensors` 헤더, `Modelfile` 의 `FROM`·`LICENSE`<br><span class="note">※ pickle 형식 가중치(`.bin`, `.pt`, `.pth`, `.ckpt`)는 열면 안에 든 코드가 실행될 수 있어 열지 않는다</span></td></tr>
+<tr markdown><td>허브 모델</td><td markdown>[Hub API](https://huggingface.co/docs/hub/api) 모델 응답 (D-BOM 이 모델 카드의 데이터셋을 읽으려고 받은 것)</td></tr>
+<tr markdown><td>OWASP aibom-generator</td><td>허브 모델</td><td markdown>[Hub API](https://huggingface.co/docs/hub/api) 응답(safetensors 헤더 포함)과 모델 카드 README.md, `config.json`, `tokenizer_config.json`, LICENSE 파일, `*.gguf` 헤더<br><span class="note">※ 이 가운데 규제 필드 원본(하이퍼파라미터, 컨텍스트 길이, 파라미터 수, 런타임)만 가져온다</span></td></tr>
 </tbody>
 </table>
 
@@ -35,10 +37,11 @@
 <thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
 <tbody markdown>
 <tr markdown><td>cdxgen</td><td>허브 데이터셋</td><td markdown>로컬 모델 카드(README.md) YAML 헤더의 `datasets:` 에 적힌 데이터셋, 소스의 huggingface.co/datasets 링크</td></tr>
-<tr markdown><td rowspan="5">aibom-cli</td><td rowspan="4">허브 데이터셋</td><td markdown>로컬 모델 카드 YAML 헤더의 `model-index:`(평가 결과)에 적힌 데이터셋 이름<br><span class="note">※ cdxgen 은 평가 데이터셋을 허브 id 가 아닌 표시 이름으로만 적는다</span></td></tr>
+<tr markdown><td rowspan="6">aibom-cli</td><td rowspan="5">허브 데이터셋</td><td markdown>로컬 모델 카드 YAML 헤더의 `datasets:` 와 `model-index:`(평가 결과)에 적힌 데이터셋 이름<br><span class="note">※ cdxgen 은 `datasets:` 의 참조를 모델에 하나만 남기고, 평가 데이터셋은 허브 id 가 아닌 표시 이름으로만 적는다</span></td></tr>
+<tr markdown><td markdown>`*.gguf` 헤더의 `general.datasets` 에 적힌 `owner/name` 데이터셋<br><span class="note">※ cdxgen 은 이름만 적는다</span></td></tr>
 <tr markdown><td markdown>코드에서 참조하는 허브 모델의 모델 카드 YAML 헤더의 `datasets:` 와 `model-index:`(평가 결과)에 적힌 데이터셋 이름을 [Hub API](https://huggingface.co/docs/hub/api) 모델 응답에서 읽음</td></tr>
 <tr markdown><td markdown>파이썬 소스와 노트북의 `load_dataset("owner/name")` 호출<br><span class="note">※ 첫 인자가 로컬 빌더(`csv`, `json`, `parquet` …)나 파일 경로인 호출은 허브 데이터셋이 아니라서 건너뛴다</span></td></tr>
-<tr markdown><td markdown>위의 세 경우(로컬 모델 카드, 허브 모델 카드, 코드)에서 찾은 데이터셋 이름마다 [Hub API](https://huggingface.co/docs/hub/api)와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 응답<br><span class="note">※ 데이터셋 파일은 내려받지 않는다</span></td></tr>
+<tr markdown><td markdown>위에서 찾은 데이터셋 이름마다 [Hub API](https://huggingface.co/docs/hub/api)와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 응답<br><span class="note">※ 데이터셋 파일은 내려받지 않는다</span></td></tr>
 <tr markdown><td>로컬 데이터</td><td markdown>`--data` 로 지정한 경로</td></tr>
 </tbody>
 </table>

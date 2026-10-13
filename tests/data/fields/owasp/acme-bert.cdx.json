@@ -1,0 +1,182 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:00000000-0000-4000-8000-0000000000aa",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-10-13T00:00:00+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "name": "owasp-aibom-generator",
+          "version": "1.0.2",
+          "manufacturer": {
+            "name": "OWASP GenAI Security Project"
+          }
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "pkg:generic/OWASP-AIBOM-Generator/job-2026-10-13-00:00:01@1780000000",
+      "type": "application",
+      "name": "job-2026-10-13-00:00:01",
+      "version": "1780000000",
+      "purl": "pkg:generic/OWASP-AIBOM-Generator/job-2026-10-13-00:00:01@1780000000",
+      "description": "Generating SBOM for acme/acme-bert",
+      "manufacturer": {
+        "name": "OWASP AIBOM Generator"
+      },
+      "supplier": {
+        "name": "OWASP AIBOM Generator"
+      }
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:huggingface/acme/acme-bert@a1a1a1a1",
+      "type": "machine-learning-model",
+      "group": "acme",
+      "name": "acme-bert",
+      "version": "a1a1a1a1",
+      "purl": "pkg:huggingface/acme/acme-bert@a1a1a1a1",
+      "description": "No description available",
+      "supplier": {
+        "name": "acme"
+      },
+      "manufacturer": {
+        "name": "acme",
+        "url": [
+          "https://huggingface.co/acme"
+        ]
+      },
+      "authors": [
+        {
+          "name": "acme"
+        }
+      ],
+      "externalReferences": [
+        {
+          "comment": "Model files",
+          "type": "distribution",
+          "url": "https://huggingface.co/acme/acme-bert/tree/main"
+        },
+        {
+          "comment": "Specific commit",
+          "type": "vcs",
+          "url": "https://huggingface.co/acme/acme-bert/commit/a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1a1"
+        },
+        {
+          "comment": "ArXiv Paper",
+          "type": "documentation",
+          "url": "https://arxiv.org/abs/2601.00001"
+        },
+        {
+          "comment": "Training dataset: acme/reviews",
+          "type": "distribution",
+          "url": "https://huggingface.co/datasets/acme/reviews"
+        },
+        {
+          "comment": "Model repository",
+          "type": "website",
+          "url": "https://huggingface.co/acme/acme-bert"
+        }
+      ],
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "properties": [
+        {
+          "name": "model_type",
+          "value": "bert"
+        }
+      ],
+      "modelCard": {
+        "modelParameters": {
+          "task": "fill-mask",
+          "modelArchitecture": "bert",
+          "datasets": [
+            {
+              "type": "dataset",
+              "name": "acme/reviews",
+              "contents": {
+                "url": "https://huggingface.co/datasets/acme/reviews"
+              }
+            }
+          ]
+        },
+        "considerations": {
+          "technicalLimitations": [
+            "and Biases](#bias-risks-limitations) - [Training](#training)"
+          ]
+        },
+        "properties": [
+          {
+            "name": "genai:aibom:modelcard:hyperparameter",
+            "value": "{\"context_length\": 512, \"embedding_length\": 64, \"block_count\": 2, \"attention_head_count\": 2, \"feed_forward_length\": 128}"
+          },
+          {
+            "name": "genai:aibom:modelcard:vocabSize",
+            "value": "1000"
+          },
+          {
+            "name": "genai:aibom:modelcard:tokenizerClass",
+            "value": "BertTokenizer"
+          },
+          {
+            "name": "genai:aibom:modelcard:contextLength",
+            "value": "512"
+          },
+          {
+            "name": "genai:aibom:trainingDataAvailable",
+            "value": "true"
+          },
+          {
+            "name": "genai:aibom:trainingDataStatus",
+            "value": "Training datasets verified: Dataset(s) exist and are accessible on Hugging Face Hub."
+          },
+          {
+            "name": "owasp:aibom:distribution:modelFileSize",
+            "value": "17600000"
+          },
+          {
+            "name": "owasp:aibom:distribution:runtimeRequirement",
+            "value": "python"
+          },
+          {
+            "name": "serialNumber",
+            "value": "urn:uuid:acme-acme-bert"
+          },
+          {
+            "name": "safetyRiskAssessment",
+            "value": "Even if the training data is neutral, this model can have biased predictions: ```python"
+          },
+          {
+            "name": "energyConsumption",
+            "value": "830"
+          },
+          {
+            "name": "safetensors_total_parameters",
+            "value": "4400000"
+          }
+        ]
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:generic/OWASP-AIBOM-Generator/job-2026-10-13-00:00:01@1780000000",
+      "dependsOn": [
+        "pkg:huggingface/acme/acme-bert@a1a1a1a1"
+      ]
+    },
+    {
+      "ref": "pkg:huggingface/acme/acme-bert@a1a1a1a1"
+    }
+  ]
+}

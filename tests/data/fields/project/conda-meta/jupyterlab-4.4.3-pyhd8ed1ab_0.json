@@ -1,0 +1,21 @@
+{
+  "name": "jupyterlab",
+  "version": "4.4.3",
+  "build": "pyhd8ed1ab_0",
+  "build_number": 0,
+  "depends": [
+    "jinja2 >=3.0.3",
+    "python >=3.9",
+    "tornado >=6.2.0"
+  ],
+  "license": "BSD-3-Clause",
+  "license_family": "BSD",
+  "noarch": "python",
+  "subdir": "noarch",
+  "fn": "jupyterlab-4.4.3-pyhd8ed1ab_0.conda",
+  "url": "https://conda.anaconda.org/conda-forge/noarch/jupyterlab-4.4.3-pyhd8ed1ab_0.conda",
+  "channel": "https://conda.anaconda.org/conda-forge/",
+  "md5": "4861a0c2a5a5d0481a450a9dfaf9febe",
+  "sha256": "fc0235a71d852734fe92183a78cb91827367573450eba82465ae522c64230736",
+  "files": []
+}

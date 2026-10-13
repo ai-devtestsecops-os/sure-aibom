@@ -1,0 +1,36 @@
+{
+  "size": {
+    "dataset": {
+      "dataset": "acme/reviews",
+      "num_bytes_original_files": 500000,
+      "num_bytes_parquet_files": 500000,
+      "num_bytes_memory": 750000,
+      "num_rows": 5000
+    },
+    "configs": [
+      {
+        "dataset": "acme/reviews",
+        "config": "default",
+        "num_bytes_original_files": 500000,
+        "num_rows": 5000
+      }
+    ],
+    "splits": [
+      {
+        "dataset": "acme/reviews",
+        "config": "default",
+        "split": "train",
+        "num_rows": 4000
+      },
+      {
+        "dataset": "acme/reviews",
+        "config": "default",
+        "split": "test",
+        "num_rows": 1000
+      }
+    ]
+  },
+  "pending": [],
+  "failed": [],
+  "partial": false
+}

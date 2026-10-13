@@ -11,7 +11,11 @@
 bom-ref 는 병합 키로 다시 부여하고 dependencies[] 의 참조를 따라 바꾼다.
 
 root=(이름, 종류) 를 주면 metadata.component 를 만든다 (디렉터리 → application, 이미지 → container).
-두 도구의 metadata.component 는 버리고 이것 하나가 문서의 루트가 된다.
+두 도구의 metadata.component 는 버리고 이것 하나가 문서의 루트가 된다. 이미지면 syft 가 metadata.properties 에 둔 OCI 라벨
+(syft:image:labels:org.opencontainers.image.*, OCI image-spec annotations.md 의 미리 정한 키)을 루트의 필드로 옮긴다:
+    version → version, description → description, licenses(SPDX 식) → licenses, vendor → supplier, authors → authors,
+    source(+ revision) → externalReferences vcs, url → website, documentation → documentation,
+    base.name(+ base.digest) → pedigree.ancestors (베이스 이미지)
 각 도구가 자기 metadata.component 를 ref 로 쓴 dependencies 행은 새 루트의 행으로 옮기고, 루트는 그 밖에
 아무도(컴포넌트·루트가) 의존하지 않는 컴포넌트에도 의존한다 — 그래프 전체가 루트에서 닿는다.
 ref 가 컴포넌트도 루트도 아닌 행(서비스 등)은 그대로 두되(변환기가 경고하고 건너뛴다) 그 대상을 '의존받음'으로 치지 않는다.
@@ -23,12 +27,17 @@ from datetime import datetime, timezone
 from typing import Iterable
 from urllib.parse import unquote, urlsplit
 
+from .licenses import license_entry
+
 SPEC_VERSION = "1.7"
 ROOT_TYPE_BY_KIND = {"directory": "application", "image": "container"}
 
 
 FILE_TYPE = "file"
 AI_FILE_REF_PREFIX = "urn:file:ai:"       # cdxgen 이 AI 파일(gguf, Modelfile 등)에 붙이는 bom-ref
+IMAGE_LABEL_PREFIX = "syft:image:labels:"
+OCI = "org.opencontainers.image."
+_SPDX_OPERATOR = (" AND ", " OR ", " WITH ", "(")
 
 
 def identity(component: dict) -> str:
@@ -107,11 +116,59 @@ def _walk_components(components: Iterable[dict]):
         yield from _walk_components(c.get("components") or [])
 
 
-def root_component(name: str, kind: str) -> dict:
-    """스캔 대상 → metadata.component. bom-ref 는 identity 규칙으로 정해 결정적이다."""
+def root_component(name: str, kind: str, labels: dict[str, str] | None = None) -> dict:
+    """스캔 대상 → metadata.component. bom-ref 는 identity 규칙으로 정해 결정적이다 (라벨의 version 은 넣지 않는다).
+    labels 는 이미지의 OCI 라벨 (키 → 값)."""
     comp = {"type": ROOT_TYPE_BY_KIND.get(kind, "application"), "name": name}
     comp["bom-ref"] = identity(comp)
+    if labels:
+        _apply_image_labels(comp, labels)
     return comp
+
+
+def _apply_image_labels(comp: dict, labels: dict[str, str]) -> None:
+    def label(key: str) -> str | None:
+        value = labels.get(OCI + key)
+        return value.strip() if isinstance(value, str) and value.strip() else None
+
+    if label("version"):
+        comp["version"] = label("version")
+    if label("description"):
+        comp["description"] = label("description")
+    if label("vendor"):
+        comp["supplier"] = {"name": label("vendor")}
+    if label("authors"):
+        comp["authors"] = [{"name": label("authors")}]
+    expression = label("licenses")
+    if expression:
+        comp["licenses"] = ([{"expression": expression}] if any(op in expression for op in _SPDX_OPERATOR)
+                            else [license_entry(expression)])
+    refs = []
+    if label("source"):
+        refs.append({"type": "vcs", "url": label("source"), **({"comment": f"revision: {label('revision')}"} if label("revision") else {})})
+    for key, kind in (("url", "website"), ("documentation", "documentation")):
+        if label(key):
+            refs.append({"type": kind, "url": label(key)})
+    if refs:
+        comp["externalReferences"] = refs
+    base = label("base.name")
+    if base:
+        ancestor = {"type": "container", "name": base}
+        digest = label("base.digest") or ""
+        if digest.startswith("sha256:") and len(digest) == 71:
+            ancestor["hashes"] = [{"alg": "SHA-256", "content": digest[len("sha256:"):]}]
+        comp["pedigree"] = {"ancestors": [ancestor]}
+
+
+def image_labels(docs: list[dict]) -> dict[str, str]:
+    """도구 문서들의 metadata.properties 에서 syft 가 적은 이미지 라벨 (키 → 값). 먼저 나온 값이 이긴다."""
+    labels: dict[str, str] = {}
+    for doc in docs:
+        for p in (doc.get("metadata") or {}).get("properties") or []:
+            name, value = p.get("name"), p.get("value")
+            if isinstance(name, str) and name.startswith(IMAGE_LABEL_PREFIX) and isinstance(value, str):
+                labels.setdefault(name[len(IMAGE_LABEL_PREFIX):], value)
+    return labels
 
 
 def merge(docs: list[dict], root: tuple[str, str] | None = None) -> dict:
@@ -151,7 +208,7 @@ def merge(docs: list[dict], root: tuple[str, str] | None = None) -> dict:
     for key, comp in components.items():
         comp["bom-ref"] = key
 
-    root_comp = root_component(*root) if root is not None else None
+    root_comp = root_component(*root, labels=image_labels(docs)) if root is not None else None
     root_key = root_comp["bom-ref"] if root_comp else None
     if root_key:
         for ref in producer_roots:            # 도구의 루트 행은 새 루트의 행이 된다 (컴포넌트이기도 하면 컴포넌트가 이긴다)

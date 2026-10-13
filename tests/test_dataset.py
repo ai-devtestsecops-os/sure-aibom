@@ -16,6 +16,7 @@ import aibom_cli.dataset as ds
 from aibom_cli.enrich import skip_reason
 from aibom_cli.merge import merge
 from aibom_cli.form import INTERNAL_PREFIX, apply
+from aibom_cli.licenses import card_licenses, license_entry
 from aibom_cli.validate import validate_cdx
 
 IMDB_FIXTURE = Path(__file__).parent / "data" / "hf_api" / "hf_dataset_stanfordnlp_imdb.json"
@@ -93,6 +94,14 @@ def cdxgen_imdb() -> dict:
             "properties": [{"name": "cdx:ai:kind", "value": "dataset"}]}
 
 
+def cdxgen_link(hf_id: str) -> dict:
+    """cdxgen 이 코드의 https://huggingface.co/datasets/<id> 링크로 만드는 모양 (실측: purl 도 data[] 도 없이 externalReferences 에만 주소)."""
+    group, _, name = hf_id.rpartition("/")
+    return {"bom-ref": f"cdxgen:ai:dataset:{group}:{name}", "type": "data", "group": group, "name": name, "version": "",
+            "externalReferences": [{"type": "distribution", "url": f"https://huggingface.co/datasets/{hf_id}"}],
+            "evidence": {"occurrences": [{"location": "src/train.py#L8"}]}}
+
+
 def doc_of(*components: dict, root=("proj", "directory")) -> dict:
     return merge([{"bomFormat": "CycloneDX", "specVersion": "1.7", "components": list(components)}], root=root)
 
@@ -147,6 +156,8 @@ def data_of(root: Path) -> list[str]:
     ({"type": "data", "purl": "pkg:huggingface/datasets/stanfordnlp/imdb@abc?x=1"}, "stanfordnlp/imdb"),
     (cdxgen_bookcorpus(), "bookcorpus"),
     (cdxgen_imdb(), "stanfordnlp/imdb"),                                                                  # purl 없이 허브 주소에만
+    (cdxgen_link("acme/eval-set"), "acme/eval-set"),                                                      # 코드의 링크: externalReferences 에만
+    ({"type": "data", "name": "x", "externalReferences": [{"type": "website", "url": "https://example.org/datasets/a/b"}]}, None),
     ({"type": "data", "group": "datasets", "name": "wikitext"}, "wikitext"),
     ({"type": "data", "name": "data", "data": [{"type": "dataset", "name": "data/train.csv"}]}, None),
     ({"type": "data", "name": "x", "data": [{"type": "dataset", "name": "a/b", "contents": {"url": "https://example.org/datasets/a/b"}}]}, None),
@@ -549,8 +560,13 @@ def test_hub_facts_variants():
                                   "cardData": {"task_categories": ["image-classification"]}})
     assert tagged["modality"] == ["structured", "text", "other"]
     assert ds.hub_facts("a/b", {"tags": ["format:parquet"], "cardData": {"task_categories": ["image-classification"]}})["modality"] == ["image"]
-    assert ds._license("apache-2.0") == {"license": {"id": "Apache-2.0"}} and ds._license("MIT") == {"license": {"id": "MIT"}}
-    assert ds._license("unknown") == {"license": {"name": "unknown"}}
+    assert license_entry("apache-2.0") == {"license": {"id": "Apache-2.0"}} and license_entry("MIT") == {"license": {"id": "MIT"}}
+    assert license_entry("unknown") == {"license": {"name": "unknown"}}
+    # 카드의 other 는 license_name 이 있으면 그 이름, license_link 는 url. 이름이 없으면 other 그대로
+    assert card_licenses({"license": "other", "license_name": "acme-eval", "license_link": "https://acme.example/l"}) == [
+        {"license": {"name": "acme-eval", "url": "https://acme.example/l"}}]
+    assert card_licenses({"license": ["other", "mit"], "license_link": "LICENSE.md"}) == [{"license": {"name": "other"}}, {"license": {"id": "MIT"}}]
+    assert card_licenses({"license": ""}) == [] and card_licenses({}) == []
 
 
 def test_existing_cdxgen_component_is_enriched_in_place_not_duplicated(tmp_path, monkeypatch, imdb):
@@ -647,7 +663,7 @@ def test_readme_only_component_is_renamed_to_the_hub_id_and_refs_follow(tmp_path
     assert set(found) == {BOOK_CANON}
     book = found[BOOK_CANON]
     assert (book["group"], book["name"], book["purl"]) == ("bookcorpus", "bookcorpus", BOOK_CANON)
-    assert book["data"][0]["name"] == "datasets/bookcorpus/bookcorpus"                    # cdxgen 의 이름 모양은 그대로, id 만 바뀐다
+    assert book["data"][0]["name"] == "bookcorpus/bookcorpus"                             # cdxgen 이 붙인 datasets/ 앞머리는 빼고 정식 id 로
     assert book["data"][0]["contents"]["url"] == "https://huggingface.co/datasets/bookcorpus/bookcorpus"
     assert props(book)["cdx:ai:kind"] == "dataset"
     bert = next(c for c in out["components"] if c["bom-ref"] == BERT_REF)
@@ -812,22 +828,24 @@ def test_owner_name_dataset_from_a_local_model_card_is_filled_and_gets_its_purl(
     assert refs_in(out) <= {c["bom-ref"] for c in out["components"]} | {out["metadata"]["component"]["bom-ref"]}
 
 
-def test_local_model_card_evaluation_datasets_become_components_linked_from_the_model(tmp_path, online):
-    """로컬 모델 README 의 model-index 평가 데이터셋(dataset.type)이 데이터셋 컴포넌트가 되고, 모델카드에 ref 로 적히며 모델이
-    dependsOn 한다. cdxgen 이 표시 이름만 적은 항목(GLUE SST2, IMDB)은 ref 로 바뀌고, 같은 데이터셋의 cdxgen 컴포넌트는 다시 쓴다.
-    datasets: 는 cdxgen 몫이라 보지 않는다. README 는 데이터셋의 evidence 가 되고, 허브 id 꼴이 아닌 것은 알린다. 루트는 잇지 않는다."""
+def test_local_model_card_datasets_become_components_linked_from_the_model(tmp_path, online):
+    """로컬 모델 README 의 datasets(학습)와 model-index 평가 데이터셋(dataset.type)이 데이터셋 컴포넌트가 되고, 모델카드에 ref 로
+    적히며 모델이 dependsOn 한다. cdxgen 이 표시 이름만 적은 항목(GLUE SST2, IMDB)은 ref 로 바뀌고, 같은 데이터셋의 cdxgen 컴포넌트는
+    다시 쓴다. cdxgen 은 datasets: 의 ref 를 마지막 하나만 남기므로 학습 데이터셋도 다시 적는다 (여기서는 cdxgen 의 bookcorpus
+    컴포넌트가 없어 새로 만든다). README 는 데이터셋의 evidence 가 되고, 허브 id 꼴이 아닌 것은 알린다. 루트는 잇지 않는다."""
     model = local_model(tmp_path, TINY_CARD, [{"ref": cdxgen_imdb()["bom-ref"]}, {"type": "dataset", "name": "GLUE SST2"},
                                               {"type": "dataset", "name": "IMDB"}, {"type": "dataset", "name": "private eval"}])
     logs: list[str] = []
     out = ds.discover(with_cdxgen_imdb(model), str(tmp_path), log=logs.append)
     glue = "pkg:huggingface/datasets/glue"
     found = datasets(out)
-    assert set(found) == {IMDB_REF, glue} and online == ["glue", IMDB]                    # datasets: 의 bookcorpus 는 만들지 않는다
+    assert set(found) == {IMDB_REF, glue, BOOK_HUB} and online == ["bookcorpus", "glue", IMDB]
     tiny = next(c for c in out["components"] if c["bom-ref"] == TINY_REF)
-    assert tiny["modelCard"]["modelParameters"]["datasets"] == [{"ref": IMDB_REF}, {"type": "dataset", "name": "private eval"}, {"ref": glue}]
+    assert tiny["modelCard"]["modelParameters"]["datasets"] == [{"ref": IMDB_REF}, {"type": "dataset", "name": "private eval"},
+                                                                {"ref": BOOK_HUB}, {"ref": glue}]
     deps = deps_of(out)
-    assert deps[TINY_REF] == sorted([IMDB_REF, glue]) and glue not in deps[out["metadata"]["component"]["bom-ref"]]
-    assert found[glue]["evidence"]["occurrences"] == [{"location": "models/tiny/README.md"}]
+    assert deps[TINY_REF] == sorted([IMDB_REF, glue, BOOK_HUB]) and glue not in deps[out["metadata"]["component"]["bom-ref"]]
+    assert found[glue]["evidence"]["occurrences"] == found[BOOK_HUB]["evidence"]["occurrences"] == [{"location": "models/tiny/README.md"}]
     assert "[dataset] models/tiny/README.md: model card dataset './eval.csv' is not a hub id, skipped" in logs
     assert refs_in(out) <= {c["bom-ref"] for c in out["components"]} | {out["metadata"]["component"]["bom-ref"]}
 
@@ -1166,3 +1184,53 @@ def test_live_hub_returns_size_and_modality_for_imdb(monkeypatch):
     assert facts["size"] and facts["size"] > 0 and facts["modality"] == ["text"] and facts["availability"] == "direct-download"
     kinds = dict(facts["statistics"])
     assert kinds["train:label:n_unique"] == "2" and float(kinds["train:text:length:mean"]) > 0
+
+
+# -- cdxgen 이 다르게 적는 허브 데이터셋 ------------------------------------------------------
+def test_a_dataset_link_in_code_is_one_component_with_the_model_card_dataset(tmp_path, online, monkeypatch):
+    """코드의 huggingface.co/datasets 링크로 cdxgen 이 만든 데이터셋을 알아본다. 허브 모델 카드가 같은 데이터셋을 적어도 하나로 남고,
+    조회한 뒤 purl·bom-ref 와 data[] 가 생긴다 (전에는 같은 데이터셋이 둘이고 링크 쪽은 조회되지 않았다)."""
+    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: {"cardData": {"datasets": [IMDB]}})
+    hub_bert = {"bom-ref": BERT_REF, "type": "machine-learning-model", "group": "google-bert", "name": "bert-base-uncased", "purl": BERT_REF,
+                "evidence": {"occurrences": [{"location": "src/train.py#L5"}]}}                  # 코드가 부르는 허브 모델
+    out = ds.discover(doc_of(cdxgen_link(IMDB), hub_bert), str(tmp_path), log=lambda m: None)
+    found = datasets(out)
+    assert set(found) == {IMDB_REF} and online == [IMDB]
+    link = found[IMDB_REF]
+    assert link["data"][0] == {"type": "dataset", "name": IMDB, "contents": {"url": "https://huggingface.co/datasets/stanfordnlp/imdb"}}
+    assert link["externalReferences"] == [{"type": "distribution", "url": "https://huggingface.co/datasets/stanfordnlp/imdb"},
+                                          {"type": "website", "url": "https://paperswithcode.com/dataset/imdb-movie-reviews"}]
+    assert link["evidence"]["occurrences"] == [{"location": "src/train.py#L8"}]
+    bert = next(c for c in out["components"] if c["bom-ref"] == BERT_REF)
+    assert bert["modelCard"]["modelParameters"]["datasets"] == [{"ref": IMDB_REF}]
+
+
+def test_renaming_rewrites_the_broken_datasets_datasets_url(tmp_path, monkeypatch, imdb):
+    """이름만 있는 id(bookcorpus)에 cdxgen 은 https://huggingface.co/datasets/datasets/bookcorpus 주소를 적는다 (401). 정식 id 로 바꿀 때
+    data[] 와 externalReferences 의 그 주소도 정식 주소로 바꾸고, 겹치면 하나만 남긴다."""
+    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: bookcorpus_hub(imdb))
+    book = cdxgen_bookcorpus()
+    book["externalReferences"] = [{"type": "distribution", "url": "https://huggingface.co/datasets/datasets/bookcorpus"},
+                                  {"type": "website", "url": "https://example.org/bookcorpus"}]
+    out = ds.discover(doc_of(book), str(tmp_path), log=lambda m: None)
+    found = datasets(out)["pkg:huggingface/datasets/bookcorpus/bookcorpus"]
+    assert found["externalReferences"] == [{"type": "distribution", "url": "https://huggingface.co/datasets/bookcorpus/bookcorpus"},
+                                           {"type": "website", "url": "https://example.org/bookcorpus"}]
+    assert "datasets/datasets" not in json.dumps(out)
+
+
+def test_owner_name_datasets_named_in_a_model_header_become_components(tmp_path, monkeypatch):
+    """cdxgen 은 GGUF 헤더의 general.datasets 를 모델카드에 이름뿐인 항목으로 적는다 (contents.url 에도 id 를 그대로). owner/name 꼴이면
+    데이터셋 컴포넌트로 만들어 ref 로 바꾸고, 모델 파일을 evidence 로 둔다. 표시 이름·이름 하나뿐인 것은 그대로 둔다."""
+    monkeypatch.setattr(ds, "hf_reachable", lambda: False)
+    gguf = {"bom-ref": "cdxgen:ai:model:Acme:Tiny", "type": "machine-learning-model", "group": "Acme", "name": "Tiny", "purl": "pkg:generic/Acme/Tiny",
+            "evidence": {"occurrences": [{"location": "models/tiny.gguf"}]},
+            "modelCard": {"modelParameters": {"datasets": [{"type": "dataset", "name": "acme/chat-sft", "contents": {"url": "acme/chat-sft"}},
+                                                           {"type": "dataset", "name": "wikitext"}, {"type": "dataset", "name": "Acme Eval"}]}}}
+    out = ds.discover(doc_of(gguf), str(tmp_path), log=lambda m: None)
+    model = next(c for c in out["components"] if c["type"] == "machine-learning-model")
+    ref = "pkg:huggingface/datasets/acme/chat-sft"
+    assert model["modelCard"]["modelParameters"]["datasets"] == [{"type": "dataset", "name": "wikitext"}, {"type": "dataset", "name": "Acme Eval"}, {"ref": ref}]
+    assert datasets(out)[ref]["evidence"]["occurrences"] == [{"location": "models/tiny.gguf"}]
+    assert ref in deps_of(out)[model["bom-ref"]]

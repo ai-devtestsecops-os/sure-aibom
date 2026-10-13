@@ -14,7 +14,7 @@ from .dataset import discover as discover_datasets, is_dataset
 from .enrich import enrich
 from .merge import merge
 from .model import discover as discover_models
-from .form import apply as regulate
+from .form import apply as regulate, drop_tool_properties
 from .image import extract as extract_image, is_archive, pull as pull_image
 from .runners import run_cdxgen, run_syft
 from .runners._proc import RunnerError
@@ -188,7 +188,15 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
     merged = discover_models(merged, scan_dir, log=detail)
 
     enriched: dict = {}
-    merged = enrich(merged, workdir, log=detail, report=enriched)
+    model_infos = None if datasets.get("hub_unreachable") else datasets.get("model_infos") or {}
+    merged = enrich(merged, workdir, log=detail, report=enriched, model_infos=model_infos)
+    if enriched["hub_skipped"]:
+        result = f"skipped: {enriched['hub_skipped']}"
+    elif enriched["hub_missing"]:
+        result = f"{enriched['hub']} of {_count(enriched['models'], 'hub model')} ({len(enriched['hub_missing'])} without hub info)"
+    else:
+        result = _count(enriched["hub"], "hub model")
+    _stage("Enriching M-BOM (Hub API)", result)
     if enriched["skipped"]:
         result = f"skipped: {enriched['skipped']}"
     elif enriched["failed"]:
@@ -202,6 +210,7 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
     regulation: dict = {}
     merged = regulate(merged, form=FORM_BY_SPEC[args.spec], log=detail, report=regulation)
     _stage("Adding regulation fields", _coverage_text(regulation))
+    merged = drop_tool_properties(merged)                         # 출력의 properties 는 aibom:* 뿐이다
 
     _emit(merged, args.output)
     # 위 줄들을 더하지 않고 다 만든 BOM 을 다시 센다 (병합·별칭 합치기로 줄어든 만큼이 여기 반영된다)

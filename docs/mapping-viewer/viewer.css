@@ -605,8 +605,8 @@
 .mapping-viewer .new-count { background: var(--badge-req-bg); color: var(--badge-req-fg); }
 
 /* v0.6 추가 표시는 초록 계열 (빨강은 경고처럼 읽힌다). 배지, 글자, +n 모두 같은 색 */
-.mapping-viewer { --added-bg: #dcfce7; --added-fg: #15803d; }
-[data-md-color-scheme="slate"] .mapping-viewer { --added-bg: rgba(34, 197, 94, .22); --added-fg: #86efac; }
+.mapping-viewer, .md-typeset { --added-bg: #dcfce7; --added-fg: #15803d; }
+[data-md-color-scheme="slate"] .mapping-viewer, [data-md-color-scheme="slate"] .md-typeset { --added-bg: rgba(34, 197, 94, .22); --added-fg: #86efac; }
 .mapping-viewer .new-badge, .md-typeset .new-badge { color: var(--added-fg); background: var(--added-bg); border-color: var(--added-fg); }
 .mapping-viewer .node-row.is-new > .label { color: var(--added-fg); }
 .mapping-viewer .new-count { background: var(--added-bg); color: var(--added-fg); }
@@ -662,3 +662,15 @@
 .mapping-viewer #detail-panel { position: sticky; top: calc(2.4rem + .6rem); max-height: calc(var(--tree-h) + var(--head-h)); }
 /* --tree-h 는 app.js 의 fitTrees 가 화면에 맞춰 다시 쓴다. 위 값은 스크립트가 돌기 전의 기본값 */
 .mapping-viewer .section-none { transform: translateY(-.5px); }   /* 글자 중심보다 0.5px 낮게 앉는다 */
+
+/* aibom-cli 출력의 출처 도구. 트리 행의 작은 배지와 상세의 「aibom-cli 출력」 절. 한 색 계열로 두고 이름으로 구분한다 */
+.mapping-viewer, .md-typeset { --tool-bg: #e7f0fb; --tool-fg: #1f5fa8; }
+[data-md-color-scheme="slate"] .mapping-viewer, [data-md-color-scheme="slate"] .md-typeset { --tool-bg: rgba(56, 139, 253, .2); --tool-fg: #a5c8ff; }
+.mapping-viewer .tool-badge, .md-typeset .tool-badge { margin-left: 4px; padding: 0 4px; border-radius: 3px; font-size: 10.5px; font-weight: 600;
+  line-height: 15px; white-space: nowrap; background: var(--tool-bg); color: var(--tool-fg); vertical-align: 1px; }
+.mapping-viewer .source-line { display: flex; align-items: baseline; gap: 6px; margin: 3px 0; font-size: 13px; }
+.mapping-viewer .source-line .tool-badge { margin-left: 0; flex: 0 0 auto; }
+.mapping-viewer .source-kinds { color: var(--text); }
+.mapping-viewer .source-note { font-size: 13px; color: var(--text-muted); }
+.mapping-viewer #generated-only-box { display: flex; align-items: center; gap: 5px; font-size: 14px; color: var(--text-muted); cursor: pointer; white-space: nowrap; }
+.mapping-viewer #generated-only-box input { margin: 0; accent-color: var(--accent); }

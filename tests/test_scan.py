@@ -99,7 +99,10 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
                                                  "tiny-gpt2-lora"}
     #   src/train.py 의 from_pretrained · Modelfile · models/stories260K.gguf · models/tiny-random-gpt2/ · 어댑터
     assert by_type["data"] == {"bookcorpus", "imdb", "data", "wikipedia"}   # 모델 카드 · 코드의 load_dataset · 로컬 data/ · 허브 모델 카드
-    assert {s["name"] for s in doc["services"]} == {"ollama-service", "google-bert-service"}
+    assert doc["services"] == []            # cdxgen 이 지어낸 ollama-service · google-bert-service 는 뺀다 (SDK import 가 없다)
+    assert "properties" not in json.dumps({k: v for k, v in doc.items() if k != "components"})
+    assert all(p["name"].startswith("aibom:") for c in doc["components"]
+               for p in (c.get("properties") or []) + ((c.get("modelCard") or {}).get("properties") or []))   # 도구 properties 는 남지 않는다
 
     # 스캔 머신 경로가 어디에도 새지 않는다 (파일 컴포넌트 이름, 데이터 파일 경로, evidence)
     text = cdx.read_text()
@@ -151,7 +154,7 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert card["aibom:model:hyperparameters:5:value"] == "1000"                # vocab_size
     assert card["aibom:model:parameterCount"] == "111968"                       # model.safetensors 헤더의 shape 합
     assert card["aibom:model:technicalRequirements:0"] == "transformers"
-    assert "cdx:ai:runtime" not in {p["name"] for p in gpt2["properties"]}       # 승격한 원본은 소비된다
+    assert "properties" not in gpt2                                             # 승격한 원본은 소비되고 나머지 도구 properties 는 지운다
     assert [a["name"] for a in gpt2["pedigree"]["ancestors"]] == ["gpt2"]        # 카드의 base_model
 
     # gguf: 헤더의 하이퍼파라미터 8개와 텐서에서 센 파라미터 수 (stories260K 에는 general.parameter_count 가 없다)
@@ -170,9 +173,12 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert bert_card["aibom:model:parameterCount"] == recorded["safetensors_total_parameters"]
     assert bert_card["aibom:model:inputs:0:maxSize"] == recorded["genai:aibom:modelcard:contextLength"]
     assert bert_card["aibom:model:hyperparameters:0:name"] and "aibom:model:technicalRequirements:0" in bert_card
-    assert "genai:aibom:trainingDataAvailable" in bert_card and "safetensors_total_parameters" not in bert_card   # 승격한 원본은 지우고 나머지는 남긴다
-    # 모델 카드의 데이터셋은 D-BOM 이 ref 로 먼저 적어서, aibom-generator 의 이름뿐인 목록은 들어오지 않는다
+    assert all(name.startswith("aibom:") for name in bert_card)                  # aibom-generator 에서는 규제 필드 원본만 가져와 승격한다
+    # 모델 카드의 데이터셋은 D-BOM 이 허브 모델 카드에서 ref 로 적는다. 나머지 정규 필드는 Hub API 응답에서 (tests/data/hf_api)
     assert bert["modelCard"]["modelParameters"]["datasets"] == [{"ref": BOOK_REF}, {"ref": WIKI_REF}]
+    assert (bert["version"], bert["licenses"], bert["supplier"]) == ("86b5e0934494bd15c9632b12f734a8a67f723594",
+                                                                    [{"license": {"id": "Apache-2.0"}}], {"name": "google-bert"})
+    assert bert["modelCard"]["modelParameters"]["architectureFamily"] == "bert" and "description" not in bert
 
     # adapter_config.json: 베이스 모델 계보만 나온다 (config.json 이 없으니 하이퍼파라미터는 없다)
     adapter = next(c for c in doc["components"] if c["name"] == "tiny-gpt2-lora")
@@ -194,10 +200,10 @@ def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
     assert lines[0] == f"[aibom-cli] Generating AI-BOM v0.6 (CycloneDX) for {FIXTURE}, data from {FIXTURE / 'data'}"
     assert [line.split(" .")[0] for line in lines[1:-1]] == [
         "[aibom-cli] Generating S-BOM (syft)", "[aibom-cli] Generating M-BOM (cdxgen)", "[aibom-cli] Generating D-BOM",
-        "[aibom-cli] Enriching M-BOM (aibom-generator)", "[aibom-cli] Adding regulation fields"]
+        "[aibom-cli] Enriching M-BOM (Hub API)", "[aibom-cli] Enriching M-BOM (aibom-generator)", "[aibom-cli] Adding regulation fields"]
     assert lines[1].endswith(" 4 packages, 1 file") and lines[2].endswith(" 5 models, 2 files")   # cdxgen 의 데이터셋 참조는 D-BOM 에서 센다
-    assert lines[3].endswith(" 4 datasets") and lines[4].endswith(" 1 hub model")
-    assert lines[5].endswith(" 34 of 44 filled (models 12/20, datasets 22/24)")      # 모델 5개 × 4, 허브 데이터셋 3개 × 7 + 로컬 1개 × 3
+    assert lines[3].endswith(" 4 datasets") and lines[4].endswith(" 1 hub model") and lines[5].endswith(" 1 hub model")
+    assert lines[6].endswith(" 34 of 44 filled (models 12/20, datasets 22/24)")      # 모델 5개 × 4, 허브 데이터셋 3개 × 7 + 로컬 1개 × 3
     # 마지막 줄은 다 만든 BOM 을 다시 센 것 — 묶음을 더하면 전체와 같다
     total, groups, deps = re.fullmatch(rf"\[aibom-cli\] Wrote {re.escape(str(cdx))} \((\d+) components: (.+); (\d+) dependencies\)", lines[-1]).groups()
     assert groups == "4 packages, 5 models, 4 datasets, 3 files"

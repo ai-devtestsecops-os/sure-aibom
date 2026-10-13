@@ -1,5 +1,6 @@
-"""enrich — OWASP aibom-generator 를 HF 모델마다 돌려 결과를 합친다.
-실제 실행 결과는 tests/data/owasp/bert-base-uncased.cdx.json (python -m src.cli google-bert/bert-base-uncased) 로 바꿔 끼운다."""
+"""enrich — 허브 모델을 Hub API 응답으로 채우고, OWASP aibom-generator 에서 규제 필드 원본만 가져온다.
+Hub API 는 tests/data/hf_api/hf_model_google-bert_bert-base-uncased.json (실제 GET /api/models/google-bert/bert-base-uncased 응답),
+OWASP 는 tests/data/owasp/bert-base-uncased.cdx.json (python -m src.cli google-bert/bert-base-uncased) 로 바꿔 끼운다."""
 import copy
 import json
 import os
@@ -8,24 +9,30 @@ from pathlib import Path
 import pytest
 
 import aibom_cli.enrich as en
-from aibom_cli.enrich import enrich, hf_id_of, skip_reason
+from aibom_cli.enrich import OWASP_SOURCES, apply_model_info, enrich, hf_id_of, hub_model_id, performance_metrics, skip_reason
 from aibom_cli.form import apply
 from aibom_cli.runners._proc import RunnerError
 
 OWASP = Path(__file__).parent / "data" / "owasp" / "bert-base-uncased.cdx.json"
+HUB = Path(__file__).parent / "data" / "hf_api" / "hf_model_google-bert_bert-base-uncased.json"
 BERT = "pkg:huggingface/google-bert/bert-base-uncased"
 HF_ID = "google-bert/bert-base-uncased"
 WORKDIR = Path("/nonexistent")                                   # 러너를 바꿔 끼우므로 쓰이지 않는다
 
 KEPT = {"genai:aibom:modelcard:hyperparameter", "genai:aibom:modelcard:vocabSize", "genai:aibom:modelcard:contextLength",
-        "genai:aibom:trainingDataAvailable", "genai:aibom:trainingDataStatus", "owasp:aibom:distribution:modelFileSize",
-        "owasp:aibom:distribution:runtimeRequirement", "safetensors_total_parameters"}
-DROPPED = {"serialNumber", "safetyRiskAssessment"}               # 접두어 없는 키는 safetensors_total_parameters 만 남긴다
+        "owasp:aibom:distribution:runtimeRequirement", "safetensors_total_parameters"}         # 녹화본에 있는 규제 필드 원본
+DROPPED = {"genai:aibom:trainingDataAvailable", "genai:aibom:trainingDataStatus", "owasp:aibom:distribution:modelFileSize",
+           "serialNumber", "safetyRiskAssessment"}
 
 
 @pytest.fixture
 def owasp() -> dict:
     return json.loads(OWASP.read_text(encoding="utf-8"))
+
+
+@pytest.fixture
+def hub() -> dict:
+    return json.loads(HUB.read_text(encoding="utf-8"))
 
 
 @pytest.fixture(autouse=True)
@@ -34,8 +41,10 @@ def reachable(monkeypatch):
 
 
 def bert_component(**extra) -> dict:
+    """cdxgen 이 코드의 from_pretrained("google-bert/bert-base-uncased") 로 만드는 모델 (모델카드 일부는 시험용으로 미리 채움)."""
     comp = {"bom-ref": BERT, "type": "machine-learning-model", "group": "google-bert", "name": "bert-base-uncased",
             "purl": BERT, "properties": [{"name": "cdx:ai:runtime", "value": "transformers"}],
+            "evidence": {"occurrences": [{"location": "src/train.py#L5"}]},
             "modelCard": {"modelParameters": {"task": "fill-mask", "modelArchitecture": "BertForMaskedLM"}}}
     comp.update(extra)
     return comp
@@ -59,7 +68,7 @@ def stub(monkeypatch, result, calls: list | None = None):
     monkeypatch.setattr(en, "run_aibom_generator", run)
 
 
-# -- HF 모델 고르기 ------------------------------------------------------------------
+# -- 허브 모델 고르기 -----------------------------------------------------------------
 @pytest.mark.parametrize("comp, expected", [
     ({"type": "machine-learning-model", "purl": BERT}, HF_ID),
     ({"type": "machine-learning-model", "purl": "pkg:huggingface/google-bert/bert-base-uncased@abc?x=1"}, HF_ID),
@@ -72,23 +81,41 @@ def test_hf_id_of(comp, expected):
     assert hf_id_of(comp) == expected
 
 
+@pytest.mark.parametrize("locations, expected", [
+    (["src/train.py#L5"], HF_ID),                                                  # 코드가 부른다
+    (["notebooks/eval.ipynb", "app.js#L3"], HF_ID),
+    ([], HF_ID),
+    (["models/bert/README.md", "models/bert/config.json"], None),                  # 받아 둔 폴더 (config 의 _name_or_path 로 허브 id 를 얻은 것)
+    (["src/train.py#L5", "models/bert/config.json"], None),                        # 코드도 부르지만 로컬 사본이 있다
+    (["models/x.gguf"], None), (["models/x/model.safetensors"], None), (["deploy/Modelfile"], None), (["a/adapter_config.json"], None),
+])
+def test_hub_models_are_the_ones_without_local_model_files(locations, expected):
+    comp = {"type": "machine-learning-model", "purl": BERT, "evidence": {"occurrences": [{"location": loc} for loc in locations]}}
+    assert hub_model_id(comp) == expected
+
+
 def test_nothing_to_enrich_is_left_alone(monkeypatch):
     stub(monkeypatch, RunnerError("불려서는 안 된다"))
     logs: list[str] = []
     doc = doc_of({"bom-ref": "x", "type": "library", "name": "numpy"})
     before = json.dumps(doc)
-    assert json.dumps(enrich(doc, WORKDIR, logs.append)) == before
+    report: dict = {}
+    assert json.dumps(enrich(doc, WORKDIR, logs.append, report=report)) == before
     assert any("no hub model components" in m for m in logs)
+    assert report["skipped"] == report["hub_skipped"] == "no Hugging Face models"
 
 
 def test_offline_skips_without_running_anything(monkeypatch):
+    """허브에 닿지 않으면 D-BOM 이 응답을 받지 못해 model_infos 가 None 이고, OWASP 도 건너뛴다."""
     monkeypatch.setattr(en, "skip_reason", lambda: "huggingface.co unreachable")
     stub(monkeypatch, RunnerError("불려서는 안 된다"))
     logs: list[str] = []
     doc = doc_of(bert_component())
     before = json.dumps(doc)
-    assert json.dumps(enrich(doc, WORKDIR, logs.append)) == before
-    assert [m for m in logs if "skipped" in m] == ["[enrich] skipped 1 hub model: huggingface.co unreachable"]
+    report: dict = {}
+    assert json.dumps(enrich(doc, WORKDIR, logs.append, report=report)) == before
+    assert [m for m in logs if "skipped" in m] == ["[enrich] aibom-generator skipped for 1 hub model: huggingface.co unreachable"]
+    assert report["hub_skipped"] == report["skipped"] == "huggingface.co unreachable"
 
 
 def test_skip_reason_checks_the_clone_before_the_network(tmp_path, monkeypatch):
@@ -129,79 +156,52 @@ def test_a_missing_working_directory_is_not_reported_as_a_missing_program():
         run(["python", "-c", "0"], cwd="/nonexistent")
 
 
-# -- 합치기 ------------------------------------------------------------------------
-def test_owasp_properties_are_filtered_and_merged_into_the_model_card(monkeypatch, owasp):
+# -- OWASP: 규제 필드 원본만 -------------------------------------------------------------
+def test_only_regulation_sources_are_taken_from_owasp(monkeypatch, owasp):
     calls: list[str] = []
     stub(monkeypatch, owasp, calls)
-    out = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None)
+    report: dict = {}
+    out = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None, report=report)
     comp = out["components"][0]
-    assert calls == [HF_ID]
+    assert calls == [HF_ID] and report["enriched"] == 1
     props = card_props(comp)
-    assert set(props) == KEPT                                     # 접두어 없는 키는 safetensors_total_parameters 만
-    assert not (set(props) & DROPPED)
+    assert set(props) == KEPT and KEPT <= OWASP_SOURCES
     assert props["safetensors_total_parameters"] == "110106428"
     assert json.loads(props["genai:aibom:modelcard:hyperparameter"])["block_count"] == 12
-    assert "model_type" not in {p["name"] for p in comp.get("properties") or []}       # component.properties 는 안 가져온다
-    assert {p["name"] for p in comp["properties"]} == {"cdx:ai:runtime"}                # cdxgen 값은 그대로
+    assert {p["name"] for p in comp["properties"]} == {"cdx:ai:runtime"}                # component.properties(model_type)는 안 가져온다
 
 
-def test_cdxgen_values_are_not_overwritten(monkeypatch, owasp):
+def test_owasp_fields_other_than_regulation_sources_are_not_taken(monkeypatch, owasp):
+    """OWASP 의 description(자리표시자), licenses, task·modelArchitecture(계열 이름), datasets(이름뿐), technicalLimitations(README 조각),
+    supplier·authors·version 은 하나도 들어오지 않는다. 비어 있는 자리여도 그렇다."""
     stub(monkeypatch, owasp)
-    comp = bert_component(description="cdxgen 설명")
-    out = enrich(doc_of(comp), WORKDIR, log=lambda m: None)
-    card = out["components"][0]["modelCard"]
-    assert card["modelParameters"]["task"] == "fill-mask"                                # 있던 하위 키는 유지
-    assert card["modelParameters"]["modelArchitecture"] == "BertForMaskedLM"
-    assert out["components"][0]["description"] == "cdxgen 설명"                          # 설명도 먼저 있던 것이 이긴다
+    comp = {"bom-ref": BERT, "type": "machine-learning-model", "name": "bert-base-uncased", "purl": BERT}
+    out = enrich(doc_of(comp), WORKDIR, log=lambda m: None)["components"][0]
+    assert set(out) == {"bom-ref", "type", "name", "purl", "modelCard"} and set(out["modelCard"]) == {"properties"}
+    kept = enrich(doc_of(bert_component(description="cdxgen 설명")), WORKDIR, log=lambda m: None)["components"][0]
+    assert kept["modelCard"]["modelParameters"] == {"task": "fill-mask", "modelArchitecture": "BertForMaskedLM"}
+    assert kept["description"] == "cdxgen 설명" and "considerations" not in kept["modelCard"]
 
 
-def test_dataset_refs_written_by_the_d_bom_are_not_replaced_by_the_name_only_list(monkeypatch, owasp):
-    """D-BOM 이 허브 모델 카드의 데이터셋을 ref 로 먼저 적어 두면, 빈 자리만 채우는 규칙에 걸려 aibom-generator 의 이름뿐인 목록은
-    들어오지 않는다. 모델 카드를 못 읽어 자리가 비어 있으면 지금처럼 그 목록이 들어간다."""
+def test_an_owasp_result_without_regulation_values_counts_as_failed(monkeypatch, owasp):
+    """허브에 없는 저장소·비공개 저장소에도 OWASP 는 기본값(task text-generation, modelArchitecture transformer, 설명 자리표시자)으로
+    채운 BOM 을 낸다. 가져올 원본이 없으니 아무것도 바뀌지 않고 실패로 센다."""
+    defaults = copy.deepcopy(owasp)
+    src = defaults["components"][0]
+    src["modelCard"] = {"modelParameters": {"task": "text-generation", "modelArchitecture": "transformer"},
+                        "properties": [{"name": "genai:aibom:trainingDataAvailable", "value": "false"}]}
+    stub(monkeypatch, defaults)
+    doc = doc_of(bert_component())
+    before = json.dumps(doc)
+    report: dict = {}
+    assert json.dumps(enrich(doc, WORKDIR, log=lambda m: None, report=report)) == before
+    assert report["failed"] == [HF_ID] and report["errors"] == {HF_ID: "no regulation values in the aibom-generator output"}
+
+
+def test_running_twice_adds_nothing_new(monkeypatch, owasp, hub):
     stub(monkeypatch, owasp)
-    refs = [{"ref": "pkg:huggingface/datasets/bookcorpus/bookcorpus"}]
-    comp = bert_component()
-    comp["modelCard"]["modelParameters"]["datasets"] = copy.deepcopy(refs)
-    assert enrich(doc_of(comp), WORKDIR, log=lambda m: None)["components"][0]["modelCard"]["modelParameters"]["datasets"] == refs
-    plain = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None)["components"][0]
-    assert [e["name"] for e in plain["modelCard"]["modelParameters"]["datasets"]] == ["bookcorpus", "wikipedia"]
-
-
-def test_description_and_considerations_come_from_owasp_when_missing(monkeypatch, owasp):
-    src = next(c for c in owasp["components"] if c["type"] == "machine-learning-model")
-    stub(monkeypatch, owasp)
-    out = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None)
-    comp = out["components"][0]
-    assert comp.get("description") == src.get("description")
-    if src.get("modelCard", {}).get("considerations"):
-        assert comp["modelCard"]["considerations"] == src["modelCard"]["considerations"]
-
-
-def test_performance_metrics_are_copied_when_missing():
-    from aibom_cli.enrich import _apply
-    metrics = [{"type": "accuracy", "value": "0.91", "slice": "glue/cola"}]
-    dst = {"modelCard": {"quantitativeAnalysis": {"performanceMetrics": [{"type": "f1", "value": "0.5"}]}}}
-    _apply(dst, {"modelCard": {"quantitativeAnalysis": {"performanceMetrics": metrics, "graphics": {"collection": []}}}}, {})
-    assert dst["modelCard"]["quantitativeAnalysis"]["performanceMetrics"] == [{"type": "f1", "value": "0.5"}]     # 있던 것이 이긴다
-    assert dst["modelCard"]["quantitativeAnalysis"]["graphics"] == {"collection": []}                            # 없던 하위 키만 들어온다
-    dst = {}
-    _apply(dst, {"modelCard": {"quantitativeAnalysis": {"performanceMetrics": metrics}}}, {})
-    assert dst["modelCard"]["quantitativeAnalysis"]["performanceMetrics"] == metrics
-
-
-def test_document_level_score_properties_move_to_the_component(monkeypatch, owasp):
-    owasp["metadata"]["properties"] = [{"name": "aibom:completeness:score", "value": "83"},
-                                       {"name": "generated_at", "value": "2026-01-01"}]
-    stub(monkeypatch, owasp)
-    comp = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None)["components"][0]
-    names = {p["name"]: p["value"] for p in comp["properties"]}
-    assert names["owasp:aibom:aibom:completeness:score"] == "83" and "generated_at" not in names
-
-
-def test_running_twice_adds_nothing_new(monkeypatch, owasp):
-    stub(monkeypatch, owasp)
-    once = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None)
-    twice = enrich(copy.deepcopy(once), WORKDIR, log=lambda m: None)
+    once = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None, model_infos={HF_ID: hub})
+    twice = enrich(copy.deepcopy(once), WORKDIR, log=lambda m: None, model_infos={HF_ID: hub})
     assert json.dumps(twice) == json.dumps(once)
 
 
@@ -230,21 +230,98 @@ def test_a_result_without_a_model_component_changes_nothing(monkeypatch):
     assert json.dumps(enrich(doc, WORKDIR, log=lambda m: None)) == before
 
 
+# -- Hub API 응답으로 채우기 --------------------------------------------------------------
+def test_hub_api_response_fills_the_empty_fields(monkeypatch, hub):
+    """실제 응답: sha · author · cardData.license · arxiv 태그 · config · pipeline_tag · safetensors.total. 이미 있는 값(cdxgen 의 task ·
+    modelArchitecture)은 그대로이고, model-index 가 없으니 성능 지표는 없으며, base_model 이 없으니 계보도 없다."""
+    stub(monkeypatch, RunnerError("OWASP 는 이 테스트의 관심 밖"))
+    report: dict = {}
+    comp = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None, report=report, model_infos={HF_ID: hub})["components"][0]
+    assert (report["hub"], report["hub_missing"]) == (1, [])
+    assert comp["version"] == "86b5e0934494bd15c9632b12f734a8a67f723594"
+    assert comp["licenses"] == [{"license": {"id": "Apache-2.0"}}] and comp["supplier"] == {"name": "google-bert"}
+    assert comp["externalReferences"] == [{"type": "distribution", "url": "https://huggingface.co/google-bert/bert-base-uncased"},
+                                          {"type": "documentation", "url": "https://arxiv.org/abs/1810.04805"}]
+    assert comp["modelCard"]["modelParameters"] == {"task": "fill-mask", "modelArchitecture": "BertForMaskedLM", "architectureFamily": "bert",
+                                                    "inputs": [{"format": "text"}], "outputs": [{"format": "text"}]}
+    assert "pedigree" not in comp and "quantitativeAnalysis" not in comp["modelCard"] and "description" not in comp
+    assert {"name": "aibom-internal:model:parameterCount", "value": "110106428"} in comp["properties"]
+
+
+def test_hub_models_without_a_response_are_reported(monkeypatch, hub):
+    other = "pkg:huggingface/acme/private"
+    stub(monkeypatch, RunnerError("x"))
+    report: dict = {}
+    doc = doc_of(bert_component(), {"bom-ref": other, "type": "machine-learning-model", "name": "private", "purl": other})
+    out = enrich(doc, WORKDIR, log=lambda m: None, report=report, model_infos={HF_ID: hub, "acme/private": None})
+    assert (report["models"], report["hub"], report["hub_missing"]) == (2, 1, ["acme/private"])
+    assert set(out["components"][1]) == {"bom-ref", "type", "name", "purl"}
+
+
+def test_hub_api_fields_follow_the_cdxgen_rules_for_cards():
+    """허구의 응답: other 라이선스 · base_model 관계 · model-index 성능 지표 · GGUF 저장소 (gguf.total · context_length · architecture)."""
+    info = {"id": "acme/chat-GGUF", "author": "acme", "sha": "b2" * 20, "tags": ["gguf", "arxiv:2601.00001"],
+            "cardData": {"license": "other", "license_name": "acme-license", "license_link": "https://acme.example/l",
+                         "base_model": ["acme/base", "not a hub id"], "base_model_relation": "quantized", "model_description": "Acme  chat\\nmodel.",
+                         "model-index": [{"name": "x", "results": [
+                             {"task": {"type": "text-generation"}, "dataset": {"name": "Eval", "type": "acme/eval", "split": "test"},
+                              "metrics": [{"type": "accuracy", "value": 0.5}, {"name": "f1", "value": None}, {"value": 1}]}]}]},
+            "gguf": {"total": 15000000, "architecture": "llama", "context_length": 2048}}
+    comp = {"type": "machine-learning-model", "name": "chat-GGUF", "purl": "pkg:huggingface/acme/chat-GGUF"}
+    apply_model_info(comp, "acme/chat-GGUF", info)
+    assert comp["licenses"] == [{"license": {"name": "acme-license", "url": "https://acme.example/l"}}]
+    assert comp["description"] == "Acme chat\\nmodel."
+    assert comp["pedigree"] == {"ancestors": [{"type": "machine-learning-model", "group": "acme", "name": "base", "purl": "pkg:huggingface/acme/base"}],
+                                "notes": "Hugging Face relation: quantized"}
+    params = comp["modelCard"]["modelParameters"]
+    assert params == {"task": "text-generation", "architectureFamily": "llama", "inputs": [{"format": "text"}], "outputs": [{"format": "text"}]}
+    assert comp["modelCard"]["quantitativeAnalysis"]["performanceMetrics"] == [{"type": "accuracy", "value": "0.5", "slice": "Eval / test"}]
+    assert {p["name"]: p["value"] for p in comp["properties"]} == {"aibom-internal:model:parameterCount": "15000000",
+                                                                    "aibom-internal:model:maxSize": "2048"}
+    assert comp["externalReferences"][1] == {"type": "documentation", "url": "https://arxiv.org/abs/2601.00001"}
+
+
+def test_hub_api_never_overwrites_and_infers_io_from_widgets_like_cdxgen():
+    comp = {"type": "machine-learning-model", "name": "m", "purl": "pkg:huggingface/a/m", "version": "1", "description": "d",
+            "licenses": [{"license": {"id": "MIT"}}], "pedigree": {"ancestors": [{"name": "x"}]},
+            "modelCard": {"modelParameters": {"inputs": [{"format": "image"}]}}}
+    before = copy.deepcopy(comp)
+    apply_model_info(comp, "a/m", {"sha": "s", "cardData": {"license": "apache-2.0", "base_model": "a/b", "model_description": "x"},
+                                   "pipeline_tag": "text-classification", "widgetData": [{"text": "hi"}]})
+    assert {k: comp[k] for k in before} == {**before, "modelCard": comp["modelCard"]}
+    assert comp["modelCard"]["modelParameters"] == {"inputs": [{"format": "image"}], "task": "text-classification"}   # 입출력이 있으면 손대지 않는다
+    widget = {"type": "machine-learning-model", "name": "m", "purl": "pkg:huggingface/a/m"}
+    apply_model_info(widget, "a/m", {"pipeline_tag": "text-classification", "widgetData": [{"text": "hi"}]})      # 표에 없는 task 는 widget 으로
+    assert widget["modelCard"]["modelParameters"]["inputs"] == [{"format": "text"}]
+    empty = {"type": "machine-learning-model", "name": "m", "purl": "pkg:huggingface/a/m"}
+    apply_model_info(empty, "a/m", {"id": "a/m"})
+    assert empty == {"type": "machine-learning-model", "name": "m", "purl": "pkg:huggingface/a/m",
+                     "externalReferences": [{"type": "distribution", "url": "https://huggingface.co/a/m"}]}
+
+
+def test_performance_metrics_match_cdxgen():
+    index = [{"results": [{"dataset": {"name": "D", "split": "s"}, "metrics": [{"type": "acc", "value": 0.9}, {"name": "f1", "value": "0.8"},
+                                                                             {"type": "x", "value": ""}, {"value": 1}]},
+                          {"metrics": [{"type": "bleu", "value": 30}]}, "bad"]}, None]
+    assert performance_metrics(index) == [{"type": "acc", "value": "0.9", "slice": "D / s"}, {"type": "f1", "value": "0.8", "slice": "D / s"},
+                                          {"type": "bleu", "value": "30"}]
+    assert performance_metrics(None) == [] and performance_metrics({"results": []}) == []
+
+
 # -- form 으로 이어지는가 ----------------------------------------------------------
 @pytest.mark.parametrize("form", ["properties", "typed"])
-def test_enriched_values_become_v06_fields(monkeypatch, owasp, form):
+def test_enriched_values_become_v06_fields(monkeypatch, owasp, hub, form):
     stub(monkeypatch, owasp)
-    out = apply(enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None), form=form, log=lambda m: None)
+    out = apply(enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None, model_infos={HF_ID: hub}), form=form, log=lambda m: None)
     card = out["components"][0]["modelCard"]
     if form == "properties":
         props = card_props(out["components"][0])
         assert props["aibom:model:parameterCount"] == "110106428" and props["aibom:model:inputs:0:maxSize"] == "512"
         assert (props["aibom:model:hyperparameters:0:name"], props["aibom:model:hyperparameters:0:value"]) == ("context_length", "512")
-        assert set(props) & KEPT == {"genai:aibom:trainingDataAvailable", "genai:aibom:trainingDataStatus",
-                                     "owasp:aibom:distribution:modelFileSize"}          # 승격한 원본만 사라진다
+        assert all(name.startswith("aibom:") for name in props)                       # 가져온 원본은 모두 승격되어 소비된다
     else:
         assert card["modelParameters"]["parameterCount"] == 110106428
-        assert card["modelParameters"]["inputs"][0]["maxSize"] == "512"
+        assert card["modelParameters"]["inputs"][0] == {"format": "text", "maxSize": "512"}
         assert card["considerations"]["technicalRequirements"] == ["python", "transformers"]
 
 

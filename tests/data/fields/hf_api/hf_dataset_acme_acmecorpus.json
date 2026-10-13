@@ -1,0 +1,35 @@
+{
+  "_id": "6650aa00acmemeacmecorpus",
+  "id": "acme/acmecorpus",
+  "author": "acme",
+  "sha": "d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4d4",
+  "lastModified": "2026-03-01T00:00:00.000Z",
+  "createdAt": "2026-02-01T00:00:00.000Z",
+  "private": false,
+  "disabled": false,
+  "gated": false,
+  "downloads": 10,
+  "likes": 0,
+  "tags": [
+    "task_categories:fill-mask",
+    "language:en",
+    "license:mit",
+    "modality:text"
+  ],
+  "description": "",
+  "cardData": {
+    "license": "mit",
+    "pretty_name": "Acme Corpus",
+    "task_categories": [
+      "fill-mask"
+    ],
+    "language": [
+      "en"
+    ],
+    "dataset_info": {
+      "dataset_size": 2000000,
+      "download_size": 1200000
+    }
+  },
+  "usedStorage": 1000
+}

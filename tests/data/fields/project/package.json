@@ -1,0 +1,14 @@
+{
+  "name": "acme-web",
+  "version": "1.0.0",
+  "description": "Acme review assistant web client",
+  "license": "ISC",
+  "dependencies": {
+    "@acme/ui": "^2.0.0",
+    "left-pad": "1.3.0",
+    "openai": "^4.52.0"
+  },
+  "devDependencies": {
+    "eslint-plugin-acme": "0.0.1"
+  }
+}
