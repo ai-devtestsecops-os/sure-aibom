@@ -1327,6 +1327,17 @@
   ]
  },
  {
+  "site": "metadata.tools.components.manufacturer.name",
+  "sources": [
+   {
+    "tool": "OWASP aibom-generator",
+    "kinds": [
+     "도구 목록"
+    ]
+   }
+  ]
+ },
+ {
   "site": "metadata.tools.components.name",
   "sources": [
    {
@@ -1337,6 +1348,12 @@
    },
    {
     "tool": "cdxgen",
+    "kinds": [
+     "도구 목록"
+    ]
+   },
+   {
+    "tool": "OWASP aibom-generator",
     "kinds": [
      "도구 목록"
     ]
@@ -1387,6 +1404,12 @@
     ]
    },
    {
+    "tool": "OWASP aibom-generator",
+    "kinds": [
+     "도구 목록"
+    ]
+   },
+   {
     "tool": "aibom-cli",
     "kinds": [
      "도구 목록"
@@ -1405,6 +1428,12 @@
    },
    {
     "tool": "cdxgen",
+    "kinds": [
+     "도구 목록"
+    ]
+   },
+   {
+    "tool": "OWASP aibom-generator",
     "kinds": [
      "도구 목록"
     ]

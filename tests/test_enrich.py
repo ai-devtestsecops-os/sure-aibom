@@ -202,6 +202,22 @@ def test_an_owasp_result_without_regulation_values_counts_as_failed(monkeypatch,
     assert report["failed"] == [HF_ID] and report["errors"] == {HF_ID: "no regulation values in the aibom-generator output"}
 
 
+def test_the_generator_is_listed_as_a_tool_only_when_its_values_are_used(monkeypatch, owasp):
+    """aibom-generator 에서 규제 필드 원본을 가져오면, 그 출력이 metadata.tools 에 자기를 적은 항목을 문서의 도구 목록에 더한다.
+    모델이 여럿이어도, 두 번 돌려도 한 번만 둔다. 원본을 하나도 못 가져온 결과(비공개·없는 저장소)면 더하지 않는다."""
+    stub(monkeypatch, owasp)
+    other = bert_component(**{"bom-ref": "pkg:huggingface/acme/other", "purl": "pkg:huggingface/acme/other", "group": "acme", "name": "other"})
+    out = enrich(doc_of(bert_component(), other), WORKDIR, log=lambda m: None)
+    assert out["metadata"]["tools"]["components"] == owasp["metadata"]["tools"]["components"]
+    assert enrich(copy.deepcopy(out), WORKDIR, log=lambda m: None)["metadata"] == out["metadata"]
+    empty = copy.deepcopy(owasp)
+    for comp in empty["components"]:
+        card = comp.get("modelCard") or {}
+        card["properties"] = [p for p in card.get("properties") or [] if p.get("name") not in OWASP_SOURCES]
+    stub(monkeypatch, empty)
+    assert "metadata" not in enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None)
+
+
 def test_running_twice_adds_nothing_new(monkeypatch, owasp, hub):
     stub(monkeypatch, owasp)
     once = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None, model_infos={HF_ID: hub})

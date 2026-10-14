@@ -154,8 +154,14 @@ class Tracker:
         return out
 
 
+def tool_entries(doc: dict) -> list[dict]:
+    """문서의 도구 목록 항목 (사본)."""
+    return copy.deepcopy(((doc.get("metadata") or {}).get("tools") or {}).get("components") or [])
+
+
 def enrich_tool(path: str, value: str, consumed) -> set[str]:
-    return {OWASP} if path.startswith("modelCard.properties") else {CLI}
+    """보강 단계에서 새로 생긴 값. 규제 필드 원본과, 원본을 가져다 쓴 aibom-generator 가 자기를 적은 도구 항목은 OWASP 의 값이다."""
+    return {OWASP} if path.startswith(("modelCard.properties", "metadata.tools")) else {CLI}
 
 
 def form_tool(path: str, value: str, consumed) -> set[str]:
@@ -204,6 +210,16 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
     def staged(name, tool_of):
         return lambda doc, *a, **k: tracker.stage(doc, lambda: real[name](doc, *a, **k), tool_of)
 
+    def enrich(doc, *a, **k):
+        before = tool_entries(doc)
+        out = tracker.stage(doc, lambda: real["enrich"](doc, *a, **k), enrich_tool)
+        # 도구 목록은 항목 단위로 본다 (merge 와 같다): 새로 더해진 항목의 칸은 값이 다른 항목과 같아도(type) 그 항목을 낸 도구의 것이다
+        for entry in tool_entries(out):
+            if entry not in before:
+                for path, v in leaves(entry, "metadata.tools.components"):
+                    tracker.attr["doc"].setdefault(path, {}).setdefault(v, set()).update(enrich_tool(path, v, []))
+        return out
+
     def emit(doc, output):
         final["doc"] = doc
         clean = copy.deepcopy(doc)
@@ -213,7 +229,7 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
 
     patched = dict(run_syft=raw_of("run_syft", SYFT), run_cdxgen=raw_of("run_cdxgen", CDXGEN), merge=merge,
                    discover_datasets=staged("discover_datasets", lambda *_: {CLI}), discover_models=staged("discover_models", lambda *_: {CLI}),
-                   enrich=staged("enrich", enrich_tool), regulate=staged("regulate", form_tool), _emit=emit)
+                   enrich=enrich, regulate=staged("regulate", form_tool), _emit=emit)
     try:
         for name, fn in patched.items():
             setattr(cli, name, fn)

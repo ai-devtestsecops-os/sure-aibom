@@ -20,6 +20,7 @@
    contextLength, runtimeRequirement, safetensors_total_parameters). 나머지 출력은 버린다: 값이 없을 때 고정값(description
    "No description available", task text-generation, modelArchitecture transformer)을 채우고, README 를 정규식으로 잘라
    technicalLimitations·datasets 를 만들며, 허브에 없는 저장소에도 실패하지 않고 그런 BOM 을 낸다. 가져온 원본이 없으면 실패로 센다.
+   원본을 가져온 출력이 metadata.tools 에 자기를 적은 도구 항목은 문서의 도구 목록에 더한다 (한 번만).
 
 허브 모델: purl 이 pkg:huggingface/<ns>/<name> 인 모델 컴포넌트 가운데 로컬 모델 파일(README.md, config.json, adapter_config.json,
 Modelfile, *.gguf, *.safetensors)에서 찾은 것이 아닌 것. 로컬 폴더는 그 파일들이 근거다 (config 의 _name_or_path 는 베이스 모델
@@ -28,6 +29,7 @@ Modelfile, *.gguf, *.safetensors)에서 찾은 것이 아닌 것. 로컬 폴더�
 """
 from __future__ import annotations
 
+import copy
 import os
 import re
 import socket
@@ -147,6 +149,7 @@ def enrich(merged: dict, workdir: Path, log=print, report: dict | None = None, m
         log(f"[enrich] aibom-generator skipped for {len(targets)} hub model{'s' if len(targets) != 1 else ''}: {reason}")
         report["skipped"] = reason
         return merged
+    used_tools: list[dict] = []
     for hf_id, comp in targets.items():
         try:
             owasp = run_aibom_generator(hf_id, workdir)
@@ -159,11 +162,33 @@ def enrich(merged: dict, workdir: Path, log=print, report: dict | None = None, m
         taken = _apply(comp, src) if src else 0
         if taken:
             report["enriched"] += 1
+            used_tools += _tools_of(owasp)
         else:
             report["failed"].append(hf_id)
             report["errors"][hf_id] = ("no regulation values in the aibom-generator output" if src
                                        else "no model component in the aibom-generator output")
+    _add_tools(merged, used_tools)
     return merged
+
+
+def _tools_of(doc: dict) -> list[dict]:
+    """문서가 metadata.tools 에 적은 도구 항목 (1.5 이후의 components 꼴, 그 전의 배열 꼴 모두)."""
+    tools = (doc.get("metadata") or {}).get("tools")
+    items = tools.get("components") if isinstance(tools, dict) else tools
+    return [t for t in items or [] if isinstance(t, dict) and t.get("name")]
+
+
+def _add_tools(merged: dict, tools: list[dict]) -> None:
+    """값을 가져다 쓴 aibom-generator 의 도구 항목(그 출력이 자기를 적은 것)을 문서의 도구 목록에 더한다. 병합처럼
+    (이름, 버전)이 같은 것은 한 번만 둔다. 가져다 쓴 값이 없으면 손대지 않는다."""
+    if not tools:
+        return
+    listed = merged.setdefault("metadata", {}).setdefault("tools", {}).setdefault("components", [])
+    seen = {(t.get("name"), t.get("version")) for t in listed if isinstance(t, dict)}
+    for tool in tools:
+        if (tool.get("name"), tool.get("version")) not in seen:
+            seen.add((tool.get("name"), tool.get("version")))
+            listed.append(copy.deepcopy(tool))
 
 
 def _apply(dst: dict, src: dict) -> int:
