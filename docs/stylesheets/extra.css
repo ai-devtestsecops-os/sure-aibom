@@ -109,3 +109,10 @@ html { scrollbar-gutter: stable; }
 
 /* 표: 마우스를 올려도 행을 회색으로 칠하지 않는다 (Material 기본은 hover 에 옅은 회색) */
 .md-typeset table:not([class]) tbody tr:hover { background-color: transparent; box-shadow: none; }
+
+/* 한글은 띄어쓰기(어절)에서만 줄을 바꾼다. 띄어쓰기 없는 긴 문자열(파일 이름, URL)만 넘칠 때 중간에서 끊는다 */
+.md-typeset { word-break: keep-all; overflow-wrap: break-word; }
+/* Material 은 링크와 인라인 코드에 word-break: break-word 를 줘서 위 설정을 덮는다. 한글은 어절에서만 끊고,
+   코드는 지금처럼 띄어쓰기 없는 긴 이름이 넘칠 때 아무 데서나 끊을 수 있게 둔다 */
+.md-typeset a { word-break: keep-all; }
+.md-typeset code { word-break: keep-all; overflow-wrap: anywhere; }

@@ -24,14 +24,9 @@ SPDX 3.0.1 기반
 
 v0.6 이 정의한 필드 가운데 aibom-cli 가 스캔 결과로 값을 채우는 것은 열한 개다. 나머지 필드는 순차적으로 지원할 예정이다.
 
-| 대상 | 필드 | 값의 출처 |
+| 대상 | 허브 | 로컬 |
 |---|---|---|
-| 모델 | hyperparameters, parameterCount | 로컬 모델은 `config.json`, gguf·safetensors 헤더 (aibom-cli) 와 gguf 의 파라미터 수 (cdxgen), 허브 모델은 OWASP aibom-generator 가 Hub 에서 읽은 같은 값과 Hub API 의 파라미터 수 (aibom-cli) |
-| 모델 | inputs maxSize, technicalRequirements | 로컬 모델은 cdxgen 이 읽은 gguf·`config.json`·Modelfile·모델 카드, 허브 모델은 OWASP aibom-generator 와 Hub API 의 gguf 컨텍스트 길이 (aibom-cli), 코드의 import (cdxgen) |
-| 데이터셋 | size, modality, availability, provenance, statistics | Hub API 와 datasets-server (허브 데이터셋), 파일 분석 (로컬 데이터) |
-| 데이터셋 | intendedUse, collectionProcess | 허브 데이터셋 카드의 `task_categories`·`task_ids`, `annotations_creators`·`language_creators` (허브 데이터셋만) |
+| 모델 | hyperparameters, parameterCount, inputs maxSize, technicalRequirements | hyperparameters, parameterCount, inputs maxSize, technicalRequirements |
+| 데이터셋 | size, modality, statistics, availability, provenance, intendedUse, collectionProcess | size, modality, statistics |
 
-규제 필드는 아니지만 모델의 평가 결과(모델 카드 `model-index`)도 CycloneDX 의 `modelCard.quantitativeAnalysis.performanceMetrics` 로
-들어온다. 로컬 모델은 cdxgen 이, 코드에서 참조하는 허브 모델은 aibom-cli 가 Hub API 응답에서 채운다.
-
-각 필드가 어디에 붙는지, 기존 표준의 어느 필드와 대응하는지, 어느 규제 조항에 근거하는지는 [필드 탐색기](field-mapping.md)에서 볼 수 있다.
+각 필드가 어느 규제 조항에 근거하는지는 [필드 탐색기](field-mapping.md)에서 볼 수 있다.
