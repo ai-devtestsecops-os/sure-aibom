@@ -3,7 +3,7 @@
 `--spec 1.7` 로 낼 때 규제 값을 적는 키의 규격이다. 새 필드를 만들지 않고 기존 `properties` 배열에 `aibom:` 으로 시작하는 키로 값을
 적으므로, 결과는 공식 CycloneDX 1.7 스키마를 그대로 통과한다. 키는 AI-BOM v0.6 이 더한 필드와 하나씩 대응한다.
 
-## 1. 확장 지점
+## 확장 지점
 
 | | CycloneDX 1.7 | SPDX 3.0.1 |
 |---|---|---|
@@ -12,10 +12,10 @@
 
 CycloneDX 의 `componentData` 에는 properties 슬롯이 없어 데이터셋 값만 한 계층 위로 올라간다.
 
-## 2. 표기 규칙
+## 표기 규칙
 
 - 값은 전부 문자열이다.
-- 여러 값을 담는 키는 끝에 순번을 붙여 하나씩 적는다. 항목이 여러 칸으로 이루어진 키는 순번 뒤에 칸 이름을 붙인다. 아래 표의 `<i>` 가 순번 자리다.
+- 여러 값을 담는 키는 끝에 0부터 매기는 인덱스를 붙여 하나씩 적는다. 항목이 여러 칸으로 이루어진 키는 인덱스 뒤에 칸 이름을 붙인다. 아래 표의 `<i>` 가 인덱스 자리다.
   syft 의 `syft:location:0:path` 와 같은 관례다.
 - 허용값이 적힌 키는 그 목록 중 하나만 쓴다.
 
@@ -26,7 +26,7 @@ CycloneDX 의 `componentData` 에는 properties 슬롯이 없어 데이터셋 �
 { "name": "aibom:model:hyperparameters:0:value", "value": "32" }
 ```
 
-## 3. 모델
+## 모델
 
 | 키 | 설명 | 허용값 |
 |---|---|---|
@@ -60,7 +60,7 @@ CycloneDX 의 `componentData` 에는 properties 슬롯이 없어 데이터셋 �
 | `aibom:model:safetyRiskAssessment` | AI 시스템의 일반 안전 위험 평가 결과. | serious, high, medium, low |
 | `aibom:model:technicalRequirements:<i>` | 이 모델을 소프트웨어 안에서 돌리는 데 필요한 것(하드웨어, 연산 자원, 라이브러리, 운영체제)과, 모델 밖의 하드웨어·소프트웨어(다른 인공지능시스템을 포함한다)와 맞물리는 방식. |  |
 
-## 4. 데이터셋
+## 데이터셋
 
 | 키 | 설명 | 허용값 |
 |---|---|---|
