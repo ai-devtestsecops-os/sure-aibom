@@ -1,13 +1,13 @@
 # aibom-cli
 
 AI 시스템의 소프트웨어 패키지(S-BOM), 모델(M-BOM), 데이터셋(D-BOM)을 찾아 하나의 AI-BOM 으로 내는 CLI 도구다.
-기존 CycloneDX 와 SPDX 가 다루지 않지만 EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 값을 추가하여, 규제에 맞는 BOM 을 만든다.
+기존 CycloneDX 와 SPDX 가 다루지 않지만 EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 값을 추가하여, 규제에 맞는 AI-BOM 을 만든다.
 
-| BOM | 대상 | 출처 |
+| BOM 종류 | 대상 | 출처 |
 |---|---|---|
 | S-BOM | 소프트웨어 패키지 | 패키지 매니페스트, 설치된 패키지 |
 | M-BOM | 모델 | 코드의 참조, 로컬 모델 |
-| D-BOM | 데이터셋 | 코드와 모델의 참조, 로컬 데이터 (`--data`) |
+| D-BOM | 데이터셋 | 코드와 모델의 참조, 로컬 데이터 |
 
 ## 주요 기능
 
