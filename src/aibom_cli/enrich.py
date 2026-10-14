@@ -1,7 +1,8 @@
 """허브 모델(코드가 부르는 Hugging Face 모델)을 보강한다. 두 단계다.
 
-1) Hub API — D-BOM 이 모델 카드의 데이터셋을 읽으려고 이미 받은 GET /api/models/<id> 응답으로 비어 있는 필드만 채운다
-   (추가 호출 없음). 로컬 모델 카드에서 cdxgen 이 읽는 것과 같은 키·같은 규칙이다.
+1) Hub API — 허브 모델마다 GET /api/models/<id> 응답을 받아 비어 있는 필드만 채운다. 받은 응답은 report["model_infos"] 로
+   남겨, 뒤의 D-BOM 이 모델 카드의 데이터셋을 읽을 때 다시 쓴다 (같은 응답을 두 번 받지 않는다). 로컬 모델 카드에서 cdxgen 이
+   읽는 것과 같은 키·같은 규칙이다.
        version                                     sha (조회 시점의 main 커밋. 허브 데이터셋과 같은 규칙)
        licenses                                    cardData.license (other 면 license_name · license_link)
        description                                 cardData.model_description, 없으면 cardData.description
@@ -31,6 +32,7 @@ import os
 import re
 import socket
 from pathlib import Path, PurePosixPath
+from typing import Iterable
 from urllib.parse import urlparse
 
 from .form import HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON, INTERNAL_MODEL_PREFIX
@@ -88,6 +90,12 @@ def hf_reachable(timeout: float = 3.0) -> bool:
         return False
 
 
+def fetch_model_infos(hf_ids: Iterable[str], log=print) -> dict[str, dict | None]:
+    """허브 모델 id 마다 GET /api/models/<id> 응답 (실패면 None)."""
+    from .dataset import fetch_model_info          # dataset 이 이 모듈의 hub_model_id · hf_reachable 을 가져다 쓰므로 여기서 부른다
+    return {hf_id: fetch_model_info(hf_id, log) for hf_id in hf_ids}
+
+
 def skip_reason() -> str | None:
     """OWASP 보강을 건너뛰어야 하면 그 이유를, 해도 되면 None 을 돌려준다. 이유는 CLI 요약에 그대로 나가므로 영어다."""
     repo = os.environ.get("AIBOM_GENERATOR_DIR")
@@ -103,21 +111,28 @@ def skip_reason() -> str | None:
 
 
 def enrich(merged: dict, workdir: Path, log=print, report: dict | None = None, model_infos: dict | None = None) -> dict:
-    """model_infos 는 D-BOM 이 받아 둔 허브 모델 id → Hub API 응답 (실패면 None). 허브에 닿지 않았으면 None 을 준다.
+    """model_infos 는 허브 모델 id → Hub API 응답 (실패면 None). 주지 않으면 허브에 닿는지 보고 허브 모델마다 받는다.
     report 를 주면 결과를 적는다: models(허브 모델 수) · hub(Hub API 로 채운 수) · hub_missing(응답이 없던 id) ·
-    hub_skipped(Hub API 를 쓰지 못한 이유) · enriched(OWASP 에서 원본을 가져온 수) · failed(실패한 id) ·
+    hub_skipped(Hub API 를 쓰지 못한 이유) · hub_reachable(허브에 닿는지 본 결과, 보지 않았으면 None) ·
+    model_infos(쓴 응답, D-BOM 이 다시 쓴다) · enriched(OWASP 에서 원본을 가져온 수) · failed(실패한 id) ·
     errors(id → 이유 첫 줄) · skipped(OWASP 를 건너뛴 이유)."""
     report = {} if report is None else report
     targets = {hf: c for c in merged.get("components", []) if (hf := hub_model_id(c))}
-    report.update(models=len(targets), hub=0, hub_missing=[], hub_skipped=None, enriched=0, failed=[], errors={}, skipped=None)
+    report.update(models=len(targets), hub=0, hub_missing=[], hub_skipped=None, hub_reachable=None, model_infos={},
+                  enriched=0, failed=[], errors={}, skipped=None)
     if not targets:
         log("[enrich] no hub model components, nothing to enrich")
         report["skipped"] = report["hub_skipped"] = "no Hugging Face models"
         return merged
 
     if model_infos is None:
+        report["hub_reachable"] = hf_reachable()
+        if report["hub_reachable"]:
+            model_infos = fetch_model_infos(targets, log)
+    if model_infos is None:
         report["hub_skipped"] = "huggingface.co unreachable"
     else:
+        report["model_infos"] = model_infos
         for hf_id, comp in targets.items():
             info = model_infos.get(hf_id)
             if isinstance(info, dict):

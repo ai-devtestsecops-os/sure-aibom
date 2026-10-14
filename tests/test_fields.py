@@ -75,6 +75,7 @@ def scans(tmp_path_factory) -> dict:
     with pytest.MonkeyPatch.context() as mp:
         mp.setattr(en, "skip_reason", lambda: None)
         mp.setattr(en, "run_aibom_generator", recorded_owasp)
+        mp.setattr(en, "hf_reachable", lambda: True)                       # 허브 모델 응답은 M-BOM 보강이 받는다
         mp.setattr(ds, "hf_reachable", lambda: True)
         mp.setattr(ds, "fetch_model_info", lambda hf_id, log=print: recorded("model", hf_id))
         mp.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))

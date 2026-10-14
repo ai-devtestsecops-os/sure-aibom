@@ -143,11 +143,13 @@ STATISTICS_FILE_LIMIT = JSON_PARSE_LIMIT                      # 로컬 파일 �
 
 # ── 진입점 ──────────────────────────────────────────────────────────────────
 
-def discover(merged: dict, target: str, log=print, report: dict | None = None, data_paths: Iterable[str] = ()) -> dict:
+def discover(merged: dict, target: str, log=print, report: dict | None = None, data_paths: Iterable[str] = (),
+             model_infos: dict | None = None, hub_reachable: bool | None = None) -> dict:
     """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다.
-    data_paths 는 로컬 데이터 경로들 (scan --data). report 를 주면 hub_unreachable(허브에 물을 것이 있는데 허브에 닿지
-    않았는지), empty_data_paths(데이터 파일이 하나도 없던 경로), model_infos(허브 모델 id → Hub API 응답, 실패면 None.
-    보강 단계가 다시 쓴다)를 적는다."""
+    data_paths 는 로컬 데이터 경로들 (scan --data). model_infos 는 M-BOM 보강이 받아 둔 허브 모델 id → Hub API 응답이고,
+    주면 허브 모델 카드를 다시 받지 않는다 (주지 않으면 여기서 받는다). hub_reachable 은 M-BOM 보강이 허브에 닿는지 본
+    결과이고, None 이면 물을 것이 있을 때 여기서 본다. report 를 주면 hub_unreachable(허브에 물을 것이 있는데 허브에 닿지
+    않았는지), empty_data_paths(데이터 파일이 하나도 없던 경로)를 적는다."""
     components: list[dict] = merged.setdefault("components", [])
     by_hf_id: dict[str, dict] = {}
     for comp in components:
@@ -179,15 +181,14 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
     hub_models = [(c, model_id) for c in components if (model_id := hub_model_id(c))]
     reachable = True
     if hub_models or by_hf_id:
-        reachable = hf_reachable()
+        reachable = hf_reachable() if hub_reachable is None else hub_reachable
         if not reachable:
             n, m = len(by_hf_id), len(hub_models)
             skipped = [f"{n} dataset{'s keep' if n != 1 else ' keeps'} name and purl only"] if n else []
             skipped += [f"{m} hub model card{'s' if m != 1 else ''} not read"] if m else []
             log(f"[dataset] huggingface.co unreachable: {', '.join(skipped)}")
-    model_infos: dict[str, dict | None] = {}
     if reachable and hub_models:
-        model_infos = _datasets_from_model_cards(merged, hub_models, by_hf_id, log)
+        _datasets_from_model_cards(merged, hub_models, by_hf_id, log, model_infos)
 
     empty: list[str] = []
     for comp in _data_components(data_paths, log, empty):
@@ -201,7 +202,6 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
     if report is not None:
         report["hub_unreachable"] = not reachable
         report["empty_data_paths"] = empty
-        report["model_infos"] = model_infos
     return merged
 
 
@@ -323,16 +323,16 @@ def _notebook_code(text: str) -> str:
 
 # ── 허브 모델 카드 ────────────────────────────────────────────────────────────
 
-def _datasets_from_model_cards(merged: dict, hub_models: list[tuple[dict, str]], by_hf_id: dict[str, dict], log) -> dict[str, dict | None]:
-    """허브 모델마다 모델 카드의 데이터셋을 데이터셋 컴포넌트로 만들어 잇는다 (_link_model_datasets).
-    모델 카드를 못 읽었거나 데이터셋이 없는 모델은 손대지 않는다. 받은 응답을 모델 id 마다 돌려준다 (보강 단계가 다시 쓴다)."""
-    infos: dict[str, dict | None] = {}
+def _datasets_from_model_cards(merged: dict, hub_models: list[tuple[dict, str]], by_hf_id: dict[str, dict], log,
+                               infos: dict | None = None) -> None:
+    """허브 모델마다 모델 카드의 데이터셋을 데이터셋 컴포넌트로 만들어 잇는다 (_link_model_datasets). 모델 카드는 infos
+    (M-BOM 보강이 받아 둔 Hub API 응답)에서 읽고, infos 가 없으면 여기서 받는다. 모델 카드를 못 읽었거나 데이터셋이 없는
+    모델은 손대지 않는다."""
     for model, model_id in hub_models:
-        info = infos[model_id] = fetch_model_info(model_id, log)
+        info = infos.get(model_id) if infos is not None else fetch_model_info(model_id, log)
         ids = model_card_dataset_ids((info or {}).get("cardData"), model_id, log)
         if ids:
             _link_model_datasets(merged, model, ids, by_hf_id)
-    return infos
 
 
 def _datasets_from_local_model_cards(merged: dict, root: Path, by_hf_id: dict[str, dict], log) -> None:

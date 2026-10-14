@@ -178,18 +178,10 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
     merged = merge(docs, root=scan_root(args.target, image_name))
     scan_dir = scan_dir or args.target                        # 이미지를 못 풀었으면 볼 디렉터리가 없다
 
-    datasets: dict = {}
-    merged = discover_datasets(merged, scan_dir, log=detail, report=datasets, data_paths=args.data)
-    total = _count(sum(1 for c in merged["components"] if is_dataset(c)), "dataset")
-    _stage("Generating D-BOM", total + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
-    for path in datasets.get("empty_data_paths") or []:
-        _log(f"[aibom-cli] warning: no data files in {path}")
-
     merged = discover_models(merged, scan_dir, log=detail)
 
     enriched: dict = {}
-    model_infos = None if datasets.get("hub_unreachable") else datasets.get("model_infos") or {}
-    merged = enrich(merged, workdir, log=detail, report=enriched, model_infos=model_infos)
+    merged = enrich(merged, workdir, log=detail, report=enriched)
     if enriched["hub_skipped"]:
         result = f"skipped: {enriched['hub_skipped']}"
     elif enriched["hub_missing"]:
@@ -206,6 +198,15 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
     _stage("Enriching M-BOM (aibom-generator)", result)
     for hf_id, reason in enriched["errors"].items():             # 보강은 선택 단계라 종료 코드는 그대로 두고 이유만 알린다
         _log(f"[aibom-cli]   {hf_id}: {reason}")
+
+    # 허브 모델 카드의 데이터셋은 M-BOM 보강이 받아 둔 Hub API 응답에서 읽는다 (같은 응답을 다시 받지 않는다)
+    datasets: dict = {}
+    merged = discover_datasets(merged, scan_dir, log=detail, report=datasets, data_paths=args.data,
+                               model_infos=enriched["model_infos"], hub_reachable=enriched["hub_reachable"])
+    total = _count(sum(1 for c in merged["components"] if is_dataset(c)), "dataset")
+    _stage("Generating D-BOM", total + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
+    for path in datasets.get("empty_data_paths") or []:
+        _log(f"[aibom-cli] warning: no data files in {path}")
 
     regulation: dict = {}
     merged = regulate(merged, form=FORM_BY_SPEC[args.spec], log=detail, report=regulation)

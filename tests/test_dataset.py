@@ -734,9 +734,21 @@ def test_hub_model_card_datasets_become_components_linked_from_the_model(tmp_pat
     assert refs_in(out) <= {c["bom-ref"] for c in out["components"]} | {out["metadata"]["component"]["bom-ref"]}
 
 
+def test_model_infos_from_the_m_bom_step_are_read_without_asking_the_hub_again(tmp_path, monkeypatch, online):
+    """M-BOM 보강이 받아 둔 응답(model_infos)과 허브에 닿는지 본 결과(hub_reachable)를 주면, 모델 카드를 다시 받지 않고
+    허브 연결도 다시 보지 않는다. 데이터셋 조회는 그대로 한다."""
+    monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("M-BOM 보강이 본 결과가 있는데 허브 연결을 다시 봤다"))
+    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: pytest.fail("M-BOM 보강이 받은 응답이 있는데 다시 받았다"))
+    out = ds.discover(doc_of(hub_bert()), str(tmp_path), log=lambda m: None,
+                      model_infos={"google-bert/bert-base-uncased": model_info([IMDB])}, hub_reachable=True)
+    bert = next(c for c in out["components"] if c["bom-ref"] == BERT_REF)
+    assert bert["modelCard"]["modelParameters"]["datasets"] == [{"ref": IMDB_REF}]
+    assert internal(datasets(out)[IMDB_REF])["size"] == "133190302"
+
+
 def test_name_only_entries_become_refs_and_a_model_card_that_cannot_be_read_changes_nothing(tmp_path, monkeypatch, online):
     """같은 데이터셋을 이름만 적은 항목(aibom-generator 꼴)은 ref 로 바뀌어 한 번만 남고 다른 항목은 그대로다.
-    모델 카드를 못 읽은 모델은 손대지 않는다. 그때는 뒤의 보강이 지금처럼 이름뿐인 목록을 넣는다."""
+    모델 카드를 못 읽은 모델은 손대지 않는다."""
     named = hub_bert(modelCard={"modelParameters": {"datasets": [
         {"type": "dataset", "name": "glue", "contents": {"url": "https://huggingface.co/datasets/glue"}}, {"type": "dataset", "name": "kept"}]}})
     other = {"bom-ref": "pkg:huggingface/acme/other", "type": "machine-learning-model", "name": "other", "purl": "pkg:huggingface/acme/other",

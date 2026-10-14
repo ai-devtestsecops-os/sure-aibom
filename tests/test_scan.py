@@ -64,6 +64,7 @@ def recorded_owasp(hf_id: str, workdir) -> dict:
 def offline(monkeypatch):
     monkeypatch.setattr("aibom_cli.enrich.skip_reason", lambda: None)                                     # 보강은 녹화본으로 돌린다
     monkeypatch.setattr("aibom_cli.enrich.run_aibom_generator", recorded_owasp)
+    monkeypatch.setattr("aibom_cli.enrich.hf_reachable", lambda: True)                                   # 허브 모델 응답은 M-BOM 보강이 받는다
     monkeypatch.setattr(ds, "hf_reachable", lambda: True)
     monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: recorded("model", hf_id))
     monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))
@@ -199,10 +200,10 @@ def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
     lines = capsys.readouterr().err.splitlines()
     assert lines[0] == f"[aibom-cli] Generating AI-BOM v0.6 (CycloneDX) for {FIXTURE}, data from {FIXTURE / 'data'}"
     assert [line.split(" .")[0] for line in lines[1:-1]] == [
-        "[aibom-cli] Generating S-BOM (syft)", "[aibom-cli] Generating M-BOM (cdxgen)", "[aibom-cli] Generating D-BOM",
-        "[aibom-cli] Enriching M-BOM (Hub API)", "[aibom-cli] Enriching M-BOM (aibom-generator)", "[aibom-cli] Adding regulation fields"]
+        "[aibom-cli] Generating S-BOM (syft)", "[aibom-cli] Generating M-BOM (cdxgen)", "[aibom-cli] Enriching M-BOM (Hub API)",
+        "[aibom-cli] Enriching M-BOM (aibom-generator)", "[aibom-cli] Generating D-BOM", "[aibom-cli] Adding regulation fields"]
     assert lines[1].endswith(" 4 packages, 1 file") and lines[2].endswith(" 5 models, 2 files")   # cdxgen 의 데이터셋 참조는 D-BOM 에서 센다
-    assert lines[3].endswith(" 4 datasets") and lines[4].endswith(" 1 hub model") and lines[5].endswith(" 1 hub model")
+    assert lines[3].endswith(" 1 hub model") and lines[4].endswith(" 1 hub model") and lines[5].endswith(" 4 datasets")
     assert lines[6].endswith(" 34 of 44 filled (models 12/20, datasets 22/24)")      # 모델 5개 × 4, 허브 데이터셋 3개 × 7 + 로컬 1개 × 3
     # 마지막 줄은 다 만든 BOM 을 다시 센 것 — 묶음을 더하면 전체와 같다
     total, groups, deps = re.fullmatch(rf"\[aibom-cli\] Wrote {re.escape(str(cdx))} \((\d+) components: (.+); (\d+) dependencies\)", lines[-1]).groups()

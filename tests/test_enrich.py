@@ -8,6 +8,7 @@ from pathlib import Path
 
 import pytest
 
+import aibom_cli.dataset as ds
 import aibom_cli.enrich as en
 from aibom_cli.enrich import OWASP_SOURCES, apply_model_info, enrich, hf_id_of, hub_model_id, performance_metrics, skip_reason
 from aibom_cli.form import apply
@@ -38,6 +39,7 @@ def hub() -> dict:
 @pytest.fixture(autouse=True)
 def reachable(monkeypatch):
     monkeypatch.setattr(en, "skip_reason", lambda: None)
+    monkeypatch.setattr(en, "hf_reachable", lambda: False)        # Hub API 응답은 시험마다 model_infos 로 준다. 안 주면 허브에 닿지 않는다
 
 
 def bert_component(**extra) -> dict:
@@ -106,8 +108,9 @@ def test_nothing_to_enrich_is_left_alone(monkeypatch):
 
 
 def test_offline_skips_without_running_anything(monkeypatch):
-    """허브에 닿지 않으면 D-BOM 이 응답을 받지 못해 model_infos 가 None 이고, OWASP 도 건너뛴다."""
+    """허브에 닿지 않으면 Hub API 모델 응답을 받지 않고, OWASP 도 건너뛴다."""
     monkeypatch.setattr(en, "skip_reason", lambda: "huggingface.co unreachable")
+    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: pytest.fail("offline 인데 모델 응답을 받았다"))
     stub(monkeypatch, RunnerError("불려서는 안 된다"))
     logs: list[str] = []
     doc = doc_of(bert_component())
@@ -116,6 +119,7 @@ def test_offline_skips_without_running_anything(monkeypatch):
     assert json.dumps(enrich(doc, WORKDIR, logs.append, report=report)) == before
     assert [m for m in logs if "skipped" in m] == ["[enrich] aibom-generator skipped for 1 hub model: huggingface.co unreachable"]
     assert report["hub_skipped"] == report["skipped"] == "huggingface.co unreachable"
+    assert report["hub_reachable"] is False and report["model_infos"] == {}
 
 
 def test_skip_reason_checks_the_clone_before_the_network(tmp_path, monkeypatch):
@@ -246,6 +250,20 @@ def test_hub_api_response_fills_the_empty_fields(monkeypatch, hub):
                                                     "inputs": [{"format": "text"}], "outputs": [{"format": "text"}]}
     assert "pedigree" not in comp and "quantitativeAnalysis" not in comp["modelCard"] and "description" not in comp
     assert {"name": "aibom-internal:model:parameterCount", "value": "110106428"} in comp["properties"]
+
+
+def test_hub_model_responses_are_fetched_once_and_handed_to_the_d_bom(monkeypatch, hub):
+    """model_infos 를 주지 않으면 허브에 닿는지 보고 허브 모델마다 Hub API 응답을 한 번 받아 채운다. 받은 응답은 report 에 남겨
+    뒤의 D-BOM 이 모델 카드의 데이터셋을 읽을 때 다시 쓴다."""
+    calls: list[str] = []
+    monkeypatch.setattr(en, "hf_reachable", lambda: True)
+    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: calls.append(hf_id) or copy.deepcopy(hub))
+    monkeypatch.setattr(en, "skip_reason", lambda: "not under test")
+    report: dict = {}
+    comp = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None, report=report)["components"][0]
+    assert calls == [HF_ID]
+    assert report["hub_reachable"] is True and report["hub"] == 1 and report["model_infos"] == {HF_ID: hub}
+    assert comp["version"] == hub["sha"]
 
 
 def test_hub_models_without_a_response_are_reported(monkeypatch, hub):
