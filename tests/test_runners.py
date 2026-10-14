@@ -134,23 +134,6 @@ def test_pedigree_entries_lose_their_bom_ref():
                                                 "notes": "Hugging Face relation: adapter"}
 
 
-def test_only_services_created_from_sdk_imports_are_kept():
-    """SDK import 로 만든 서비스만 tags 에 제공자가 있다. 지어낸 서비스와 그 관계는 빼고, 남긴 서비스의 version "observed" 도 뺀다."""
-    doc = {"components": [{"bom-ref": "m", "type": "machine-learning-model", "name": "m"}],
-           "services": [{"bom-ref": "urn:service:ai:openai:OpenAI-API", "group": "openai", "name": "OpenAI API", "provider": {"name": "openai"},
-                         "version": "observed", "endpoints": [], "tags": ["ai", "openai"]},
-                        {"bom-ref": "urn:service:ai:google-bert:google-bert-service", "group": "google-bert", "name": "google-bert-service",
-                         "version": "observed", "tags": ["ai", "transformers"]},
-                        {"bom-ref": "urn:service:ai:ollama:ollama-service", "group": "ollama", "name": "ollama-service", "tags": ["ai"]}],
-           "dependencies": [{"ref": "urn:service:ai:openai:OpenAI-API", "dependsOn": ["m"]},
-                            {"ref": "urn:service:ai:ollama:ollama-service", "dependsOn": ["m"]},
-                            {"ref": "urn:file:ai:app.py", "dependsOn": ["m", "urn:service:ai:google-bert:google-bert-service"]}]}
-    cdxgen.tidy(doc, Path("/nonexistent"))
-    assert doc["services"] == [{"bom-ref": "urn:service:ai:openai:OpenAI-API", "group": "openai", "name": "OpenAI API",
-                                "provider": {"name": "openai"}, "endpoints": [], "tags": ["ai", "openai"]}]
-    assert doc["dependencies"] == [{"ref": "urn:service:ai:openai:OpenAI-API", "dependsOn": ["m"]}, {"ref": "urn:file:ai:app.py", "dependsOn": ["m"]}]
-
-
 @pytest.mark.parametrize("text, expected", [
     ('FROM ./m.gguf\nLICENSE """MIT License\n\nCopyright\n"""\n', ("./m.gguf", "MIT License")),
     ('FROM llama3.2:1b\nLICENSE """\n\nLLAMA 3.2 COMMUNITY LICENSE\nmore\n"""\n', ("llama3.2:1b", "LLAMA 3.2 COMMUNITY LICENSE")),

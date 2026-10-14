@@ -142,13 +142,16 @@ def test_only_aibom_properties_and_sdk_services_are_left(scans):
             assert names and all(n.startswith(("aibom:model:", "aibom:dataset:")) for n in names)
         else:
             assert not names                                                # typed 출력에는 aibom:* 프로퍼티도 없다 (규제 필드는 v0.6 필드로)
-        assert [s["name"] for s in doc["services"]] == ["OpenAI API"] and "version" not in doc["services"][0]
+        # app.js 의 OpenAI SDK, agent.py 의 import anthropic (cdxgen 은 모델 이름으로만 짐작했다), langchain_groq (cdxgen 은 만들지 않았다)
+        assert sorted(s["name"] for s in doc["services"]) == ["Anthropic API", "Groq API", "OpenAI API"]
+        assert not any("version" in s for s in doc["services"])
 
 
 def test_directory_scan_models(scans):
     doc, _, log = scans["directory"]
     models = {c["bom-ref"]: c for c in doc["components"] if c["type"] == "machine-learning-model"}
-    assert set(models) == {"pkg:generic/openai/gpt-4o-mini", "pkg:generic/ollama/llama3.2:1b", "pkg:generic/Acme/Acme%20Tiny%20Chat@v1.0",
+    assert set(models) == {"pkg:generic/openai/gpt-4o-mini", "pkg:generic/anthropic/claude-sonnet-4-5", "pkg:generic/ollama/llama3.2:1b",
+                           "pkg:generic/Acme/Acme%20Tiny%20Chat@v1.0",
                            "pkg:huggingface/acme/acme-chat-GGUF", "pkg:huggingface/acme/acme-bert", "pkg:huggingface/acme/acme-private",
                            "pkg:huggingface/acme/acme-local", "pkg:generic/huggingface/acme-lora"}      # Modelfile 의 가짜 허브 모델은 GGUF 모델로 합쳤다
     tiny = models["pkg:generic/Acme/Acme%20Tiny%20Chat@v1.0"]

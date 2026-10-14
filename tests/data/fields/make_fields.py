@@ -8,7 +8,7 @@ tests/test_fields.py 가 이 픽스처를 실제 syft·cdxgen 으로 스캔해 �
 docs/mapping-viewer/data/aibom_cli_sources.json (필드 탐색기의 도구 배지)이다.
 
     project/   디렉터리 스캔 대상. 이미지에서는 /app
-               models/ · Modelfile · deploy/Modelfile · src/ · notebooks/   cdxgen 이 찾는 모델·데이터셋 참조
+               models/ · Modelfile · deploy/Modelfile · src/ · notebooks/   cdxgen 이 찾는 모델·데이터셋 참조와 SDK import
                data/                                                     scan --data 로 주는 로컬 데이터
                requirements.txt · package-lock.json · pom.xml · lib/*.jar · go.mod · Cargo.lock · Gemfile.lock ·
                *.gemspec · composer.lock · conda-meta/                   syft 의 디렉터리 카탈로거
@@ -215,6 +215,18 @@ export async function ask(q) {
 }
 '''
 
+# SDK 를 부르는 코드 둘. cdxgen 은 파이썬의 `import anthropic` 줄을 다음 줄까지 이어 읽어 SDK import 로 알아보지 못하고, 모델
+# 이름으로만 Anthropic API 를 짐작해 만든다. LangChain 의 Groq 패키지는 모델 이름 없이 불러서 cdxgen 이 서비스를 만들지 않는다
+AGENT_PY = '''import os
+
+import anthropic
+from langchain_groq import ChatGroq
+
+client = anthropic.Anthropic()
+reply = client.messages.create(model="claude-sonnet-4-5", max_tokens=64, messages=[{"role": "user", "content": "hi"}])
+summarizer = ChatGroq(model=os.environ["SUMMARY_MODEL"])
+'''
+
 NOTEBOOK = {"cells": [
     {"cell_type": "markdown", "metadata": {}, "source": ["# Evaluation\n"]},
     {"cell_type": "code", "metadata": {}, "execution_count": 1, "outputs": [],
@@ -281,6 +293,7 @@ def build_models(root: Path) -> None:
     write(root, "Modelfile", MODELFILE)
     write(root, "deploy/Modelfile", DEPLOY_MODELFILE)
     write(root, "src/train.py", TRAIN_PY)
+    write(root, "src/agent.py", AGENT_PY)
     write(root, "src/app.js", APP_JS)
     write(root, "notebooks/eval.ipynb", json.dumps(NOTEBOOK, ensure_ascii=False, indent=1) + "\n")
 

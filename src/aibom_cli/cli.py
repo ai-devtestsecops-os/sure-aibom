@@ -14,6 +14,7 @@ from .dataset import discover as discover_datasets, is_dataset
 from .enrich import enrich
 from .merge import merge
 from .model import discover as discover_models
+from .service import discover as discover_services
 from .form import apply as regulate, drop_tool_properties
 from .image import extract as extract_image, is_archive, pull as pull_image
 from .runners import run_cdxgen, run_syft
@@ -178,6 +179,7 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
     merged = merge(docs, root=scan_root(args.target, image_name))
     scan_dir = scan_dir or args.target                        # 이미지를 못 풀었으면 볼 디렉터리가 없다
 
+    merged = discover_services(merged, scan_dir, log=detail)  # cdxgen 서비스 가운데 코드가 SDK 로 부르는 것만 (import 는 직접 읽는다)
     merged = discover_models(merged, scan_dir, log=detail)
 
     enriched: dict = {}

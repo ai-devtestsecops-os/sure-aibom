@@ -10,10 +10,6 @@
 출력은 다음만 고친다 (cdxgen 값의 정리라 출처는 cdxgen 그대로다).
     purl            공백이 든 이름(GGUF general.name)의 % 를 두 번 인코딩한 것(%2520)을 한 번으로
     pedigree        베이스 모델 항목의 bom-ref 를 뺀다 (그 모델이 스캔 대상에도 있으면 최상위 컴포넌트와 겹친다)
-    services        SDK import(openai, anthropic …)로 만든 서비스만 남긴다. cdxgen 은 코드가 부르는 허브 모델마다 그 조직의
-                    서비스를 지어내고(from_pretrained 에도 Hugging Face Inference API, google-bert-service 등) Modelfile 마다
-                    ollama-service 를 만든다. SDK import 로 만든 서비스만 tags 에 제공자 이름이 들어간다 (aiCollector.js appendImportSignals).
-                    남긴 서비스의 version "observed" 는 고정값이라 뺀다. 뺀 서비스가 든 관계도 뺀다
     Modelfile 모델   FROM 이 로컬 경로(ollama 에 GGUF 를 들이는 표준 모양)면 cdxgen 은 그 경로를 허브 id 로 읽어 가짜 pkg:huggingface
                     모델을 만든다. 그 경로의 GGUF 로 cdxgen 이 만든 모델이 있으면 거기에 합치고(Modelfile 위치와 런타임 ollama 를
                     더하고 관계를 옮긴다), 없으면 pkg:generic/<파일 이름> 으로 바꾼다.
@@ -60,7 +56,6 @@ def tidy(doc: dict, root: Path) -> dict:
         _fix_purl(comp)
         _drop_pedigree_refs(comp)
     _modelfile_models(doc, root)
-    _keep_sdk_services(doc)
     return doc
 
 
@@ -241,23 +236,3 @@ def _inside(root: Path, location: str) -> Path | None:
         return path if path.is_relative_to(root.resolve()) and path.exists() else None
     except (OSError, ValueError):
         return None
-
-
-# ── services ─────────────────────────────────────────────────────────────────
-
-def _keep_sdk_services(doc: dict) -> None:
-    if "services" not in doc:
-        return
-    kept, dropped = [], set()
-    for service in doc.get("services") or []:
-        provider = service.get("group") or (service.get("provider") or {}).get("name")
-        if provider and provider in (service.get("tags") or []):
-            if service.get("version") == "observed":
-                service = {k: v for k, v in service.items() if k != "version"}
-            kept.append(service)
-        else:
-            dropped.add(service.get("bom-ref"))
-    doc["services"] = kept
-    if dropped and doc.get("dependencies"):
-        doc["dependencies"] = [{**row, "dependsOn": [t for t in row.get("dependsOn") or [] if t not in dropped]}
-                               for row in doc["dependencies"] if row.get("ref") not in dropped]

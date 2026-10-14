@@ -1465,6 +1465,12 @@
     "kinds": [
      "서비스"
     ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "서비스"
+    ]
    }
   ]
  },
@@ -1473,6 +1479,12 @@
   "sources": [
    {
     "tool": "cdxgen",
+    "kinds": [
+     "서비스"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
     "kinds": [
      "서비스"
     ]
@@ -1487,6 +1499,12 @@
     "kinds": [
      "서비스"
     ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "서비스"
+    ]
    }
   ]
  },
@@ -1498,6 +1516,12 @@
     "kinds": [
      "서비스"
     ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "서비스"
+    ]
    }
   ]
  },
@@ -1506,6 +1530,12 @@
   "sources": [
    {
     "tool": "cdxgen",
+    "kinds": [
+     "서비스"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
     "kinds": [
      "서비스"
     ]
