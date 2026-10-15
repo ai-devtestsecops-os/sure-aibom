@@ -6,18 +6,16 @@ if (document.querySelector(".mapping-viewer")) (() => {
 // 데이터 소스 역할 분담:
 //   aibom_v0.6_cyclonedx.json : CycloneDX 1.7 전체(공용 타입 포함) + v0.6 추가 필드(added, origin·reference 는 근거 조항)
 //   aibom_v0.6_spdx.json      : SPDX 3.0.1 전체 + v0.6 추가 필드(added, path 는 대응하는 CycloneDX 경로)
-//   cdx_spdx_mapping.json     : 기존 필드의 형식 간 대응 (조인 테이블). 추가 필드의 대응은 SPDX 행의 path 로 만든다
+//   aibom_v0.6_spdx_mapping.json : 두 형식의 대응 (조인 테이블). 1.7 매핑에 v0.6 추가 필드를 넣은 표로, ai-bom 이 만든다
 //   requirement_field_mapping.json : 규제 요구사항이 어느 필드로 충족되는지. cdx_ref(CDX 경로)·spdx_ref("Class.property") 가 조인 키
 //   aibom_v0.6_properties.json : 추가 필드를 --spec 1.7 로 낼 때의 properties 키 (ai-bom 의 정의서와 같은 출처)
-//   aibom_v0.6_links.json      : 추가 필드의 형식 간 대응 (CycloneDX 경로 → SPDX class.property 들)
 
 const BASE = document.querySelector(".mapping-viewer").dataset.base || "data/";   // 페이지 기준 상대 경로
 const CDX_URL = BASE + "aibom_v0.6_cyclonedx.json";
 const SPDX_URL = BASE + "aibom_v0.6_spdx.json";
-const MAPPING_URL = BASE + "cdx_spdx_mapping.json";
+const MAPPING_URL = BASE + "aibom_v0.6_spdx_mapping.json";
 const REQ_URL = BASE + "requirement_field_mapping.json";
 const PROPS_URL = BASE + "aibom_v0.6_properties.json";
-const LINKS_URL = BASE + "aibom_v0.6_links.json";        // v0.6 추가 필드의 형식 간 대응 (export_data.py 가 만든다)
 // aibom-cli 출력에서 자리마다 값을 채우는 도구. 허구의 픽스처를 실제로 스캔해 값 하나하나의 출처를 따라간 결과다
 // (tests/test_fields.py 가 만들고 검사한다). 자리 경로는 아래 renderCdxNode 의 sitePath 와 같은 모양이다.
 const SOURCES_URL = BASE + "aibom_cli_sources.json";
@@ -48,7 +46,7 @@ function setDetailPanelOpen(open) {
 document.getElementById("detail-close").addEventListener("click", () => setDetailPanelOpen(false));
 detailToggle.addEventListener("click", () => setDetailPanelOpen(detailPanel.classList.contains("hidden")));
 
-let mappingByPath = new Map();          // cdx path -> cdx_spdx_mapping.json row
+let mappingByPath = new Map();          // cdx path -> aibom_v0.6_spdx_mapping.json row
 let spdxToCdx = new Map();              // "class::property" -> [{cdxPath, hopIndex, mismatch}]
 let cdxRowByPath = new Map();           // cdx path -> cyclonedx(_refs).json row (title/type/description/...)
 let spdxRowByKey = new Map();           // "class::property" -> spdx.json row (summary/type/...)
@@ -72,13 +70,12 @@ const generatedOnlyEl = document.getElementById("generated-only");
 init();
 
 async function init() {
-  const [cdxRows, spdxRows, baseMapping, reqRows, propRows, linkRows, sourceRows] = await Promise.all([
+  const [cdxRows, spdxRows, mappingRowsRaw, reqRows, propRows, sourceRows] = await Promise.all([
     fetch(CDX_URL).then(r => r.json()),
     fetch(SPDX_URL).then(r => r.json()),
     fetch(MAPPING_URL).then(r => r.json()),
     fetch(REQ_URL).then(r => r.json()),
     fetch(PROPS_URL).then(r => r.json()),
-    fetch(LINKS_URL).then(r => r.json()),
     fetch(SOURCES_URL).then(r => (r.ok ? r.json() : [])).catch(() => []),
   ]);
 
@@ -93,10 +90,8 @@ async function init() {
   spdxRowByKey = new Map(spdxRows.map(r => [keyFor(r.class, r.property), r]));
   ({ reqByCdxPath, reqBySpdxKey, reqByAibomField } = buildRequirementIndex(reqRows));
 
-  // 형식 간 대응: 기존 필드는 분석 결과(cdx_spdx_mapping.json), v0.6 추가 필드는 links 파일. 뒤에 오는 추가 필드 행이
-  // 같은 경로의 기존 행을 덮는다 (SPDX 에만 더한 속성이 CycloneDX 의 기존 필드에 대응하는 경우).
-  const mapping = new Map(baseMapping.map(r => [r.path, r]));
-  for (const r of addedMappingRows(linkRows)) mapping.set(r.path, r);
+  // 형식 간 대응. 자리마다 대상이 다른 공용 타입 필드는 자리별 행으로 나눈다.
+  const mapping = new Map(siteMappingRows(mappingRowsRaw).map(r => [r.path, r]));
   const mappingRows = [...mapping.values()];
   mappingByPath = mapping;
   spdxToCdx = buildReverseIndex(mappingRows);
@@ -180,20 +175,22 @@ function scheduleFit() {
   requestAnimationFrame(() => { fitPending = false; fitTrees(); });
 }
 
-/** v0.6 추가 필드의 대응 행을 기존 매핑 행 모양으로. 대상이 둘이면 서로 다른 대안(alt)으로 둔다. */
-function addedMappingRows(linkRows) {
-  return linkRows.map(l => {
-    const t = l.targets;
-    const row = { path: l.path, parent: "v0.6", spdx: t.map(x => `${x.class}.${x.property}`).join(", ") };
-    if (l.site) { row.defPath = l.path; row.path = l.site + l.path.slice(l.path.indexOf(".")); }   // 접붙인 자리의 경로로
-    if (t.length > 1) {
-      row.spdx_multi = t.map(x => ({ profile: x.profile, class: x.class, property: x.property, kind: "Property" }));
-      row.spdx_multi_kind = "alt";
-    } else {
-      Object.assign(row, { spdx_profile: t[0].profile, spdx_class: t[0].class, spdx_property: t[0].property });
+/** 공용 타입의 필드가 놓인 자리마다 다른 SPDX 속성에 대응하면 (inputOutputMLParameters.maxSize 는 inputs 자리에서
+ *  aibom_inputMaxSize, outputs 자리에서 aibom_outputMaxSize) 매핑표는 대안(alt)마다 자리(site)를 단다. 그 행을 자리별
+ *  행으로 바꾼다 — 경로는 접붙인 자리의 것, defPath 는 공용 타입 안의 경로. 나머지 행은 그대로 둔다. */
+function siteMappingRows(rows) {
+  const out = [];
+  for (const row of rows) {
+    const sited = (row.spdx_multi || []).filter(t => t.site);
+    if (!sited.length) { out.push(row); continue; }
+    for (const t of sited) {
+      out.push({ ...row, spdx_multi: undefined, spdx_multi_kind: undefined,
+        path: t.site + row.path.slice(row.path.indexOf(".")), defPath: row.path,
+        spdx: `${t.profile}::${t.class}.${t.property}`, spdx_profile: t.profile, spdx_kind: t.kind,
+        spdx_class: t.class, spdx_property: t.property, spdx_type: t.type });
     }
-    return row;
-  });
+  }
+  return out;
 }
 
 /** 접붙인 자리의 경로(metadata.component.modelCard…, components.modelCard…)가 공용 타입 안의 경로(component.modelCard…)와
