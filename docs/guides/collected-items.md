@@ -8,7 +8,7 @@
 <table markdown>
 <thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
 <tbody markdown>
-<tr markdown><td rowspan="2">syft</td><td>디렉터리</td><td markdown>패키지 매니페스트: `requirements.txt`, `setup.py`, `poetry.lock`, `package-lock.json` 등<br><span class="note">※ 버전을 `==` 로 고정하지 않은 `requirements.txt` 항목은 세지 않는다</span></td></tr>
+<tr markdown><td rowspan="2">syft</td><td>디렉터리</td><td markdown>패키지 매니페스트: `requirements.txt`, `setup.py`, `poetry.lock`, `package-lock.json` 등<br><span class="note">※ 버전을 `==` 로 고정하지 않은 `requirements.txt`·`setup.py` 항목은 세지 않는다</span></td></tr>
 <tr markdown><td>디렉터리, 컨테이너 이미지, 이미지 아카이브</td><td markdown>설치된 패키지: `site-packages`, `node_modules`, dpkg·apk·rpm 데이터베이스 등</td></tr>
 </tbody>
 </table>
