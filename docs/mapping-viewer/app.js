@@ -825,6 +825,7 @@ function selectCdxRow(row, mapping, sourceDiv, scroll = true, key = row.path, si
       hop: t.hopIndex,
       kind: t.kind || "",
       spdxKey: key,
+      isNew: !!(spdxRow && spdxRow.added),   // v0.6 이 SPDX 에 더한 속성 (CycloneDX 쪽과 같은 v0.6 표)
     };
   });
   renderDetailPanel({
@@ -836,14 +837,9 @@ function selectCdxRow(row, mapping, sourceDiv, scroll = true, key = row.path, si
       isNew: origins.length > 0,
     }],
     spdxFields,
-    // v0.5 가 더한 필드에서는 이 패널이 「왜 더했나」를 보이는 자리다. G7 절도 **근거인 요소만**
-    // 든다 — g7_element 칸은 요소 축의 추적성이라 필드마다 검토된 적이 없고(사라지는 격차
-    // 행에서 상속되기도 한다), 그것을 여기 실으면 근거가 아닌 것이 근거로 읽힌다.
-    // 1.7 필드에는 근거라는 개념이 없으므로 그 칸을 그대로 든다.
     properties: propsFor(sitePath, row.path),
     // 그릇에는 자기 키가 없다 — 실제 이름은 하위 칸의 것(aibom:dataset:knownGaps:<i>:name)이다
     propsViaChildren: propsFor(sitePath, row.path).some(p => p.child && p.path === row.path),
-    origins,
     ...requirementsFor(row.path, origins),
     // 매핑표에서 빈칸인 그릇은 대응이 그릇이 아니라 하위 칸에 있다(knownBias 의 name·detectionMethod …)
     viaChildren: !!(mapping && mapping.spdx === ""),
@@ -935,7 +931,6 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
   let scrollTo = null;
   let first = true;
   const properties = [];
-  const originList = [];
   for (const m of matches) {
     // 공용 타입은 수십 자리에 접붙여져 있어서 사본을 전부 켜면 필드 넷이 이천 줄로 보인다
     // (ExternalRefType 이 2055 줄이었다). 대표 자리 한 곳만 켠다 — 숨기는 게 아니라, 같은
@@ -949,7 +944,6 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
     }
     const cdxRow = cdxRowByPath.get(m.cdxPath) || siteAlias.get(m.cdxPath);
     properties.push(...(propsByPath.get(m.cdxPath) || []));
-    originList.push(...originsOf(cdxRow));
     cdxFields.push({
       // 여기 늘어서는 것은 한 매핑의 단계가 아니라 **서로 다른 필드들**이라 번호를 붙이지 않는다.
       name: m.cdxPath,
@@ -983,7 +977,6 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
     cdxFields,
     spdxFields,
     properties,
-    origins: originList,
     requirements: reqs,
     from: "spdx",
   });
@@ -1004,7 +997,7 @@ function sortedSources(sources) {
   return [...sources].sort((a, b) => rank(a.tool) - rank(b.tool));
 }
 
-function renderDetailPanel({ cdxFields, spdxFields, properties, propsViaChildren, origins, requirements, viaChildren, from }) {
+function renderDetailPanel({ cdxFields, spdxFields, properties, propsViaChildren, requirements, viaChildren, from }) {
   // 비어 있는 절은 문장 대신 제목 옆의 작은 "없음" 표로. 절 자체는 남긴다 (없다는 것도 정보다)
   const none = `<span class="section-none">없음</span>`;
   const cdxHtml = cdxFields.length ? cdxFields.map(fieldBlockHtml).join("") : "";
@@ -1023,15 +1016,6 @@ function renderDetailPanel({ cdxFields, spdxFields, properties, propsViaChildren
     : via ? `<span class="section-via">하위 필드에 대응</span>` : none;
   const cdxCount = cdxFields.length ? sectionCount(cdxFields.length) : none;
 
-  // v0.6 추가 필드면 맨 위에 그 사실과 근거 조항을 적는다. 기존 필드에는 근거라는 개념이 없다.
-  const isNew = (cdxFields || []).some(f => f.isNew) || (spdxFields || []).some(f => f.isNew);
-  const seen = new Set();
-  const basis = (origins || []).filter(o => o.source && !isSpdxSource(o.source) && !isG7Source(o.source))
-    .map(o => `${o.source} ${o.reference}`.trim()).filter(t => !seen.has(t) && seen.add(t));
-  const banner = isNew
-    ? `<div class="detail-banner">AI-BOM v0.6 이 더한 필드다.` +
-      (basis.length ? ` 근거: ${escapeHtml(basis.join(" · "))}` : "") + `</div>`
-    : "";
   const props = properties || [];
   const propsHtml = propsViaChildren
     ? `<div class="detail-section section-props"><h4>properties 키<span class="section-via">하위 필드에 대응</span></h4></div>`
@@ -1040,7 +1024,7 @@ function renderDetailPanel({ cdxFields, spdxFields, properties, propsViaChildren
       props.map(propertyBlockHtml).join("") + `</div>`
     : "";
 
-  const html = banner + `
+  const html = `
     <div class="detail-section section-cdx"><h4>CycloneDX${cdxCount}</h4>${cdxHtml}</div>
     <div class="detail-section section-spdx"><h4>SPDX${spdxCount}</h4>${spdxHtml}</div>
     ${propsHtml}
