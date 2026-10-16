@@ -5741,6 +5741,9 @@
   "sort_path": "component.modelCard.quantitativeAnalysis.performanceMetrics.slice",
   "description": "Each entry maps a metric listed in ai_metric to the slice it was computed on.",
   "description_ko": "`ai_metric` 에 적은 지표의 이름을 키로, 그 지표를 잰 구간을 값으로 적는다.",
+  "paths": [
+   "component.modelCard.quantitativeAnalysis.performanceMetrics.slice"
+  ],
   "origin": [
    "EU AI Act",
    "EU AI Act"
@@ -6281,6 +6284,9 @@
   "sort_path": "component.modelCard.modelParameters.task",
   "description": "Directly influences the input and/or output. Examples include classification, regression, clustering, etc.",
   "description_ko": "입력 및/또는 출력에 직접 영향을 준다. 예: 분류, 회귀, 군집화 등.",
+  "paths": [
+   "component.modelCard.modelParameters.task"
+  ],
   "origin": [
    "EU AI Act",
    "EU AI Act",
@@ -6312,6 +6318,9 @@
   "sort_path": "component.modelCard.modelParameters.architectureFamily",
   "description": "The model architecture family such as transformer network, convolutional neural network, residual neural network, LSTM neural network, etc.",
   "description_ko": "트랜스포머 네트워크, 합성곱신경망(CNN), 잔차신경망(ResNet), LSTM 신경망 등 모델 아키텍처 계열.",
+  "paths": [
+   "component.modelCard.modelParameters.architectureFamily"
+  ],
   "origin": [
    "EU AI Act",
    "EU AI Act",
@@ -6345,6 +6354,9 @@
   "sort_path": "component.modelCard.modelParameters.modelArchitecture",
   "description": "The specific architecture of the model such as GPT-1, ResNet-50, YOLOv3, etc.",
   "description_ko": "GPT-1, ResNet-50, YOLOv3 등 모델의 구체적 아키텍처.",
+  "paths": [
+   "component.modelCard.modelParameters.modelArchitecture"
+  ],
   "origin": [
    "EU AI Act",
    "EU AI Act",
@@ -6378,6 +6390,9 @@
   "sort_path": "component.modelCard.modelParameters.inputs",
   "description": "The input format(s) of the model",
   "description_ko": "모델의 입력 형식.",
+  "paths": [
+   "component.modelCard.modelParameters.inputs"
+  ],
   "origin": [
    "EU AI Act",
    "EU AI Act",
@@ -6415,6 +6430,9 @@
   "sort_path": "component.modelCard.modelParameters.inputs",
   "description": "Each entry maps an input format to the maximum size accepted for it.",
   "description_ko": "입력의 양식을 키로, 그 양식으로 받을 수 있는 최대 크기를 값으로 적는다.",
+  "paths": [
+   "inputOutputMLParameters.maxSize"
+  ],
   "origin": [
    "EU AI Act"
   ],
@@ -6442,6 +6460,9 @@
   "sort_path": "component.modelCard.modelParameters.outputs",
   "description": "The output format(s) from the model",
   "description_ko": "모델의 출력 형식.",
+  "paths": [
+   "component.modelCard.modelParameters.outputs"
+  ],
   "origin": [
    "EU AI Act",
    "EU AI Act",
@@ -6475,6 +6496,9 @@
   "sort_path": "component.modelCard.modelParameters.outputs",
   "description": "Each entry maps an output format to the maximum size produced for it.",
   "description_ko": "출력의 양식을 키로, 그 양식으로 내는 최대 크기를 값으로 적는다.",
+  "paths": [
+   "inputOutputMLParameters.maxSize"
+  ],
   "origin": [
    "EU AI Act"
   ],
@@ -6502,6 +6526,9 @@
   "sort_path": "component.modelCard.modelParameters.parameterCount",
   "description": "The number of parameters the model has.",
   "description_ko": "모델이 가진 파라미터의 개수.",
+  "paths": [
+   "component.modelCard.modelParameters.parameterCount"
+  ],
   "origin": [
    "EU AI Act",
    "EU AI Act"
@@ -6531,6 +6558,9 @@
   "sort_path": "component.modelCard.modelParameters.designChoices",
   "description": "The key design choices made for the model, including the rationale and assumptions behind them.",
   "description_ko": "이 모델에 대해 내린 주요 설계 결정과 그 근거·가정.",
+  "paths": [
+   "component.modelCard.modelParameters.designChoices"
+  ],
   "origin": [
    "EU AI Act"
   ],
@@ -6558,6 +6588,9 @@
   "sort_path": "component.modelCard.modelParameters.optimizationTarget",
   "description": "The target the model is designed to optimize for.",
   "description_ko": "이 모델이 최적화하도록 설계된 대상.",
+  "paths": [
+   "component.modelCard.modelParameters.optimizationTarget"
+  ],
   "origin": [
    "EU AI Act"
   ],
@@ -6585,6 +6618,9 @@
   "sort_path": "component.modelCard.modelParameters.trainingCompute",
   "description": "The computational resources used to train the model (e.g. number of floating point operations).",
   "description_ko": "이 모델을 훈련하는 데 쓴 연산자원(예: 부동소수점 연산 횟수).",
+  "paths": [
+   "component.modelCard.modelParameters.trainingCompute"
+  ],
   "origin": [
    "EU AI Act"
   ],
@@ -6612,6 +6648,9 @@
   "sort_path": "component.modelCard.modelParameters.trainingTime",
   "description": "The time taken to train the model.",
   "description_ko": "이 모델을 훈련하는 데 걸린 시간.",
+  "paths": [
+   "component.modelCard.modelParameters.trainingTime"
+  ],
   "origin": [
    "EU AI Act"
   ],
@@ -6639,6 +6678,9 @@
   "sort_path": "component.modelCard.considerations.users",
   "description": "Who are the intended users of the model?",
   "description_ko": "모델의 의도된 사용자는 누구인가?",
+  "paths": [
+   "component.modelCard.considerations.users"
+  ],
   "origin": [
    "NIST AI RMF"
   ],
@@ -6666,6 +6708,9 @@
   "sort_path": "component.modelCard.considerations.useCases",
   "description": "What are the intended use cases of the model?",
   "description_ko": "모델의 의도된 유스케이스는 무엇인가?",
+  "paths": [
+   "component.modelCard.considerations.useCases"
+  ],
   "origin": [
    "EU AI Act",
    "EU AI Act",
@@ -6707,6 +6752,9 @@
   "sort_path": "component.modelCard.considerations.ethicalConsiderations.name",
   "description": "The ethical risks that come with applying this model.",
   "description_ko": "이 모델의 적용에 수반되는 윤리적 위험.",
+  "paths": [
+   "component.modelCard.considerations.ethicalConsiderations.name"
+  ],
   "origin": [
    "EU AI Act",
    "EU AI Act",
@@ -6740,6 +6788,9 @@
   "sort_path": "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy",
   "description": "Each entry maps an ethical risk to the strategy used to address it.",
   "description_ko": "위험의 이름을 키로, 그 위험을 다루기 위해 사용된 전략을 값으로 적는다.",
+  "paths": [
+   "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
+  ],
   "origin": [
    "EU AI Act",
    "EU AI Act",
@@ -6771,6 +6822,9 @@
   "sort_path": "component.modelCard.considerations.fairnessAssessments.groupAtRisk",
   "description": "The groups or individuals at risk of being systematically disadvantaged by the model.",
   "description_ko": "모델에 의해 체계적으로 불이익을 받을 위험이 있는 집단 또는 개인.",
+  "paths": [
+   "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
+  ],
   "origin": [
    "EU AI Act",
    "ISO/IEC 42001",
@@ -6802,6 +6856,9 @@
   "sort_path": "component.modelCard.considerations.fairnessAssessments.benefits",
   "description": "Each entry maps a group at risk to the benefit expected for that group.",
   "description_ko": "위험이 있다고 본 집단을 키로, 그 집단에 대한 기대 이익을 값으로 적는다.",
+  "paths": [
+   "component.modelCard.considerations.fairnessAssessments.benefits"
+  ],
   "origin": [
    "ISO/IEC 42001",
    "NIST AI RMF"
@@ -6831,6 +6888,9 @@
   "sort_path": "component.modelCard.considerations.fairnessAssessments.harms",
   "description": "Each entry maps a group at risk to the harm expected for that group.",
   "description_ko": "위험이 있다고 본 집단을 키로, 그 집단에 대한 기대 피해를 값으로 적는다.",
+  "paths": [
+   "component.modelCard.considerations.fairnessAssessments.harms"
+  ],
   "origin": [
    "EU AI Act",
    "ISO/IEC 42001",
@@ -6862,6 +6922,9 @@
   "sort_path": "component.modelCard.considerations.limitationIdentificationMethods",
   "description": "The methods used to identify the limitations of the model.",
   "description_ko": "이 모델의 한계를 식별하는 데 사용한 방법.",
+  "paths": [
+   "component.modelCard.considerations.limitationIdentificationMethods"
+  ],
   "origin": [
    "EU AI Act"
   ],
@@ -7259,6 +7322,9 @@
   "sort_path": "componentData.knownBias.detectionMethod",
   "description": "Each entry maps a bias listed in dataset_knownBias to the method that detected it.",
   "description_ko": "`dataset_knownBias` 에 적은 편향의 이름을 키로, 그 편향을 찾아낸 방법을 값으로 적는다.",
+  "paths": [
+   "componentData.knownBias.detectionMethod"
+  ],
   "origin": [
    "EU AI Act"
   ],
@@ -7286,6 +7352,9 @@
   "sort_path": "componentData.knownBias.mitigationStrategy",
   "description": "Each entry maps a bias listed in dataset_knownBias to the measures taken to prevent or mitigate it.",
   "description_ko": "`dataset_knownBias` 에 적은 편향의 이름을 키로, 그 편향을 예방·완화하기 위해 한 조치를 값으로 적는다.",
+  "paths": [
+   "componentData.knownBias.mitigationStrategy"
+  ],
   "origin": [
    "EU AI Act"
   ],
@@ -7701,6 +7770,9 @@
   "sort_path": "componentData.originalCollectionPurpose",
   "description": "The original purpose of the data collection, in the case of personal data.",
   "description_ko": "개인데이터의 경우, 그 수집의 원래 목적.",
+  "paths": [
+   "componentData.originalCollectionPurpose"
+  ],
   "origin": [
    "EU AI Act"
   ],
@@ -7728,6 +7800,9 @@
   "sort_path": "componentData.designChoices",
   "description": "The design choices made in putting the dataset together.",
   "description_ko": "이 데이터셋을 구성하면서 내린 설계 결정.",
+  "paths": [
+   "componentData.designChoices"
+  ],
   "origin": [
    "EU AI Act"
   ],
@@ -7755,6 +7830,9 @@
   "sort_path": "componentData.representationAssumptions",
   "description": "The assumptions formulated with respect to the information this data is supposed to measure and represent.",
   "description_ko": "이 데이터가 측정·표상하도록 되어 있는 정보에 관한 가정.",
+  "paths": [
+   "componentData.representationAssumptions"
+  ],
   "origin": [
    "EU AI Act"
   ],
@@ -7782,6 +7860,10 @@
   "sort_path": "componentData.knownGaps.name",
   "description": "The data gaps or shortcomings the dataset is known to have.",
   "description_ko": "이 데이터셋에 있는 것으로 알려진 데이터 공백이나 결함.",
+  "paths": [
+   "componentData.knownGaps.name",
+   "componentData.knownGaps"
+  ],
   "origin": [
    "EU AI Act",
    "EU AI Act"
@@ -7811,6 +7893,9 @@
   "sort_path": "componentData.knownGaps.mitigationStrategy",
   "description": "Each entry maps the name of a known gap to how it can be addressed.",
   "description_ko": "공백·결함의 이름을 키로, 그것을 해결할 수 있는 방법을 값으로 적는다.",
+  "paths": [
+   "componentData.knownGaps.mitigationStrategy"
+  ],
   "origin": [
    "EU AI Act"
   ],
@@ -7838,6 +7923,11 @@
   "sort_path": "componentData.statistics",
   "description": "Each entry maps the kind of statistic to its value.",
   "description_ko": "통계량의 종류를 키로, 그 값을 값으로 적는다.",
+  "paths": [
+   "componentData.statistics",
+   "componentData.statistics.type",
+   "componentData.statistics.value"
+  ],
   "origin": [
    "EU AI Act"
   ],

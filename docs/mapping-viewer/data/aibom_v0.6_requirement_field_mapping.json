@@ -5,11 +5,11 @@
   "bom": "M-BOM",
   "id": "Annex IV(2)",
   "requirement_ko": "다음을 포함한, 인공지능시스템의 요소 및 그 개발과정에 대한 상세한 설명: (a) 인공지능시스템 개발을 위해 수행된 방법과 절차(관련되는 경우, 제3자가 제공한 사전훈련된 시스템이나 도구의 사용 및 제공자가 이를 사용, 통합 또는 수정한 방식을 포함); (b) 시스템의 설계사양, 즉 인공지능시스템 및 알고리즘의 일반적 논리; 그 근거와 가정을 포함한 주요 설계상의 선택(시스템이 사용되고자 하는 대상이 되는 개인 또는 집단에 관한 사항을 포함); 주요 분류 선택; 시스템이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; 시스템의 예상 산출물 및 산출물 품질에 대한 설명; 제III장 제2절에서 정하는 요건을 준수하기 위해 채택된 기술적 해결책에 관하여 이루어진 발생 가능한 절충에 대한 결정; (c) 소프트웨어 구성요소가 서로 어떻게 구축되거나 연계되어 전체 처리과정에 통합되는지를 설명하는 시스템 구조에 대한 설명; 인공지능시스템의 개발, 훈련, 시험 및 검증에 사용된 연산자원; (d) 관련되는 경우, 훈련방법론과 기법 및 사용된 훈련 데이터 세트를 설명하는 데이터시트 형태의 데이터 요건(그 데이터 세트에 대한 일반적 설명, 출처, 범위 및 주요 특성에 관한 정보를 포함); 데이터가 획득되고 선정된 방식; 라벨링 절차(예: 지도학습의 경우); 데이터 정제 방법론(예: 이상치 탐지); (e) 제13조(3) (d)호에 따라 배포자에 의한 인공지능시스템 산출물의 해석을 촉진하는 데 필요한 기술적 조치에 대한 평가를 포함하여, 제14조에 따라 필요한 인적 감독조치에 대한 평가; (f) 해당하는 경우, 인공지능시스템 및 그 성능에 대해 미리 정해진 변경사항에 대한 상세한 설명과, 제III장 제2절에서 정하는 관련 요건에 대한 인공지능시스템의 지속적 준수를 보장하기 위해 채택된 기술적 해결책과 관련된 모든 관련 정보; (g) 사용된 검증 및 시험 절차(사용된 검증·시험 데이터에 관한 정보 및 그 주요 특성을 포함); 정확성, 견고성 및 제III장 제2절에서 정하는 그 밖의 관련 요건에 대한 준수, 그리고 잠재적으로 차별적인 영향을 측정하기 위해 사용된 지표; (f)호에서 정하는 미리 정해진 변경사항에 관한 사항을 포함하여, 책임자가 서명하고 날짜가 기재된 시험 로그 및 모든 시험 보고서; (h) 마련된 사이버보안조치;",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.modelParameters.hyperparameters",
   "spdx_field": "AIPackage.ai_hyperparameter",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.modelParameters.hyperparameters",
   "spdx_ref": "AIPackage.ai_hyperparameter",
   "row_key": "모델 구조·과업#10#Annex IV(2)",
   "field_key": "모델 구조·과업#10#Annex IV(2)#3",
@@ -21,7 +21,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "하이퍼파라미터",
@@ -29,11 +29,11 @@
   "bom": "M-BOM",
   "id": "Annex XI §1(2)",
   "requirement_ko": "제1호에서 정하는 모델의 요소에 대한 상세한 설명 및 그 개발과정에 관한 관련 정보로서, 다음 요소를 포함한다. (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 훈련방법론과 기법을 포함한 모델 및 훈련과정의 설계사양, 그 근거와 가정을 포함한 주요 설계상의 선택; 해당하는 경우, 모델이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론(예: 정제, 필터링 등), 데이터포인트의 수, 그 범위 및 주요 특성을 포함); 데이터가 획득되고 선정된 방식 및, 해당하는 경우, 데이터 출처의 부적합성을 탐지하기 위한 그 밖의 모든 조치와 식별 가능한 편향을 탐지하는 방법; (d) 모델을 훈련시키는 데 사용된 연산자원(예: 부동소수점 연산 횟수), 훈련 시간, 훈련과 관련된 그 밖의 관련 세부사항; (e) 모델의 알려진 또는 추정된 에너지 소비량. (e)호와 관련하여, 모델의 에너지 소비량이 알려지지 아니한 경우, 그 에너지 소비량은 사용된 연산자원에 관한 정보를 기초로 산정될 수 있다.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.modelParameters.hyperparameters",
   "spdx_field": "AIPackage.ai_hyperparameter",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.modelParameters.hyperparameters",
   "spdx_ref": "AIPackage.ai_hyperparameter",
   "row_key": "모델 구조·과업#8#Annex XI §1(2)",
   "field_key": "모델 구조·과업#8#Annex XI §1(2)#2",
@@ -45,7 +45,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "소프트웨어 구동 정보",
@@ -53,11 +53,11 @@
   "bom": "M-BOM",
   "id": "Annex XII(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 해당하는 경우, 모델 자체의 일부가 아닌 하드웨어나 소프트웨어와 상호작용하는 방식 또는 상호작용에 사용될 수 있는 방식; (e) 해당하는 경우, 범용 인공지능모델의 사용과 관련된 소프트웨어의 버전; (f) 구조 및 파라미터 수; (g) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (h) 모델에 대한 라이선스.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.considerations.technicalRequirements",
   "spdx_field": "AIPackage.ai_informationAboutApplication",
   "note": "부속서 IV(1)(b)와 같은 자리",
   "coverage": "자유 서술",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.considerations.technicalRequirements",
   "spdx_ref": "AIPackage.ai_informationAboutApplication",
   "row_key": "모델 구조·과업#5#Annex XII(1)",
   "field_key": "모델 구조·과업#5#Annex XII(1)#4",
@@ -69,7 +69,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "소프트웨어 구동 정보",
@@ -77,11 +77,11 @@
   "bom": "M-BOM",
   "id": "Annex IV(1)",
   "requirement_ko": "다음을 포함한 인공지능시스템에 대한 일반적 설명: (a) 그 의도된 목적, 제공자의 명칭 및 이전 버전과의 관계를 반영한 시스템의 버전; (b) 인공지능시스템 자체의 일부가 아닌 하드웨어나 소프트웨어(다른 인공지능시스템을 포함)와 상호작용하는 방식 또는 상호작용에 사용될 수 있는 방식(해당하는 경우); (c) 관련 소프트웨어나 펌웨어의 버전, 그리고 버전 업데이트와 관련된 요건; (d) 하드웨어에 내장된 소프트웨어 패키지, 다운로드 또는 API 등 인공지능시스템이 시장에 출시되거나 서비스가 제공되는 모든 형태에 대한 설명; (e) 인공지능시스템이 작동하도록 의도된 하드웨어에 대한 설명; (f) 인공지능시스템이 제품의 구성요소인 경우, 그 제품의 외부 특징, 마킹 및 내부 배치를 보여주는 사진 또는 그림; (g) 배포자에게 제공되는 사용자 인터페이스에 대한 기본 설명; (h) 배포자를 위한 사용설명서 및, 해당하는 경우, 배포자에게 제공되는 사용자 인터페이스에 대한 기본 설명;",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.considerations.technicalRequirements",
   "spdx_field": "AIPackage.ai_informationAboutApplication",
   "note": "informationAboutApplication 정의가 함께 쓰는 제3자 API·서비스와 구동에 필요한 하드웨어·라이브러리·OS까지 적는 자리라 대응. (a)의 '이전 버전과의 관계'는 버전을 어떻게 매길지의 조건이라 버전 값과 별개 사실이 아니고, (f)의 제품 외형·내부 배치 사진은 하드웨어 도해라 축 밖",
   "coverage": "자유 서술",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.considerations.technicalRequirements",
   "spdx_ref": "AIPackage.ai_informationAboutApplication",
   "row_key": "모델 구조·과업#9#Annex IV(1)",
   "field_key": "모델 구조·과업#9#Annex IV(1)#3",
@@ -93,7 +93,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "소프트웨어 구동 정보",
@@ -101,11 +101,11 @@
   "bom": "M-BOM",
   "id": "Annex IV(1)",
   "requirement_ko": "다음을 포함한 인공지능시스템에 대한 일반적 설명: (a) 그 의도된 목적, 제공자의 명칭 및 이전 버전과의 관계를 반영한 시스템의 버전; (b) 인공지능시스템 자체의 일부가 아닌 하드웨어나 소프트웨어(다른 인공지능시스템을 포함)와 상호작용하는 방식 또는 상호작용에 사용될 수 있는 방식(해당하는 경우); (c) 관련 소프트웨어나 펌웨어의 버전, 그리고 버전 업데이트와 관련된 요건; (d) 하드웨어에 내장된 소프트웨어 패키지, 다운로드 또는 API 등 인공지능시스템이 시장에 출시되거나 서비스가 제공되는 모든 형태에 대한 설명; (e) 인공지능시스템이 작동하도록 의도된 하드웨어에 대한 설명; (f) 인공지능시스템이 제품의 구성요소인 경우, 그 제품의 외부 특징, 마킹 및 내부 배치를 보여주는 사진 또는 그림; (g) 배포자에게 제공되는 사용자 인터페이스에 대한 기본 설명; (h) 배포자를 위한 사용설명서 및, 해당하는 경우, 배포자에게 제공되는 사용자 인터페이스에 대한 기본 설명;",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.considerations.technicalRequirements",
   "spdx_field": "AIPackage.ai_informationAboutApplication",
   "note": "(e) — 정의에 \"구동에 필요한 하드웨어\"가 들어 있어 같은 자리. (a)의 '이전 버전과의 관계'는 버전을 어떻게 매길지의 조건이라 버전 값과 별개 사실이 아니고, (f)의 제품 외형·내부 배치 사진은 하드웨어 도해라 축 밖",
   "coverage": "자유 서술",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.considerations.technicalRequirements",
   "spdx_ref": "AIPackage.ai_informationAboutApplication",
   "row_key": "모델 구조·과업#9#Annex IV(1)",
   "field_key": "모델 구조·과업#9#Annex IV(1)#7",
@@ -117,7 +117,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "소프트웨어 구동 정보",
@@ -125,11 +125,11 @@
   "bom": "M-BOM",
   "id": "Article 13(3)",
   "requirement_ko": "사용설명서는 최소한 다음 정보를 포함하여야 한다. (a) 제공자 및, 해당하는 경우, 그 수권대리인의 신원과 연락처; (b) 다음을 포함한, 고위험 인공지능시스템의 성능에 관한 특성, 역량 및 한계: (i) 그 의도된 목적; (ii) 고위험 인공지능시스템이 시험·검증된, 그리고 기대할 수 있는, 제15조에서 정하는 정확성·견고성·사이버보안의 수준(그 지표를 포함) 및 그 기대되는 정확성·견고성·사이버보안 수준에 영향을 미칠 수 있는 알려진·예견 가능한 상황; (iii) 고위험 인공지능시스템을 그 의도된 목적에 따라 사용하거나 합리적으로 예견 가능한 오용 조건에서 사용하는 것과 관련하여, 제9조(2)에서 정하는 건강 및 안전 또는 기본권에 대한 위험으로 이어질 수 있는 알려진·예견 가능한 상황; (iv) 해당하는 경우, 그 산출물을 설명하는 데 관련된 정보를 제공하기 위한 고위험 인공지능시스템의 기술적 역량 및 특성; (v) 적절한 경우, 시스템이 사용되고자 하는 대상이 되는 특정 개인 또는 집단에 관한 성능; (vi) 적절한 경우, 고위험 인공지능시스템의 의도된 목적을 고려한, 사용된 훈련·검증·시험 데이터 세트에 관한 입력데이터의 사양 또는 그 밖의 관련 정보; (vii) 해당하는 경우, 배포자가 고위험 인공지능시스템의 산출물을 해석하고 이를 적절하게 사용할 수 있도록 하는 정보; (c) 최초 적합성평가 시점에 제공자가 미리 정한, 고위험 인공지능시스템 및 그 성능에 대한 변경사항(있는 경우); (d) 배포자에 의한 고위험 인공지능시스템 산출물의 해석을 촉진하기 위해 마련된 기술적 조치를 포함한, 제14조에서 정하는 인적 감독조치; (e) 소프트웨어 업데이트에 관한 사항을 포함하여, 그 인공지능시스템의 적절한 작동을 보장하기 위해 필요한 연산·하드웨어 자원, 고위험 인공지능시스템의 예상 수명 및 필요한 유지관리조치(그 주기를 포함); (f) 관련된 경우, 배포자가 제12조에 따라 로그를 적절하게 수집·저장·해석할 수 있도록 하는, 고위험 인공지능시스템에 포함된 메커니즘에 대한 설명.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.considerations.technicalRequirements",
   "spdx_field": "AIPackage.ai_informationAboutApplication",
   "note": "SPDX 정의가 \"모델을 구동하는 데 필요한 의존성·요구사항 — 특정 하드웨어, 소프트웨어 라이브러리, 운영체제 포함\"을 적으라 해서 대응. 자유 서술이라 요구사양이 구조화되지는 않음. 사용설명서 기재사항이 여러 축에 걸쳐 문구별로 행을 쪼갬",
   "coverage": "자유 서술",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.considerations.technicalRequirements",
   "spdx_ref": "AIPackage.ai_informationAboutApplication",
   "row_key": "운용·유지관리#0#Article 13(3)",
   "field_key": "운용·유지관리#0#Article 13(3)#0",
@@ -141,7 +141,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "학습 과정 정보",
@@ -149,11 +149,11 @@
   "bom": "M-BOM",
   "id": "Annex IV(2)",
   "requirement_ko": "다음을 포함한, 인공지능시스템의 요소 및 그 개발과정에 대한 상세한 설명: (a) 인공지능시스템 개발을 위해 수행된 방법과 절차(관련되는 경우, 제3자가 제공한 사전훈련된 시스템이나 도구의 사용 및 제공자가 이를 사용, 통합 또는 수정한 방식을 포함); (b) 시스템의 설계사양, 즉 인공지능시스템 및 알고리즘의 일반적 논리; 그 근거와 가정을 포함한 주요 설계상의 선택(시스템이 사용되고자 하는 대상이 되는 개인 또는 집단에 관한 사항을 포함); 주요 분류 선택; 시스템이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; 시스템의 예상 산출물 및 산출물 품질에 대한 설명; 제III장 제2절에서 정하는 요건을 준수하기 위해 채택된 기술적 해결책에 관하여 이루어진 발생 가능한 절충에 대한 결정; (c) 소프트웨어 구성요소가 서로 어떻게 구축되거나 연계되어 전체 처리과정에 통합되는지를 설명하는 시스템 구조에 대한 설명; 인공지능시스템의 개발, 훈련, 시험 및 검증에 사용된 연산자원; (d) 관련되는 경우, 훈련방법론과 기법 및 사용된 훈련 데이터 세트를 설명하는 데이터시트 형태의 데이터 요건(그 데이터 세트에 대한 일반적 설명, 출처, 범위 및 주요 특성에 관한 정보를 포함); 데이터가 획득되고 선정된 방식; 라벨링 절차(예: 지도학습의 경우); 데이터 정제 방법론(예: 이상치 탐지); (e) 제13조(3) (d)호에 따라 배포자에 의한 인공지능시스템 산출물의 해석을 촉진하는 데 필요한 기술적 조치에 대한 평가를 포함하여, 제14조에 따라 필요한 인적 감독조치에 대한 평가; (f) 해당하는 경우, 인공지능시스템 및 그 성능에 대해 미리 정해진 변경사항에 대한 상세한 설명과, 제III장 제2절에서 정하는 관련 요건에 대한 인공지능시스템의 지속적 준수를 보장하기 위해 채택된 기술적 해결책과 관련된 모든 관련 정보; (g) 사용된 검증 및 시험 절차(사용된 검증·시험 데이터에 관한 정보 및 그 주요 특성을 포함); 정확성, 견고성 및 제III장 제2절에서 정하는 그 밖의 관련 요건에 대한 준수, 그리고 잠재적으로 차별적인 영향을 측정하기 위해 사용된 지표; (f)호에서 정하는 미리 정해진 변경사항에 관한 사항을 포함하여, 책임자가 서명하고 날짜가 기재된 시험 로그 및 모든 시험 보고서; (h) 마련된 사이버보안조치;",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.modelParameters.trainingTechniques",
   "spdx_field": "AIPackage.ai_informationAboutTraining",
   "note": "(d)",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.modelParameters.trainingTechniques",
   "spdx_ref": "AIPackage.ai_informationAboutTraining",
   "row_key": "모델 구조·과업#10#Annex IV(2)",
   "field_key": "모델 구조·과업#10#Annex IV(2)#8",
@@ -165,7 +165,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "학습 과정 정보",
@@ -173,11 +173,11 @@
   "bom": "M-BOM",
   "id": "Article 53(1)",
   "requirement_ko": "범용 인공지능모델의 제공자는 다음을 이행하여야 한다. (a) 인공지능사무국 및 국가관할당국에 요청 시 제공할 목적으로, 모델의 훈련·시험 과정 및 그 평가 결과를 포함한 모델의 기술문서를 작성하고 최신 상태로 유지할 것(그 기술문서는 최소한 부속서 XI에서 정하는 정보를 포함하여야 한다); (b) 범용 인공지능모델을 자신의 인공지능시스템에 통합하고자 하는 인공지능시스템 제공자에게 정보와 문서를 작성·최신화하여 제공할 것. 연합법과 국내법에 따라 지식재산권 및 기밀 영업정보 또는 영업비밀을 준수·보호할 필요성을 침해하지 아니하는 범위에서, 그 정보와 문서는 다음과 같아야 한다. (i) 인공지능시스템의 제공자가 범용 인공지능모델의 역량과 한계를 충분히 이해하고 이 규정에 따른 자신의 의무를 준수할 수 있도록 할 것; 그리고 (ii) 최소한 부속서 XII에서 정하는 요소를 포함할 것; (c) 지침(EU) 2019/790 제4조(3)에 따라 표명된 권리유보를 최신 기술을 통해서라도 식별하고 준수하는 것을 포함하여, 저작권 및 관련 권리에 관한 연합법을 준수하기 위한 정책을 마련할 것; (d) 인공지능사무국이 제공하는 서식에 따라, 범용 인공지능모델의 훈련에 사용된 콘텐츠에 관한 충분히 상세한 요약을 작성하여 공중이 이용할 수 있도록 할 것.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.modelParameters.trainingTechniques",
   "spdx_field": "AIPackage.ai_informationAboutTraining",
   "note": "정의가 \"훈련 과정에 대한 상세한 설명 — 기법·알고리즘·방법\"이라 대응. CDX modelCard 에는 훈련 과정을 서술하는 필드가 없고 datasets 는 쓴 데이터셋이라 다름. (b)의 다운스트림 제공 문서는 부속서 XII가 담고, (c)의 저작권 준수 정책은 조직의 정책이라 축 밖",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.modelParameters.trainingTechniques",
   "spdx_ref": "AIPackage.ai_informationAboutTraining",
   "row_key": "모델 구조·과업#3#Article 53(1)",
   "field_key": "모델 구조·과업#3#Article 53(1)#0",
@@ -189,7 +189,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "학습 과정 정보",
@@ -197,11 +197,11 @@
   "bom": "M-BOM",
   "id": "Annex XI §1(2)",
   "requirement_ko": "제1호에서 정하는 모델의 요소에 대한 상세한 설명 및 그 개발과정에 관한 관련 정보로서, 다음 요소를 포함한다. (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 훈련방법론과 기법을 포함한 모델 및 훈련과정의 설계사양, 그 근거와 가정을 포함한 주요 설계상의 선택; 해당하는 경우, 모델이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론(예: 정제, 필터링 등), 데이터포인트의 수, 그 범위 및 주요 특성을 포함); 데이터가 획득되고 선정된 방식 및, 해당하는 경우, 데이터 출처의 부적합성을 탐지하기 위한 그 밖의 모든 조치와 식별 가능한 편향을 탐지하는 방법; (d) 모델을 훈련시키는 데 사용된 연산자원(예: 부동소수점 연산 횟수), 훈련 시간, 훈련과 관련된 그 밖의 관련 세부사항; (e) 모델의 알려진 또는 추정된 에너지 소비량. (e)호와 관련하여, 모델의 에너지 소비량이 알려지지 아니한 경우, 그 에너지 소비량은 사용된 연산자원에 관한 정보를 기초로 산정될 수 있다.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.modelParameters.trainingTechniques",
   "spdx_field": "AIPackage.ai_informationAboutTraining",
   "note": "(b)",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.modelParameters.trainingTechniques",
   "spdx_ref": "AIPackage.ai_informationAboutTraining",
   "row_key": "모델 구조·과업#8#Annex XI §1(2)",
   "field_key": "모델 구조·과업#8#Annex XI §1(2)#4",
@@ -213,7 +213,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "학습 과정 정보",
@@ -221,11 +221,11 @@
   "bom": "M-BOM",
   "id": "Annex XI §1(2)",
   "requirement_ko": "제1호에서 정하는 모델의 요소에 대한 상세한 설명 및 그 개발과정에 관한 관련 정보로서, 다음 요소를 포함한다. (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 훈련방법론과 기법을 포함한 모델 및 훈련과정의 설계사양, 그 근거와 가정을 포함한 주요 설계상의 선택; 해당하는 경우, 모델이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론(예: 정제, 필터링 등), 데이터포인트의 수, 그 범위 및 주요 특성을 포함); 데이터가 획득되고 선정된 방식 및, 해당하는 경우, 데이터 출처의 부적합성을 탐지하기 위한 그 밖의 모든 조치와 식별 가능한 편향을 탐지하는 방법; (d) 모델을 훈련시키는 데 사용된 연산자원(예: 부동소수점 연산 횟수), 훈련 시간, 훈련과 관련된 그 밖의 관련 세부사항; (e) 모델의 알려진 또는 추정된 에너지 소비량. (e)호와 관련하여, 모델의 에너지 소비량이 알려지지 아니한 경우, 그 에너지 소비량은 사용된 연산자원에 관한 정보를 기초로 산정될 수 있다.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.modelParameters.trainingTechniques",
   "spdx_field": "AIPackage.ai_informationAboutTraining",
   "note": "(d) — 정의가 \"학습 과정에 대한 상세한 설명\"이라 연산량·시간을 뺀 나머지 서술을 받음. 자유 서술이라 구조화되지는 않음",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.modelParameters.trainingTechniques",
   "spdx_ref": "AIPackage.ai_informationAboutTraining",
   "row_key": "모델 구조·과업#8#Annex XI §1(2)",
   "field_key": "모델 구조·과업#8#Annex XI §1(2)#7",
@@ -237,7 +237,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "학습 과정 정보",
@@ -245,11 +245,11 @@
   "bom": "M-BOM",
   "id": "Annex XI §2(2)",
   "requirement_ko": "해당하는 경우, 내부 및/또는 외부 적대적 시험(예: 레드티밍), 정렬(alignment) 및 미세조정(fine-tuning)을 포함한 모델 적응을 수행할 목적으로 마련된 조치에 대한 상세한 설명.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.modelParameters.trainingTechniques",
   "spdx_field": "AIPackage.ai_informationAboutTraining",
   "note": "정렬·미세조정이 곧 학습 과정에서 쓴 기법이라 대응. '수행할 목적으로 마련된 조치'는 활동 표현이라 결과로 남는 실제 적용 기법까지만 잡음",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.modelParameters.trainingTechniques",
   "spdx_ref": "AIPackage.ai_informationAboutTraining",
   "row_key": "입증·검증#8#Annex XI §2(2)",
   "field_key": "입증·검증#8#Annex XI §2(2)#1",
@@ -261,7 +261,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "지표 임계값",
@@ -269,11 +269,11 @@
   "bom": "M-BOM",
   "id": "Article 9(8)",
   "requirement_ko": "고위험 인공지능시스템의 시험은, 적절한 경우, 개발과정 전반에 걸쳐 언제든지 수행되어야 하며, 어떠한 경우에도 시장 출시 또는 서비스 제공 이전에 수행되어야 한다. 시험은 고위험 인공지능시스템의 의도된 목적에 적절한, 사전에 정의된 지표와 확률적 임계값에 따라 수행되어야 한다.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.quantitativeAnalysis.performanceMetrics.decisionThreshold",
   "spdx_field": "AIPackage.ai_metricDecisionThreshold",
   "note": "지표를 계산할 때 쓴 임계값(예: 확률 0.5 초과) — CDX 에는 자리가 없고 confidenceInterval 은 신뢰구간이라 다름. 그 임계값도 모델의 예측 품질을 계산할 때 쓴 것이라 시스템 시험 전체의 판정 기준은 아님",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.quantitativeAnalysis.performanceMetrics.decisionThreshold",
   "spdx_ref": "AIPackage.ai_metricDecisionThreshold",
   "row_key": "성능측정#9#Article 9(8)",
   "field_key": "성능측정#9#Article 9(8)#2",
@@ -285,7 +285,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "학습 데이터 전처리",
@@ -293,11 +293,11 @@
   "bom": "M-BOM",
   "id": "Article 10(2)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 고위험 인공지능시스템의 의도된 목적에 적절한 데이터 거버넌스 및 관리 관행의 적용을 받아야 한다. 그러한 관행은 특히 다음 사항에 관한 것이어야 한다. (a) 관련 설계상의 선택; (b) 데이터 수집 절차 및 데이터의 출처, 그리고 개인데이터의 경우 그 수집의 원래 목적; (c) 주석 처리, 라벨링, 정제, 갱신, 보강 및 집계와 같은 관련 데이터 준비·처리 작업; (d) 데이터가 측정·표상하도록 되어 있는 정보에 관한 것을 포함한 가정의 설정; (e) 필요한 데이터 세트의 가용성, 양 및 적합성에 대한 평가; (f) 특히 데이터 산출물이 향후 운용을 위한 입력에 영향을 미치는 경우, 개인의 건강과 안전에 영향을 미치거나 기본권에 부정적 영향을 미치거나 연합법상 금지된 차별로 이어질 가능성이 있는 편향의 발생 가능성에 대한 검토; (g) (f)호에 따라 식별된 발생 가능한 편향을 탐지, 예방 및 완화하기 위한 적절한 조치; (h) 이 규정의 준수를 저해하는 관련 데이터 공백 또는 결함의 식별과, 그러한 공백과 결함을 해결할 수 있는 방법.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.preprocessing",
   "spdx_field": "AIPackage.ai_modelDataPreprocessing",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.preprocessing",
   "spdx_ref": "AIPackage.ai_modelDataPreprocessing",
   "row_key": "데이터셋 수집·출처#7#Article 10(2)",
   "field_key": "데이터셋 수집·출처#7#Article 10(2)#3",
@@ -309,7 +309,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "설명 방법",
@@ -317,11 +317,11 @@
   "bom": "M-BOM",
   "id": "Annex IV(3)",
   "requirement_ko": "인공지능시스템의 모니터링, 기능 및 통제에 관한 상세한 정보로서, 특히 다음에 관한 것: 시스템이 사용되고자 하는 대상이 되는 특정 개인이나 집단에 대한 정확성의 정도 및 그 의도된 목적과 관련하여 기대되는 전반적인 정확성 수준을 포함한 성능상의 역량과 한계; 인공지능시스템의 의도된 목적에 비추어 예견 가능한 의도되지 아니한 결과 및 건강·안전·기본권·차별에 대한 위험의 원천; 배포자에 의한 인공지능시스템 산출물의 해석을 촉진하기 위해 마련된 기술적 조치를 포함하여, 제14조에 따라 필요한 인적 감독조치; 적절한 경우 입력데이터에 관한 사양;",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.considerations.explainabilityMethods",
   "spdx_field": "AIPackage.ai_modelExplainability",
   "note": "정의가 \"모델의 결과를 설명하는 데 쓸 수 있는 방법\"이라 대응. ai_modelExplainability 정의가 \"모델의 결과를 설명하는 데 쓸 수 있는 방법\"이라 시스템 작동 전반의 투명성은 못 담음",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.considerations.explainabilityMethods",
   "spdx_ref": "AIPackage.ai_modelExplainability",
   "row_key": "모델 한계·가정#5#Annex IV(3)",
   "field_key": "모델 한계·가정#5#Annex IV(3)#3",
@@ -333,7 +333,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "설명 방법",
@@ -341,11 +341,11 @@
   "bom": "M-BOM",
   "id": "MEASURE 2.9",
   "requirement_ko": "AI 모델이 설명·검증·문서화되고, AI 시스템 출력이 MAP 기능에서 식별된 맥락 내에서 해석되어 책임 있는 사용과 거버넌스에 반영된다.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.considerations.explainabilityMethods",
   "spdx_field": "AIPackage.ai_modelExplainability",
   "note": "필드가 쓸 수 있는 기법 목록만 담고 실제 설명 결과까지는 못 담는 부분 대응. 뒷문장(해석을 책임 있는 사용·거버넌스에 반영)은 조직 활동이라 범위 밖",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.considerations.explainabilityMethods",
   "spdx_ref": "AIPackage.ai_modelExplainability",
   "row_key": "설명가능성#0#MEASURE 2.9",
   "field_key": "설명가능성#0#MEASURE 2.9#0",
@@ -357,7 +357,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "설명 방법",
@@ -365,11 +365,11 @@
   "bom": "M-BOM",
   "id": "Article 13(3)",
   "requirement_ko": "사용설명서는 최소한 다음 정보를 포함하여야 한다. (a) 제공자 및, 해당하는 경우, 그 수권대리인의 신원과 연락처; (b) 다음을 포함한, 고위험 인공지능시스템의 성능에 관한 특성, 역량 및 한계: (i) 그 의도된 목적; (ii) 고위험 인공지능시스템이 시험·검증된, 그리고 기대할 수 있는, 제15조에서 정하는 정확성·견고성·사이버보안의 수준(그 지표를 포함) 및 그 기대되는 정확성·견고성·사이버보안 수준에 영향을 미칠 수 있는 알려진·예견 가능한 상황; (iii) 고위험 인공지능시스템을 그 의도된 목적에 따라 사용하거나 합리적으로 예견 가능한 오용 조건에서 사용하는 것과 관련하여, 제9조(2)에서 정하는 건강 및 안전 또는 기본권에 대한 위험으로 이어질 수 있는 알려진·예견 가능한 상황; (iv) 해당하는 경우, 그 산출물을 설명하는 데 관련된 정보를 제공하기 위한 고위험 인공지능시스템의 기술적 역량 및 특성; (v) 적절한 경우, 시스템이 사용되고자 하는 대상이 되는 특정 개인 또는 집단에 관한 성능; (vi) 적절한 경우, 고위험 인공지능시스템의 의도된 목적을 고려한, 사용된 훈련·검증·시험 데이터 세트에 관한 입력데이터의 사양 또는 그 밖의 관련 정보; (vii) 해당하는 경우, 배포자가 고위험 인공지능시스템의 산출물을 해석하고 이를 적절하게 사용할 수 있도록 하는 정보; (c) 최초 적합성평가 시점에 제공자가 미리 정한, 고위험 인공지능시스템 및 그 성능에 대한 변경사항(있는 경우); (d) 배포자에 의한 고위험 인공지능시스템 산출물의 해석을 촉진하기 위해 마련된 기술적 조치를 포함한, 제14조에서 정하는 인적 감독조치; (e) 소프트웨어 업데이트에 관한 사항을 포함하여, 그 인공지능시스템의 적절한 작동을 보장하기 위해 필요한 연산·하드웨어 자원, 고위험 인공지능시스템의 예상 수명 및 필요한 유지관리조치(그 주기를 포함); (f) 관련된 경우, 배포자가 제12조에 따라 로그를 적절하게 수집·저장·해석할 수 있도록 하는, 고위험 인공지능시스템에 포함된 메커니즘에 대한 설명.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.considerations.explainabilityMethods",
   "spdx_field": "AIPackage.ai_modelExplainability",
   "note": "사용설명서 기재사항이 여러 축에 걸쳐 문구별로 행을 쪼갬. ai_modelExplainability 정의가 \"모델의 결과를 설명하는 데 쓸 수 있는 방법\"이라 시스템 작동 전반의 투명성은 못 담음",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.considerations.explainabilityMethods",
   "spdx_ref": "AIPackage.ai_modelExplainability",
   "row_key": "설명가능성#1#Article 13(3)",
   "field_key": "설명가능성#1#Article 13(3)#0",
@@ -382,7 +382,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "설명 방법",
@@ -390,11 +390,11 @@
   "bom": "M-BOM",
   "id": "Article 13(1)",
   "requirement_ko": "고위험 인공지능시스템은, 배포자가 시스템의 산출물을 해석하고 이를 적절하게 사용할 수 있도록, 그 작동이 충분히 투명하게 이루어지는 방식으로 설계·개발되어야 한다. 제3절에서 정하는 제공자 및 배포자의 관련 의무의 준수를 달성하기 위하여 적절한 유형과 정도의 투명성이 확보되어야 한다.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.considerations.explainabilityMethods",
   "spdx_field": "AIPackage.ai_modelExplainability",
   "note": "ai_modelExplainability 정의가 \"모델의 결과를 설명하는 데 쓸 수 있는 방법\"이라 시스템 작동 전반의 투명성은 못 담음",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.considerations.explainabilityMethods",
   "spdx_ref": "AIPackage.ai_modelExplainability",
   "row_key": "설명가능성#2#Article 13(1)",
   "field_key": "설명가능성#2#Article 13(1)#0",
@@ -406,7 +406,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "설명 방법",
@@ -414,11 +414,11 @@
   "bom": "M-BOM",
   "id": "Article 14(4)",
   "requirement_ko": "제1항, 제2항 및 제3항의 이행을 위하여, 고위험 인공지능시스템은, 인적 감독을 담당하는 자연인이 적절하고 비례하는 범위에서 다음을 할 수 있도록 하는 방식으로 배포자에게 제공되어야 한다. (a) 고위험 인공지능시스템의 관련 역량과 한계를 올바르게 이해하고, 이상, 기능장애 및 예상치 못한 성능을 탐지·대응하는 것을 포함하여 그 작동을 적절히 모니터링할 수 있을 것; (b) 특히 자연인이 내릴 결정에 대한 정보나 권고를 제공하기 위해 사용되는 고위험 인공지능시스템의 경우, 고위험 인공지능시스템이 산출한 결과에 자동으로 의존하거나 과도하게 의존하는 경향(자동화 편향)의 가능성을 계속 인식할 것; (c) 예를 들어 이용 가능한 해석 도구와 방법을 고려하여, 고위험 인공지능시스템의 산출물을 올바르게 해석할 것; (d) 특정한 상황에서, 고위험 인공지능시스템을 사용하지 아니하기로 결정하거나 그 밖의 방법으로 고위험 인공지능시스템의 산출물을 무시, 무효화 또는 반전시킬 것; (e) 시스템이 안전한 상태로 정지할 수 있도록 하는 '정지' 버튼이나 이와 유사한 절차를 통해 고위험 인공지능시스템의 작동에 개입하거나 시스템을 중단시킬 것.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.considerations.explainabilityMethods",
   "spdx_field": "AIPackage.ai_modelExplainability",
   "note": "(b) 자동화 편향을 인식할 것은 감독자의 태도라 범위 밖",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.considerations.explainabilityMethods",
   "spdx_ref": "AIPackage.ai_modelExplainability",
   "row_key": "인적 감독#4#Article 14(4)",
   "field_key": "인적 감독#4#Article 14(4)#1",
@@ -430,7 +430,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "안전 위험 평가",
@@ -438,11 +438,11 @@
   "bom": "M-BOM",
   "id": "MEASURE 2.6",
   "requirement_ko": "AI 시스템이 MAP 기능에서 식별된 안전 위험에 대해 정기적으로 평가된다. 배포될 AI 시스템이 안전함이 입증되고, 잔여 부정 위험이 위험 허용 수준을 초과하지 않으며, 특히 지식 한계를 벗어나 작동하게 될 경우 안전하게 실패할 수 있음이 입증된다. 안전 지표는 시스템 신뢰성·견고성, 실시간 모니터링, AI 시스템 장애에 대한 대응 시간을 반영한다.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.considerations.safetyRiskAssessment",
   "spdx_field": "AIPackage.ai_safetyRiskAssessment",
   "note": "enum(low/medium/high/serious)이라 안전 위험 등급 하나만 담음. 그 등급은 모델에 대한 것이라 시스템 전체가 안전함을 담지는 못함",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.considerations.safetyRiskAssessment",
   "spdx_ref": "AIPackage.ai_safetyRiskAssessment",
   "row_key": "위험·영향평가#3#MEASURE 2.6",
   "field_key": "위험·영향평가#3#MEASURE 2.6#0",
@@ -454,7 +454,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "민감 개인정보 사용",
@@ -462,11 +462,11 @@
   "bom": "M-BOM",
   "id": "Article 10(5)",
   "requirement_ko": "고위험 인공지능시스템과 관련하여 이 조 제2항 (f)호 및 (g)호에 따른 편향의 탐지 및 시정을 보장하기 위해 엄격히 필요한 범위 내에서, 그러한 시스템의 제공자는 자연인의 기본권과 자유에 대한 적절한 보호장치를 조건으로 특별한 범주의 개인데이터를 예외적으로 처리할 수 있다. 규정(EU) 2016/679 및 규정(EU) 2018/1725, 지침(EU) 2016/680에서 정하는 사항에 더하여, 그러한 처리가 이루어지기 위해서는 다음 조건이 모두 충족되어야 한다. (a) 편향의 탐지 및 시정이 합성데이터나 익명화된 데이터를 포함한 다른 데이터의 처리로는 효과적으로 달성될 수 없을 것; (b) 특별한 범주의 개인데이터가 그 재사용에 관한 기술적 제한 및 가명처리를 포함한 최신 보안·프라이버시 보호조치의 적용을 받을 것; (c) 특별한 범주의 개인데이터가, 오남용을 방지하고 적절한 비밀유지의무를 지는 인가된 자만이 그 개인데이터에 접근할 수 있도록, 접근에 대한 엄격한 통제 및 기록을 포함하여 안전하게 보호되고 적절한 보호장치의 적용을 받도록 하는 조치의 대상이 될 것; (d) 특별한 범주의 개인데이터가 다른 당사자에게 전송·이전되거나 그 밖의 방법으로 접근되지 아니할 것; (e) 편향이 시정되거나 개인데이터의 보유기간이 종료되는 시점 중 먼저 도래하는 시점에 특별한 범주의 개인데이터가 삭제될 것; (f) 규정(EU) 2016/679 및 규정(EU) 2018/1725, 지침(EU) 2016/680에 따른 처리활동 기록에, 편향을 탐지·시정하기 위해 특별한 범주의 개인데이터의 처리가 엄격히 필요하였던 이유 및 그 목적이 다른 데이터의 처리로는 달성될 수 없었던 이유가 포함될 것.",
-  "cdx_field": "-",
+  "cdx_field": "component.modelCard.considerations.sensitivePersonalInformation",
   "spdx_field": "AIPackage.ai_useSensitivePersonalInformation",
   "note": "학습·추론에 실제로 썼는지. 나머지 조건은 범위 밖 — (c) 접근 통제·기록, (d) 제3자 전송 금지, (e) 시정 후 삭제는 조직이 데이터를 다루는 운영 통제이고, (a) 다른 데이터로는 달성 불가하다는 판단과 그 이유는 (f)에 따라 GDPR·EUDPR 처리활동 기록에 적히는 조직 문서다",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "component.modelCard.considerations.sensitivePersonalInformation",
   "spdx_ref": "AIPackage.ai_useSensitivePersonalInformation",
   "row_key": "데이터셋 수집·출처#11#Article 10(5)",
   "field_key": "데이터셋 수집·출처#11#Article 10(5)#1",
@@ -478,7 +478,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "익명화 방법",
@@ -486,11 +486,11 @@
   "bom": "D-BOM",
   "id": "Article 10(5)",
   "requirement_ko": "고위험 인공지능시스템과 관련하여 이 조 제2항 (f)호 및 (g)호에 따른 편향의 탐지 및 시정을 보장하기 위해 엄격히 필요한 범위 내에서, 그러한 시스템의 제공자는 자연인의 기본권과 자유에 대한 적절한 보호장치를 조건으로 특별한 범주의 개인데이터를 예외적으로 처리할 수 있다. 규정(EU) 2016/679 및 규정(EU) 2018/1725, 지침(EU) 2016/680에서 정하는 사항에 더하여, 그러한 처리가 이루어지기 위해서는 다음 조건이 모두 충족되어야 한다. (a) 편향의 탐지 및 시정이 합성데이터나 익명화된 데이터를 포함한 다른 데이터의 처리로는 효과적으로 달성될 수 없을 것; (b) 특별한 범주의 개인데이터가 그 재사용에 관한 기술적 제한 및 가명처리를 포함한 최신 보안·프라이버시 보호조치의 적용을 받을 것; (c) 특별한 범주의 개인데이터가, 오남용을 방지하고 적절한 비밀유지의무를 지는 인가된 자만이 그 개인데이터에 접근할 수 있도록, 접근에 대한 엄격한 통제 및 기록을 포함하여 안전하게 보호되고 적절한 보호장치의 적용을 받도록 하는 조치의 대상이 될 것; (d) 특별한 범주의 개인데이터가 다른 당사자에게 전송·이전되거나 그 밖의 방법으로 접근되지 아니할 것; (e) 편향이 시정되거나 개인데이터의 보유기간이 종료되는 시점 중 먼저 도래하는 시점에 특별한 범주의 개인데이터가 삭제될 것; (f) 규정(EU) 2016/679 및 규정(EU) 2018/1725, 지침(EU) 2016/680에 따른 처리활동 기록에, 편향을 탐지·시정하기 위해 특별한 범주의 개인데이터의 처리가 엄격히 필요하였던 이유 및 그 목적이 다른 데이터의 처리로는 달성될 수 없었던 이유가 포함될 것.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.anonymizationMethods",
   "spdx_field": "DatasetPackage.dataset_anonymizationMethodUsed",
   "note": "(b)가 요구하는 보호조치 중 익명화·가명처리 방법. 나머지 조건은 범위 밖 — (c) 접근 통제·기록, (d) 제3자 전송 금지, (e) 시정 후 삭제는 조직이 데이터를 다루는 운영 통제이고, (a) 다른 데이터로는 달성 불가하다는 판단과 그 이유는 (f)에 따라 GDPR·EUDPR 처리활동 기록에 적히는 조직 문서다",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.anonymizationMethods",
   "spdx_ref": "DatasetPackage.dataset_anonymizationMethodUsed",
   "row_key": "데이터셋 수집·출처#11#Article 10(5)",
   "field_key": "데이터셋 수집·출처#11#Article 10(5)#2",
@@ -502,7 +502,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터 수집 절차",
@@ -510,11 +510,11 @@
   "bom": "D-BOM",
   "id": "MAP 2.3",
   "requirement_ko": "실험 설계, 데이터 수집·선택(예: 가용성·대표성·적합성), 시스템 신뢰성, 구성 타당성 검증과 관련된 것을 포함하여 과학적 무결성과 TEVV 고려사항이 식별·문서화된다.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.collectionProcess",
   "spdx_field": "DatasetPackage.dataset_dataCollectionProcess",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.collectionProcess",
   "spdx_ref": "DatasetPackage.dataset_dataCollectionProcess",
   "row_key": "데이터셋 수집·출처#0#MAP 2.3",
   "field_key": "데이터셋 수집·출처#0#MAP 2.3#0",
@@ -526,7 +526,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터 수집 절차",
@@ -534,11 +534,11 @@
   "bom": "D-BOM",
   "id": "A.7.3",
   "requirement_ko": "조직은 AI 시스템에 사용되는 데이터의 취득·선택에 관한 세부사항을 결정·문서화해야 한다.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.collectionProcess",
   "spdx_field": "DatasetPackage.dataset_dataCollectionProcess",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.collectionProcess",
   "spdx_ref": "DatasetPackage.dataset_dataCollectionProcess",
   "row_key": "데이터셋 수집·출처#1#A.7.3",
   "field_key": "데이터셋 수집·출처#1#A.7.3#0",
@@ -550,7 +550,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터 수집 절차",
@@ -558,11 +558,11 @@
   "bom": "D-BOM",
   "id": "Annex XII(2)",
   "requirement_ko": "다음을 포함한, 모델의 요소 및 그 개발과정에 대한 설명: (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 입력·산출물의 양식(예: 텍스트, 이미지 등) 및 형식과 그 최대 크기(예: 컨텍스트 윈도우 길이 등); (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론을 포함).",
-  "cdx_field": "-",
+  "cdx_field": "componentData.collectionProcess",
   "spdx_field": "DatasetPackage.dataset_dataCollectionProcess",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.collectionProcess",
   "spdx_ref": "DatasetPackage.dataset_dataCollectionProcess",
   "row_key": "데이터셋 수집·출처#3#Annex XII(2)",
   "field_key": "데이터셋 수집·출처#3#Annex XII(2)#1",
@@ -574,7 +574,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터 수집 절차",
@@ -582,11 +582,11 @@
   "bom": "D-BOM",
   "id": "Annex XI §1(2)",
   "requirement_ko": "제1호에서 정하는 모델의 요소에 대한 상세한 설명 및 그 개발과정에 관한 관련 정보로서, 다음 요소를 포함한다. (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 훈련방법론과 기법을 포함한 모델 및 훈련과정의 설계사양, 그 근거와 가정을 포함한 주요 설계상의 선택; 해당하는 경우, 모델이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론(예: 정제, 필터링 등), 데이터포인트의 수, 그 범위 및 주요 특성을 포함); 데이터가 획득되고 선정된 방식 및, 해당하는 경우, 데이터 출처의 부적합성을 탐지하기 위한 그 밖의 모든 조치와 식별 가능한 편향을 탐지하는 방법; (d) 모델을 훈련시키는 데 사용된 연산자원(예: 부동소수점 연산 횟수), 훈련 시간, 훈련과 관련된 그 밖의 관련 세부사항; (e) 모델의 알려진 또는 추정된 에너지 소비량. (e)호와 관련하여, 모델의 에너지 소비량이 알려지지 아니한 경우, 그 에너지 소비량은 사용된 연산자원에 관한 정보를 기초로 산정될 수 있다.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.collectionProcess",
   "spdx_field": "DatasetPackage.dataset_dataCollectionProcess",
   "note": "(c) — 출처와 획득 경로",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.collectionProcess",
   "spdx_ref": "DatasetPackage.dataset_dataCollectionProcess",
   "row_key": "데이터셋 수집·출처#4#Annex XI §1(2)",
   "field_key": "데이터셋 수집·출처#4#Annex XI §1(2)#1",
@@ -599,7 +599,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터 수집 절차",
@@ -607,11 +607,11 @@
   "bom": "D-BOM",
   "id": "Annex IV(2)",
   "requirement_ko": "다음을 포함한, 인공지능시스템의 요소 및 그 개발과정에 대한 상세한 설명: (a) 인공지능시스템 개발을 위해 수행된 방법과 절차(관련되는 경우, 제3자가 제공한 사전훈련된 시스템이나 도구의 사용 및 제공자가 이를 사용, 통합 또는 수정한 방식을 포함); (b) 시스템의 설계사양, 즉 인공지능시스템 및 알고리즘의 일반적 논리; 그 근거와 가정을 포함한 주요 설계상의 선택(시스템이 사용되고자 하는 대상이 되는 개인 또는 집단에 관한 사항을 포함); 주요 분류 선택; 시스템이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; 시스템의 예상 산출물 및 산출물 품질에 대한 설명; 제III장 제2절에서 정하는 요건을 준수하기 위해 채택된 기술적 해결책에 관하여 이루어진 발생 가능한 절충에 대한 결정; (c) 소프트웨어 구성요소가 서로 어떻게 구축되거나 연계되어 전체 처리과정에 통합되는지를 설명하는 시스템 구조에 대한 설명; 인공지능시스템의 개발, 훈련, 시험 및 검증에 사용된 연산자원; (d) 관련되는 경우, 훈련방법론과 기법 및 사용된 훈련 데이터 세트를 설명하는 데이터시트 형태의 데이터 요건(그 데이터 세트에 대한 일반적 설명, 출처, 범위 및 주요 특성에 관한 정보를 포함); 데이터가 획득되고 선정된 방식; 라벨링 절차(예: 지도학습의 경우); 데이터 정제 방법론(예: 이상치 탐지); (e) 제13조(3) (d)호에 따라 배포자에 의한 인공지능시스템 산출물의 해석을 촉진하는 데 필요한 기술적 조치에 대한 평가를 포함하여, 제14조에 따라 필요한 인적 감독조치에 대한 평가; (f) 해당하는 경우, 인공지능시스템 및 그 성능에 대해 미리 정해진 변경사항에 대한 상세한 설명과, 제III장 제2절에서 정하는 관련 요건에 대한 인공지능시스템의 지속적 준수를 보장하기 위해 채택된 기술적 해결책과 관련된 모든 관련 정보; (g) 사용된 검증 및 시험 절차(사용된 검증·시험 데이터에 관한 정보 및 그 주요 특성을 포함); 정확성, 견고성 및 제III장 제2절에서 정하는 그 밖의 관련 요건에 대한 준수, 그리고 잠재적으로 차별적인 영향을 측정하기 위해 사용된 지표; (f)호에서 정하는 미리 정해진 변경사항에 관한 사항을 포함하여, 책임자가 서명하고 날짜가 기재된 시험 로그 및 모든 시험 보고서; (h) 마련된 사이버보안조치;",
-  "cdx_field": "-",
+  "cdx_field": "componentData.collectionProcess",
   "spdx_field": "DatasetPackage.dataset_dataCollectionProcess",
   "note": "(d) — 10조(2)와 같은 자리",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.collectionProcess",
   "spdx_ref": "DatasetPackage.dataset_dataCollectionProcess",
   "row_key": "데이터셋 수집·출처#5#Annex IV(2)",
   "field_key": "데이터셋 수집·출처#5#Annex IV(2)#2",
@@ -624,7 +624,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터 수집 절차",
@@ -632,11 +632,11 @@
   "bom": "D-BOM",
   "id": "Article 10(2)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 고위험 인공지능시스템의 의도된 목적에 적절한 데이터 거버넌스 및 관리 관행의 적용을 받아야 한다. 그러한 관행은 특히 다음 사항에 관한 것이어야 한다. (a) 관련 설계상의 선택; (b) 데이터 수집 절차 및 데이터의 출처, 그리고 개인데이터의 경우 그 수집의 원래 목적; (c) 주석 처리, 라벨링, 정제, 갱신, 보강 및 집계와 같은 관련 데이터 준비·처리 작업; (d) 데이터가 측정·표상하도록 되어 있는 정보에 관한 것을 포함한 가정의 설정; (e) 필요한 데이터 세트의 가용성, 양 및 적합성에 대한 평가; (f) 특히 데이터 산출물이 향후 운용을 위한 입력에 영향을 미치는 경우, 개인의 건강과 안전에 영향을 미치거나 기본권에 부정적 영향을 미치거나 연합법상 금지된 차별로 이어질 가능성이 있는 편향의 발생 가능성에 대한 검토; (g) (f)호에 따라 식별된 발생 가능한 편향을 탐지, 예방 및 완화하기 위한 적절한 조치; (h) 이 규정의 준수를 저해하는 관련 데이터 공백 또는 결함의 식별과, 그러한 공백과 결함을 해결할 수 있는 방법.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.collectionProcess",
   "spdx_field": "DatasetPackage.dataset_dataCollectionProcess",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.collectionProcess",
   "spdx_ref": "DatasetPackage.dataset_dataCollectionProcess",
   "row_key": "데이터셋 수집·출처#7#Article 10(2)",
   "field_key": "데이터셋 수집·출처#7#Article 10(2)#1",
@@ -648,7 +648,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터 전처리",
@@ -656,11 +656,11 @@
   "bom": "D-BOM",
   "id": "A.7.6",
   "requirement_ko": "조직은 데이터 준비 선택 기준과 사용할 데이터 준비 방법을 정의·문서화해야 한다.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.preprocessing",
   "spdx_field": "DatasetPackage.dataset_dataPreprocessing",
   "note": "실제 적용된 변환·전처리만 대응. 본문이 함께 요구하는 \"선택 기준\"은 준비 방법을 고르는 조직의 규칙이라 범위 밖",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.preprocessing",
   "spdx_ref": "DatasetPackage.dataset_dataPreprocessing",
   "row_key": "데이터 전처리#0#A.7.6",
   "field_key": "데이터 전처리#0#A.7.6#0",
@@ -672,7 +672,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터 전처리",
@@ -680,11 +680,11 @@
   "bom": "D-BOM",
   "id": "Annex XII(2)",
   "requirement_ko": "다음을 포함한, 모델의 요소 및 그 개발과정에 대한 설명: (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 입력·산출물의 양식(예: 텍스트, 이미지 등) 및 형식과 그 최대 크기(예: 컨텍스트 윈도우 길이 등); (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론을 포함).",
-  "cdx_field": "-",
+  "cdx_field": "componentData.preprocessing",
   "spdx_field": "DatasetPackage.dataset_dataPreprocessing",
   "note": "유형·출처·정제방법론이 각각 datasetType·dataCollectionProcess·dataPreprocessing 으로 갈림",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.preprocessing",
   "spdx_ref": "DatasetPackage.dataset_dataPreprocessing",
   "row_key": "데이터 전처리#1#Annex XII(2)",
   "field_key": "데이터 전처리#1#Annex XII(2)#0",
@@ -696,7 +696,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터 전처리",
@@ -704,11 +704,11 @@
   "bom": "D-BOM",
   "id": "Annex XI §1(2)",
   "requirement_ko": "제1호에서 정하는 모델의 요소에 대한 상세한 설명 및 그 개발과정에 관한 관련 정보로서, 다음 요소를 포함한다. (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 훈련방법론과 기법을 포함한 모델 및 훈련과정의 설계사양, 그 근거와 가정을 포함한 주요 설계상의 선택; 해당하는 경우, 모델이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론(예: 정제, 필터링 등), 데이터포인트의 수, 그 범위 및 주요 특성을 포함); 데이터가 획득되고 선정된 방식 및, 해당하는 경우, 데이터 출처의 부적합성을 탐지하기 위한 그 밖의 모든 조치와 식별 가능한 편향을 탐지하는 방법; (d) 모델을 훈련시키는 데 사용된 연산자원(예: 부동소수점 연산 횟수), 훈련 시간, 훈련과 관련된 그 밖의 관련 세부사항; (e) 모델의 알려진 또는 추정된 에너지 소비량. (e)호와 관련하여, 모델의 에너지 소비량이 알려지지 아니한 경우, 그 에너지 소비량은 사용된 연산자원에 관한 정보를 기초로 산정될 수 있다.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.preprocessing",
   "spdx_field": "DatasetPackage.dataset_dataPreprocessing",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.preprocessing",
   "spdx_ref": "DatasetPackage.dataset_dataPreprocessing",
   "row_key": "데이터 전처리#2#Annex XI §1(2)",
   "field_key": "데이터 전처리#2#Annex XI §1(2)#0",
@@ -720,7 +720,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터 전처리",
@@ -728,11 +728,11 @@
   "bom": "D-BOM",
   "id": "Annex IV(2)",
   "requirement_ko": "다음을 포함한, 인공지능시스템의 요소 및 그 개발과정에 대한 상세한 설명: (a) 인공지능시스템 개발을 위해 수행된 방법과 절차(관련되는 경우, 제3자가 제공한 사전훈련된 시스템이나 도구의 사용 및 제공자가 이를 사용, 통합 또는 수정한 방식을 포함); (b) 시스템의 설계사양, 즉 인공지능시스템 및 알고리즘의 일반적 논리; 그 근거와 가정을 포함한 주요 설계상의 선택(시스템이 사용되고자 하는 대상이 되는 개인 또는 집단에 관한 사항을 포함); 주요 분류 선택; 시스템이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; 시스템의 예상 산출물 및 산출물 품질에 대한 설명; 제III장 제2절에서 정하는 요건을 준수하기 위해 채택된 기술적 해결책에 관하여 이루어진 발생 가능한 절충에 대한 결정; (c) 소프트웨어 구성요소가 서로 어떻게 구축되거나 연계되어 전체 처리과정에 통합되는지를 설명하는 시스템 구조에 대한 설명; 인공지능시스템의 개발, 훈련, 시험 및 검증에 사용된 연산자원; (d) 관련되는 경우, 훈련방법론과 기법 및 사용된 훈련 데이터 세트를 설명하는 데이터시트 형태의 데이터 요건(그 데이터 세트에 대한 일반적 설명, 출처, 범위 및 주요 특성에 관한 정보를 포함); 데이터가 획득되고 선정된 방식; 라벨링 절차(예: 지도학습의 경우); 데이터 정제 방법론(예: 이상치 탐지); (e) 제13조(3) (d)호에 따라 배포자에 의한 인공지능시스템 산출물의 해석을 촉진하는 데 필요한 기술적 조치에 대한 평가를 포함하여, 제14조에 따라 필요한 인적 감독조치에 대한 평가; (f) 해당하는 경우, 인공지능시스템 및 그 성능에 대해 미리 정해진 변경사항에 대한 상세한 설명과, 제III장 제2절에서 정하는 관련 요건에 대한 인공지능시스템의 지속적 준수를 보장하기 위해 채택된 기술적 해결책과 관련된 모든 관련 정보; (g) 사용된 검증 및 시험 절차(사용된 검증·시험 데이터에 관한 정보 및 그 주요 특성을 포함); 정확성, 견고성 및 제III장 제2절에서 정하는 그 밖의 관련 요건에 대한 준수, 그리고 잠재적으로 차별적인 영향을 측정하기 위해 사용된 지표; (f)호에서 정하는 미리 정해진 변경사항에 관한 사항을 포함하여, 책임자가 서명하고 날짜가 기재된 시험 로그 및 모든 시험 보고서; (h) 마련된 사이버보안조치;",
-  "cdx_field": "-",
+  "cdx_field": "componentData.preprocessing",
   "spdx_field": "DatasetPackage.dataset_dataPreprocessing",
   "note": "(d)",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.preprocessing",
   "spdx_ref": "DatasetPackage.dataset_dataPreprocessing",
   "row_key": "데이터 전처리#3#Annex IV(2)",
   "field_key": "데이터 전처리#3#Annex IV(2)#0",
@@ -745,7 +745,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터셋 가용성",
@@ -753,11 +753,11 @@
   "bom": "D-BOM",
   "id": "Article 10(2)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 고위험 인공지능시스템의 의도된 목적에 적절한 데이터 거버넌스 및 관리 관행의 적용을 받아야 한다. 그러한 관행은 특히 다음 사항에 관한 것이어야 한다. (a) 관련 설계상의 선택; (b) 데이터 수집 절차 및 데이터의 출처, 그리고 개인데이터의 경우 그 수집의 원래 목적; (c) 주석 처리, 라벨링, 정제, 갱신, 보강 및 집계와 같은 관련 데이터 준비·처리 작업; (d) 데이터가 측정·표상하도록 되어 있는 정보에 관한 것을 포함한 가정의 설정; (e) 필요한 데이터 세트의 가용성, 양 및 적합성에 대한 평가; (f) 특히 데이터 산출물이 향후 운용을 위한 입력에 영향을 미치는 경우, 개인의 건강과 안전에 영향을 미치거나 기본권에 부정적 영향을 미치거나 연합법상 금지된 차별로 이어질 가능성이 있는 편향의 발생 가능성에 대한 검토; (g) (f)호에 따라 식별된 발생 가능한 편향을 탐지, 예방 및 완화하기 위한 적절한 조치; (h) 이 규정의 준수를 저해하는 관련 데이터 공백 또는 결함의 식별과, 그러한 공백과 결함을 해결할 수 있는 방법.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.contents.availability",
   "spdx_field": "DatasetPackage.dataset_datasetAvailability",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.contents.availability",
   "spdx_ref": "DatasetPackage.dataset_datasetAvailability",
   "row_key": "데이터셋 수집·출처#7#Article 10(2)",
   "field_key": "데이터셋 수집·출처#7#Article 10(2)#6",
@@ -769,7 +769,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터셋 잡음",
@@ -777,11 +777,11 @@
   "bom": "D-BOM",
   "id": "Article 10(3)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 관련성이 있고, 충분히 대표성을 가지며, 가능한 한 오류가 없고 의도된 목적에 비추어 완전하여야 한다. 그 데이터 세트는, 적용 가능한 경우 고위험 인공지능시스템이 사용되고자 하는 대상이 되는 개인 또는 집단에 관한 사항을 포함하여, 적절한 통계적 특성을 가져야 한다. 데이터 세트의 이러한 특성은 개별 데이터 세트 단위 또는 그 조합의 단위에서 충족될 수 있다.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.noise",
   "spdx_field": "DatasetPackage.dataset_datasetNoise",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.noise",
   "spdx_ref": "DatasetPackage.dataset_datasetNoise",
   "row_key": "데이터셋 수집·출처#8#Article 10(3)",
   "field_key": "데이터셋 수집·출처#8#Article 10(3)#0",
@@ -793,7 +793,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터셋 크기",
@@ -801,11 +801,11 @@
   "bom": "D-BOM",
   "id": "Annex XI §1(2)",
   "requirement_ko": "제1호에서 정하는 모델의 요소에 대한 상세한 설명 및 그 개발과정에 관한 관련 정보로서, 다음 요소를 포함한다. (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 훈련방법론과 기법을 포함한 모델 및 훈련과정의 설계사양, 그 근거와 가정을 포함한 주요 설계상의 선택; 해당하는 경우, 모델이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론(예: 정제, 필터링 등), 데이터포인트의 수, 그 범위 및 주요 특성을 포함); 데이터가 획득되고 선정된 방식 및, 해당하는 경우, 데이터 출처의 부적합성을 탐지하기 위한 그 밖의 모든 조치와 식별 가능한 편향을 탐지하는 방법; (d) 모델을 훈련시키는 데 사용된 연산자원(예: 부동소수점 연산 횟수), 훈련 시간, 훈련과 관련된 그 밖의 관련 세부사항; (e) 모델의 알려진 또는 추정된 에너지 소비량. (e)호와 관련하여, 모델의 에너지 소비량이 알려지지 아니한 경우, 그 에너지 소비량은 사용된 연산자원에 관한 정보를 기초로 산정될 수 있다.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.size",
   "spdx_field": "DatasetPackage.dataset_datasetSize",
   "note": "(c)",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.size",
   "spdx_ref": "DatasetPackage.dataset_datasetSize",
   "row_key": "데이터셋 수집·출처#4#Annex XI §1(2)",
   "field_key": "데이터셋 수집·출처#4#Annex XI §1(2)#2",
@@ -817,7 +817,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터셋 크기",
@@ -825,11 +825,11 @@
   "bom": "D-BOM",
   "id": "Annex IV(2)",
   "requirement_ko": "다음을 포함한, 인공지능시스템의 요소 및 그 개발과정에 대한 상세한 설명: (a) 인공지능시스템 개발을 위해 수행된 방법과 절차(관련되는 경우, 제3자가 제공한 사전훈련된 시스템이나 도구의 사용 및 제공자가 이를 사용, 통합 또는 수정한 방식을 포함); (b) 시스템의 설계사양, 즉 인공지능시스템 및 알고리즘의 일반적 논리; 그 근거와 가정을 포함한 주요 설계상의 선택(시스템이 사용되고자 하는 대상이 되는 개인 또는 집단에 관한 사항을 포함); 주요 분류 선택; 시스템이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; 시스템의 예상 산출물 및 산출물 품질에 대한 설명; 제III장 제2절에서 정하는 요건을 준수하기 위해 채택된 기술적 해결책에 관하여 이루어진 발생 가능한 절충에 대한 결정; (c) 소프트웨어 구성요소가 서로 어떻게 구축되거나 연계되어 전체 처리과정에 통합되는지를 설명하는 시스템 구조에 대한 설명; 인공지능시스템의 개발, 훈련, 시험 및 검증에 사용된 연산자원; (d) 관련되는 경우, 훈련방법론과 기법 및 사용된 훈련 데이터 세트를 설명하는 데이터시트 형태의 데이터 요건(그 데이터 세트에 대한 일반적 설명, 출처, 범위 및 주요 특성에 관한 정보를 포함); 데이터가 획득되고 선정된 방식; 라벨링 절차(예: 지도학습의 경우); 데이터 정제 방법론(예: 이상치 탐지); (e) 제13조(3) (d)호에 따라 배포자에 의한 인공지능시스템 산출물의 해석을 촉진하는 데 필요한 기술적 조치에 대한 평가를 포함하여, 제14조에 따라 필요한 인적 감독조치에 대한 평가; (f) 해당하는 경우, 인공지능시스템 및 그 성능에 대해 미리 정해진 변경사항에 대한 상세한 설명과, 제III장 제2절에서 정하는 관련 요건에 대한 인공지능시스템의 지속적 준수를 보장하기 위해 채택된 기술적 해결책과 관련된 모든 관련 정보; (g) 사용된 검증 및 시험 절차(사용된 검증·시험 데이터에 관한 정보 및 그 주요 특성을 포함); 정확성, 견고성 및 제III장 제2절에서 정하는 그 밖의 관련 요건에 대한 준수, 그리고 잠재적으로 차별적인 영향을 측정하기 위해 사용된 지표; (f)호에서 정하는 미리 정해진 변경사항에 관한 사항을 포함하여, 책임자가 서명하고 날짜가 기재된 시험 로그 및 모든 시험 보고서; (h) 마련된 사이버보안조치;",
-  "cdx_field": "-",
+  "cdx_field": "componentData.size",
   "spdx_field": "DatasetPackage.dataset_datasetSize",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.size",
   "spdx_ref": "DatasetPackage.dataset_datasetSize",
   "row_key": "데이터셋 수집·출처#5#Annex IV(2)",
   "field_key": "데이터셋 수집·출처#5#Annex IV(2)#1",
@@ -841,7 +841,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터셋 크기",
@@ -849,11 +849,11 @@
   "bom": "D-BOM",
   "id": "Article 10(2)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 고위험 인공지능시스템의 의도된 목적에 적절한 데이터 거버넌스 및 관리 관행의 적용을 받아야 한다. 그러한 관행은 특히 다음 사항에 관한 것이어야 한다. (a) 관련 설계상의 선택; (b) 데이터 수집 절차 및 데이터의 출처, 그리고 개인데이터의 경우 그 수집의 원래 목적; (c) 주석 처리, 라벨링, 정제, 갱신, 보강 및 집계와 같은 관련 데이터 준비·처리 작업; (d) 데이터가 측정·표상하도록 되어 있는 정보에 관한 것을 포함한 가정의 설정; (e) 필요한 데이터 세트의 가용성, 양 및 적합성에 대한 평가; (f) 특히 데이터 산출물이 향후 운용을 위한 입력에 영향을 미치는 경우, 개인의 건강과 안전에 영향을 미치거나 기본권에 부정적 영향을 미치거나 연합법상 금지된 차별로 이어질 가능성이 있는 편향의 발생 가능성에 대한 검토; (g) (f)호에 따라 식별된 발생 가능한 편향을 탐지, 예방 및 완화하기 위한 적절한 조치; (h) 이 규정의 준수를 저해하는 관련 데이터 공백 또는 결함의 식별과, 그러한 공백과 결함을 해결할 수 있는 방법.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.size",
   "spdx_field": "DatasetPackage.dataset_datasetSize",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.size",
   "spdx_ref": "DatasetPackage.dataset_datasetSize",
   "row_key": "데이터셋 수집·출처#7#Article 10(2)",
   "field_key": "데이터셋 수집·출처#7#Article 10(2)#7",
@@ -865,7 +865,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터셋 유형",
@@ -873,11 +873,11 @@
   "bom": "D-BOM",
   "id": "Annex XII(2)",
   "requirement_ko": "다음을 포함한, 모델의 요소 및 그 개발과정에 대한 설명: (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 입력·산출물의 양식(예: 텍스트, 이미지 등) 및 형식과 그 최대 크기(예: 컨텍스트 윈도우 길이 등); (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론을 포함).",
-  "cdx_field": "-",
+  "cdx_field": "componentData.modality",
   "spdx_field": "DatasetPackage.dataset_datasetType",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.modality",
   "spdx_ref": "DatasetPackage.dataset_datasetType",
   "row_key": "데이터셋 수집·출처#3#Annex XII(2)",
   "field_key": "데이터셋 수집·출처#3#Annex XII(2)#0",
@@ -889,7 +889,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터셋 유형",
@@ -897,11 +897,11 @@
   "bom": "D-BOM",
   "id": "Annex XI §1(2)",
   "requirement_ko": "제1호에서 정하는 모델의 요소에 대한 상세한 설명 및 그 개발과정에 관한 관련 정보로서, 다음 요소를 포함한다. (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 훈련방법론과 기법을 포함한 모델 및 훈련과정의 설계사양, 그 근거와 가정을 포함한 주요 설계상의 선택; 해당하는 경우, 모델이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론(예: 정제, 필터링 등), 데이터포인트의 수, 그 범위 및 주요 특성을 포함); 데이터가 획득되고 선정된 방식 및, 해당하는 경우, 데이터 출처의 부적합성을 탐지하기 위한 그 밖의 모든 조치와 식별 가능한 편향을 탐지하는 방법; (d) 모델을 훈련시키는 데 사용된 연산자원(예: 부동소수점 연산 횟수), 훈련 시간, 훈련과 관련된 그 밖의 관련 세부사항; (e) 모델의 알려진 또는 추정된 에너지 소비량. (e)호와 관련하여, 모델의 에너지 소비량이 알려지지 아니한 경우, 그 에너지 소비량은 사용된 연산자원에 관한 정보를 기초로 산정될 수 있다.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.modality",
   "spdx_field": "DatasetPackage.dataset_datasetType",
   "note": "(c) — 유형",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.modality",
   "spdx_ref": "DatasetPackage.dataset_datasetType",
   "row_key": "데이터셋 수집·출처#4#Annex XI §1(2)",
   "field_key": "데이터셋 수집·출처#4#Annex XI §1(2)#0",
@@ -913,7 +913,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터셋 유형",
@@ -921,11 +921,11 @@
   "bom": "D-BOM",
   "id": "Annex IV(2)",
   "requirement_ko": "다음을 포함한, 인공지능시스템의 요소 및 그 개발과정에 대한 상세한 설명: (a) 인공지능시스템 개발을 위해 수행된 방법과 절차(관련되는 경우, 제3자가 제공한 사전훈련된 시스템이나 도구의 사용 및 제공자가 이를 사용, 통합 또는 수정한 방식을 포함); (b) 시스템의 설계사양, 즉 인공지능시스템 및 알고리즘의 일반적 논리; 그 근거와 가정을 포함한 주요 설계상의 선택(시스템이 사용되고자 하는 대상이 되는 개인 또는 집단에 관한 사항을 포함); 주요 분류 선택; 시스템이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; 시스템의 예상 산출물 및 산출물 품질에 대한 설명; 제III장 제2절에서 정하는 요건을 준수하기 위해 채택된 기술적 해결책에 관하여 이루어진 발생 가능한 절충에 대한 결정; (c) 소프트웨어 구성요소가 서로 어떻게 구축되거나 연계되어 전체 처리과정에 통합되는지를 설명하는 시스템 구조에 대한 설명; 인공지능시스템의 개발, 훈련, 시험 및 검증에 사용된 연산자원; (d) 관련되는 경우, 훈련방법론과 기법 및 사용된 훈련 데이터 세트를 설명하는 데이터시트 형태의 데이터 요건(그 데이터 세트에 대한 일반적 설명, 출처, 범위 및 주요 특성에 관한 정보를 포함); 데이터가 획득되고 선정된 방식; 라벨링 절차(예: 지도학습의 경우); 데이터 정제 방법론(예: 이상치 탐지); (e) 제13조(3) (d)호에 따라 배포자에 의한 인공지능시스템 산출물의 해석을 촉진하는 데 필요한 기술적 조치에 대한 평가를 포함하여, 제14조에 따라 필요한 인적 감독조치에 대한 평가; (f) 해당하는 경우, 인공지능시스템 및 그 성능에 대해 미리 정해진 변경사항에 대한 상세한 설명과, 제III장 제2절에서 정하는 관련 요건에 대한 인공지능시스템의 지속적 준수를 보장하기 위해 채택된 기술적 해결책과 관련된 모든 관련 정보; (g) 사용된 검증 및 시험 절차(사용된 검증·시험 데이터에 관한 정보 및 그 주요 특성을 포함); 정확성, 견고성 및 제III장 제2절에서 정하는 그 밖의 관련 요건에 대한 준수, 그리고 잠재적으로 차별적인 영향을 측정하기 위해 사용된 지표; (f)호에서 정하는 미리 정해진 변경사항에 관한 사항을 포함하여, 책임자가 서명하고 날짜가 기재된 시험 로그 및 모든 시험 보고서; (h) 마련된 사이버보안조치;",
-  "cdx_field": "-",
+  "cdx_field": "componentData.modality",
   "spdx_field": "DatasetPackage.dataset_datasetType",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.modality",
   "spdx_ref": "DatasetPackage.dataset_datasetType",
   "row_key": "데이터셋 수집·출처#5#Annex IV(2)",
   "field_key": "데이터셋 수집·출처#5#Annex IV(2)#0",
@@ -937,7 +937,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터셋 갱신 방식",
@@ -945,11 +945,11 @@
   "bom": "D-BOM",
   "id": "Article 10(2)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 고위험 인공지능시스템의 의도된 목적에 적절한 데이터 거버넌스 및 관리 관행의 적용을 받아야 한다. 그러한 관행은 특히 다음 사항에 관한 것이어야 한다. (a) 관련 설계상의 선택; (b) 데이터 수집 절차 및 데이터의 출처, 그리고 개인데이터의 경우 그 수집의 원래 목적; (c) 주석 처리, 라벨링, 정제, 갱신, 보강 및 집계와 같은 관련 데이터 준비·처리 작업; (d) 데이터가 측정·표상하도록 되어 있는 정보에 관한 것을 포함한 가정의 설정; (e) 필요한 데이터 세트의 가용성, 양 및 적합성에 대한 평가; (f) 특히 데이터 산출물이 향후 운용을 위한 입력에 영향을 미치는 경우, 개인의 건강과 안전에 영향을 미치거나 기본권에 부정적 영향을 미치거나 연합법상 금지된 차별로 이어질 가능성이 있는 편향의 발생 가능성에 대한 검토; (g) (f)호에 따라 식별된 발생 가능한 편향을 탐지, 예방 및 완화하기 위한 적절한 조치; (h) 이 규정의 준수를 저해하는 관련 데이터 공백 또는 결함의 식별과, 그러한 공백과 결함을 해결할 수 있는 방법.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.updateMechanism",
   "spdx_field": "DatasetPackage.dataset_datasetUpdateMechanism",
   "note": "",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.updateMechanism",
   "spdx_ref": "DatasetPackage.dataset_datasetUpdateMechanism",
   "row_key": "데이터셋 수집·출처#7#Article 10(2)",
   "field_key": "데이터셋 수집·출처#7#Article 10(2)#4",
@@ -961,7 +961,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "데이터셋 의도된 용도",
@@ -969,11 +969,11 @@
   "bom": "D-BOM",
   "id": "Article 10(4)",
   "requirement_ko": "데이터 세트는, 의도된 목적에 따라 요구되는 범위 내에서, 고위험 인공지능시스템이 사용되고자 하는 특정 지리적·상황적·행동적 또는 기능적 환경에 특유한 특성이나 요소를 고려하여야 한다.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.intendedUse",
   "spdx_field": "DatasetPackage.dataset_intendedUse",
   "note": "intendedUse 본문 정의가 \"특정 인구집단에서 모은 의료 데이터는 그 집단에만 적용 가능하다\"를 예로 들어 적용 환경을 담음. 다만 방향이 앞(어디에 쓸 것인가)이라 데이터가 어느 환경에서 나왔는지와 어긋날 때 그 차이는 드러나지 않음",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.intendedUse",
   "spdx_ref": "DatasetPackage.dataset_intendedUse",
   "row_key": "데이터셋 수집·출처#10#Article 10(4)",
   "field_key": "데이터셋 수집·출처#10#Article 10(4)#0",
@@ -985,7 +985,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "알려진 편향",
@@ -993,11 +993,11 @@
   "bom": "D-BOM",
   "id": "Article 10(2)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 고위험 인공지능시스템의 의도된 목적에 적절한 데이터 거버넌스 및 관리 관행의 적용을 받아야 한다. 그러한 관행은 특히 다음 사항에 관한 것이어야 한다. (a) 관련 설계상의 선택; (b) 데이터 수집 절차 및 데이터의 출처, 그리고 개인데이터의 경우 그 수집의 원래 목적; (c) 주석 처리, 라벨링, 정제, 갱신, 보강 및 집계와 같은 관련 데이터 준비·처리 작업; (d) 데이터가 측정·표상하도록 되어 있는 정보에 관한 것을 포함한 가정의 설정; (e) 필요한 데이터 세트의 가용성, 양 및 적합성에 대한 평가; (f) 특히 데이터 산출물이 향후 운용을 위한 입력에 영향을 미치는 경우, 개인의 건강과 안전에 영향을 미치거나 기본권에 부정적 영향을 미치거나 연합법상 금지된 차별로 이어질 가능성이 있는 편향의 발생 가능성에 대한 검토; (g) (f)호에 따라 식별된 발생 가능한 편향을 탐지, 예방 및 완화하기 위한 적절한 조치; (h) 이 규정의 준수를 저해하는 관련 데이터 공백 또는 결함의 식별과, 그러한 공백과 결함을 해결할 수 있는 방법.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.knownBias.name",
   "spdx_field": "DatasetPackage.dataset_knownBias",
   "note": "검토 결과가 알려진 편향으로 남아 대응",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.knownBias.name",
   "spdx_ref": "DatasetPackage.dataset_knownBias",
   "row_key": "데이터셋 수집·출처#7#Article 10(2)",
   "field_key": "데이터셋 수집·출처#7#Article 10(2)#10",
@@ -1009,7 +1009,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "알려진 편향",
@@ -1017,11 +1017,11 @@
   "bom": "D-BOM",
   "id": "Article 10(3)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 관련성이 있고, 충분히 대표성을 가지며, 가능한 한 오류가 없고 의도된 목적에 비추어 완전하여야 한다. 그 데이터 세트는, 적용 가능한 경우 고위험 인공지능시스템이 사용되고자 하는 대상이 되는 개인 또는 집단에 관한 사항을 포함하여, 적절한 통계적 특성을 가져야 한다. 데이터 세트의 이러한 특성은 개별 데이터 세트 단위 또는 그 조합의 단위에서 충족될 수 있다.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.knownBias.name",
   "spdx_field": "DatasetPackage.dataset_knownBias",
   "note": "대표성이 모자라면 편향으로 기록되므로 부분 대응 — 대표성이 충분하다는 진술 자체는 못 담음",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.knownBias.name",
   "spdx_ref": "DatasetPackage.dataset_knownBias",
   "row_key": "데이터셋 수집·출처#8#Article 10(3)",
   "field_key": "데이터셋 수집·출처#8#Article 10(3)#1",
@@ -1033,7 +1033,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "알려진 편향",
@@ -1041,11 +1041,11 @@
   "bom": "D-BOM",
   "id": "Article 26(4)",
   "requirement_ko": "제1항과 제2항에 영향을 미치지 아니하는 범위에서, 배포자가 입력 데이터에 대한 통제권을 행사하는 한, 그 배포자는 고위험 인공지능시스템의 의도된 목적에 비추어 입력 데이터가 관련성이 있고 충분히 대표성을 갖추도록 보장하여야 한다.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.knownBias.name",
   "spdx_field": "DatasetPackage.dataset_knownBias",
   "note": "배포자가 통제하는 입력을 데이터 컴포넌트로 세우면 대표성 부족이 편향으로 기록되므로 부분 대응 — 대표성이 충분하다는 진술 자체는 못 담음",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.knownBias.name",
   "spdx_ref": "DatasetPackage.dataset_knownBias",
   "row_key": "데이터셋 수집·출처#9#Article 26(4)",
   "field_key": "데이터셋 수집·출처#9#Article 26(4)#0",
@@ -1057,7 +1057,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "패키지 출처 정보",
@@ -1065,11 +1065,11 @@
   "bom": "D-BOM",
   "id": "A.7.5",
   "requirement_ko": "조직은 데이터와 AI 시스템의 수명주기에 걸쳐 AI 시스템에 사용되는 데이터의 출처를 기록하는 프로세스를 정의·문서화해야 한다.",
-  "cdx_field": "-",
+  "cdx_field": "componentData.provenance",
   "spdx_field": "DatasetPackage.software_sourceInfo",
   "note": "software_sourceInfo 정의가 \"패키지의 출처에 관한 관련 배경 정보나 추가 코멘트\"라 직접 대응 — dataCollectionProcess는 \"어떻게 수집되었는지\"라 수집 방법 쪽이고, componentData.governance는 책임자 기록이라 다름",
   "coverage": "필드",
-  "cdx_ref": "",
+  "cdx_ref": "componentData.provenance",
   "spdx_ref": "DatasetPackage.software_sourceInfo",
   "row_key": "데이터셋 수집·출처#2#A.7.5",
   "field_key": "데이터셋 수집·출처#2#A.7.5#0",
@@ -1081,7 +1081,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "외부참조: 프라이버시 평가",
@@ -1105,7 +1105,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "인증서 만료일",
@@ -1130,7 +1130,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 2,
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "CPE 식별자",
@@ -1154,7 +1154,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "CPE 식별자",
@@ -1178,7 +1178,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "CPE 식별자",
@@ -1202,7 +1202,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "CPE 식별자",
@@ -1226,7 +1226,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "CPE 식별자",
@@ -1250,7 +1250,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "CPE 식별자",
@@ -1274,7 +1274,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "CPE 식별자",
@@ -1298,7 +1298,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "CPE 식별자",
@@ -1322,7 +1322,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 설명",
@@ -1346,7 +1346,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 설명",
@@ -1370,7 +1370,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 설명",
@@ -1394,7 +1394,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 설명",
@@ -1418,7 +1418,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 적대자 모델",
@@ -1442,7 +1442,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 적대자 모델",
@@ -1466,7 +1466,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 적대자 모델",
@@ -1490,7 +1490,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 적대자 모델",
@@ -1514,7 +1514,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 증명",
@@ -1538,7 +1538,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 증명",
@@ -1562,7 +1562,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 증명",
@@ -1586,7 +1586,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 증명",
@@ -1610,7 +1610,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 증명",
@@ -1634,7 +1634,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 증명",
@@ -1658,7 +1658,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 증명",
@@ -1682,7 +1682,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 증명",
@@ -1706,7 +1706,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 인증 보고서",
@@ -1731,7 +1731,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 인증 보고서",
@@ -1756,7 +1756,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 인증 보고서",
@@ -1781,7 +1781,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 인증 보고서",
@@ -1806,7 +1806,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 인증 보고서",
@@ -1830,7 +1830,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 인증 보고서",
@@ -1854,7 +1854,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 인증 보고서",
@@ -1878,7 +1878,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 인증 보고서",
@@ -1902,7 +1902,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -1926,7 +1926,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -1950,7 +1950,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -1974,7 +1974,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -1998,7 +1998,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2022,7 +2022,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2046,7 +2046,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2070,7 +2070,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2094,7 +2094,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2118,7 +2118,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2142,7 +2142,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2166,7 +2166,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2190,7 +2190,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2214,7 +2214,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2238,7 +2238,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2262,7 +2262,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2286,7 +2286,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2310,7 +2310,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2334,7 +2334,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2358,7 +2358,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2382,7 +2382,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2406,7 +2406,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2430,7 +2430,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2454,7 +2454,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 문서",
@@ -2478,7 +2478,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 침투시험 보고서",
@@ -2502,7 +2502,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 침투시험 보고서",
@@ -2526,7 +2526,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2550,7 +2550,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2574,7 +2574,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2598,7 +2598,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2622,7 +2622,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2646,7 +2646,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2670,7 +2670,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2696,7 +2696,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2722,7 +2722,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2746,7 +2746,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2770,7 +2770,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2794,7 +2794,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2818,7 +2818,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2842,7 +2842,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2866,7 +2866,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2890,7 +2890,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2914,7 +2914,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2938,7 +2938,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2962,7 +2962,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -2986,7 +2986,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -3010,7 +3010,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -3034,7 +3034,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -3058,7 +3058,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -3082,7 +3082,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -3106,7 +3106,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -3130,7 +3130,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위험평가",
@@ -3154,7 +3154,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위협 모델",
@@ -3181,7 +3181,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 위협 모델",
@@ -3208,7 +3208,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 웹사이트",
@@ -3232,7 +3232,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 웹사이트",
@@ -3256,7 +3256,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 웹사이트",
@@ -3280,7 +3280,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "외부참조: 웹사이트",
@@ -3304,7 +3304,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "라이선스",
@@ -3329,7 +3329,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "라이선스",
@@ -3354,7 +3354,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "에너지 소비",
@@ -3378,7 +3378,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "에너지 소비",
@@ -3402,7 +3402,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "위험 완화 전략",
@@ -3411,11 +3411,11 @@
   "id": "Article 55(1)",
   "requirement_ko": "제53조 및 제54조에 열거된 의무에 더하여, 시스템적 위험이 있는 범용 인공지능모델의 제공자는 다음을 이행하여야 한다. (a) 시스템적 위험을 식별하고 완화할 목적으로 모델의 적대적 시험을 수행·기록하는 것을 포함하여, 최신 기술수준을 반영하는 표준화된 프로토콜과 도구에 따라 모델 평가를 수행할 것; (b) 시스템적 위험이 있는 범용 인공지능모델의 개발, 시장 출시 또는 사용으로부터 발생할 수 있는, 연합 차원의 발생 가능한 시스템적 위험(그 원인을 포함)을 평가하고 완화할 것; (c) 중대사건 및 그에 대응하기 위한 발생 가능한 시정조치에 관한 관련 정보를 지체 없이 추적, 기록 및 인공지능사무국(적절한 경우 국가관할당국)에 보고할 것; (d) 시스템적 위험이 있는 범용 인공지능모델과 그 모델의 물리적 인프라에 대한 적절한 수준의 사이버보안 보호를 보장할 것.",
   "cdx_field": "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_ethicalConsiderationsMitigationStrategy",
   "note": "(b)의 완화조치",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_ethicalConsiderationsMitigationStrategy",
   "row_key": "위험·영향평가#15#Article 55(1)",
   "field_key": "위험·영향평가#15#Article 55(1)#1",
   "year_pin": "",
@@ -3426,7 +3426,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "위험 완화 전략",
@@ -3435,11 +3435,11 @@
   "id": "Article 9(2)",
   "requirement_ko": "위험관리시스템은 고위험 인공지능시스템의 전체 수명주기에 걸쳐 계획되고 운영되는 지속적·반복적 절차로 이해되며, 정기적이고 체계적인 검토와 갱신을 필요로 한다. 이는 다음 단계로 구성된다. (a) 고위험 인공지능시스템이 그 의도된 목적에 따라 사용될 때 건강, 안전 또는 기본권에 제기할 수 있는, 알려진 위험 및 합리적으로 예견 가능한 위험의 식별과 분석; (b) 고위험 인공지능시스템이 그 의도된 목적에 따라 사용되거나 합리적으로 예견 가능한 오용 조건에서 사용될 때 발생할 수 있는 위험의 추정 및 평가; (c) 제72조에 따른 시판 후 모니터링 시스템으로부터 수집된 데이터의 분석을 토대로 발생 가능한 그 밖의 위험에 대한 평가; (d) (a)호에 따라 식별된 위험에 대응하기 위해 설계된 적절하고 표적화된 위험관리조치의 채택.",
   "cdx_field": "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_ethicalConsiderationsMitigationStrategy",
   "note": "그 위험에 채택한 조치. (c)의 시판 후 재평가도 결과는 같은 위험평가 문서에 담긴다. ethicalConsiderations 정의가 \"모델 적용의 윤리적 위험\"이라 시스템 전체의 건강·안전·기본권 위험은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_ethicalConsiderationsMitigationStrategy",
   "row_key": "위험·영향평가#16#Article 9(2)",
   "field_key": "위험·영향평가#16#Article 9(2)#2",
   "year_pin": "",
@@ -3450,7 +3450,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "위험 완화 전략",
@@ -3459,11 +3459,11 @@
   "id": "Article 9(5)",
   "requirement_ko": "제2항 (d)호에서 말하는 위험관리조치는, 각 위해요인과 관련된 잔여위험 및 고위험 인공지능시스템의 전체 잔여위험이 수용 가능한 수준으로 판단되도록 하여야 한다. 가장 적절한 위험관리조치를 식별함에 있어 다음이 보장되어야 한다. (a) 기술적으로 실행 가능한 범위 내에서 고위험 인공지능시스템의 적절한 설계와 개발을 통해 제2항에 따라 식별·평가된 위험의 제거 또는 감소; (b) 적절한 경우, 제거될 수 없는 위험을 다루기 위한 적절한 완화·통제조치의 시행; (c) 제13조에 따라 요구되는 정보의 제공 및, 적절한 경우, 배포자에 대한 교육의 제공. 고위험 인공지능시스템의 사용과 관련된 위험을 제거하거나 감소시키기 위해서는, 배포자에게 기대되는 기술적 지식, 경험, 교육 및 훈련, 그리고 그 시스템이 사용될 것으로 추정되는 맥락을 충분히 고려하여야 한다.",
   "cdx_field": "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_ethicalConsiderationsMitigationStrategy",
   "note": "(a)(b)가 채택한 조치라 9조(2)(d)와 같은 자리. (c)의 정보 제공은 13조를 가리키는 포인터라 그 조문에서 판정했고, 배포자 교육은 사람에게 하는 활동이라 범위 밖. ethicalConsiderations 정의가 \"모델 적용의 윤리적 위험\"이라 시스템 전체의 건강·안전·기본권 위험은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_ethicalConsiderationsMitigationStrategy",
   "row_key": "위험·영향평가#17#Article 9(5)",
   "field_key": "위험·영향평가#17#Article 9(5)#0",
   "year_pin": "",
@@ -3475,7 +3475,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "위험의 이름",
@@ -3484,11 +3484,11 @@
   "id": "Article 13(3)",
   "requirement_ko": "사용설명서는 최소한 다음 정보를 포함하여야 한다. (a) 제공자 및, 해당하는 경우, 그 수권대리인의 신원과 연락처; (b) 다음을 포함한, 고위험 인공지능시스템의 성능에 관한 특성, 역량 및 한계: (i) 그 의도된 목적; (ii) 고위험 인공지능시스템이 시험·검증된, 그리고 기대할 수 있는, 제15조에서 정하는 정확성·견고성·사이버보안의 수준(그 지표를 포함) 및 그 기대되는 정확성·견고성·사이버보안 수준에 영향을 미칠 수 있는 알려진·예견 가능한 상황; (iii) 고위험 인공지능시스템을 그 의도된 목적에 따라 사용하거나 합리적으로 예견 가능한 오용 조건에서 사용하는 것과 관련하여, 제9조(2)에서 정하는 건강 및 안전 또는 기본권에 대한 위험으로 이어질 수 있는 알려진·예견 가능한 상황; (iv) 해당하는 경우, 그 산출물을 설명하는 데 관련된 정보를 제공하기 위한 고위험 인공지능시스템의 기술적 역량 및 특성; (v) 적절한 경우, 시스템이 사용되고자 하는 대상이 되는 특정 개인 또는 집단에 관한 성능; (vi) 적절한 경우, 고위험 인공지능시스템의 의도된 목적을 고려한, 사용된 훈련·검증·시험 데이터 세트에 관한 입력데이터의 사양 또는 그 밖의 관련 정보; (vii) 해당하는 경우, 배포자가 고위험 인공지능시스템의 산출물을 해석하고 이를 적절하게 사용할 수 있도록 하는 정보; (c) 최초 적합성평가 시점에 제공자가 미리 정한, 고위험 인공지능시스템 및 그 성능에 대한 변경사항(있는 경우); (d) 배포자에 의한 고위험 인공지능시스템 산출물의 해석을 촉진하기 위해 마련된 기술적 조치를 포함한, 제14조에서 정하는 인적 감독조치; (e) 소프트웨어 업데이트에 관한 사항을 포함하여, 그 인공지능시스템의 적절한 작동을 보장하기 위해 필요한 연산·하드웨어 자원, 고위험 인공지능시스템의 예상 수명 및 필요한 유지관리조치(그 주기를 포함); (f) 관련된 경우, 배포자가 제12조에 따라 로그를 적절하게 수집·저장·해석할 수 있도록 하는, 고위험 인공지능시스템에 포함된 메커니즘에 대한 설명.",
   "cdx_field": "component.modelCard.considerations.ethicalConsiderations.name",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_ethicalConsiderations",
   "note": "사용설명서 기재사항이 여러 축에 걸쳐 문구별로 행을 쪼갬. ethicalConsiderations 정의가 \"모델 적용의 윤리적 위험\"이라 시스템 전체의 건강·안전·기본권 위험은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.ethicalConsiderations.name",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_ethicalConsiderations",
   "row_key": "모델 한계·가정#4#Article 13(3)",
   "field_key": "모델 한계·가정#4#Article 13(3)#1",
   "year_pin": "",
@@ -3499,7 +3499,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "위험의 이름",
@@ -3508,11 +3508,11 @@
   "id": "Annex IV(3)",
   "requirement_ko": "인공지능시스템의 모니터링, 기능 및 통제에 관한 상세한 정보로서, 특히 다음에 관한 것: 시스템이 사용되고자 하는 대상이 되는 특정 개인이나 집단에 대한 정확성의 정도 및 그 의도된 목적과 관련하여 기대되는 전반적인 정확성 수준을 포함한 성능상의 역량과 한계; 인공지능시스템의 의도된 목적에 비추어 예견 가능한 의도되지 아니한 결과 및 건강·안전·기본권·차별에 대한 위험의 원천; 배포자에 의한 인공지능시스템 산출물의 해석을 촉진하기 위해 마련된 기술적 조치를 포함하여, 제14조에 따라 필요한 인적 감독조치; 적절한 경우 입력데이터에 관한 사양;",
   "cdx_field": "component.modelCard.considerations.ethicalConsiderations.name",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_ethicalConsiderations",
   "note": "ethicalConsiderations 정의가 \"모델 적용의 윤리적 위험\"이라 시스템 전체의 건강·안전·기본권 위험은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.ethicalConsiderations.name",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_ethicalConsiderations",
   "row_key": "모델 한계·가정#5#Annex IV(3)",
   "field_key": "모델 한계·가정#5#Annex IV(3)#1",
   "year_pin": "",
@@ -3523,7 +3523,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "위험의 이름",
@@ -3532,11 +3532,11 @@
   "id": "Article 55(1)",
   "requirement_ko": "제53조 및 제54조에 열거된 의무에 더하여, 시스템적 위험이 있는 범용 인공지능모델의 제공자는 다음을 이행하여야 한다. (a) 시스템적 위험을 식별하고 완화할 목적으로 모델의 적대적 시험을 수행·기록하는 것을 포함하여, 최신 기술수준을 반영하는 표준화된 프로토콜과 도구에 따라 모델 평가를 수행할 것; (b) 시스템적 위험이 있는 범용 인공지능모델의 개발, 시장 출시 또는 사용으로부터 발생할 수 있는, 연합 차원의 발생 가능한 시스템적 위험(그 원인을 포함)을 평가하고 완화할 것; (c) 중대사건 및 그에 대응하기 위한 발생 가능한 시정조치에 관한 관련 정보를 지체 없이 추적, 기록 및 인공지능사무국(적절한 경우 국가관할당국)에 보고할 것; (d) 시스템적 위험이 있는 범용 인공지능모델과 그 모델의 물리적 인프라에 대한 적절한 수준의 사이버보안 보호를 보장할 것.",
   "cdx_field": "component.modelCard.considerations.ethicalConsiderations.name",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_ethicalConsiderations",
   "note": "(b)가 남기는 식별된 시스템적 위험 — 9조(2)와 같은 자리",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.ethicalConsiderations.name",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_ethicalConsiderations",
   "row_key": "위험·영향평가#15#Article 55(1)",
   "field_key": "위험·영향평가#15#Article 55(1)#0",
   "year_pin": "",
@@ -3547,7 +3547,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "위험의 이름",
@@ -3556,11 +3556,11 @@
   "id": "Article 9(2)",
   "requirement_ko": "위험관리시스템은 고위험 인공지능시스템의 전체 수명주기에 걸쳐 계획되고 운영되는 지속적·반복적 절차로 이해되며, 정기적이고 체계적인 검토와 갱신을 필요로 한다. 이는 다음 단계로 구성된다. (a) 고위험 인공지능시스템이 그 의도된 목적에 따라 사용될 때 건강, 안전 또는 기본권에 제기할 수 있는, 알려진 위험 및 합리적으로 예견 가능한 위험의 식별과 분석; (b) 고위험 인공지능시스템이 그 의도된 목적에 따라 사용되거나 합리적으로 예견 가능한 오용 조건에서 사용될 때 발생할 수 있는 위험의 추정 및 평가; (c) 제72조에 따른 시판 후 모니터링 시스템으로부터 수집된 데이터의 분석을 토대로 발생 가능한 그 밖의 위험에 대한 평가; (d) (a)호에 따라 식별된 위험에 대응하기 위해 설계된 적절하고 표적화된 위험관리조치의 채택.",
   "cdx_field": "component.modelCard.considerations.ethicalConsiderations.name",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_ethicalConsiderations",
   "note": "ethicalConsiderations 는 위험 하나마다 name·mitigationStrategy 한 쌍 — 여기는 식별된 위험의 이름. (c)의 시판 후 재평가도 결과는 같은 위험평가 문서에 담긴다. ethicalConsiderations 정의가 \"모델 적용의 윤리적 위험\"이라 시스템 전체의 건강·안전·기본권 위험은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.ethicalConsiderations.name",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_ethicalConsiderations",
   "row_key": "위험·영향평가#16#Article 9(2)",
   "field_key": "위험·영향평가#16#Article 9(2)#1",
   "year_pin": "",
@@ -3571,7 +3571,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "집단에 대한 이익",
@@ -3580,11 +3580,11 @@
   "id": "MEASURE 2.11",
   "requirement_ko": "MAP 기능에서 식별된 공정성·편향이 평가되고 결과가 문서화된다.",
   "cdx_field": "component.modelCard.considerations.fairnessAssessments.benefits",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_fairnessAssessmentBenefits",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.fairnessAssessments.benefits",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_fairnessAssessmentBenefits",
   "row_key": "집단·환경 영향#0#MEASURE 2.11",
   "field_key": "집단·환경 영향#0#MEASURE 2.11#1",
   "year_pin": "",
@@ -3595,7 +3595,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "집단에 대한 이익",
@@ -3604,11 +3604,11 @@
   "id": "A.5.4",
   "requirement_ko": "조직은 시스템 수명주기 전반에 걸쳐 개인 또는 개인 집단에 대한 AI 시스템의 잠재적 영향을 평가·문서화해야 한다.",
   "cdx_field": "component.modelCard.considerations.fairnessAssessments.benefits",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_fairnessAssessmentBenefits",
   "note": "fairnessAssessments 정의가 \"모델이 취약 집단에 미치는 영향\"이라 모델 밖(인터페이스·운영)이 만드는 시스템 영향은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.fairnessAssessments.benefits",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_fairnessAssessmentBenefits",
   "row_key": "집단·환경 영향#1#A.5.4",
   "field_key": "집단·환경 영향#1#A.5.4#1",
   "year_pin": "",
@@ -3619,7 +3619,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "위험에 놓인 집단",
@@ -3628,11 +3628,11 @@
   "id": "MEASURE 2.11",
   "requirement_ko": "MAP 기능에서 식별된 공정성·편향이 평가되고 결과가 문서화된다.",
   "cdx_field": "component.modelCard.considerations.fairnessAssessments.groupAtRisk",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_fairnessAssessments",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.fairnessAssessments.groupAtRisk",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_fairnessAssessments",
   "row_key": "집단·환경 영향#0#MEASURE 2.11",
   "field_key": "집단·환경 영향#0#MEASURE 2.11#0",
   "year_pin": "",
@@ -3643,7 +3643,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "위험에 놓인 집단",
@@ -3652,11 +3652,11 @@
   "id": "A.5.4",
   "requirement_ko": "조직은 시스템 수명주기 전반에 걸쳐 개인 또는 개인 집단에 대한 AI 시스템의 잠재적 영향을 평가·문서화해야 한다.",
   "cdx_field": "component.modelCard.considerations.fairnessAssessments.groupAtRisk",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_fairnessAssessments",
   "note": "fairnessAssessments 정의가 \"모델이 취약 집단에 미치는 영향\"이라 모델 밖(인터페이스·운영)이 만드는 시스템 영향은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.fairnessAssessments.groupAtRisk",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_fairnessAssessments",
   "row_key": "집단·환경 영향#1#A.5.4",
   "field_key": "집단·환경 영향#1#A.5.4#0",
   "year_pin": "",
@@ -3667,7 +3667,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "위험에 놓인 집단",
@@ -3676,11 +3676,11 @@
   "id": "Article 9(9)",
   "requirement_ko": "제1항부터 제7항까지에서 정하는 위험관리시스템을 시행할 때, 제공자는 고위험 인공지능시스템이 그 의도된 목적에 비추어 18세 미만의 자 및, 적절한 경우, 그 밖의 취약계층에 부정적 영향을 미칠 가능성이 있는지를 고려하여야 한다.",
   "cdx_field": "component.modelCard.considerations.fairnessAssessments.groupAtRisk",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_fairnessAssessments",
   "note": "fairnessAssessments 정의가 \"모델이 취약 집단에 미치는 영향\"이라 모델 밖(인터페이스·운영)이 만드는 시스템 영향은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.fairnessAssessments.groupAtRisk",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_fairnessAssessments",
   "row_key": "집단·환경 영향#4#Article 9(9)",
   "field_key": "집단·환경 영향#4#Article 9(9)#0",
   "year_pin": "",
@@ -3692,7 +3692,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "집단에 대한 피해",
@@ -3701,11 +3701,11 @@
   "id": "MEASURE 2.11",
   "requirement_ko": "MAP 기능에서 식별된 공정성·편향이 평가되고 결과가 문서화된다.",
   "cdx_field": "component.modelCard.considerations.fairnessAssessments.harms",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_fairnessAssessmentHarms",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.fairnessAssessments.harms",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_fairnessAssessmentHarms",
   "row_key": "집단·환경 영향#0#MEASURE 2.11",
   "field_key": "집단·환경 영향#0#MEASURE 2.11#2",
   "year_pin": "",
@@ -3716,7 +3716,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "집단에 대한 피해",
@@ -3725,11 +3725,11 @@
   "id": "A.5.4",
   "requirement_ko": "조직은 시스템 수명주기 전반에 걸쳐 개인 또는 개인 집단에 대한 AI 시스템의 잠재적 영향을 평가·문서화해야 한다.",
   "cdx_field": "component.modelCard.considerations.fairnessAssessments.harms",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_fairnessAssessmentHarms",
   "note": "fairnessAssessments 정의가 \"모델이 취약 집단에 미치는 영향\"이라 모델 밖(인터페이스·운영)이 만드는 시스템 영향은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.fairnessAssessments.harms",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_fairnessAssessmentHarms",
   "row_key": "집단·환경 영향#1#A.5.4",
   "field_key": "집단·환경 영향#1#A.5.4#2",
   "year_pin": "",
@@ -3740,7 +3740,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "집단에 대한 피해",
@@ -3749,11 +3749,11 @@
   "id": "Article 9(9)",
   "requirement_ko": "제1항부터 제7항까지에서 정하는 위험관리시스템을 시행할 때, 제공자는 고위험 인공지능시스템이 그 의도된 목적에 비추어 18세 미만의 자 및, 적절한 경우, 그 밖의 취약계층에 부정적 영향을 미칠 가능성이 있는지를 고려하여야 한다.",
   "cdx_field": "component.modelCard.considerations.fairnessAssessments.harms",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_fairnessAssessmentHarms",
   "note": "fairnessAssessments 정의가 \"모델이 취약 집단에 미치는 영향\"이라 모델 밖(인터페이스·운영)이 만드는 시스템 영향은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.fairnessAssessments.harms",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_fairnessAssessmentHarms",
   "row_key": "집단·환경 영향#4#Article 9(9)",
   "field_key": "집단·환경 영향#4#Article 9(9)#1",
   "year_pin": "",
@@ -3764,7 +3764,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "기술적 한계",
@@ -3788,7 +3788,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "기술적 한계",
@@ -3812,7 +3812,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "기술적 한계",
@@ -3836,7 +3836,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "기술적 한계",
@@ -3861,7 +3861,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "기술적 한계",
@@ -3885,7 +3885,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "기술적 한계",
@@ -3909,7 +3909,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "의도된 용도",
@@ -3918,11 +3918,11 @@
   "id": "Annex XI §1(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 구조 및 파라미터 수; (e) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (f) 라이선스.",
   "cdx_field": "component.modelCard.considerations.useCases",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_useCases",
   "note": "어떤 시스템에 넣을 수 있는가는 곧 의도된 사용 사례라 useCases 자리 — ai_domain 은 정의가 컴퓨터 비전·자연어처리 같은 기술 분야라 축이 다름",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.useCases",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_useCases",
   "row_key": "모델 구조·과업#4#Annex XI §1(1)",
   "field_key": "모델 구조·과업#4#Annex XI §1(1)#1",
   "year_pin": "",
@@ -3933,7 +3933,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "의도된 용도",
@@ -3942,11 +3942,11 @@
   "id": "Annex IV(1)",
   "requirement_ko": "다음을 포함한 인공지능시스템에 대한 일반적 설명: (a) 그 의도된 목적, 제공자의 명칭 및 이전 버전과의 관계를 반영한 시스템의 버전; (b) 인공지능시스템 자체의 일부가 아닌 하드웨어나 소프트웨어(다른 인공지능시스템을 포함)와 상호작용하는 방식 또는 상호작용에 사용될 수 있는 방식(해당하는 경우); (c) 관련 소프트웨어나 펌웨어의 버전, 그리고 버전 업데이트와 관련된 요건; (d) 하드웨어에 내장된 소프트웨어 패키지, 다운로드 또는 API 등 인공지능시스템이 시장에 출시되거나 서비스가 제공되는 모든 형태에 대한 설명; (e) 인공지능시스템이 작동하도록 의도된 하드웨어에 대한 설명; (f) 인공지능시스템이 제품의 구성요소인 경우, 그 제품의 외부 특징, 마킹 및 내부 배치를 보여주는 사진 또는 그림; (g) 배포자에게 제공되는 사용자 인터페이스에 대한 기본 설명; (h) 배포자를 위한 사용설명서 및, 해당하는 경우, 배포자에게 제공되는 사용자 인터페이스에 대한 기본 설명;",
   "cdx_field": "component.modelCard.considerations.useCases",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_useCases",
   "note": "(a)의 '이전 버전과의 관계'는 버전을 어떻게 매길지의 조건이라 버전 값과 별개 사실이 아니고, (f)의 제품 외형·내부 배치 사진은 하드웨어 도해라 축 밖. useCases 정의가 \"모델의 의도된 유스케이스\"라 시스템의 목적이 모델 범위로 좁혀 담김",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.useCases",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_useCases",
   "row_key": "모델 구조·과업#9#Annex IV(1)",
   "field_key": "모델 구조·과업#9#Annex IV(1)#0",
   "year_pin": "",
@@ -3957,7 +3957,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "의도된 용도",
@@ -3966,11 +3966,11 @@
   "id": "Annex IX(3)",
   "requirement_ko": "인공지능시스템에 대한 간략한 설명, 그 의도된 목적, 그리고 시스템의 식별에 필요한 그 밖의 정보;",
   "cdx_field": "component.modelCard.considerations.useCases",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_useCases",
   "note": "useCases 정의가 \"모델의 의도된 유스케이스\"라 시스템의 목적이 모델 범위로 좁혀 담김",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.useCases",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_useCases",
   "row_key": "실세계시험 등록#0#Annex IX(3)",
   "field_key": "실세계시험 등록#0#Annex IX(3)#1",
   "year_pin": "",
@@ -3981,7 +3981,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "의도된 용도",
@@ -3990,11 +3990,11 @@
   "id": "MAP 1.1",
   "requirement_ko": "의도된 목적, 잠재적으로 유익한 용도, 맥락별 법률·규범·기대, AI 시스템이 배포될 예상 환경이 이해·문서화된다. 고려사항: 사용자의 특정 집합·유형과 그 기대; 시스템 사용이 개인·커뮤니티·조직·사회·지구에 미치는 잠재적 긍정·부정 영향; 개발·제품 AI 수명주기 전반의 목적·용도·위험에 관한 가정과 한계; 관련 TEVV(시험·평가·검증·확인) 및 시스템 지표.",
   "cdx_field": "component.modelCard.considerations.useCases",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_useCases",
   "note": "useCases 정의가 \"모델의 의도된 유스케이스\"라 시스템의 목적이 모델 범위로 좁혀 담김",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.useCases",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_useCases",
   "row_key": "의도된 용도·사용자#0#MAP 1.1",
   "field_key": "의도된 용도·사용자#0#MAP 1.1#0",
   "year_pin": "",
@@ -4006,7 +4006,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "의도된 용도",
@@ -4015,11 +4015,11 @@
   "id": "MAP 3.3",
   "requirement_ko": "시스템의 역량, 확립된 맥락, AI 시스템 분류에 기반하여 목표 적용 범위가 명시·문서화된다.",
   "cdx_field": "component.modelCard.considerations.useCases",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_useCases",
   "note": "useCases 정의가 \"모델의 의도된 유스케이스\"라 시스템의 목적이 모델 범위로 좁혀 담김",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.useCases",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_useCases",
   "row_key": "의도된 용도·사용자#2#MAP 3.3",
   "field_key": "의도된 용도·사용자#2#MAP 3.3#0",
   "year_pin": "",
@@ -4030,7 +4030,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "의도된 용도",
@@ -4039,11 +4039,11 @@
   "id": "Article 13(3)",
   "requirement_ko": "사용설명서는 최소한 다음 정보를 포함하여야 한다. (a) 제공자 및, 해당하는 경우, 그 수권대리인의 신원과 연락처; (b) 다음을 포함한, 고위험 인공지능시스템의 성능에 관한 특성, 역량 및 한계: (i) 그 의도된 목적; (ii) 고위험 인공지능시스템이 시험·검증된, 그리고 기대할 수 있는, 제15조에서 정하는 정확성·견고성·사이버보안의 수준(그 지표를 포함) 및 그 기대되는 정확성·견고성·사이버보안 수준에 영향을 미칠 수 있는 알려진·예견 가능한 상황; (iii) 고위험 인공지능시스템을 그 의도된 목적에 따라 사용하거나 합리적으로 예견 가능한 오용 조건에서 사용하는 것과 관련하여, 제9조(2)에서 정하는 건강 및 안전 또는 기본권에 대한 위험으로 이어질 수 있는 알려진·예견 가능한 상황; (iv) 해당하는 경우, 그 산출물을 설명하는 데 관련된 정보를 제공하기 위한 고위험 인공지능시스템의 기술적 역량 및 특성; (v) 적절한 경우, 시스템이 사용되고자 하는 대상이 되는 특정 개인 또는 집단에 관한 성능; (vi) 적절한 경우, 고위험 인공지능시스템의 의도된 목적을 고려한, 사용된 훈련·검증·시험 데이터 세트에 관한 입력데이터의 사양 또는 그 밖의 관련 정보; (vii) 해당하는 경우, 배포자가 고위험 인공지능시스템의 산출물을 해석하고 이를 적절하게 사용할 수 있도록 하는 정보; (c) 최초 적합성평가 시점에 제공자가 미리 정한, 고위험 인공지능시스템 및 그 성능에 대한 변경사항(있는 경우); (d) 배포자에 의한 고위험 인공지능시스템 산출물의 해석을 촉진하기 위해 마련된 기술적 조치를 포함한, 제14조에서 정하는 인적 감독조치; (e) 소프트웨어 업데이트에 관한 사항을 포함하여, 그 인공지능시스템의 적절한 작동을 보장하기 위해 필요한 연산·하드웨어 자원, 고위험 인공지능시스템의 예상 수명 및 필요한 유지관리조치(그 주기를 포함); (f) 관련된 경우, 배포자가 제12조에 따라 로그를 적절하게 수집·저장·해석할 수 있도록 하는, 고위험 인공지능시스템에 포함된 메커니즘에 대한 설명.",
   "cdx_field": "component.modelCard.considerations.useCases",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_useCases",
   "note": "사용설명서 기재사항이 여러 축에 걸쳐 문구별로 행을 쪼갬. useCases 정의가 \"모델의 의도된 유스케이스\"라 시스템의 목적이 모델 범위로 좁혀 담김",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.useCases",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_useCases",
   "row_key": "의도된 용도·사용자#4#Article 13(3)",
   "field_key": "의도된 용도·사용자#4#Article 13(3)#0",
   "year_pin": "",
@@ -4054,7 +4054,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "의도된 용도",
@@ -4063,11 +4063,11 @@
   "id": "Annex VIII §A(5)",
   "requirement_ko": "인공지능시스템의 의도된 목적, 그리고 그 인공지능시스템을 통해 지원되는 구성요소와 기능에 대한 설명;",
   "cdx_field": "component.modelCard.considerations.useCases",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_useCases",
   "note": "useCases 정의가 \"모델의 의도된 유스케이스\"라 시스템의 목적이 모델 범위로 좁혀 담김",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.useCases",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_useCases",
   "row_key": "의도된 용도·사용자#5#Annex VIII §A(5)",
   "field_key": "의도된 용도·사용자#5#Annex VIII §A(5)#0",
   "year_pin": "",
@@ -4078,7 +4078,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "의도된 용도",
@@ -4087,11 +4087,11 @@
   "id": "Annex VIII §B(5)",
   "requirement_ko": "인공지능시스템의 의도된 목적에 대한 설명;",
   "cdx_field": "component.modelCard.considerations.useCases",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_useCases",
   "note": "useCases 정의가 \"모델의 의도된 유스케이스\"라 시스템의 목적이 모델 범위로 좁혀 담김",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.useCases",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_useCases",
   "row_key": "의도된 용도·사용자#6#Annex VIII §B(5)",
   "field_key": "의도된 용도·사용자#6#Annex VIII §B(5)#0",
   "year_pin": "",
@@ -4102,7 +4102,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "의도된 사용자",
@@ -4111,11 +4111,11 @@
   "id": "MAP 1.1",
   "requirement_ko": "의도된 목적, 잠재적으로 유익한 용도, 맥락별 법률·규범·기대, AI 시스템이 배포될 예상 환경이 이해·문서화된다. 고려사항: 사용자의 특정 집합·유형과 그 기대; 시스템 사용이 개인·커뮤니티·조직·사회·지구에 미치는 잠재적 긍정·부정 영향; 개발·제품 AI 수명주기 전반의 목적·용도·위험에 관한 가정과 한계; 관련 TEVV(시험·평가·검증·확인) 및 시스템 지표.",
   "cdx_field": "component.modelCard.considerations.users",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_users",
   "note": "users 정의가 \"모델의 의도된 사용자\"라 시스템 사용자는 모델 범위로 좁혀 담김",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.considerations.users",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_users",
   "row_key": "의도된 용도·사용자#0#MAP 1.1",
   "field_key": "의도된 용도·사용자#0#MAP 1.1#1",
   "year_pin": "",
@@ -4126,7 +4126,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "아키텍처 계열",
@@ -4135,11 +4135,11 @@
   "id": "Annex IV(2)",
   "requirement_ko": "다음을 포함한, 인공지능시스템의 요소 및 그 개발과정에 대한 상세한 설명: (a) 인공지능시스템 개발을 위해 수행된 방법과 절차(관련되는 경우, 제3자가 제공한 사전훈련된 시스템이나 도구의 사용 및 제공자가 이를 사용, 통합 또는 수정한 방식을 포함); (b) 시스템의 설계사양, 즉 인공지능시스템 및 알고리즘의 일반적 논리; 그 근거와 가정을 포함한 주요 설계상의 선택(시스템이 사용되고자 하는 대상이 되는 개인 또는 집단에 관한 사항을 포함); 주요 분류 선택; 시스템이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; 시스템의 예상 산출물 및 산출물 품질에 대한 설명; 제III장 제2절에서 정하는 요건을 준수하기 위해 채택된 기술적 해결책에 관하여 이루어진 발생 가능한 절충에 대한 결정; (c) 소프트웨어 구성요소가 서로 어떻게 구축되거나 연계되어 전체 처리과정에 통합되는지를 설명하는 시스템 구조에 대한 설명; 인공지능시스템의 개발, 훈련, 시험 및 검증에 사용된 연산자원; (d) 관련되는 경우, 훈련방법론과 기법 및 사용된 훈련 데이터 세트를 설명하는 데이터시트 형태의 데이터 요건(그 데이터 세트에 대한 일반적 설명, 출처, 범위 및 주요 특성에 관한 정보를 포함); 데이터가 획득되고 선정된 방식; 라벨링 절차(예: 지도학습의 경우); 데이터 정제 방법론(예: 이상치 탐지); (e) 제13조(3) (d)호에 따라 배포자에 의한 인공지능시스템 산출물의 해석을 촉진하는 데 필요한 기술적 조치에 대한 평가를 포함하여, 제14조에 따라 필요한 인적 감독조치에 대한 평가; (f) 해당하는 경우, 인공지능시스템 및 그 성능에 대해 미리 정해진 변경사항에 대한 상세한 설명과, 제III장 제2절에서 정하는 관련 요건에 대한 인공지능시스템의 지속적 준수를 보장하기 위해 채택된 기술적 해결책과 관련된 모든 관련 정보; (g) 사용된 검증 및 시험 절차(사용된 검증·시험 데이터에 관한 정보 및 그 주요 특성을 포함); 정확성, 견고성 및 제III장 제2절에서 정하는 그 밖의 관련 요건에 대한 준수, 그리고 잠재적으로 차별적인 영향을 측정하기 위해 사용된 지표; (f)호에서 정하는 미리 정해진 변경사항에 관한 사항을 포함하여, 책임자가 서명하고 날짜가 기재된 시험 로그 및 모든 시험 보고서; (h) 마련된 사이버보안조치;",
   "cdx_field": "component.modelCard.modelParameters.architectureFamily",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_architectureFamily",
   "note": "아키텍처는 담기나 알고리즘이 어떤 논리로 도는지의 서술은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.architectureFamily",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_architectureFamily",
   "row_key": "모델 구조·과업#10#Annex IV(2)",
   "field_key": "모델 구조·과업#10#Annex IV(2)#0",
   "year_pin": "",
@@ -4150,7 +4150,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "아키텍처 계열",
@@ -4159,11 +4159,11 @@
   "id": "Annex VIII §A(6)",
   "requirement_ko": "시스템이 사용하는 정보(데이터, 입력값) 및 그 작동 논리에 대한 기본적이고 간결한 설명;",
   "cdx_field": "component.modelCard.modelParameters.architectureFamily",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_architectureFamily",
   "note": "아키텍처는 담기나 알고리즘이 어떤 논리로 도는지의 서술은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.architectureFamily",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_architectureFamily",
   "row_key": "모델 구조·과업#2#Annex VIII §A(6)",
   "field_key": "모델 구조·과업#2#Annex VIII §A(6)#0",
   "year_pin": "",
@@ -4174,7 +4174,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "아키텍처 계열",
@@ -4183,11 +4183,11 @@
   "id": "Annex XI §1(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 구조 및 파라미터 수; (e) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (f) 라이선스.",
   "cdx_field": "component.modelCard.modelParameters.architectureFamily",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_architectureFamily",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.architectureFamily",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_architectureFamily",
   "row_key": "모델 구조·과업#4#Annex XI §1(1)",
   "field_key": "모델 구조·과업#4#Annex XI §1(1)#2",
   "year_pin": "",
@@ -4198,7 +4198,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "아키텍처 계열",
@@ -4207,11 +4207,11 @@
   "id": "Annex XII(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 해당하는 경우, 모델 자체의 일부가 아닌 하드웨어나 소프트웨어와 상호작용하는 방식 또는 상호작용에 사용될 수 있는 방식; (e) 해당하는 경우, 범용 인공지능모델의 사용과 관련된 소프트웨어의 버전; (f) 구조 및 파라미터 수; (g) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (h) 모델에 대한 라이선스.",
   "cdx_field": "component.modelCard.modelParameters.architectureFamily",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_architectureFamily",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.architectureFamily",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_architectureFamily",
   "row_key": "모델 구조·과업#5#Annex XII(1)",
   "field_key": "모델 구조·과업#5#Annex XII(1)#6",
   "year_pin": "",
@@ -4222,7 +4222,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "사용한 데이터셋",
@@ -4246,7 +4246,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "사용한 데이터셋",
@@ -4270,7 +4270,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "사용한 데이터셋",
@@ -4294,7 +4294,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "사용한 데이터셋",
@@ -4318,7 +4318,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "입력 형식",
@@ -4327,11 +4327,11 @@
   "id": "Annex VIII §A(6)",
   "requirement_ko": "시스템이 사용하는 정보(데이터, 입력값) 및 그 작동 논리에 대한 기본적이고 간결한 설명;",
   "cdx_field": "component.modelCard.modelParameters.inputs",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_inputs",
   "note": "inputs 는 양식만 담는다 — 어떤 정보를 쓰는지는 datasets 가 받는다",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.inputs",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_inputs",
   "row_key": "데이터셋 수집·출처#12#Annex VIII §A(6)",
   "field_key": "데이터셋 수집·출처#12#Annex VIII §A(6)#0",
   "year_pin": "",
@@ -4342,7 +4342,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "입력 형식",
@@ -4351,11 +4351,11 @@
   "id": "Article 13(3)",
   "requirement_ko": "사용설명서는 최소한 다음 정보를 포함하여야 한다. (a) 제공자 및, 해당하는 경우, 그 수권대리인의 신원과 연락처; (b) 다음을 포함한, 고위험 인공지능시스템의 성능에 관한 특성, 역량 및 한계: (i) 그 의도된 목적; (ii) 고위험 인공지능시스템이 시험·검증된, 그리고 기대할 수 있는, 제15조에서 정하는 정확성·견고성·사이버보안의 수준(그 지표를 포함) 및 그 기대되는 정확성·견고성·사이버보안 수준에 영향을 미칠 수 있는 알려진·예견 가능한 상황; (iii) 고위험 인공지능시스템을 그 의도된 목적에 따라 사용하거나 합리적으로 예견 가능한 오용 조건에서 사용하는 것과 관련하여, 제9조(2)에서 정하는 건강 및 안전 또는 기본권에 대한 위험으로 이어질 수 있는 알려진·예견 가능한 상황; (iv) 해당하는 경우, 그 산출물을 설명하는 데 관련된 정보를 제공하기 위한 고위험 인공지능시스템의 기술적 역량 및 특성; (v) 적절한 경우, 시스템이 사용되고자 하는 대상이 되는 특정 개인 또는 집단에 관한 성능; (vi) 적절한 경우, 고위험 인공지능시스템의 의도된 목적을 고려한, 사용된 훈련·검증·시험 데이터 세트에 관한 입력데이터의 사양 또는 그 밖의 관련 정보; (vii) 해당하는 경우, 배포자가 고위험 인공지능시스템의 산출물을 해석하고 이를 적절하게 사용할 수 있도록 하는 정보; (c) 최초 적합성평가 시점에 제공자가 미리 정한, 고위험 인공지능시스템 및 그 성능에 대한 변경사항(있는 경우); (d) 배포자에 의한 고위험 인공지능시스템 산출물의 해석을 촉진하기 위해 마련된 기술적 조치를 포함한, 제14조에서 정하는 인적 감독조치; (e) 소프트웨어 업데이트에 관한 사항을 포함하여, 그 인공지능시스템의 적절한 작동을 보장하기 위해 필요한 연산·하드웨어 자원, 고위험 인공지능시스템의 예상 수명 및 필요한 유지관리조치(그 주기를 포함); (f) 관련된 경우, 배포자가 제12조에 따라 로그를 적절하게 수집·저장·해석할 수 있도록 하는, 고위험 인공지능시스템에 포함된 메커니즘에 대한 설명.",
   "cdx_field": "component.modelCard.modelParameters.inputs",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_inputs",
   "note": "inputs 는 inputOutputMLParameters 의 format 한 칸이라 양식만 담고 범위·단위 같은 사양은 못 담음. 사용설명서 기재사항이 여러 축에 걸쳐 문구별로 행을 쪼갬. 부속서 IV 중 하드웨어·인터페이스·시장 상태 같은 시스템 몫은 모델카드에 자리가 없음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.inputs",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_inputs",
   "row_key": "데이터셋 수집·출처#6#Article 13(3)",
   "field_key": "데이터셋 수집·출처#6#Article 13(3)#0",
   "year_pin": "",
@@ -4366,7 +4366,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "입력 형식",
@@ -4375,11 +4375,11 @@
   "id": "Annex XI §1(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 구조 및 파라미터 수; (e) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (f) 라이선스.",
   "cdx_field": "component.modelCard.modelParameters.inputs",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_inputs",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.inputs",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_inputs",
   "row_key": "모델 구조·과업#4#Annex XI §1(1)",
   "field_key": "모델 구조·과업#4#Annex XI §1(1)#7",
   "year_pin": "",
@@ -4390,7 +4390,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "입력 형식",
@@ -4399,11 +4399,11 @@
   "id": "Annex XII(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 해당하는 경우, 모델 자체의 일부가 아닌 하드웨어나 소프트웨어와 상호작용하는 방식 또는 상호작용에 사용될 수 있는 방식; (e) 해당하는 경우, 범용 인공지능모델의 사용과 관련된 소프트웨어의 버전; (f) 구조 및 파라미터 수; (g) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (h) 모델에 대한 라이선스.",
   "cdx_field": "component.modelCard.modelParameters.inputs",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_inputs",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.inputs",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_inputs",
   "row_key": "모델 구조·과업#5#Annex XII(1)",
   "field_key": "모델 구조·과업#5#Annex XII(1)#8",
   "year_pin": "",
@@ -4414,7 +4414,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "입력 형식",
@@ -4423,11 +4423,11 @@
   "id": "Annex XII(2)",
   "requirement_ko": "다음을 포함한, 모델의 요소 및 그 개발과정에 대한 설명: (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 입력·산출물의 양식(예: 텍스트, 이미지 등) 및 형식과 그 최대 크기(예: 컨텍스트 윈도우 길이 등); (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론을 포함).",
   "cdx_field": "component.modelCard.modelParameters.inputs",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_inputs",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.inputs",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_inputs",
   "row_key": "모델 구조·과업#7#Annex XII(2)",
   "field_key": "모델 구조·과업#7#Annex XII(2)#0",
   "year_pin": "",
@@ -4438,7 +4438,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "입력 형식",
@@ -4447,11 +4447,11 @@
   "id": "Annex IV(3)",
   "requirement_ko": "인공지능시스템의 모니터링, 기능 및 통제에 관한 상세한 정보로서, 특히 다음에 관한 것: 시스템이 사용되고자 하는 대상이 되는 특정 개인이나 집단에 대한 정확성의 정도 및 그 의도된 목적과 관련하여 기대되는 전반적인 정확성 수준을 포함한 성능상의 역량과 한계; 인공지능시스템의 의도된 목적에 비추어 예견 가능한 의도되지 아니한 결과 및 건강·안전·기본권·차별에 대한 위험의 원천; 배포자에 의한 인공지능시스템 산출물의 해석을 촉진하기 위해 마련된 기술적 조치를 포함하여, 제14조에 따라 필요한 인적 감독조치; 적절한 경우 입력데이터에 관한 사양;",
   "cdx_field": "component.modelCard.modelParameters.inputs",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_inputs",
   "note": "inputs 는 inputOutputMLParameters 의 format 한 칸이라 양식만 담고 범위·단위 같은 사양은 못 담음. 부속서 IV 중 하드웨어·인터페이스·시장 상태 같은 시스템 몫은 모델카드에 자리가 없음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.inputs",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_inputs",
   "row_key": "모델 한계·가정#5#Annex IV(3)",
   "field_key": "모델 한계·가정#5#Annex IV(3)#2",
   "year_pin": "",
@@ -4462,7 +4462,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "구체적 아키텍처",
@@ -4471,11 +4471,11 @@
   "id": "Annex IV(2)",
   "requirement_ko": "다음을 포함한, 인공지능시스템의 요소 및 그 개발과정에 대한 상세한 설명: (a) 인공지능시스템 개발을 위해 수행된 방법과 절차(관련되는 경우, 제3자가 제공한 사전훈련된 시스템이나 도구의 사용 및 제공자가 이를 사용, 통합 또는 수정한 방식을 포함); (b) 시스템의 설계사양, 즉 인공지능시스템 및 알고리즘의 일반적 논리; 그 근거와 가정을 포함한 주요 설계상의 선택(시스템이 사용되고자 하는 대상이 되는 개인 또는 집단에 관한 사항을 포함); 주요 분류 선택; 시스템이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; 시스템의 예상 산출물 및 산출물 품질에 대한 설명; 제III장 제2절에서 정하는 요건을 준수하기 위해 채택된 기술적 해결책에 관하여 이루어진 발생 가능한 절충에 대한 결정; (c) 소프트웨어 구성요소가 서로 어떻게 구축되거나 연계되어 전체 처리과정에 통합되는지를 설명하는 시스템 구조에 대한 설명; 인공지능시스템의 개발, 훈련, 시험 및 검증에 사용된 연산자원; (d) 관련되는 경우, 훈련방법론과 기법 및 사용된 훈련 데이터 세트를 설명하는 데이터시트 형태의 데이터 요건(그 데이터 세트에 대한 일반적 설명, 출처, 범위 및 주요 특성에 관한 정보를 포함); 데이터가 획득되고 선정된 방식; 라벨링 절차(예: 지도학습의 경우); 데이터 정제 방법론(예: 이상치 탐지); (e) 제13조(3) (d)호에 따라 배포자에 의한 인공지능시스템 산출물의 해석을 촉진하는 데 필요한 기술적 조치에 대한 평가를 포함하여, 제14조에 따라 필요한 인적 감독조치에 대한 평가; (f) 해당하는 경우, 인공지능시스템 및 그 성능에 대해 미리 정해진 변경사항에 대한 상세한 설명과, 제III장 제2절에서 정하는 관련 요건에 대한 인공지능시스템의 지속적 준수를 보장하기 위해 채택된 기술적 해결책과 관련된 모든 관련 정보; (g) 사용된 검증 및 시험 절차(사용된 검증·시험 데이터에 관한 정보 및 그 주요 특성을 포함); 정확성, 견고성 및 제III장 제2절에서 정하는 그 밖의 관련 요건에 대한 준수, 그리고 잠재적으로 차별적인 영향을 측정하기 위해 사용된 지표; (f)호에서 정하는 미리 정해진 변경사항에 관한 사항을 포함하여, 책임자가 서명하고 날짜가 기재된 시험 로그 및 모든 시험 보고서; (h) 마련된 사이버보안조치;",
   "cdx_field": "component.modelCard.modelParameters.modelArchitecture",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_modelArchitecture",
   "note": "아키텍처는 담기나 알고리즘이 어떤 논리로 도는지의 서술은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.modelArchitecture",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_modelArchitecture",
   "row_key": "모델 구조·과업#10#Annex IV(2)",
   "field_key": "모델 구조·과업#10#Annex IV(2)#1",
   "year_pin": "",
@@ -4486,7 +4486,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "구체적 아키텍처",
@@ -4495,11 +4495,11 @@
   "id": "Annex VIII §A(6)",
   "requirement_ko": "시스템이 사용하는 정보(데이터, 입력값) 및 그 작동 논리에 대한 기본적이고 간결한 설명;",
   "cdx_field": "component.modelCard.modelParameters.modelArchitecture",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_modelArchitecture",
   "note": "부속서 IV(2)의 '일반적 논리'와 같은 자리. 아키텍처는 담기나 알고리즘이 어떤 논리로 도는지의 서술은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.modelArchitecture",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_modelArchitecture",
   "row_key": "모델 구조·과업#2#Annex VIII §A(6)",
   "field_key": "모델 구조·과업#2#Annex VIII §A(6)#1",
   "year_pin": "",
@@ -4510,7 +4510,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "구체적 아키텍처",
@@ -4519,11 +4519,11 @@
   "id": "Annex XI §1(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 구조 및 파라미터 수; (e) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (f) 라이선스.",
   "cdx_field": "component.modelCard.modelParameters.modelArchitecture",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_modelArchitecture",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.modelArchitecture",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_modelArchitecture",
   "row_key": "모델 구조·과업#4#Annex XI §1(1)",
   "field_key": "모델 구조·과업#4#Annex XI §1(1)#3",
   "year_pin": "",
@@ -4534,7 +4534,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "구체적 아키텍처",
@@ -4543,11 +4543,11 @@
   "id": "Annex XII(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 해당하는 경우, 모델 자체의 일부가 아닌 하드웨어나 소프트웨어와 상호작용하는 방식 또는 상호작용에 사용될 수 있는 방식; (e) 해당하는 경우, 범용 인공지능모델의 사용과 관련된 소프트웨어의 버전; (f) 구조 및 파라미터 수; (g) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (h) 모델에 대한 라이선스.",
   "cdx_field": "component.modelCard.modelParameters.modelArchitecture",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_modelArchitecture",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.modelArchitecture",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_modelArchitecture",
   "row_key": "모델 구조·과업#5#Annex XII(1)",
   "field_key": "모델 구조·과업#5#Annex XII(1)#7",
   "year_pin": "",
@@ -4558,7 +4558,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "출력 형식",
@@ -4567,11 +4567,11 @@
   "id": "Annex IV(2)",
   "requirement_ko": "다음을 포함한, 인공지능시스템의 요소 및 그 개발과정에 대한 상세한 설명: (a) 인공지능시스템 개발을 위해 수행된 방법과 절차(관련되는 경우, 제3자가 제공한 사전훈련된 시스템이나 도구의 사용 및 제공자가 이를 사용, 통합 또는 수정한 방식을 포함); (b) 시스템의 설계사양, 즉 인공지능시스템 및 알고리즘의 일반적 논리; 그 근거와 가정을 포함한 주요 설계상의 선택(시스템이 사용되고자 하는 대상이 되는 개인 또는 집단에 관한 사항을 포함); 주요 분류 선택; 시스템이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; 시스템의 예상 산출물 및 산출물 품질에 대한 설명; 제III장 제2절에서 정하는 요건을 준수하기 위해 채택된 기술적 해결책에 관하여 이루어진 발생 가능한 절충에 대한 결정; (c) 소프트웨어 구성요소가 서로 어떻게 구축되거나 연계되어 전체 처리과정에 통합되는지를 설명하는 시스템 구조에 대한 설명; 인공지능시스템의 개발, 훈련, 시험 및 검증에 사용된 연산자원; (d) 관련되는 경우, 훈련방법론과 기법 및 사용된 훈련 데이터 세트를 설명하는 데이터시트 형태의 데이터 요건(그 데이터 세트에 대한 일반적 설명, 출처, 범위 및 주요 특성에 관한 정보를 포함); 데이터가 획득되고 선정된 방식; 라벨링 절차(예: 지도학습의 경우); 데이터 정제 방법론(예: 이상치 탐지); (e) 제13조(3) (d)호에 따라 배포자에 의한 인공지능시스템 산출물의 해석을 촉진하는 데 필요한 기술적 조치에 대한 평가를 포함하여, 제14조에 따라 필요한 인적 감독조치에 대한 평가; (f) 해당하는 경우, 인공지능시스템 및 그 성능에 대해 미리 정해진 변경사항에 대한 상세한 설명과, 제III장 제2절에서 정하는 관련 요건에 대한 인공지능시스템의 지속적 준수를 보장하기 위해 채택된 기술적 해결책과 관련된 모든 관련 정보; (g) 사용된 검증 및 시험 절차(사용된 검증·시험 데이터에 관한 정보 및 그 주요 특성을 포함); 정확성, 견고성 및 제III장 제2절에서 정하는 그 밖의 관련 요건에 대한 준수, 그리고 잠재적으로 차별적인 영향을 측정하기 위해 사용된 지표; (f)호에서 정하는 미리 정해진 변경사항에 관한 사항을 포함하여, 책임자가 서명하고 날짜가 기재된 시험 로그 및 모든 시험 보고서; (h) 마련된 사이버보안조치;",
   "cdx_field": "component.modelCard.modelParameters.outputs",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_outputs",
   "note": "outputs 는 format 한 칸이라 양식만 담고 무엇을 내는지의 서술은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.outputs",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_outputs",
   "row_key": "모델 구조·과업#10#Annex IV(2)",
   "field_key": "모델 구조·과업#10#Annex IV(2)#2",
   "year_pin": "",
@@ -4582,7 +4582,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "출력 형식",
@@ -4591,11 +4591,11 @@
   "id": "Annex XI §1(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 구조 및 파라미터 수; (e) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (f) 라이선스.",
   "cdx_field": "component.modelCard.modelParameters.outputs",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_outputs",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.outputs",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_outputs",
   "row_key": "모델 구조·과업#4#Annex XI §1(1)",
   "field_key": "모델 구조·과업#4#Annex XI §1(1)#8",
   "year_pin": "",
@@ -4606,7 +4606,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "출력 형식",
@@ -4615,11 +4615,11 @@
   "id": "Annex XII(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 해당하는 경우, 모델 자체의 일부가 아닌 하드웨어나 소프트웨어와 상호작용하는 방식 또는 상호작용에 사용될 수 있는 방식; (e) 해당하는 경우, 범용 인공지능모델의 사용과 관련된 소프트웨어의 버전; (f) 구조 및 파라미터 수; (g) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (h) 모델에 대한 라이선스.",
   "cdx_field": "component.modelCard.modelParameters.outputs",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_outputs",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.outputs",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_outputs",
   "row_key": "모델 구조·과업#5#Annex XII(1)",
   "field_key": "모델 구조·과업#5#Annex XII(1)#9",
   "year_pin": "",
@@ -4630,7 +4630,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "출력 형식",
@@ -4639,11 +4639,11 @@
   "id": "Annex XII(2)",
   "requirement_ko": "다음을 포함한, 모델의 요소 및 그 개발과정에 대한 설명: (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 입력·산출물의 양식(예: 텍스트, 이미지 등) 및 형식과 그 최대 크기(예: 컨텍스트 윈도우 길이 등); (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론을 포함).",
   "cdx_field": "component.modelCard.modelParameters.outputs",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_outputs",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.outputs",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_outputs",
   "row_key": "모델 구조·과업#7#Annex XII(2)",
   "field_key": "모델 구조·과업#7#Annex XII(2)#1",
   "year_pin": "",
@@ -4654,7 +4654,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "과업",
@@ -4663,11 +4663,11 @@
   "id": "MAP 2.1",
   "requirement_ko": "AI 시스템이 지원할 구체적 과업과 그 과업을 구현하는 데 사용되는 방법(예: 분류기, 생성 모델, 추천기)이 정의된다.",
   "cdx_field": "component.modelCard.modelParameters.task",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_task",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.task",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_task",
   "row_key": "모델 구조·과업#0#MAP 2.1",
   "field_key": "모델 구조·과업#0#MAP 2.1#0",
   "year_pin": "",
@@ -4678,7 +4678,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "과업",
@@ -4687,11 +4687,11 @@
   "id": "Annex XI §1(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 구조 및 파라미터 수; (e) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (f) 라이선스.",
   "cdx_field": "component.modelCard.modelParameters.task",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_task",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.task",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_task",
   "row_key": "모델 구조·과업#4#Annex XI §1(1)",
   "field_key": "모델 구조·과업#4#Annex XI §1(1)#0",
   "year_pin": "",
@@ -4702,7 +4702,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "과업",
@@ -4711,11 +4711,11 @@
   "id": "Annex XII(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 해당하는 경우, 모델 자체의 일부가 아닌 하드웨어나 소프트웨어와 상호작용하는 방식 또는 상호작용에 사용될 수 있는 방식; (e) 해당하는 경우, 범용 인공지능모델의 사용과 관련된 소프트웨어의 버전; (f) 구조 및 파라미터 수; (g) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (h) 모델에 대한 라이선스.",
   "cdx_field": "component.modelCard.modelParameters.task",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_task",
   "note": "",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.modelParameters.task",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_task",
   "row_key": "모델 구조·과업#5#Annex XII(1)",
   "field_key": "모델 구조·과업#5#Annex XII(1)#0",
   "year_pin": "",
@@ -4726,7 +4726,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "성능 지표 구간",
@@ -4735,11 +4735,11 @@
   "id": "Annex IV(3)",
   "requirement_ko": "인공지능시스템의 모니터링, 기능 및 통제에 관한 상세한 정보로서, 특히 다음에 관한 것: 시스템이 사용되고자 하는 대상이 되는 특정 개인이나 집단에 대한 정확성의 정도 및 그 의도된 목적과 관련하여 기대되는 전반적인 정확성 수준을 포함한 성능상의 역량과 한계; 인공지능시스템의 의도된 목적에 비추어 예견 가능한 의도되지 아니한 결과 및 건강·안전·기본권·차별에 대한 위험의 원천; 배포자에 의한 인공지능시스템 산출물의 해석을 촉진하기 위해 마련된 기술적 조치를 포함하여, 제14조에 따라 필요한 인적 감독조치; 적절한 경우 입력데이터에 관한 사양;",
   "cdx_field": "component.modelCard.quantitativeAnalysis.performanceMetrics.slice",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_metricSlice",
   "note": "그 지표를 어느 집단에서 쟀는지를 이 칸이 받는다. modelCard 아래 지표라 모델의 예측 품질만 담고 모델 밖까지 합친 시스템 정확성은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.quantitativeAnalysis.performanceMetrics.slice",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_metricSlice",
   "row_key": "성능측정#5#Annex IV(3)",
   "field_key": "성능측정#5#Annex IV(3)#2",
   "year_pin": "",
@@ -4750,7 +4750,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "성능 지표 구간",
@@ -4759,11 +4759,11 @@
   "id": "Article 13(3)",
   "requirement_ko": "사용설명서는 최소한 다음 정보를 포함하여야 한다. (a) 제공자 및, 해당하는 경우, 그 수권대리인의 신원과 연락처; (b) 다음을 포함한, 고위험 인공지능시스템의 성능에 관한 특성, 역량 및 한계: (i) 그 의도된 목적; (ii) 고위험 인공지능시스템이 시험·검증된, 그리고 기대할 수 있는, 제15조에서 정하는 정확성·견고성·사이버보안의 수준(그 지표를 포함) 및 그 기대되는 정확성·견고성·사이버보안 수준에 영향을 미칠 수 있는 알려진·예견 가능한 상황; (iii) 고위험 인공지능시스템을 그 의도된 목적에 따라 사용하거나 합리적으로 예견 가능한 오용 조건에서 사용하는 것과 관련하여, 제9조(2)에서 정하는 건강 및 안전 또는 기본권에 대한 위험으로 이어질 수 있는 알려진·예견 가능한 상황; (iv) 해당하는 경우, 그 산출물을 설명하는 데 관련된 정보를 제공하기 위한 고위험 인공지능시스템의 기술적 역량 및 특성; (v) 적절한 경우, 시스템이 사용되고자 하는 대상이 되는 특정 개인 또는 집단에 관한 성능; (vi) 적절한 경우, 고위험 인공지능시스템의 의도된 목적을 고려한, 사용된 훈련·검증·시험 데이터 세트에 관한 입력데이터의 사양 또는 그 밖의 관련 정보; (vii) 해당하는 경우, 배포자가 고위험 인공지능시스템의 산출물을 해석하고 이를 적절하게 사용할 수 있도록 하는 정보; (c) 최초 적합성평가 시점에 제공자가 미리 정한, 고위험 인공지능시스템 및 그 성능에 대한 변경사항(있는 경우); (d) 배포자에 의한 고위험 인공지능시스템 산출물의 해석을 촉진하기 위해 마련된 기술적 조치를 포함한, 제14조에서 정하는 인적 감독조치; (e) 소프트웨어 업데이트에 관한 사항을 포함하여, 그 인공지능시스템의 적절한 작동을 보장하기 위해 필요한 연산·하드웨어 자원, 고위험 인공지능시스템의 예상 수명 및 필요한 유지관리조치(그 주기를 포함); (f) 관련된 경우, 배포자가 제12조에 따라 로그를 적절하게 수집·저장·해석할 수 있도록 하는, 고위험 인공지능시스템에 포함된 메커니즘에 대한 설명.",
   "cdx_field": "component.modelCard.quantitativeAnalysis.performanceMetrics.slice",
-  "spdx_field": "-",
+  "spdx_field": "AIPackage.aibom_metricSlice",
   "note": "그 지표를 어느 집단에서 쟀는지를 이 칸이 받는다. 사용설명서 기재사항이 여러 축에 걸쳐 문구별로 행을 쪼갬. modelCard 아래 지표라 모델의 예측 품질만 담고 모델 밖까지 합친 시스템 정확성은 못 담음",
   "coverage": "필드",
   "cdx_ref": "component.modelCard.quantitativeAnalysis.performanceMetrics.slice",
-  "spdx_ref": "",
+  "spdx_ref": "AIPackage.aibom_metricSlice",
   "row_key": "성능측정#7#Article 13(3)",
   "field_key": "성능측정#7#Article 13(3)#4",
   "year_pin": "",
@@ -4774,7 +4774,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": 1,
-  "aibom_field": ""
+  "version": "v0.6"
  },
  {
   "group": "성능 지표 유형",
@@ -4798,7 +4798,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 유형",
@@ -4822,7 +4822,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 유형",
@@ -4846,7 +4846,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 유형",
@@ -4870,7 +4870,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 유형",
@@ -4894,7 +4894,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 유형",
@@ -4919,7 +4919,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 유형",
@@ -4943,7 +4943,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 유형",
@@ -4968,7 +4968,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 유형",
@@ -4993,7 +4993,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 유형",
@@ -5017,7 +5017,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 유형",
@@ -5041,7 +5041,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 유형",
@@ -5065,7 +5065,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 유형",
@@ -5089,7 +5089,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 값",
@@ -5113,7 +5113,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 값",
@@ -5137,7 +5137,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 값",
@@ -5161,7 +5161,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 값",
@@ -5185,7 +5185,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 값",
@@ -5209,7 +5209,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 값",
@@ -5234,7 +5234,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 값",
@@ -5258,7 +5258,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 값",
@@ -5283,7 +5283,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 값",
@@ -5308,7 +5308,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 값",
@@ -5332,7 +5332,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 값",
@@ -5356,7 +5356,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 값",
@@ -5380,7 +5380,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "성능 지표 값",
@@ -5404,7 +5404,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 이름",
@@ -5428,7 +5428,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 이름",
@@ -5452,7 +5452,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 이름",
@@ -5476,7 +5476,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 이름",
@@ -5500,7 +5500,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 이름",
@@ -5524,7 +5524,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 이름",
@@ -5548,7 +5548,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "계보",
@@ -5572,7 +5572,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "계보: 커밋",
@@ -5596,7 +5596,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "계보: 메모",
@@ -5620,7 +5620,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "purl 식별자",
@@ -5644,7 +5644,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "purl 식별자",
@@ -5668,7 +5668,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "purl 식별자",
@@ -5692,7 +5692,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "purl 식별자",
@@ -5716,7 +5716,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "purl 식별자",
@@ -5740,7 +5740,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "purl 식별자",
@@ -5764,7 +5764,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "purl 식별자",
@@ -5788,7 +5788,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "purl 식별자",
@@ -5812,7 +5812,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "purl 식별자",
@@ -5836,7 +5836,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "purl 식별자",
@@ -5860,7 +5860,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "purl 식별자",
@@ -5884,7 +5884,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "purl 식별자",
@@ -5908,7 +5908,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -5932,7 +5932,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -5956,7 +5956,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -5982,7 +5982,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -6008,7 +6008,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -6032,7 +6032,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -6056,7 +6056,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -6080,7 +6080,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -6104,7 +6104,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -6128,7 +6128,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -6152,7 +6152,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -6176,7 +6176,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -6200,7 +6200,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -6224,7 +6224,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "공급자",
@@ -6248,7 +6248,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 유형",
@@ -6272,7 +6272,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 유형",
@@ -6296,7 +6296,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "버전",
@@ -6320,7 +6320,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "데이터 컴포넌트",
@@ -6344,7 +6344,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "민감 데이터",
@@ -6368,7 +6368,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6392,7 +6392,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6416,7 +6416,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6440,7 +6440,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6464,7 +6464,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6488,7 +6488,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6512,7 +6512,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6536,7 +6536,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6560,7 +6560,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6584,7 +6584,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6608,7 +6608,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6632,7 +6632,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6656,7 +6656,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6680,7 +6680,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "구성요소 목록",
@@ -6704,7 +6704,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "요구사항↔주장 연결",
@@ -6728,7 +6728,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "요구사항↔주장 연결",
@@ -6752,7 +6752,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -6776,7 +6776,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -6800,7 +6800,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -6824,7 +6824,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -6848,7 +6848,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -6874,7 +6874,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -6898,7 +6898,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -6922,7 +6922,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -6947,7 +6947,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -6971,7 +6971,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -6995,7 +6995,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -7019,7 +7019,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -7043,7 +7043,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -7067,7 +7067,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -7091,7 +7091,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "주장",
@@ -7115,7 +7115,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7139,7 +7139,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7163,7 +7163,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7187,7 +7187,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7211,7 +7211,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7237,7 +7237,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7261,7 +7261,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7285,7 +7285,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7310,7 +7310,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7334,7 +7334,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7358,7 +7358,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7382,7 +7382,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7406,7 +7406,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7430,7 +7430,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7454,7 +7454,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "증거",
@@ -7478,7 +7478,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "준수 표준",
@@ -7503,7 +7503,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "준수 표준",
@@ -7528,7 +7528,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "준수 표준",
@@ -7552,7 +7552,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "준수 표준",
@@ -7576,7 +7576,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "준수 표준",
@@ -7600,7 +7600,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "준수 표준",
@@ -7624,7 +7624,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "준수 표준",
@@ -7648,7 +7648,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "준수 표준",
@@ -7672,7 +7672,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "표준 요구사항 정의",
@@ -7696,7 +7696,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "표준 요구사항 정의",
@@ -7720,7 +7720,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "표준 요구사항 정의",
@@ -7744,7 +7744,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "표준 요구사항 정의",
@@ -7768,7 +7768,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "표준 요구사항 정의",
@@ -7792,7 +7792,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "의존관계",
@@ -7816,7 +7816,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "의존관계",
@@ -7840,7 +7840,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "형성 기록",
@@ -7864,7 +7864,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "형성: 일시적 구성요소",
@@ -7888,7 +7888,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "형성: 일시적 서비스",
@@ -7912,7 +7912,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "형성: 태스크",
@@ -7937,7 +7937,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "형성: 리소스 참조",
@@ -7961,7 +7961,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "형성: 리소스 참조",
@@ -7985,7 +7985,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "문서 작성자",
@@ -8009,7 +8009,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "문서 생성 조직",
@@ -8033,7 +8033,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "출시일",
@@ -8057,7 +8057,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "출시일",
@@ -8081,7 +8081,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "출시일",
@@ -8105,7 +8105,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "출시일",
@@ -8129,7 +8129,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "서비스 목록",
@@ -8153,7 +8153,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "서비스 목록",
@@ -8177,7 +8177,7 @@
   "requirement_gap_highlight": [],
   "candidate": "",
   "year": "",
-  "aibom_field": ""
+  "version": "1.7"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8202,7 +8202,7 @@
   ],
   "candidate": "회복력·안전장애 방안",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8210,23 +8210,23 @@
   "bom": "",
   "id": "Annex XI §1(2)",
   "requirement_ko": "제1호에서 정하는 모델의 요소에 대한 상세한 설명 및 그 개발과정에 관한 관련 정보로서, 다음 요소를 포함한다. (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 훈련방법론과 기법을 포함한 모델 및 훈련과정의 설계사양, 그 근거와 가정을 포함한 주요 설계상의 선택; 해당하는 경우, 모델이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론(예: 정제, 필터링 등), 데이터포인트의 수, 그 범위 및 주요 특성을 포함); 데이터가 획득되고 선정된 방식 및, 해당하는 경우, 데이터 출처의 부적합성을 탐지하기 위한 그 밖의 모든 조치와 식별 가능한 편향을 탐지하는 방법; (d) 모델을 훈련시키는 데 사용된 연산자원(예: 부동소수점 연산 횟수), 훈련 시간, 훈련과 관련된 그 밖의 관련 세부사항; (e) 모델의 알려진 또는 추정된 에너지 소비량. (e)호와 관련하여, 모델의 에너지 소비량이 알려지지 아니한 경우, 그 에너지 소비량은 사용된 연산자원에 관한 정보를 기초로 산정될 수 있다.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "componentData.knownBias.detectionMethod",
+  "spdx_field": "DatasetPackage.aibom_knownBiasDetectionMethod",
   "note": "(c) — knownBias 는 알려진 편향의 기술이라 그것을 탐지한 방법과 다름 — 10조(2)와 같은 격차",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "componentData.knownBias.detectionMethod",
+  "spdx_ref": "DatasetPackage.aibom_knownBiasDetectionMethod",
   "row_key": "데이터셋 수집·출처#4#Annex XI §1(2)",
   "field_key": "데이터셋 수집·출처#4#Annex XI §1(2)#3",
   "year_pin": "",
   "concept_key": "데이터셋 수집·출처#4#Annex XI §1(2)##식별 가능한 편향을 탐지하는 방법",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "식별 가능한 편향을 탐지하는 방법"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "편향 탐지 방법",
   "year": 1,
-  "aibom_field": "componentData.knownBias.detectionMethod"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8234,23 +8234,23 @@
   "bom": "",
   "id": "Article 10(2)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 고위험 인공지능시스템의 의도된 목적에 적절한 데이터 거버넌스 및 관리 관행의 적용을 받아야 한다. 그러한 관행은 특히 다음 사항에 관한 것이어야 한다. (a) 관련 설계상의 선택; (b) 데이터 수집 절차 및 데이터의 출처, 그리고 개인데이터의 경우 그 수집의 원래 목적; (c) 주석 처리, 라벨링, 정제, 갱신, 보강 및 집계와 같은 관련 데이터 준비·처리 작업; (d) 데이터가 측정·표상하도록 되어 있는 정보에 관한 것을 포함한 가정의 설정; (e) 필요한 데이터 세트의 가용성, 양 및 적합성에 대한 평가; (f) 특히 데이터 산출물이 향후 운용을 위한 입력에 영향을 미치는 경우, 개인의 건강과 안전에 영향을 미치거나 기본권에 부정적 영향을 미치거나 연합법상 금지된 차별로 이어질 가능성이 있는 편향의 발생 가능성에 대한 검토; (g) (f)호에 따라 식별된 발생 가능한 편향을 탐지, 예방 및 완화하기 위한 적절한 조치; (h) 이 규정의 준수를 저해하는 관련 데이터 공백 또는 결함의 식별과, 그러한 공백과 결함을 해결할 수 있는 방법.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "componentData.designChoices",
+  "spdx_field": "DatasetPackage.aibom_designChoices",
   "note": "데이터를 어떻게 구성하기로 했는지의 설계 결정을 담을 필드가 없음",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "componentData.designChoices",
+  "spdx_ref": "DatasetPackage.aibom_designChoices",
   "row_key": "데이터셋 수집·출처#7#Article 10(2)",
   "field_key": "데이터셋 수집·출처#7#Article 10(2)#0",
   "year_pin": "",
   "concept_key": "데이터셋 수집·출처#7#Article 10(2)##관련 설계상의 선택",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "관련 설계상의 선택"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "데이터 설계 선택",
   "year": 1,
-  "aibom_field": "componentData.designChoices"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8258,23 +8258,23 @@
   "bom": "",
   "id": "Article 10(2)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 고위험 인공지능시스템의 의도된 목적에 적절한 데이터 거버넌스 및 관리 관행의 적용을 받아야 한다. 그러한 관행은 특히 다음 사항에 관한 것이어야 한다. (a) 관련 설계상의 선택; (b) 데이터 수집 절차 및 데이터의 출처, 그리고 개인데이터의 경우 그 수집의 원래 목적; (c) 주석 처리, 라벨링, 정제, 갱신, 보강 및 집계와 같은 관련 데이터 준비·처리 작업; (d) 데이터가 측정·표상하도록 되어 있는 정보에 관한 것을 포함한 가정의 설정; (e) 필요한 데이터 세트의 가용성, 양 및 적합성에 대한 평가; (f) 특히 데이터 산출물이 향후 운용을 위한 입력에 영향을 미치는 경우, 개인의 건강과 안전에 영향을 미치거나 기본권에 부정적 영향을 미치거나 연합법상 금지된 차별로 이어질 가능성이 있는 편향의 발생 가능성에 대한 검토; (g) (f)호에 따라 식별된 발생 가능한 편향을 탐지, 예방 및 완화하기 위한 적절한 조치; (h) 이 규정의 준수를 저해하는 관련 데이터 공백 또는 결함의 식별과, 그러한 공백과 결함을 해결할 수 있는 방법.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "componentData.knownBias.mitigationStrategy",
+  "spdx_field": "DatasetPackage.aibom_knownBiasMitigationStrategy",
   "note": "fairnessAssessments.mitigationStrategy 는 모델이 집단에 주는 피해의 완화라 데이터 편향에 가한 조치와 층이 다름. 부속서 XI §1(2)(c) '편향을 탐지하는 방법'이 이 조치의 탐지 부분이라 같은 자리",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "componentData.knownBias.mitigationStrategy",
+  "spdx_ref": "DatasetPackage.aibom_knownBiasMitigationStrategy",
   "row_key": "데이터셋 수집·출처#7#Article 10(2)",
   "field_key": "데이터셋 수집·출처#7#Article 10(2)#11",
   "year_pin": "",
   "concept_key": "데이터셋 수집·출처#7#Article 10(2)##예방 및 완화하기 위한 적절한 조치",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "예방 및 완화하기 위한 적절한 조치"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "편향 완화 조치",
   "year": 1,
-  "aibom_field": "componentData.knownBias.mitigationStrategy"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8282,23 +8282,23 @@
   "bom": "",
   "id": "Article 10(2)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 고위험 인공지능시스템의 의도된 목적에 적절한 데이터 거버넌스 및 관리 관행의 적용을 받아야 한다. 그러한 관행은 특히 다음 사항에 관한 것이어야 한다. (a) 관련 설계상의 선택; (b) 데이터 수집 절차 및 데이터의 출처, 그리고 개인데이터의 경우 그 수집의 원래 목적; (c) 주석 처리, 라벨링, 정제, 갱신, 보강 및 집계와 같은 관련 데이터 준비·처리 작업; (d) 데이터가 측정·표상하도록 되어 있는 정보에 관한 것을 포함한 가정의 설정; (e) 필요한 데이터 세트의 가용성, 양 및 적합성에 대한 평가; (f) 특히 데이터 산출물이 향후 운용을 위한 입력에 영향을 미치는 경우, 개인의 건강과 안전에 영향을 미치거나 기본권에 부정적 영향을 미치거나 연합법상 금지된 차별로 이어질 가능성이 있는 편향의 발생 가능성에 대한 검토; (g) (f)호에 따라 식별된 발생 가능한 편향을 탐지, 예방 및 완화하기 위한 적절한 조치; (h) 이 규정의 준수를 저해하는 관련 데이터 공백 또는 결함의 식별과, 그러한 공백과 결함을 해결할 수 있는 방법.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "componentData.knownGaps.name",
+  "spdx_field": "DatasetPackage.aibom_knownGaps",
   "note": "datasetNoise 는 노이즈지 공백·결함이 아님",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "componentData.knownGaps.name",
+  "spdx_ref": "DatasetPackage.aibom_knownGaps",
   "row_key": "데이터셋 수집·출처#7#Article 10(2)",
   "field_key": "데이터셋 수집·출처#7#Article 10(2)#12",
   "year_pin": "",
   "concept_key": "데이터셋 수집·출처#7#Article 10(2)##데이터 공백 또는 결함의 식별",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "데이터 공백 또는 결함의 식별"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "데이터 공백·결함",
   "year": 1,
-  "aibom_field": "componentData.knownGaps.name"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8306,23 +8306,23 @@
   "bom": "",
   "id": "Article 10(2)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 고위험 인공지능시스템의 의도된 목적에 적절한 데이터 거버넌스 및 관리 관행의 적용을 받아야 한다. 그러한 관행은 특히 다음 사항에 관한 것이어야 한다. (a) 관련 설계상의 선택; (b) 데이터 수집 절차 및 데이터의 출처, 그리고 개인데이터의 경우 그 수집의 원래 목적; (c) 주석 처리, 라벨링, 정제, 갱신, 보강 및 집계와 같은 관련 데이터 준비·처리 작업; (d) 데이터가 측정·표상하도록 되어 있는 정보에 관한 것을 포함한 가정의 설정; (e) 필요한 데이터 세트의 가용성, 양 및 적합성에 대한 평가; (f) 특히 데이터 산출물이 향후 운용을 위한 입력에 영향을 미치는 경우, 개인의 건강과 안전에 영향을 미치거나 기본권에 부정적 영향을 미치거나 연합법상 금지된 차별로 이어질 가능성이 있는 편향의 발생 가능성에 대한 검토; (g) (f)호에 따라 식별된 발생 가능한 편향을 탐지, 예방 및 완화하기 위한 적절한 조치; (h) 이 규정의 준수를 저해하는 관련 데이터 공백 또는 결함의 식별과, 그러한 공백과 결함을 해결할 수 있는 방법.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "componentData.knownGaps.mitigationStrategy",
+  "spdx_field": "DatasetPackage.aibom_knownGapsMitigationStrategy",
   "note": "그 공백·결함을 어떻게 메울 수 있는지를 담을 필드가 없음",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "componentData.knownGaps.mitigationStrategy",
+  "spdx_ref": "DatasetPackage.aibom_knownGapsMitigationStrategy",
   "row_key": "데이터셋 수집·출처#7#Article 10(2)",
   "field_key": "데이터셋 수집·출처#7#Article 10(2)#13",
   "year_pin": "",
   "concept_key": "데이터셋 수집·출처#7#Article 10(2)##그러한 공백과 결함을 해결할 수 있는 방법",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "그러한 공백과 결함을 해결할 수 있는 방법"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "데이터 공백·결함",
   "year": 1,
-  "aibom_field": "componentData.knownGaps.mitigationStrategy"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8330,23 +8330,23 @@
   "bom": "",
   "id": "Article 10(2)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 고위험 인공지능시스템의 의도된 목적에 적절한 데이터 거버넌스 및 관리 관행의 적용을 받아야 한다. 그러한 관행은 특히 다음 사항에 관한 것이어야 한다. (a) 관련 설계상의 선택; (b) 데이터 수집 절차 및 데이터의 출처, 그리고 개인데이터의 경우 그 수집의 원래 목적; (c) 주석 처리, 라벨링, 정제, 갱신, 보강 및 집계와 같은 관련 데이터 준비·처리 작업; (d) 데이터가 측정·표상하도록 되어 있는 정보에 관한 것을 포함한 가정의 설정; (e) 필요한 데이터 세트의 가용성, 양 및 적합성에 대한 평가; (f) 특히 데이터 산출물이 향후 운용을 위한 입력에 영향을 미치는 경우, 개인의 건강과 안전에 영향을 미치거나 기본권에 부정적 영향을 미치거나 연합법상 금지된 차별로 이어질 가능성이 있는 편향의 발생 가능성에 대한 검토; (g) (f)호에 따라 식별된 발생 가능한 편향을 탐지, 예방 및 완화하기 위한 적절한 조치; (h) 이 규정의 준수를 저해하는 관련 데이터 공백 또는 결함의 식별과, 그러한 공백과 결함을 해결할 수 있는 방법.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "componentData.originalCollectionPurpose",
+  "spdx_field": "DatasetPackage.aibom_originalCollectionPurpose",
   "note": "dataset_intendedUse 는 이 데이터셋을 무엇에 써야 하는가라 방향이 반대 — 개인데이터를 처음 모을 때의 목적은 담을 자리가 없음",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "componentData.originalCollectionPurpose",
+  "spdx_ref": "DatasetPackage.aibom_originalCollectionPurpose",
   "row_key": "데이터셋 수집·출처#7#Article 10(2)",
   "field_key": "데이터셋 수집·출처#7#Article 10(2)#2",
   "year_pin": "",
   "concept_key": "데이터셋 수집·출처#7#Article 10(2)##그 수집의 원래 목적",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "그 수집의 원래 목적"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "데이터 수집의 원래 목적",
   "year": 1,
-  "aibom_field": "componentData.originalCollectionPurpose"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8354,23 +8354,23 @@
   "bom": "",
   "id": "Article 10(2)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 고위험 인공지능시스템의 의도된 목적에 적절한 데이터 거버넌스 및 관리 관행의 적용을 받아야 한다. 그러한 관행은 특히 다음 사항에 관한 것이어야 한다. (a) 관련 설계상의 선택; (b) 데이터 수집 절차 및 데이터의 출처, 그리고 개인데이터의 경우 그 수집의 원래 목적; (c) 주석 처리, 라벨링, 정제, 갱신, 보강 및 집계와 같은 관련 데이터 준비·처리 작업; (d) 데이터가 측정·표상하도록 되어 있는 정보에 관한 것을 포함한 가정의 설정; (e) 필요한 데이터 세트의 가용성, 양 및 적합성에 대한 평가; (f) 특히 데이터 산출물이 향후 운용을 위한 입력에 영향을 미치는 경우, 개인의 건강과 안전에 영향을 미치거나 기본권에 부정적 영향을 미치거나 연합법상 금지된 차별로 이어질 가능성이 있는 편향의 발생 가능성에 대한 검토; (g) (f)호에 따라 식별된 발생 가능한 편향을 탐지, 예방 및 완화하기 위한 적절한 조치; (h) 이 규정의 준수를 저해하는 관련 데이터 공백 또는 결함의 식별과, 그러한 공백과 결함을 해결할 수 있는 방법.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "componentData.representationAssumptions",
+  "spdx_field": "DatasetPackage.aibom_representationAssumptions",
   "note": "데이터가 무엇을 measure·표상한다고 보았는지의 가정을 담을 필드가 없음 — MAP 1.1(가정)과 같은 격차",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "componentData.representationAssumptions",
+  "spdx_ref": "DatasetPackage.aibom_representationAssumptions",
   "row_key": "데이터셋 수집·출처#7#Article 10(2)",
   "field_key": "데이터셋 수집·출처#7#Article 10(2)#5",
   "year_pin": "",
   "concept_key": "데이터셋 수집·출처#7#Article 10(2)##가정의 설정",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "가정의 설정"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "데이터의 표상 가정",
   "year": 1,
-  "aibom_field": "componentData.representationAssumptions"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8378,23 +8378,23 @@
   "bom": "",
   "id": "Article 10(3)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 관련성이 있고, 충분히 대표성을 가지며, 가능한 한 오류가 없고 의도된 목적에 비추어 완전하여야 한다. 그 데이터 세트는, 적용 가능한 경우 고위험 인공지능시스템이 사용되고자 하는 대상이 되는 개인 또는 집단에 관한 사항을 포함하여, 적절한 통계적 특성을 가져야 한다. 데이터 세트의 이러한 특성은 개별 데이터 세트 단위 또는 그 조합의 단위에서 충족될 수 있다.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "componentData.knownGaps",
+  "spdx_field": "DatasetPackage.aibom_knownGaps",
   "note": "빠짐 없이 갖췄는지를 담을 필드가 없음 — 10조(2)(h)의 데이터 공백과 같은 자리",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "componentData.knownGaps",
+  "spdx_ref": "DatasetPackage.aibom_knownGaps",
   "row_key": "데이터셋 수집·출처#8#Article 10(3)",
   "field_key": "데이터셋 수집·출처#8#Article 10(3)#4",
   "year_pin": "",
   "concept_key": "데이터셋 수집·출처#8#Article 10(3)##의도된 목적에 비추어 완전하여야",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "의도된 목적에 비추어 완전하여야"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "데이터 공백·결함",
   "year": 1,
-  "aibom_field": "componentData.knownGaps"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8402,23 +8402,23 @@
   "bom": "",
   "id": "Article 10(3)",
   "requirement_ko": "훈련·검증·시험 데이터 세트는 관련성이 있고, 충분히 대표성을 가지며, 가능한 한 오류가 없고 의도된 목적에 비추어 완전하여야 한다. 그 데이터 세트는, 적용 가능한 경우 고위험 인공지능시스템이 사용되고자 하는 대상이 되는 개인 또는 집단에 관한 사항을 포함하여, 적절한 통계적 특성을 가져야 한다. 데이터 세트의 이러한 특성은 개별 데이터 세트 단위 또는 그 조합의 단위에서 충족될 수 있다.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "componentData.statistics",
+  "spdx_field": "DatasetPackage.aibom_statistics",
   "note": "componentData.graphics 가 분포·평균을 그림으로 담을 수는 있으나 정의가 \"측정값을 나타내는 그래픽 모음\"이라 값이 구조화되지 않아 질의가 안 됨 — 평균·분산·중앙값 같은 값을 적을 칸이 없고 SPDX 대응도 없음",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "componentData.statistics",
+  "spdx_ref": "DatasetPackage.aibom_statistics",
   "row_key": "데이터셋 수집·출처#8#Article 10(3)",
   "field_key": "데이터셋 수집·출처#8#Article 10(3)#5",
   "year_pin": "",
   "concept_key": "데이터셋 수집·출처#8#Article 10(3)##적절한 통계적 특성",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "적절한 통계적 특성"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "데이터셋 통계 특성",
   "year": 1,
-  "aibom_field": "componentData.statistics"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8442,7 +8442,7 @@
   ],
   "candidate": "수권대리인·등록 대행자",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8466,7 +8466,7 @@
   ],
   "candidate": "시장 유통 상태·배포 지역",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8490,7 +8490,7 @@
   ],
   "candidate": "시장 유통 상태·배포 지역",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8514,7 +8514,7 @@
   ],
   "candidate": "시장 유통 상태·배포 지역",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8538,7 +8538,7 @@
   ],
   "candidate": "시장 유통 상태·배포 지역",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8562,7 +8562,7 @@
   ],
   "candidate": "수권대리인·등록 대행자",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8586,7 +8586,7 @@
   ],
   "candidate": "수권대리인·등록 대행자",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8610,7 +8610,7 @@
   ],
   "candidate": "수권대리인·등록 대행자",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8634,7 +8634,7 @@
   ],
   "candidate": "로깅 메커니즘",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8658,7 +8658,7 @@
   ],
   "candidate": "로깅 메커니즘",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8682,7 +8682,7 @@
   ],
   "candidate": "로깅 메커니즘",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8706,7 +8706,7 @@
   ],
   "candidate": "로깅 메커니즘",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8730,7 +8730,7 @@
   ],
   "candidate": "로깅 메커니즘",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8754,7 +8754,7 @@
   ],
   "candidate": "과업 구현 계열",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8780,7 +8780,7 @@
   ],
   "candidate": "시스템 설계 선택·절충",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8804,7 +8804,7 @@
   ],
   "candidate": "시스템 개발·시험 연산자원",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8828,7 +8828,7 @@
   ],
   "candidate": "인적 감독 수단",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8852,7 +8852,7 @@
   ],
   "candidate": "사전 명세된 변경사항",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8876,7 +8876,7 @@
   ],
   "candidate": "시험 로그·보고서 참조",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8900,7 +8900,7 @@
   ],
   "candidate": "적용한 통제",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8924,7 +8924,7 @@
   ],
   "candidate": "시스템 설계 선택·절충",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8948,7 +8948,7 @@
   ],
   "candidate": "배포 형태·버전 갱신 요건",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8956,23 +8956,23 @@
   "bom": "",
   "id": "Annex XI §1(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 구조 및 파라미터 수; (e) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (f) 라이선스.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "component.modelCard.modelParameters.parameterCount",
+  "spdx_field": "AIPackage.aibom_parameterCount",
   "note": "모델 크기를 담는 전용 필드가 CDX·SPDX 모두 없음 — 구조는 modelArchitecture 로 담김",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "component.modelCard.modelParameters.parameterCount",
+  "spdx_ref": "AIPackage.aibom_parameterCount",
   "row_key": "모델 구조·과업#4#Annex XI §1(1)",
   "field_key": "모델 구조·과업#4#Annex XI §1(1)#9",
   "year_pin": "",
   "concept_key": "모델 구조·과업#4#Annex XI §1(1)##파라미터 수",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "파라미터 수"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "파라미터 수·모델 크기",
   "year": 1,
-  "aibom_field": "component.modelCard.modelParameters.parameterCount"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -8980,23 +8980,23 @@
   "bom": "",
   "id": "Annex XII(1)",
   "requirement_ko": "다음을 포함한 범용 인공지능모델에 대한 일반적 설명: (a) 모델이 수행하도록 의도된 작업 및 그 모델이 통합될 수 있는 인공지능시스템의 유형과 성격; (b) 적용 가능한 허용사용정책; (c) 출시일 및 배포방법; (d) 해당하는 경우, 모델 자체의 일부가 아닌 하드웨어나 소프트웨어와 상호작용하는 방식 또는 상호작용에 사용될 수 있는 방식; (e) 해당하는 경우, 범용 인공지능모델의 사용과 관련된 소프트웨어의 버전; (f) 구조 및 파라미터 수; (g) 입력·산출물의 양식(예: 텍스트, 이미지) 및 형식; (h) 모델에 대한 라이선스.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "component.modelCard.modelParameters.parameterCount",
+  "spdx_field": "AIPackage.aibom_parameterCount",
   "note": "부속서 XI §1(1)과 같은 격차",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "component.modelCard.modelParameters.parameterCount",
+  "spdx_ref": "AIPackage.aibom_parameterCount",
   "row_key": "모델 구조·과업#5#Annex XII(1)",
   "field_key": "모델 구조·과업#5#Annex XII(1)#10",
   "year_pin": "",
   "concept_key": "모델 구조·과업#5#Annex XII(1)##파라미터 수",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "파라미터 수"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "파라미터 수·모델 크기",
   "year": 1,
-  "aibom_field": "component.modelCard.modelParameters.parameterCount"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9020,7 +9020,7 @@
   ],
   "candidate": "배포 형태·버전 갱신 요건",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9028,23 +9028,47 @@
   "bom": "",
   "id": "Annex XII(2)",
   "requirement_ko": "다음을 포함한, 모델의 요소 및 그 개발과정에 대한 설명: (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 입력·산출물의 양식(예: 텍스트, 이미지 등) 및 형식과 그 최대 크기(예: 컨텍스트 윈도우 길이 등); (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론을 포함).",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "inputOutputMLParameters.maxSize",
+  "spdx_field": "AIPackage.aibom_inputMaxSize",
   "note": "컨텍스트 윈도우 길이 같은 입출력 최대 크기를 담을 필드가 없음 — inputs·outputs 는 양식·형식만 담음",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "inputOutputMLParameters.maxSize",
+  "spdx_ref": "AIPackage.aibom_inputMaxSize",
   "row_key": "모델 구조·과업#7#Annex XII(2)",
   "field_key": "모델 구조·과업#7#Annex XII(2)#4",
   "year_pin": "",
   "concept_key": "모델 구조·과업#7#Annex XII(2)##그 최대 크기",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "그 최대 크기"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "문맥 길이·입출력 최대 크기",
   "year": 1,
-  "aibom_field": "inputOutputMLParameters.maxSize"
+  "version": "v0.6"
+ },
+ {
+  "group": "— 격차 (담을 필드 없음)",
+  "source": "EU AI Act",
+  "bom": "",
+  "id": "Annex XII(2)",
+  "requirement_ko": "다음을 포함한, 모델의 요소 및 그 개발과정에 대한 설명: (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 입력·산출물의 양식(예: 텍스트, 이미지 등) 및 형식과 그 최대 크기(예: 컨텍스트 윈도우 길이 등); (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론을 포함).",
+  "cdx_field": "inputOutputMLParameters.maxSize",
+  "spdx_field": "AIPackage.aibom_outputMaxSize",
+  "note": "컨텍스트 윈도우 길이 같은 입출력 최대 크기를 담을 필드가 없음 — inputs·outputs 는 양식·형식만 담음",
+  "coverage": "필드",
+  "cdx_ref": "inputOutputMLParameters.maxSize",
+  "spdx_ref": "AIPackage.aibom_outputMaxSize",
+  "row_key": "모델 구조·과업#7#Annex XII(2)",
+  "field_key": "모델 구조·과업#7#Annex XII(2)#4",
+  "year_pin": "",
+  "concept_key": "모델 구조·과업#7#Annex XII(2)##그 최대 크기",
+  "requirement_highlight": [
+   "그 최대 크기"
+  ],
+  "requirement_gap_highlight": [],
+  "candidate": "문맥 길이·입출력 최대 크기",
+  "year": 1,
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9052,23 +9076,23 @@
   "bom": "",
   "id": "Annex XI §1(2)",
   "requirement_ko": "제1호에서 정하는 모델의 요소에 대한 상세한 설명 및 그 개발과정에 관한 관련 정보로서, 다음 요소를 포함한다. (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 훈련방법론과 기법을 포함한 모델 및 훈련과정의 설계사양, 그 근거와 가정을 포함한 주요 설계상의 선택; 해당하는 경우, 모델이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론(예: 정제, 필터링 등), 데이터포인트의 수, 그 범위 및 주요 특성을 포함); 데이터가 획득되고 선정된 방식 및, 해당하는 경우, 데이터 출처의 부적합성을 탐지하기 위한 그 밖의 모든 조치와 식별 가능한 편향을 탐지하는 방법; (d) 모델을 훈련시키는 데 사용된 연산자원(예: 부동소수점 연산 횟수), 훈련 시간, 훈련과 관련된 그 밖의 관련 세부사항; (e) 모델의 알려진 또는 추정된 에너지 소비량. (e)호와 관련하여, 모델의 에너지 소비량이 알려지지 아니한 경우, 그 에너지 소비량은 사용된 연산자원에 관한 정보를 기초로 산정될 수 있다.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "component.modelCard.modelParameters.trainingCompute",
+  "spdx_field": "AIPackage.aibom_trainingCompute",
   "note": "(d) — 훈련에 쓴 연산량을 담을 필드가 CDX·SPDX 모두 없음",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "component.modelCard.modelParameters.trainingCompute",
+  "spdx_ref": "AIPackage.aibom_trainingCompute",
   "row_key": "모델 구조·과업#8#Annex XI §1(2)",
   "field_key": "모델 구조·과업#8#Annex XI §1(2)#5",
   "year_pin": "",
   "concept_key": "모델 구조·과업#8#Annex XI §1(2)##모델을 훈련시키는 데 사용된 연산자원",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "모델을 훈련시키는 데 사용된 연산자원"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "모델 훈련 연산자원",
   "year": 1,
-  "aibom_field": "component.modelCard.modelParameters.trainingCompute"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9076,23 +9100,23 @@
   "bom": "",
   "id": "Annex XI §1(2)",
   "requirement_ko": "제1호에서 정하는 모델의 요소에 대한 상세한 설명 및 그 개발과정에 관한 관련 정보로서, 다음 요소를 포함한다. (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 훈련방법론과 기법을 포함한 모델 및 훈련과정의 설계사양, 그 근거와 가정을 포함한 주요 설계상의 선택; 해당하는 경우, 모델이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론(예: 정제, 필터링 등), 데이터포인트의 수, 그 범위 및 주요 특성을 포함); 데이터가 획득되고 선정된 방식 및, 해당하는 경우, 데이터 출처의 부적합성을 탐지하기 위한 그 밖의 모든 조치와 식별 가능한 편향을 탐지하는 방법; (d) 모델을 훈련시키는 데 사용된 연산자원(예: 부동소수점 연산 횟수), 훈련 시간, 훈련과 관련된 그 밖의 관련 세부사항; (e) 모델의 알려진 또는 추정된 에너지 소비량. (e)호와 관련하여, 모델의 에너지 소비량이 알려지지 아니한 경우, 그 에너지 소비량은 사용된 연산자원에 관한 정보를 기초로 산정될 수 있다.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "component.modelCard.modelParameters.trainingTime",
+  "spdx_field": "AIPackage.aibom_trainingTime",
   "note": "(d) — 훈련에 걸린 시간을 담을 필드가 CDX·SPDX 모두 없음",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "component.modelCard.modelParameters.trainingTime",
+  "spdx_ref": "AIPackage.aibom_trainingTime",
   "row_key": "모델 구조·과업#8#Annex XI §1(2)",
   "field_key": "모델 구조·과업#8#Annex XI §1(2)#6",
   "year_pin": "",
   "concept_key": "모델 구조·과업#8#Annex XI §1(2)##훈련 시간",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "훈련 시간"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "모델 훈련 연산자원",
   "year": 1,
-  "aibom_field": "component.modelCard.modelParameters.trainingTime"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9100,23 +9124,23 @@
   "bom": "",
   "id": "Annex XI §1(2)",
   "requirement_ko": "제1호에서 정하는 모델의 요소에 대한 상세한 설명 및 그 개발과정에 관한 관련 정보로서, 다음 요소를 포함한다. (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 훈련방법론과 기법을 포함한 모델 및 훈련과정의 설계사양, 그 근거와 가정을 포함한 주요 설계상의 선택; 해당하는 경우, 모델이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론(예: 정제, 필터링 등), 데이터포인트의 수, 그 범위 및 주요 특성을 포함); 데이터가 획득되고 선정된 방식 및, 해당하는 경우, 데이터 출처의 부적합성을 탐지하기 위한 그 밖의 모든 조치와 식별 가능한 편향을 탐지하는 방법; (d) 모델을 훈련시키는 데 사용된 연산자원(예: 부동소수점 연산 횟수), 훈련 시간, 훈련과 관련된 그 밖의 관련 세부사항; (e) 모델의 알려진 또는 추정된 에너지 소비량. (e)호와 관련하여, 모델의 에너지 소비량이 알려지지 아니한 경우, 그 에너지 소비량은 사용된 연산자원에 관한 정보를 기초로 산정될 수 있다.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "component.modelCard.modelParameters.designChoices",
+  "spdx_field": "AIPackage.aibom_designChoices",
   "note": "(b) — 무엇을 왜 그렇게 골랐는지를 담을 필드가 없음 — 부속서 IV(2)와 같은 격차",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "component.modelCard.modelParameters.designChoices",
+  "spdx_ref": "AIPackage.aibom_designChoices",
   "row_key": "모델 구조·과업#8#Annex XI §1(2)",
   "field_key": "모델 구조·과업#8#Annex XI §1(2)#8",
   "year_pin": "",
   "concept_key": "모델 구조·과업#8#Annex XI §1(2)##그 근거와 가정을 포함한 주요 설계상의 선택",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "그 근거와 가정을 포함한 주요 설계상의 선택"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "모델 설계 선택",
   "year": 1,
-  "aibom_field": "component.modelCard.modelParameters.designChoices"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9124,23 +9148,23 @@
   "bom": "",
   "id": "Annex XI §1(2)",
   "requirement_ko": "제1호에서 정하는 모델의 요소에 대한 상세한 설명 및 그 개발과정에 관한 관련 정보로서, 다음 요소를 포함한다. (a) 범용 인공지능모델이 인공지능시스템에 통합되는 데 필요한 기술적 수단(예: 사용설명서, 인프라, 도구); (b) 훈련방법론과 기법을 포함한 모델 및 훈련과정의 설계사양, 그 근거와 가정을 포함한 주요 설계상의 선택; 해당하는 경우, 모델이 최적화하도록 설계된 대상 및 여러 파라미터의 관련성; (c) 해당하는 경우, 훈련·시험·검증에 사용된 데이터에 관한 정보(데이터의 유형과 출처 및 정제방법론(예: 정제, 필터링 등), 데이터포인트의 수, 그 범위 및 주요 특성을 포함); 데이터가 획득되고 선정된 방식 및, 해당하는 경우, 데이터 출처의 부적합성을 탐지하기 위한 그 밖의 모든 조치와 식별 가능한 편향을 탐지하는 방법; (d) 모델을 훈련시키는 데 사용된 연산자원(예: 부동소수점 연산 횟수), 훈련 시간, 훈련과 관련된 그 밖의 관련 세부사항; (e) 모델의 알려진 또는 추정된 에너지 소비량. (e)호와 관련하여, 모델의 에너지 소비량이 알려지지 아니한 경우, 그 에너지 소비량은 사용된 연산자원에 관한 정보를 기초로 산정될 수 있다.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "component.modelCard.modelParameters.optimizationTarget",
+  "spdx_field": "AIPackage.aibom_optimizationTarget",
   "note": "(b) — 무엇을 잘하도록 맞췄는지의 최적화 목표를 담을 필드가 없음. 'task'는 분류·회귀 같은 과업 유형이라 그 목표와 다름",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "component.modelCard.modelParameters.optimizationTarget",
+  "spdx_ref": "AIPackage.aibom_optimizationTarget",
   "row_key": "모델 구조·과업#8#Annex XI §1(2)",
   "field_key": "모델 구조·과업#8#Annex XI §1(2)#9",
   "year_pin": "",
   "concept_key": "모델 구조·과업#8#Annex XI §1(2)##모델이 최적화하도록 설계된 대상",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "모델이 최적화하도록 설계된 대상"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "최적화 목표",
   "year": 1,
-  "aibom_field": "component.modelCard.modelParameters.optimizationTarget"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9164,7 +9188,7 @@
   ],
   "candidate": "배포 형태·버전 갱신 요건",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9188,7 +9212,7 @@
   ],
   "candidate": "배포 형태·버전 갱신 요건",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9212,7 +9236,7 @@
   ],
   "candidate": "인적 감독 수단",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9236,7 +9260,7 @@
   ],
   "candidate": "용도·위험의 가정",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9260,7 +9284,7 @@
   ],
   "candidate": "인적 감독 수단",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9284,7 +9308,7 @@
   ],
   "candidate": "배포 예상 환경",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9308,7 +9332,7 @@
   ],
   "candidate": "회복력·안전장애 방안",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9332,7 +9356,7 @@
   ],
   "candidate": "적용한 통제",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9356,7 +9380,7 @@
   ],
   "candidate": "회복력·안전장애 방안",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9380,7 +9404,7 @@
   ],
   "candidate": "적용한 통제",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9388,23 +9412,23 @@
   "bom": "",
   "id": "Annex XI §2(1)",
   "requirement_ko": "이용 가능한 공개 평가프로토콜 및 도구, 또는 그 밖의 평가방법론을 기초로 한, 평가결과를 포함한 평가전략에 대한 상세한 설명. 평가전략은 평가기준, 지표 및 한계 식별방법론을 포함하여야 한다.",
-  "cdx_field": "-",
-  "spdx_field": "-",
+  "cdx_field": "component.modelCard.considerations.limitationIdentificationMethods",
+  "spdx_field": "AIPackage.aibom_limitationIdentificationMethods",
   "note": "평가전략 셋 중 지표는 performanceMetrics, 평가기준은 요구사항 명세가 받고 한계를 어떻게 식별했는지의 방법론만 남음 — MAP 2.3 의 실험 설계·구성 타당성과 같은 자리",
-  "coverage": "격차",
-  "cdx_ref": "",
-  "spdx_ref": "",
+  "coverage": "필드",
+  "cdx_ref": "component.modelCard.considerations.limitationIdentificationMethods",
+  "spdx_ref": "AIPackage.aibom_limitationIdentificationMethods",
   "row_key": "성능측정#12#Annex XI §2(1)",
   "field_key": "성능측정#12#Annex XI §2(1)#4",
   "year_pin": "",
   "concept_key": "성능측정#12#Annex XI §2(1)##한계 식별방법론",
-  "requirement_highlight": [],
-  "requirement_gap_highlight": [
+  "requirement_highlight": [
    "한계 식별방법론"
   ],
+  "requirement_gap_highlight": [],
   "candidate": "한계 식별방법론",
   "year": 1,
-  "aibom_field": "component.modelCard.considerations.limitationIdentificationMethods"
+  "version": "v0.6"
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9428,7 +9452,7 @@
   ],
   "candidate": "보증 기준 평가 결과",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9452,7 +9476,7 @@
   ],
   "candidate": "성능 변화량",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9476,7 +9500,7 @@
   ],
   "candidate": "예상 수명·유지관리 주기",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9500,7 +9524,7 @@
   ],
   "candidate": "사전 명세된 변경사항",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9524,7 +9548,7 @@
   ],
   "candidate": "운영 성과 KPI",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9548,7 +9572,7 @@
   ],
   "candidate": "측정하지 못한 위험 목록",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9572,7 +9596,7 @@
   ],
   "candidate": "신뢰성 종합 측정",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9596,7 +9620,7 @@
   ],
   "candidate": "잔여위험 수용 판정",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9620,7 +9644,7 @@
   ],
   "candidate": "고위험 분류 판정 근거",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9644,7 +9668,7 @@
   ],
   "candidate": "잔여위험 수용 판정",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9668,7 +9692,7 @@
   ],
   "candidate": "사업적 사용 맥락",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9692,7 +9716,7 @@
   ],
   "candidate": "사용자의 기대",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9716,7 +9740,7 @@
   ],
   "candidate": "인적 감독 수단",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9740,7 +9764,7 @@
   ],
   "candidate": "인적 감독 수단",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9764,7 +9788,7 @@
   ],
   "candidate": "인적 감독 수단",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9789,7 +9813,7 @@
   ],
   "candidate": "인적 감독 수단",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9814,7 +9838,7 @@
   ],
   "candidate": "인적 감독 수단",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9838,7 +9862,7 @@
   ],
   "candidate": "인적 감독 수단",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9862,7 +9886,7 @@
   ],
   "candidate": "개발·배포 게이트 판정",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9887,7 +9911,7 @@
   ],
   "candidate": "검증 방법론",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9911,7 +9935,7 @@
   ],
   "candidate": "잠재적 이점·비용",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9936,7 +9960,7 @@
   ],
   "candidate": "잠재적 이점·비용",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9960,7 +9984,7 @@
   ],
   "candidate": "적용받는 법률·규범",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -9984,7 +10008,7 @@
   ],
   "candidate": "적합성 표시 (CE 마킹)",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -10008,7 +10032,7 @@
   ],
   "candidate": "적합성 표시 (CE 마킹)",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -10032,7 +10056,7 @@
   ],
   "candidate": "적합성평가절차·선언서 발급 정보",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -10057,7 +10081,7 @@
   ],
   "candidate": "적합성평가절차·선언서 발급 정보",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -10081,7 +10105,7 @@
   ],
   "candidate": "적용한 통제",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -10105,7 +10129,7 @@
   ],
   "candidate": "적용한 통제",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -10129,7 +10153,7 @@
   ],
   "candidate": "제3자에게 받기로 한 지원 범위",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -10153,7 +10177,7 @@
   ],
   "candidate": "시스템의 사회·환경 영향",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -10177,7 +10201,7 @@
   ],
   "candidate": "콘텐츠·상호작용 표시",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -10201,7 +10225,7 @@
   ],
   "candidate": "콘텐츠·상호작용 표시",
   "year": 2,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -10225,7 +10249,7 @@
   ],
   "candidate": "표준 대체 준수 수단",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -10249,7 +10273,7 @@
   ],
   "candidate": "표준 대체 준수 수단",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -10273,7 +10297,7 @@
   ],
   "candidate": "표준 대체 준수 수단",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  },
  {
   "group": "— 격차 (담을 필드 없음)",
@@ -10297,6 +10321,6 @@
   ],
   "candidate": "표준 대체 준수 수단",
   "year": 3,
-  "aibom_field": ""
+  "version": ""
  }
 ]

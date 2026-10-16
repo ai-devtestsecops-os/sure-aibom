@@ -9357,15 +9357,15 @@
   "name": "inputs",
   "title": "Inputs",
   "type": "array of inputOutputMLParameters",
-  "spdx": "AI::AIPackage.aibom_inputs",
+  "spdx": "",
   "g7_element": "Model input-output properties",
-  "spdx_type": "array of xsd:string",
-  "spdx_profile": "AI",
-  "spdx_kind": "Class",
-  "spdx_class": "AIPackage",
-  "spdx_property": "aibom_inputs",
-  "cisa_element": "",
-  "type_mismatch": "Y"
+  "ref": "inputOutputMLParameters",
+  "spdx_type": "",
+  "spdx_profile": "",
+  "spdx_kind": "",
+  "spdx_class": "",
+  "spdx_property": "",
+  "cisa_element": ""
  },
  {
   "parent": "component.modelCard.modelParameters",
@@ -9374,15 +9374,15 @@
   "name": "outputs",
   "title": "Outputs",
   "type": "array of inputOutputMLParameters",
-  "spdx": "AI::AIPackage.aibom_outputs",
+  "spdx": "",
   "g7_element": "Model input-output properties",
-  "spdx_type": "array of xsd:string",
-  "spdx_profile": "AI",
-  "spdx_kind": "Class",
-  "spdx_class": "AIPackage",
-  "spdx_property": "aibom_outputs",
-  "cisa_element": "",
-  "type_mismatch": "Y"
+  "ref": "inputOutputMLParameters",
+  "spdx_type": "",
+  "spdx_profile": "",
+  "spdx_kind": "",
+  "spdx_class": "",
+  "spdx_property": "",
+  "cisa_element": ""
  },
  {
   "parent": "component.modelCard.modelParameters",
@@ -9671,15 +9671,32 @@
   "name": "slice",
   "title": "Slice",
   "type": "string",
-  "spdx": "AI::AIPackage.aibom_metricSlice",
+  "spdx": "AI::AIPackage.aibom_metricSlice.value",
   "g7_element": "",
-  "spdx_type": "array of DictionaryEntry",
-  "spdx_profile": "AI",
-  "spdx_kind": "Class",
-  "spdx_class": "AIPackage",
-  "spdx_property": "aibom_metricSlice",
+  "spdx_type": "",
+  "spdx_profile": "",
+  "spdx_kind": "",
+  "spdx_class": "",
+  "spdx_property": "",
   "cisa_element": "",
-  "type_mismatch": "Y"
+  "spdx_multi": [
+   {
+    "profile": "AI",
+    "kind": "Class",
+    "class": "AIPackage",
+    "property": "aibom_metricSlice",
+    "type": "array of DictionaryEntry"
+   },
+   {
+    "profile": "Core",
+    "kind": "Class",
+    "class": "DictionaryEntry",
+    "property": "value",
+    "type": "xsd:string",
+    "depth": 1
+   }
+  ],
+  "spdx_multi_kind": "chain"
  },
  {
   "parent": "component.modelCard.quantitativeAnalysis.performanceMetrics",
@@ -9867,13 +9884,13 @@
   "name": "ethicalConsiderations",
   "title": "Ethical Considerations",
   "type": "array of object",
-  "spdx": "-",
+  "spdx": "",
   "g7_element": "",
   "spdx_type": "",
   "spdx_profile": "",
   "spdx_kind": "",
   "spdx_class": "",
-  "spdx_property": "-",
+  "spdx_property": "",
   "cisa_element": ""
  },
  {
@@ -9899,15 +9916,32 @@
   "name": "mitigationStrategy",
   "title": "Mitigation Strategy",
   "type": "string",
-  "spdx": "AI::AIPackage.aibom_ethicalConsiderationsMitigationStrategy",
+  "spdx": "AI::AIPackage.aibom_ethicalConsiderationsMitigationStrategy.value",
   "g7_element": "",
-  "spdx_type": "array of DictionaryEntry",
-  "spdx_profile": "AI",
-  "spdx_kind": "Class",
-  "spdx_class": "AIPackage",
-  "spdx_property": "aibom_ethicalConsiderationsMitigationStrategy",
+  "spdx_type": "",
+  "spdx_profile": "",
+  "spdx_kind": "",
+  "spdx_class": "",
+  "spdx_property": "",
   "cisa_element": "",
-  "type_mismatch": "Y"
+  "spdx_multi": [
+   {
+    "profile": "AI",
+    "kind": "Class",
+    "class": "AIPackage",
+    "property": "aibom_ethicalConsiderationsMitigationStrategy",
+    "type": "array of DictionaryEntry"
+   },
+   {
+    "profile": "Core",
+    "kind": "Class",
+    "class": "DictionaryEntry",
+    "property": "value",
+    "type": "xsd:string",
+    "depth": 1
+   }
+  ],
+  "spdx_multi_kind": "chain"
  },
  {
   "parent": "component.modelCard.considerations",
@@ -10188,13 +10222,13 @@
   "name": "fairnessAssessments",
   "title": "Fairness Assessments",
   "type": "array of object",
-  "spdx": "-",
+  "spdx": "",
   "g7_element": "",
   "spdx_type": "",
   "spdx_profile": "",
   "spdx_kind": "",
   "spdx_class": "",
-  "spdx_property": "-",
+  "spdx_property": "",
   "cisa_element": ""
  },
  {
@@ -10220,15 +10254,32 @@
   "name": "benefits",
   "title": "Benefits",
   "type": "string",
-  "spdx": "AI::AIPackage.aibom_fairnessAssessmentBenefits",
+  "spdx": "AI::AIPackage.aibom_fairnessAssessmentBenefits.value",
   "g7_element": "",
-  "spdx_type": "array of DictionaryEntry",
-  "spdx_profile": "AI",
-  "spdx_kind": "Class",
-  "spdx_class": "AIPackage",
-  "spdx_property": "aibom_fairnessAssessmentBenefits",
+  "spdx_type": "",
+  "spdx_profile": "",
+  "spdx_kind": "",
+  "spdx_class": "",
+  "spdx_property": "",
   "cisa_element": "",
-  "type_mismatch": "Y"
+  "spdx_multi": [
+   {
+    "profile": "AI",
+    "kind": "Class",
+    "class": "AIPackage",
+    "property": "aibom_fairnessAssessmentBenefits",
+    "type": "array of DictionaryEntry"
+   },
+   {
+    "profile": "Core",
+    "kind": "Class",
+    "class": "DictionaryEntry",
+    "property": "value",
+    "type": "xsd:string",
+    "depth": 1
+   }
+  ],
+  "spdx_multi_kind": "chain"
  },
  {
   "parent": "component.modelCard.considerations.fairnessAssessments",
@@ -10237,15 +10288,32 @@
   "name": "harms",
   "title": "Harms",
   "type": "string",
-  "spdx": "AI::AIPackage.aibom_fairnessAssessmentHarms",
+  "spdx": "AI::AIPackage.aibom_fairnessAssessmentHarms.value",
   "g7_element": "",
-  "spdx_type": "array of DictionaryEntry",
-  "spdx_profile": "AI",
-  "spdx_kind": "Class",
-  "spdx_class": "AIPackage",
-  "spdx_property": "aibom_fairnessAssessmentHarms",
+  "spdx_type": "",
+  "spdx_profile": "",
+  "spdx_kind": "",
+  "spdx_class": "",
+  "spdx_property": "",
   "cisa_element": "",
-  "type_mismatch": "Y"
+  "spdx_multi": [
+   {
+    "profile": "AI",
+    "kind": "Class",
+    "class": "AIPackage",
+    "property": "aibom_fairnessAssessmentHarms",
+    "type": "array of DictionaryEntry"
+   },
+   {
+    "profile": "Core",
+    "kind": "Class",
+    "class": "DictionaryEntry",
+    "property": "value",
+    "type": "xsd:string",
+    "depth": 1
+   }
+  ],
+  "spdx_multi_kind": "chain"
  },
  {
   "parent": "component.modelCard.considerations.fairnessAssessments",
@@ -10390,13 +10458,13 @@
   "name": "technicalRequirements",
   "title": "Technical Requirements",
   "type": "array of string",
-  "spdx": "-",
+  "spdx": "AI::AIPackage.ai_informationAboutApplication",
   "g7_element": "",
-  "spdx_type": "",
-  "spdx_profile": "",
-  "spdx_kind": "",
-  "spdx_class": "",
-  "spdx_property": "",
+  "spdx_type": "xsd:string",
+  "spdx_profile": "AI",
+  "spdx_kind": "Class",
+  "spdx_class": "AIPackage",
+  "spdx_property": "ai_informationAboutApplication",
   "cisa_element": ""
  },
  {
@@ -10464,22 +10532,6 @@
   "spdx_kind": "Class",
   "spdx_class": "AIPackage",
   "spdx_property": "ai_domain",
-  "cisa_element": ""
- },
- {
-  "parent": "",
-  "path": "AIPackage.ai_informationAboutApplication",
-  "display_path": "",
-  "name": "-",
-  "title": "",
-  "type": "",
-  "spdx": "AI::AIPackage.ai_informationAboutApplication",
-  "g7_element": "",
-  "spdx_type": "xsd:string",
-  "spdx_profile": "AI",
-  "spdx_kind": "Class",
-  "spdx_class": "AIPackage",
-  "spdx_property": "ai_informationAboutApplication",
   "cisa_element": ""
  },
  {
@@ -13059,22 +13111,6 @@
  },
  {
   "parent": "",
-  "path": "DatasetPackage.software_sourceInfo",
-  "display_path": "",
-  "name": "-",
-  "title": "",
-  "type": "",
-  "spdx": "Dataset::DatasetPackage.software_sourceInfo",
-  "g7_element": "",
-  "spdx_type": "xsd:string",
-  "spdx_profile": "Dataset",
-  "spdx_kind": "Class",
-  "spdx_class": "DatasetPackage",
-  "spdx_property": "software_sourceInfo",
-  "cisa_element": ""
- },
- {
-  "parent": "",
   "path": "DatasetPackage.summary",
   "display_path": "",
   "name": "-",
@@ -13274,15 +13310,32 @@
   "name": "detectionMethod",
   "title": "Detection Method",
   "type": "string",
-  "spdx": "Dataset::DatasetPackage.aibom_knownBiasDetectionMethod",
+  "spdx": "Dataset::DatasetPackage.aibom_knownBiasDetectionMethod.value",
   "g7_element": "",
-  "spdx_type": "array of DictionaryEntry",
-  "spdx_profile": "Dataset",
-  "spdx_kind": "Class",
-  "spdx_class": "DatasetPackage",
-  "spdx_property": "aibom_knownBiasDetectionMethod",
+  "spdx_type": "",
+  "spdx_profile": "",
+  "spdx_kind": "",
+  "spdx_class": "",
+  "spdx_property": "",
   "cisa_element": "",
-  "type_mismatch": "Y"
+  "spdx_multi": [
+   {
+    "profile": "Dataset",
+    "kind": "Class",
+    "class": "DatasetPackage",
+    "property": "aibom_knownBiasDetectionMethod",
+    "type": "array of DictionaryEntry"
+   },
+   {
+    "profile": "Core",
+    "kind": "Class",
+    "class": "DictionaryEntry",
+    "property": "value",
+    "type": "xsd:string",
+    "depth": 1
+   }
+  ],
+  "spdx_multi_kind": "chain"
  },
  {
   "parent": "componentData.knownBias",
@@ -13291,15 +13344,32 @@
   "name": "mitigationStrategy",
   "title": "Mitigation Strategy",
   "type": "string",
-  "spdx": "Dataset::DatasetPackage.aibom_knownBiasMitigationStrategy",
+  "spdx": "Dataset::DatasetPackage.aibom_knownBiasMitigationStrategy.value",
   "g7_element": "",
-  "spdx_type": "array of DictionaryEntry",
-  "spdx_profile": "Dataset",
-  "spdx_kind": "Class",
-  "spdx_class": "DatasetPackage",
-  "spdx_property": "aibom_knownBiasMitigationStrategy",
+  "spdx_type": "",
+  "spdx_profile": "",
+  "spdx_kind": "",
+  "spdx_class": "",
+  "spdx_property": "",
   "cisa_element": "",
-  "type_mismatch": "Y"
+  "spdx_multi": [
+   {
+    "profile": "Dataset",
+    "kind": "Class",
+    "class": "DatasetPackage",
+    "property": "aibom_knownBiasMitigationStrategy",
+    "type": "array of DictionaryEntry"
+   },
+   {
+    "profile": "Core",
+    "kind": "Class",
+    "class": "DictionaryEntry",
+    "property": "value",
+    "type": "xsd:string",
+    "depth": 1
+   }
+  ],
+  "spdx_multi_kind": "chain"
  },
  {
   "parent": "componentData",
@@ -13340,15 +13410,32 @@
   "name": "mitigationStrategy",
   "title": "Mitigation Strategy",
   "type": "string",
-  "spdx": "Dataset::DatasetPackage.aibom_knownGapsMitigationStrategy",
+  "spdx": "Dataset::DatasetPackage.aibom_knownGapsMitigationStrategy.value",
   "g7_element": "",
-  "spdx_type": "array of DictionaryEntry",
-  "spdx_profile": "Dataset",
-  "spdx_kind": "Class",
-  "spdx_class": "DatasetPackage",
-  "spdx_property": "aibom_knownGapsMitigationStrategy",
+  "spdx_type": "",
+  "spdx_profile": "",
+  "spdx_kind": "",
+  "spdx_class": "",
+  "spdx_property": "",
   "cisa_element": "",
-  "type_mismatch": "Y"
+  "spdx_multi": [
+   {
+    "profile": "Dataset",
+    "kind": "Class",
+    "class": "DatasetPackage",
+    "property": "aibom_knownGapsMitigationStrategy",
+    "type": "array of DictionaryEntry"
+   },
+   {
+    "profile": "Core",
+    "kind": "Class",
+    "class": "DictionaryEntry",
+    "property": "value",
+    "type": "xsd:string",
+    "depth": 1
+   }
+  ],
+  "spdx_multi_kind": "chain"
  },
  {
   "parent": "componentData",
@@ -13584,13 +13671,13 @@
   "name": "provenance",
   "title": "Provenance",
   "type": "array of string",
-  "spdx": "-",
+  "spdx": "Dataset::DatasetPackage.software_sourceInfo",
   "g7_element": "",
-  "spdx_type": "",
-  "spdx_profile": "",
-  "spdx_kind": "",
-  "spdx_class": "",
-  "spdx_property": "",
+  "spdx_type": "xsd:string",
+  "spdx_profile": "Dataset",
+  "spdx_kind": "Class",
+  "spdx_class": "DatasetPackage",
+  "spdx_property": "software_sourceInfo",
   "cisa_element": ""
  },
  {
@@ -14584,13 +14671,13 @@
   "name": "inputOutputMLParameters",
   "title": "Input and Output Parameters",
   "type": "object",
-  "spdx": "-",
+  "spdx": "",
   "g7_element": "",
   "spdx_type": "",
   "spdx_profile": "",
   "spdx_kind": "",
   "spdx_class": "",
-  "spdx_property": "-",
+  "spdx_property": "",
   "cisa_element": ""
  },
  {
@@ -14600,14 +14687,33 @@
   "name": "format",
   "title": "Input/Output Format",
   "type": "string",
-  "spdx": "-",
+  "spdx": "AI::AIPackage.aibom_inputs, AI::AIPackage.aibom_outputs",
   "g7_element": "Model input-output properties",
   "spdx_type": "",
   "spdx_profile": "",
   "spdx_kind": "",
   "spdx_class": "",
-  "spdx_property": "-",
-  "cisa_element": ""
+  "spdx_property": "",
+  "cisa_element": "",
+  "spdx_multi": [
+   {
+    "profile": "AI",
+    "kind": "Class",
+    "class": "AIPackage",
+    "property": "aibom_inputs",
+    "type": "array of xsd:string",
+    "site": "component.modelCard.modelParameters.inputs"
+   },
+   {
+    "profile": "AI",
+    "kind": "Class",
+    "class": "AIPackage",
+    "property": "aibom_outputs",
+    "type": "array of xsd:string",
+    "site": "component.modelCard.modelParameters.outputs"
+   }
+  ],
+  "spdx_multi_kind": "alt"
  },
  {
   "parent": "inputOutputMLParameters",
@@ -14616,7 +14722,7 @@
   "name": "maxSize",
   "title": "Max Size",
   "type": "string",
-  "spdx": "AI::AIPackage.aibom_inputMaxSize, AI::AIPackage.aibom_outputMaxSize",
+  "spdx": "AI::AIPackage.aibom_inputMaxSize.value, AI::AIPackage.aibom_outputMaxSize.value",
   "g7_element": "Model input-output properties",
   "spdx_type": "",
   "spdx_profile": "",
@@ -14634,16 +14740,31 @@
     "site": "component.modelCard.modelParameters.inputs"
    },
    {
+    "profile": "Core",
+    "kind": "Class",
+    "class": "DictionaryEntry",
+    "property": "value",
+    "type": "xsd:string",
+    "depth": 1
+   },
+   {
     "profile": "AI",
     "kind": "Class",
     "class": "AIPackage",
     "property": "aibom_outputMaxSize",
     "type": "array of DictionaryEntry",
     "site": "component.modelCard.modelParameters.outputs"
+   },
+   {
+    "profile": "Core",
+    "kind": "Class",
+    "class": "DictionaryEntry",
+    "property": "value",
+    "type": "xsd:string",
+    "depth": 1
    }
   ],
-  "spdx_multi_kind": "alt",
-  "type_mismatch": "Y"
+  "spdx_multi_kind": "alt"
  },
  {
   "parent": "(공용 타입)",

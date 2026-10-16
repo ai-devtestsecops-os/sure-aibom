@@ -7,14 +7,15 @@ if (document.querySelector(".mapping-viewer")) (() => {
 //   aibom_v0.6_cyclonedx.json : CycloneDX 1.7 전체(공용 타입 포함) + v0.6 추가 필드(added, origin·reference 는 근거 조항)
 //   aibom_v0.6_spdx.json      : SPDX 3.0.1 전체 + v0.6 추가 필드(added, path 는 대응하는 CycloneDX 경로)
 //   aibom_v0.6_spdx_mapping.json : 두 형식의 대응 (조인 테이블). 1.7 매핑에 v0.6 추가 필드를 넣은 표로, ai-bom 이 만든다
-//   requirement_field_mapping.json : 규제 요구사항이 어느 필드로 충족되는지. cdx_ref(CDX 경로)·spdx_ref("Class.property") 가 조인 키
+//   aibom_v0.6_requirement_field_mapping.json : 규제 요구사항이 어느 v0.6 필드로 충족되는지 (엑셀 「요구사항 매핑」 시트와 같은 표).
+//                                cdx_ref(CDX 경로)·spdx_ref("Class.property") 가 조인 키, version 은 그 필드가 1.7 의 것인지 v0.6 의 것인지
 //   aibom_v0.6_properties.json : 추가 필드를 --spec 1.7 로 낼 때의 properties 키 (ai-bom 의 정의서와 같은 출처)
 
 const BASE = document.querySelector(".mapping-viewer").dataset.base || "data/";   // 페이지 기준 상대 경로
 const CDX_URL = BASE + "aibom_v0.6_cyclonedx.json";
 const SPDX_URL = BASE + "aibom_v0.6_spdx.json";
 const MAPPING_URL = BASE + "aibom_v0.6_spdx_mapping.json";
-const REQ_URL = BASE + "requirement_field_mapping.json";
+const REQ_URL = BASE + "aibom_v0.6_requirement_field_mapping.json";
 const PROPS_URL = BASE + "aibom_v0.6_properties.json";
 // aibom-cli 출력에서 자리마다 값을 채우는 도구. 허구의 픽스처를 실제로 스캔해 값 하나하나의 출처를 따라간 결과다
 // (tests/test_fields.py 가 만들고 검사한다). 자리 경로는 아래 renderCdxNode 의 sitePath 와 같은 모양이다.
@@ -54,7 +55,6 @@ let cdxEnumIndex = new Map();           // "cdxPath::value" -> [{cls, value}]   
 let spdxEnumIndex = new Map();          // "cls::value" -> [{cdxPath, value}]
 let reqByCdxPath = new Map();           // cdx path -> [requirement row, ...]
 let reqBySpdxKey = new Map();           // "class::property" -> [requirement row, ...]
-let reqByAibomField = new Map();        // v0.5 새 필드 경로 -> [requirement row, ...] (그 필드가 비로소 담는 것)
 const spdxNodeIndex = new Map();        // "class::property" -> <li>  (SPDX 트리는 클래스당 1곳)
 const cdxNodeIndex = new Map();         // cdx path -> [<li>, ...]     (그래프트로 여러 곳에 나타날 수 있음)
 const cdxChipIndex = new Map();         // "cdxPath::value" -> [<span class=enum-chip>, ...]
@@ -88,7 +88,7 @@ async function init() {
     if (p.child) addProp(`${p.path}.${p.child}`, p);
   }
   spdxRowByKey = new Map(spdxRows.map(r => [keyFor(r.class, r.property), r]));
-  ({ reqByCdxPath, reqBySpdxKey, reqByAibomField } = buildRequirementIndex(reqRows));
+  ({ reqByCdxPath, reqBySpdxKey } = buildRequirementIndex(reqRows));
 
   // 형식 간 대응. 자리마다 대상이 다른 공용 타입 필드는 자리별 행으로 나눈다.
   const mapping = new Map(siteMappingRows(mappingRowsRaw).map(r => [r.path, r]));
@@ -176,18 +176,28 @@ function scheduleFit() {
 }
 
 /** 공용 타입의 필드가 놓인 자리마다 다른 SPDX 속성에 대응하면 (inputOutputMLParameters.maxSize 는 inputs 자리에서
- *  aibom_inputMaxSize, outputs 자리에서 aibom_outputMaxSize) 매핑표는 대안(alt)마다 자리(site)를 단다. 그 행을 자리별
- *  행으로 바꾼다 — 경로는 접붙인 자리의 것, defPath 는 공용 타입 안의 경로. 나머지 행은 그대로 둔다. */
+ *  aibom_inputMaxSize, outputs 자리에서 aibom_outputMaxSize. format 도 aibom_inputs · aibom_outputs 로 갈린다) 매핑표는
+ *  대안(alt)마다 자리(site)를 단다. 그 행을 자리별 행으로 바꾼다 — 경로는 접붙인 자리의 것, defPath 는 공용 타입 안의 경로.
+ *  대안 뒤에 딸린 체인 홉은 그 자리의 체인이 된다. 나머지 행은 그대로 둔다. */
 function siteMappingRows(rows) {
   const out = [];
   for (const row of rows) {
-    const sited = (row.spdx_multi || []).filter(t => t.site);
-    if (!sited.length) { out.push(row); continue; }
-    for (const t of sited) {
-      out.push({ ...row, spdx_multi: undefined, spdx_multi_kind: undefined,
-        path: t.site + row.path.slice(row.path.indexOf(".")), defPath: row.path,
-        spdx: `${t.profile}::${t.class}.${t.property}`, spdx_profile: t.profile, spdx_kind: t.kind,
-        spdx_class: t.class, spdx_property: t.property, spdx_type: t.type });
+    const multi = row.spdx_multi || [];
+    if (!multi.some(t => t.site)) { out.push(row); continue; }
+    // 자리마다 대안 하나와, 그 뒤에 딸린 체인 홉(depth 가 있는 것 — maxSize 의 DictionaryEntry.value)이 온다
+    const groups = [];
+    for (const t of multi) {
+      if (t.site) groups.push([t]);
+      else if (groups.length && t.depth) groups[groups.length - 1].push(t);
+    }
+    for (const [t, ...hops] of groups) {
+      const site = { ...row, path: t.site + row.path.slice(row.path.indexOf(".")), defPath: row.path,
+        spdx: `${t.profile}::${t.class}.${t.property}${hops.map(h => "." + h.property).join("")}` };
+      if (hops.length) Object.assign(site, { spdx_multi: [t, ...hops], spdx_multi_kind: "chain",
+        spdx_profile: "", spdx_kind: "", spdx_class: "", spdx_property: "", spdx_type: "" });
+      else Object.assign(site, { spdx_multi: undefined, spdx_multi_kind: undefined, spdx_profile: t.profile,
+        spdx_kind: t.kind, spdx_class: t.class, spdx_property: t.property, spdx_type: t.type });
+      out.push(site);
     }
   }
   return out;
@@ -390,21 +400,16 @@ function buildReverseIndex(mappingRows) {
   return idx;
 }
 
-// 요구사항 역인덱스 — requirement_field_mapping.json의 한 행 = (요구사항, 그 요구사항을
-// 충족하는 필드) 한 쌍이다. cdx_ref/spdx_ref가 비어 있는 행은 그 축에 대응 필드가 없다는
-// 뜻(격차)이라 인덱스에 넣지 않는다.
+// 요구사항 역인덱스 — 요구사항 매핑의 한 행 = (요구사항, 그 요구사항을 충족하는 필드) 한 쌍이다. 필드는 v0.6 판이라
+// 1.7 에 자리가 없던 요구사항도 v0.6 이 더한 필드로 걸려 있다. cdx_ref/spdx_ref가 비어 있는 행은 그 축에 대응 필드가
+// 없다는 뜻(격차)이라 인덱스에 넣지 않는다.
 //
 // spdx_ref는 "AIPackage.ai_metric.key"처럼 체인 끝까지 적힌 경우가 있는데, SPDX 트리 노드는
 // "클래스::프로퍼티" 두 단계뿐이라 앞 두 마디로 잘라 맞춘다. 마디가 하나뿐이면(예:
 // "DatasetPackage") 클래스 노드 자신을 가리킨다.
-//
-// 세 번째 축이 aibom_field 다 — 1.7 엔 담을 자리가 없어 cdx_ref 가 비어 있고, v0.5 가 만든
-// 필드가 비로소 그것을 담는 행이다(67건). 이 축을 안 보면 v0.5 새 필드를 눌렀을 때
-// Requirement Coverage 가 늘 "No requirement" 가 된다 — 정작 그 요구사항 때문에 만든 필드인데도.
 function buildRequirementIndex(reqRows) {
   const byCdx = new Map();
   const bySpdx = new Map();
-  const byAibom = new Map();
   const push = (map, key, row) => {
     if (!map.has(key)) map.set(key, []);
     const list = map.get(key);
@@ -412,13 +417,12 @@ function buildRequirementIndex(reqRows) {
   };
   for (const row of reqRows) {
     if (row.cdx_ref) push(byCdx, row.cdx_ref, row);
-    if (row.aibom_field) push(byAibom, row.aibom_field, row);
     if (row.spdx_ref) {
       const parts = row.spdx_ref.split(".");
       push(bySpdx, keyFor(parts[0], parts[1] || ""), row);
     }
   }
-  return { reqByCdxPath: byCdx, reqBySpdxKey: bySpdx, reqByAibomField: byAibom };
+  return { reqByCdxPath: byCdx, reqBySpdxKey: bySpdx };
 }
 
 // enum 값 단위 대응 — cdx_spdx_mapping.json의 row-level "type_match"(CDX 쪽 매칭 토큰)와
@@ -838,7 +842,7 @@ function selectCdxRow(row, mapping, sourceDiv, scroll = true, key = row.path, si
     // 1.7 필드에는 근거라는 개념이 없으므로 그 칸을 그대로 든다.
     properties: propsFor(sitePath, row.path),
     origins,
-    ...requirementsFor(row.path, origins, targets),
+    ...requirementsFor(row.path, origins),
     from: "cdx",
   });
 
@@ -860,39 +864,20 @@ function originsOf(row) {
 const isSpdxSource = source => source.startsWith("SPDX");
 const isG7Source = source => source === "G7";
 
-/* Requirement Coverage 에 들어갈 행과, 그중 무엇이 "v0.5 가 비로소 담은 것"인지.
-   세 갈래를 모은다.
-     1. cdx_ref 로 걸린 것 — 1.7 부터 그 필드가 담던 요구사항
-     2. aibom_field 로 걸린 것 — v0.5 가 만든 이 필드가 비로소 담는 요구사항
-     3. 조항 출처인데 1·2 어디에도 안 걸린 것 — 조항이 컨테이너에, 출처는 그 하위 필드에
-        적히는 식으로 한 칸씩 어긋난 자리가 다섯 곳 있다(statistics ↔ statistics.type 등).
-        같은 계열(컨테이너와 그 하위)에서 그 조항의 행을 끌어온다. */
-function requirementsFor(path, origins, targets = []) {
+/* Requirement Coverage 에 들어갈 행. 두 갈래를 모은다.
+     1. cdx_ref 로 걸린 것 — 요구사항 매핑이 이 필드(1.7 의 것이든 v0.6 이 더한 것이든)에 건 요구사항
+     2. 이 필드의 근거 조항인데 1 에 없는 것 — 조항은 그릇에 걸렸는데 근거는 하위 칸이 물려받거나
+        (statistics → statistics.type), 하위 name 의 조항이 그릇으로 올라간 자리(knownBias.name → knownBias)다.
+        같은 계열(그릇과 그 하위)에서 그 조항의 행을 끌어온다. */
+function requirementsFor(path, origins) {
   const rows = [];
   const push = r => { if (!rows.some(x => x.row_key === r.row_key)) rows.push(r); };
   const clauses = new Set(origins.filter(o => !isSpdxSource(o.source) && !isG7Source(o.source))
                                  .map(o => o.reference));
   for (const r of reqByCdxPath.get(path) || []) push(r);
-  // 요구사항 표가 SPDX 쪽 속성에만 걸어 둔 행이 있다 (1.7 에 자리가 없던 값은 SPDX 로만 충족했으므로). v0.6 추가 필드는
-  // 그 필드의 근거 조항인 행을 대응 SPDX 속성에서 가져온다. 기존 필드는 가져오지 않는다. 대응이 Sbom.creationInfo 같은
-  // 중간 단계를 거치는데, 거기 걸린 조항은 그 단계 전체의 것이라 이 필드의 요구사항이 아니다 (timestamp 가 C(1)·C(2) 를 얻는 식).
-  // 같은 이유로 추가 필드도 체인의 마지막 속성만 본다.
-  if (clauses.size) {
-    const last = new Map();                       // 후보마다 마지막 단계
-    for (const t of targets) if (!last.has(t.candidateIndex) || last.get(t.candidateIndex).hopIndex < t.hopIndex) last.set(t.candidateIndex, t);
-    for (const t of last.values()) {
-      for (const r of reqBySpdxKey.get(keyFor(t.cls, t.property || "")) || []) if (clauses.has(r.id)) push(r);
-    }
-  }
-  // aibom_field 로 걸린 행은 **그 조항이 이 필드를 만든 근거일 때만** 싣는다. SPDX 속성 하나가
-  // 넓은 범위를 덮는 자리가 있어서(ai_informationAboutApplication 이 그렇다), 그 속성에 걸린
-  // 조항을 그보다 좁은 새 필드로 그대로 옮기면 우리가 하지 않은 판단을 한 것이 된다.
-  // 67 행 중 50 행이 그런 경우였다.
-  for (const r of reqByAibomField.get(path) || []) if (clauses.has(r.id)) push(r);
-  // 조항이 컨테이너에, 출처는 그 하위 필드에 적히는 식으로 한 칸씩 어긋난 자리가 다섯 곳 있다.
   for (const ref of clauses) {
     if (rows.some(r => r.id === ref)) continue;
-    for (const [field, list] of reqByAibomField) {
+    for (const [field, list] of reqByCdxPath) {
       if (!sameFamily(field, path)) continue;
       for (const r of list) if (r.id === ref) push(r);
     }
@@ -1264,9 +1249,8 @@ function g7BlockHtml(t) {
 // 요구사항 원문에서 매핑 근거가 된 문구를 엑셀 "요구사항 매핑" 시트와 같은 방식으로 파랗게
 // 칠한다. 문구는 원문에 그대로 들어 있는 부분 문자열이므로, escape 한 쪽끼리 치환한다.
 //
-// **시트의 빨강(대응 필드 없음)은 여기 오지 않는다.** 한 행은 매핑되거나 격차이거나 둘 중
-// 하나라 격차 문구를 가진 행은 cdx_ref·spdx_ref 가 비어 있고, 이 패널은 필드를 통해서만 행에
-// 닿는다. 그중 v0.5 가 담은 것(aibom_field)만 닿는데 그 문구는 이제 담기므로 파랑이 맞다.
+// **시트의 빨강(대응 필드 없음)은 여기 오지 않는다.** 격차 문구를 가진 행은 cdx_ref·spdx_ref 가 비어 있고,
+// 이 패널은 필드를 통해서만 행에 닿는다. v0.6 이 메운 격차의 문구는 데이터에서 이미 파랑으로 옮겨져 있다.
 function highlightPhrases(text, phrases) {
   let html = escapeHtml(text);
   for (const p of phrases || []) {
@@ -1278,9 +1262,7 @@ function highlightPhrases(text, phrases) {
 }
 
 function requirementBlockHtml(r) {
-  // v0.5 가 담은 행은 시트에서 빨갛던 격차 문구가 곧 이 필드가 메운 대목이라 같이 파랗게 칠한다.
-  const text = highlightPhrases(r.requirement_ko || "",
-    [...(r.requirement_highlight || []), ...(r.requirement_gap_highlight || [])]);
+  const text = highlightPhrases(r.requirement_ko || "", r.requirement_highlight);
   const cell = (label, value, cls) =>
     `<div class="req-cell"><span class="req-label">${label}</span><span class="${cls}">${escapeHtml(value)}</span></div>`;
   return `
@@ -1288,6 +1270,7 @@ function requirementBlockHtml(r) {
       <div class="req-meta">
         ${cell("규제", r.source || "", "req-doc")}
         ${cell("조항", r.id || "", "req-id")}
+        ${r.version ? cell("버전", r.version, "req-version") : ""}
       </div>
       <div class="req-text">${text}</div>
     </div>

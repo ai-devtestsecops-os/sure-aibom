@@ -7,7 +7,7 @@
     aibom_v0.6_cyclonedx.json       CycloneDX 1.7 전체 + v0.6 추가 필드 (added, origin, reference)
     aibom_v0.6_spdx.json            SPDX 3.0.1 전체 + v0.6 추가 필드 (added, path = 대응하는 CycloneDX 경로)
     aibom_v0.6_spdx_mapping.json    두 형식의 대응 (1.7 매핑 + v0.6 추가 필드. 엑셀의 CycloneDX v0.6↔SPDX v0.6 시트와 같은 표)
-    requirement_field_mapping.json  규제 요구사항 → 필드
+    aibom_v0.6_requirement_field_mapping.json  규제 요구사항 → v0.6 필드 (엑셀의 요구사항 매핑 시트와 같은 표)
 만드는 것:
     aibom_v0.6_properties.json      추가 필드를 --spec 1.7 로 낼 때의 properties 키 (정의서 생성 코드와 같은 규칙)
 """
@@ -21,7 +21,8 @@ CLI = os.path.dirname(os.path.dirname(HERE))
 AIBOM = os.path.join(os.path.dirname(CLI), "ai-bom")
 DATA = os.path.join(AIBOM, "data")
 OUT = os.path.join(HERE, "data")
-COPY = ("aibom_v0.6_cyclonedx.json", "aibom_v0.6_spdx.json", "aibom_v0.6_spdx_mapping.json", "requirement_field_mapping.json")
+COPY = ("aibom_v0.6_cyclonedx.json", "aibom_v0.6_spdx.json", "aibom_v0.6_spdx_mapping.json",
+        "aibom_v0.6_requirement_field_mapping.json")
 # 여기서 만들지 않지만 뷰어가 읽는 파일 — tests/test_fields.py 가 만든다. 지우지 않는다.
 KEEP = ("aibom_cli_sources.json",)
 
