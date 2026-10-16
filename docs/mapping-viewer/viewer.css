@@ -671,3 +671,8 @@
   line-height: 15px; white-space: nowrap; background: var(--tool-bg); color: var(--tool-fg); vertical-align: 1px; }
 .mapping-viewer #generated-only-box { display: flex; align-items: center; gap: 5px; font-size: 14px; color: var(--text-muted); cursor: pointer; white-space: nowrap; }
 .mapping-viewer #generated-only-box input { margin: 0; accent-color: var(--accent); }
+
+/* 하위 필드에 대응하는 그릇 — 「없음」과 갈리게 파란 표 */
+.mapping-viewer .section-via { margin-left: 6px; padding: 0 6px; border-radius: 8px; font-size: 11.5px; font-weight: 600; line-height: 16px;
+  background: var(--accent-soft); color: var(--accent); }
+.mapping-viewer .detail-section h4:has(.section-via) { margin-bottom: 0; }
