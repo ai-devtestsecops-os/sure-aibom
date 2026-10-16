@@ -1013,7 +1013,10 @@ function renderDetailPanel({ cdxFields, spdxFields, properties, propsViaChildren
   const via = !spdxFields.length && viaChildren;
   const spdxHtml = spdxFields.length ? fieldBlocksHtml(spdxFields) : (panelChains = new Map(), "");
   const reqs = requirements || [];
-  const reqHtml = reqs.length ? reqs.map(requirementBlockHtml).join("") : "";
+  // 요구사항 본문은 비공식 자체 번역이다. 출처와 함께 절 끝에 작게 밝힌다 (ISO 는 본문 없이 조항 제목만 싣는다)
+  const reqNote = `<div class="req-source">한국어는 비공식 자체 번역. 출처: EU AI Act (Regulation (EU) 2024/1689), ` +
+    `NIST AI RMF 1.0 (NIST AI 100-1), ISO/IEC 42001:2023. ISO/IEC 42001 은 조항 번호와 제목만 싣는다.</div>`;
+  const reqHtml = reqs.length ? reqs.map(requirementBlockHtml).join("") + reqNote : "";
   const reqCount = reqs.length ? sectionCount(reqs.length) : none;
   // SPDX 는 **매핑 수**를 센다. 체인 단계는 한 매핑 안에서의 이동이지 매핑이 늘어난 게 아니다.
   const spdxCount = spdxFields.length ? sectionCount(mappingCount(spdxFields))
@@ -1278,7 +1281,6 @@ function requirementBlockHtml(r) {
       <div class="req-meta">
         ${cell("규제", r.source || "", "req-doc")}
         ${cell("조항", r.id || "", "req-id")}
-        ${r.version ? cell("버전", r.version, "req-version") : ""}
       </div>
       <div class="req-text">${text}</div>
     </div>

@@ -310,7 +310,6 @@
 .mapping-viewer .req-label {font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-muted);}
 .mapping-viewer .req-doc {font-size: 14px; font-weight: 600; color: var(--text);}
 .mapping-viewer .req-id {font-family: var(--mono); font-size: 14px; font-weight: 600; color: var(--text);}
-.mapping-viewer .req-version {font-family: var(--mono); font-size: 14px; color: var(--text);}
 .mapping-viewer .req-text {margin-top: 7px; font-size: 14px; line-height: 1.6; color: var(--text);}
 .mapping-viewer .req-hl {color: var(--accent); font-weight: 600;}
 .mapping-viewer .chain {margin-bottom: 10px;}
@@ -676,3 +675,6 @@
 .mapping-viewer .section-via { margin-left: 6px; padding: 0 6px; border-radius: 8px; font-size: 11.5px; font-weight: 600; line-height: 16px;
   background: var(--accent-soft); color: var(--accent); }
 .mapping-viewer .detail-section h4:has(.section-via) { margin-bottom: 0; }
+
+/* 규제 요구사항 절 끝의 출처·번역 표기 */
+.mapping-viewer .req-source { margin-top: 10px; font-size: 11.5px; line-height: 1.5; color: var(--text-muted); }
