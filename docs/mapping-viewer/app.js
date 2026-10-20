@@ -619,6 +619,8 @@ function renderCdxNode(node, depth, ancestors, parentPath) {
 
   const label = row.name || row.title || row.path;
   const enumInfo = parseEnum(row.type);
+  // 갈래(oneOf·anyOf)를 가진 행: 갈래 사이에 or 구분선을 긋는다
+  const choice = hasChoiceBranches(node.children);
   // added 면 v0.6 이 더한 필드다. origin 은 그 근거(규제)이고 여럿이면 배열로 온다.
   const origins = row.added ? (Array.isArray(row.origin) ? row.origin : (row.origin ? [row.origin] : [])) : [];
   const newBadge = row.added
@@ -656,9 +658,24 @@ function renderCdxNode(node, depth, ancestors, parentPath) {
     });
     const childAncestors = new Set(ancestors);
     childAncestors.add(row.path);
-    li.appendChild(renderChildren(node.children, renderCdxNode, depth + 1, childAncestors, sitePath));
+    const ul = renderChildren(node.children, renderCdxNode, depth + 1, childAncestors, sitePath);
+    if (choice) markChoiceBranches(ul);
+    li.appendChild(ul);
   }
   return li;
+}
+
+/** 갈래(oneOf·anyOf 의 각 모양) 행이 둘 이상인가 */
+function hasChoiceBranches(children) {
+  return children.filter(c => c.row && c.row.name === "").length >= 2;
+}
+/** 갈래 행에 묶음 표시를 붙인다 (CSS 가 갈래 사이에 or 구분선을 긋는다). 행을 더 만들지 않는다 (필터가 li 마다 .node-row 를 찾는다) */
+function markChoiceBranches(ul) {
+  ul.classList.add("choice-group");
+  for (const li of ul.children) {
+    const div = li.querySelector(":scope > .node-row");
+    if (div && div.classList.contains("branch")) li.classList.add("choice-branch");
+  }
 }
 
 // ── SPDX 트리 (profile -> class -> property) ───────────────────────────

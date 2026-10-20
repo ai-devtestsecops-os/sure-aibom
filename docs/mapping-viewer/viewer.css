@@ -206,7 +206,7 @@
   padding-bottom: 6px;
   margin-top: 4px;}
 .mapping-viewer .node-row.class-row .label {font-weight: 700;}
-.mapping-viewer .node-row.branch .label {font-weight: 400; color: var(--text-muted); font-family: var(--sans); font-style: italic;}
+.mapping-viewer .node-row.branch .label {font-weight: 600; color: var(--text); font-family: var(--sans); font-style: normal;}   /* 갈래 이름은 머리글: SPDX 프로파일 머리글과 같은 꼴 */
 .mapping-viewer .node-row.selected {background: var(--border);}
 .mapping-viewer .node-row.selected:hover {background: var(--border);}
 .mapping-viewer .node-row.highlight {background: var(--accent-soft);}
@@ -594,7 +594,6 @@
 /* 두 트리의 글자 규칙을 맞춘다: 펼칠 수 있는 행(CycloneDX 의 객체·배열, SPDX 의 프로파일·클래스)은 600, 잎은 400. 기울임은 없다 */
 .mapping-viewer .node-row .label { font-weight: 400; font-style: normal; }
 .mapping-viewer .node-row.expandable > .label, .mapping-viewer .node-row.class-row .label { font-weight: 600; }
-.mapping-viewer .node-row.branch .label { font-style: normal; font-family: var(--mono); color: var(--text); }
 .mapping-viewer .node-row.profile-header { font-style: normal; text-transform: none; letter-spacing: 0; font-size: 14.5px; }
 .mapping-viewer .node-row.profile-header .label { font-family: var(--sans); font-weight: 600; color: var(--text); }   /* 프로파일 이름은 식별자가 아니라 본문 글꼴 */
 
@@ -675,3 +674,10 @@
 
 /* 규제 요구사항 절 끝의 출처·번역 표기 */
 .mapping-viewer .req-source { margin-top: 10px; font-size: 11.5px; line-height: 1.5; color: var(--text-muted); }
+
+/* 갈래(oneOf·anyOf): 갈래 사이에 "── or ──" 구분선. 그 갈래 묶음의 폭만큼만 긋는다 */
+.mapping-viewer ul.choice-group > li.choice-branch { position: relative; width: max-content; min-width: 220px; }
+.mapping-viewer ul.choice-group > li.choice-branch ~ li.choice-branch { margin-top: 22px; }
+.mapping-viewer ul.choice-group > li.choice-branch ~ li.choice-branch::before { content: ""; position: absolute; top: -12px; left: 6px; right: 6px; height: 1px; background: var(--border); }
+.mapping-viewer ul.choice-group > li.choice-branch ~ li.choice-branch::after { content: "or"; position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+  padding: 0 7px; background: var(--bg); color: var(--text-muted); font: 500 11.5px/16px var(--sans); }
