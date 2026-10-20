@@ -84,3 +84,24 @@ def test_groups_count_only_real_datasets_as_datasets():
     assert _groups(comps) == "2 packages, 1 model, 1 dataset, 1 file, 1 other"
     assert _groups(comps, skip=("datasets",)) == "2 packages, 1 model, 1 file, 1 other"
     assert _groups([]) == "nothing found"
+
+
+@pytest.mark.parametrize("argv, message", [
+    (["scan", "./nowhere", "--format", "spdx", "--spec", "1.7"], "--spec 1.7 is not a spdx spec (use 3.0.1 or v0.6)"),
+    (["scan", "./nowhere", "--spec", "3.0.1"], "--spec 3.0.1 is not a cyclonedx spec (use 1.7 or v0.6)"),
+])
+def test_a_spec_of_the_other_format_is_a_usage_error_before_anything_runs(argv, message, capsys):
+    """형식과 spec 이 맞지 않으면 대상을 보기도 전에 2 로 끝낸다 (없는 대상을 줘도 그 오류가 아니라 이 오류다)."""
+    assert main(argv) == 2
+    assert capsys.readouterr().err.strip() == f"[aibom-cli] error: {message}"
+
+
+def test_validate_refuses_a_spec_of_the_other_format(tmp_path, capsys):
+    spdx = tmp_path / "bom.spdx.json"
+    spdx.write_text('{"@context": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld", "@graph": []}', encoding="utf-8")
+    assert main(["validate", str(spdx), "--spec", "1.7"]) == 2
+    assert "--spec 1.7 is not a spdx spec" in capsys.readouterr().err
+    neither = tmp_path / "x.json"
+    neither.write_text('{"hello": 1}', encoding="utf-8")
+    assert main(["validate", str(neither), "--spec", "1.7"]) == 2
+    assert "not a CycloneDX or SPDX document" in capsys.readouterr().err

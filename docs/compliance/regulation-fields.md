@@ -1,7 +1,8 @@
 # properties 키
 
-`--spec 1.7` 로 낼 때 규제 값을 적는 키의 규격이다. 새 필드를 만들지 않고 기존 `properties` 배열에 `aibom:` 으로 시작하는 키로 값을
-적으므로, 결과는 공식 CycloneDX 1.7 스키마를 그대로 통과한다. 키는 AI-BOM v0.6 이 더한 필드와 하나씩 대응한다.
+`--spec 1.7`(CycloneDX)과 `--spec 3.0.1`(SPDX)로 낼 때 규제 값을 적는 키의 규격이다. 새 필드를 만들지 않고 CycloneDX 는 기존 `properties` 배열에,
+SPDX 는 Extension 프로파일의 `CdxPropertiesExtension` 에 `aibom:` 으로 시작하는 키로 값을 적으므로, 결과는 공식 스키마를 그대로 통과한다.
+키는 AI-BOM v0.6 이 더한 필드와 하나씩 대응한다. SPDX 3.0.1 에 자리가 있는 값(하이퍼파라미터, 데이터셋 크기와 모달리티 등)은 SPDX 에서는 키 대신 그 속성에 적는다.
 
 ## 확장 지점
 

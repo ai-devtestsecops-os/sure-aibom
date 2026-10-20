@@ -19,15 +19,20 @@ from .form import apply as regulate, drop_tool_properties
 from .image import extract as extract_image, is_archive, pull as pull_image
 from .runners import run_cdxgen, run_syft
 from .runners._proc import RunnerError
-from .validate import CDX_SCHEMA_BY_SPEC, validate_cdx
+from .spdx import convert as convert_spdx
+from .validate import SPECS, detect_format, schema_for, validate_doc
 
 EXIT_TOOL = 2      # 실행 오류 (잘못된 인자·입력, 도구 없음·실패)
 EXIT_INVALID = 3   # 스키마 불일치 (1 은 파이썬이 처리 못 한 예외로 죽을 때 내므로 비워 둔다)
 
-SCHEMA_NAME = {"1.7": "CycloneDX 1.7 schema", "v0.6": "AI-BOM v0.6 (CycloneDX) schema"}   # validate 는 문서를 어떻게 만들었는지 모른다
-# scan --spec → 규제 필드를 넣는 형태. 1.7 은 표준 properties 라 1.7·v0.6 스키마 모두에 맞고, v0.6 은 v0.6 스키마에만 맞는다
-FORM_BY_SPEC = {"1.7": "properties", "v0.6": "typed"}
-FORMAT_NAME = {"1.7": "CycloneDX 1.7", "v0.6": "AI-BOM v0.6 (CycloneDX)"}
+# scan --format 과 --spec. 형식마다 spec 둘이고 첫 값이 기본이다. v0.6 은 두 형식에 다 있다 (AI-BOM v0.6 은 CycloneDX 판과 SPDX 판이 있다)
+FORMATS = ("cyclonedx", "spdx")
+SPEC_BY_FORMAT = {"cyclonedx": ("1.7", "v0.6"), "spdx": ("3.0.1", "v0.6")}
+# 규제 필드를 넣는 형태. 1.7 은 표준 properties 라 1.7·v0.6 스키마 모두에 맞고, v0.6 은 v0.6 스키마에만 맞는다.
+# SPDX 는 v0.6 형(typed)으로 만든 뒤 바꾼다 — 3.0.1 이면 변환기가 v0.6 이 더한 값을 확장에 넣는다
+FORM_BY_SPEC = {"1.7": "properties", "v0.6": "typed", "3.0.1": "typed"}
+FORMAT_NAME = {("cyclonedx", "1.7"): "CycloneDX 1.7", ("cyclonedx", "v0.6"): "AI-BOM v0.6 (CycloneDX)",
+               ("spdx", "3.0.1"): "SPDX 3.0.1", ("spdx", "v0.6"): "AI-BOM v0.6 (SPDX)"}
 # 요약 줄의 묶음: CycloneDX type → S/M/D 와 파일. 목록에 없는 type(library, application, operating-system …)은 packages
 GROUP_ORDER = ("packages", "models", "datasets", "files", "other")
 SINGULAR = {"packages": "package", "models": "model", "datasets": "dataset", "files": "file", "other": "other"}
@@ -106,6 +111,10 @@ def _read(path: str) -> dict | None:
 def cmd_scan(args: argparse.Namespace) -> int:
     """단계마다 한 줄씩 찍는다. 항목별 내용은 찍지 않고, 사용자가 할 일이 있는 것(건너뜀·실패)만 그 줄에 붙인다.
     syft·cdxgen 중 하나라도 실패하면 만든 만큼은 쓰되 종료 코드 2 로 끝낸다 (CI 가 모자란 BOM 을 성공으로 넘기지 않게)."""
+    args.spec = args.spec or SPEC_BY_FORMAT[args.format][0]
+    if args.spec not in SPEC_BY_FORMAT[args.format]:
+        _log(f"[aibom-cli] error: --spec {args.spec} is not a {args.format} spec (use {' or '.join(SPEC_BY_FORMAT[args.format])})")
+        return EXIT_TOOL
     if args.target.startswith("~"):
         args.target = str(Path(args.target).expanduser())
     if _looks_like_path(args.target) and not Path(args.target).exists():
@@ -117,7 +126,7 @@ def cmd_scan(args: argparse.Namespace) -> int:
         return EXIT_TOOL
 
     data = f", data from {', '.join(args.data)}" if args.data else ""
-    _log(f"[aibom-cli] Generating {FORMAT_NAME[args.spec]} for {args.target}{data}")
+    _log(f"[aibom-cli] Generating {FORMAT_NAME[(args.format, args.spec)]} for {args.target}{data}")
 
     workdir = Path(tempfile.mkdtemp(prefix="aibom-cli-"))
     try:
@@ -215,7 +224,15 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
     _stage("Adding regulation fields", _coverage_text(regulation))
     merged = drop_tool_properties(merged)                         # 출력의 properties 는 aibom:* 뿐이다
 
-    _emit(merged, args.output)
+    out_doc = merged
+    if args.format == "spdx":                                     # 값은 CycloneDX 로 다 만들고 마지막에 모양만 바꾼다
+        out_doc = convert_spdx(merged, args.spec, log=detail)
+        graph = out_doc["@graph"]
+        _stage(f"Converting to {FORMAT_NAME[(args.format, args.spec)]}",
+               f"{_count(sum(1 for e in graph if e['type'] not in ('CreationInfo', 'Relationship')), 'element')}, "
+               f"{_count(sum(1 for e in graph if e['type'] == 'Relationship'), 'relationship')}")
+
+    _emit(out_doc, args.output)
     # 위 줄들을 더하지 않고 다 만든 BOM 을 다시 센다 (병합·별칭 합치기로 줄어든 만큼이 여기 반영된다)
     _log(f"[aibom-cli] Wrote {args.output or 'stdout'} ({_count(len(merged['components']), 'component')}: "
          f"{_groups(merged['components'])}; {_count(len(merged['dependencies']), 'dependency', 'dependencies')})")
@@ -248,13 +265,19 @@ def cmd_validate(args: argparse.Namespace) -> int:
     doc = _read(args.bom)
     if doc is None:
         return EXIT_TOOL
-    if "bomFormat" not in doc:
-        _log(f"[aibom-cli] error: not a CycloneDX document (no bomFormat): {args.bom}")
+    fmt = detect_format(doc)
+    if fmt is None:
+        _log(f"[aibom-cli] error: not a CycloneDX or SPDX document (no bomFormat or @context): {args.bom}")
         return EXIT_TOOL
-    if not validate_cdx(doc, args.spec, log=_log):
-        _log(f"[aibom-cli] Invalid against the {SCHEMA_NAME[args.spec]} (--spec {args.spec}): {args.bom}")
+    if schema_for(fmt, args.spec) is None:
+        _log(f"[aibom-cli] error: --spec {args.spec} is not a {fmt} spec, and {args.bom} is a {fmt} document "
+             f"(use {' or '.join(SPEC_BY_FORMAT[fmt])})")
+        return EXIT_TOOL
+    name = f"{FORMAT_NAME[(fmt, args.spec)]} schema"
+    if not validate_doc(doc, fmt, args.spec, log=_log):
+        _log(f"[aibom-cli] Invalid against the {name} (--spec {args.spec}): {args.bom}")
         return EXIT_INVALID
-    _log(f"[aibom-cli] Valid against the {SCHEMA_NAME[args.spec]}: {args.bom}")
+    _log(f"[aibom-cli] Valid against the {name}: {args.bom}")
     return 0
 
 
@@ -273,18 +296,20 @@ BANNER = r"""
 HELP = BANNER + """
 Usage:
   aibom-cli scan <target> [options]
-  aibom-cli validate <bom> --spec <1.7|v0.6>
+  aibom-cli validate <bom> --spec <1.7|v0.6|3.0.1>
 
 Commands:
   scan <target>               디렉터리 또는 컨테이너 이미지를 스캔해 AI-BOM 을 만든다
-  validate <bom>              BOM 을 --spec 이 고른 스키마로 검증한다
+  validate <bom>              BOM 을 --spec 이 고른 스키마로 검증한다. 형식(CycloneDX, SPDX)은 문서에서 알아낸다
 
 Options:
   -o, --output <path>         [scan] 출력 경로 (default: 표준출력)
   --data <path>               [scan] 로컬 데이터 경로. 여러 번 줄 수 있음 (optional)
-  --spec <1.7|v0.6>           [scan] 규제 필드를 넣을 스키마 (default: 1.7)
-                                1.7   CycloneDX 1.7 의 properties 로 넣음
-                                v0.6  AI-BOM v0.6 (CycloneDX) 의 필드로 넣음
+  --format <cyclonedx|spdx>   [scan] 출력 형식 (default: cyclonedx)
+  --spec <1.7|v0.6|3.0.1>     [scan] 규제 필드를 넣을 스키마 (default: cyclonedx 는 1.7, spdx 는 3.0.1)
+                                1.7    CycloneDX 1.7 의 properties 로 넣음
+                                3.0.1  SPDX 3.0.1 의 CdxPropertiesExtension 으로 넣음
+                                v0.6   AI-BOM v0.6 의 필드로 넣음 (cyclonedx, spdx 모두)
                               [validate] 검증할 스키마 (required)
   -v, --verbose               [scan] 항목별 상세 로그
   --version                   버전을 보여 준다
@@ -293,6 +318,9 @@ Options:
 Examples:
   aibom-cli scan ./project -o bom.cdx.json                    디렉터리를 스캔하여 규제 필드를 CycloneDX 1.7 properties 로 넣음
   aibom-cli scan ./project -o bom.cdx.json --spec v0.6        디렉터리를 스캔하여 규제 필드를 AI-BOM v0.6 (CycloneDX) 필드로 넣음
+  aibom-cli scan ./project -o bom.spdx.json --format spdx     SPDX 3.0.1 로 냄
+  aibom-cli scan ./project -o bom.spdx.json --format spdx --spec v0.6
+                                                              AI-BOM v0.6 (SPDX) 로 냄
   aibom-cli scan ./project -o bom.cdx.json --data ./dataset   로컬 데이터 경로를 함께 지정
 
   aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔
@@ -300,6 +328,8 @@ Examples:
 
   aibom-cli validate bom.cdx.json --spec 1.7                  CycloneDX 1.7 스키마로 검증
   aibom-cli validate bom.cdx.json --spec v0.6                 AI-BOM v0.6 (CycloneDX) 스키마로 검증
+  aibom-cli validate bom.spdx.json --spec 3.0.1               SPDX 3.0.1 스키마로 검증
+  aibom-cli validate bom.spdx.json --spec v0.6                AI-BOM v0.6 (SPDX) 스키마로 검증
 
 Exit codes:
   0  성공        2  실행 오류        3  스키마 불일치
@@ -318,25 +348,26 @@ class _Help(argparse.Action):
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="aibom-cli", usage="aibom-cli <command> [options]", add_help=False)
+    p = argparse.ArgumentParser(prog="aibom-cli", usage="aibom-cli <command> [options]", add_help=False, allow_abbrev=False)
     p.add_argument("-h", "--help", action=_Help)
     p.add_argument("--version", action="version", version=f"aibom-cli {__version__}")
     sub = p.add_subparsers(dest="command", metavar="<command>")
 
-    s = sub.add_parser("scan", prog="aibom-cli scan", usage="aibom-cli scan <target> [options]", add_help=False)
+    s = sub.add_parser("scan", prog="aibom-cli scan", usage="aibom-cli scan <target> [options]", add_help=False, allow_abbrev=False)
     s.add_argument("-h", "--help", action=_Help)
     s.add_argument("target", metavar="<target>")
     s.add_argument("-o", "--output", metavar="<path>")
     s.add_argument("--data", action="append", default=[], metavar="<path>")
-    s.add_argument("--spec", choices=tuple(FORM_BY_SPEC), default="1.7", metavar="<1.7|v0.6>")
+    s.add_argument("--format", choices=FORMATS, default="cyclonedx", metavar="<cyclonedx|spdx>")
+    s.add_argument("--spec", choices=SPECS, default=None, metavar="<1.7|v0.6|3.0.1>")
     s.add_argument("-v", "--verbose", action="store_true")
     s.set_defaults(func=cmd_scan)
 
-    v = sub.add_parser("validate", prog="aibom-cli validate", usage="aibom-cli validate <bom> --spec <1.7|v0.6>",
-                       add_help=False)
+    v = sub.add_parser("validate", prog="aibom-cli validate", usage="aibom-cli validate <bom> --spec <1.7|v0.6|3.0.1>",
+                       add_help=False, allow_abbrev=False)
     v.add_argument("-h", "--help", action=_Help)
     v.add_argument("bom", metavar="<bom>")
-    v.add_argument("--spec", choices=tuple(CDX_SCHEMA_BY_SPEC), required=True, metavar="<1.7|v0.6>")
+    v.add_argument("--spec", choices=SPECS, required=True, metavar="<1.7|v0.6|3.0.1>")
     v.set_defaults(func=cmd_validate)
     return p
 

@@ -233,6 +233,43 @@ def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
     assert datasets[BOOK_REF]["data"][0]["size"] == 4853859824 and "statistics" not in datasets[BOOK_REF]["data"][0]
 
 
+def test_spdx_output_validates_and_keeps_the_models_and_datasets(tmp_path, capsys):
+    """--format spdx 는 같은 스캔을 SPDX 3.0.1 JSON-LD 로 낸다. 3.0.1 은 공식 스키마를, v0.6 은 aibom-v0.6 SPDX 스키마를 통과하고,
+    validate 는 문서에서 형식을 알아내므로 SPDX 문서에 CycloneDX spec 을 주면 2 다."""
+    plain = out_file("project.spdx.json")
+    doc = scan(FIXTURE, plain, "--format", "spdx", "--data", str(FIXTURE / "data"))
+    lines = capsys.readouterr().err.splitlines()
+    assert lines[0].startswith("[aibom-cli] Generating SPDX 3.0.1 for ")
+    assert any(line.startswith("[aibom-cli] Converting to SPDX 3.0.1 ") and "elements" in line and "relationships" in line for line in lines)
+    assert main(["validate", str(plain), "--spec", "3.0.1"]) == 0
+    assert main(["validate", str(plain), "--spec", "1.7"]) == 2
+    graph = doc["@graph"]
+    models = {e["name"] for e in graph if e["type"] == "ai_AIPackage"}
+    assert {"bert-base-uncased", "llama", "tiny-random-gpt2", "tiny-gpt2-lora", "llama3.2:1b"} <= models      # 베이스 모델(gpt2)도 요소가 된다
+    assert {e["name"] for e in graph if e["type"] == "dataset_DatasetPackage"} == {"bookcorpus", "imdb", "data", "wikipedia"}
+    assert not any(k.startswith("aibom_") for e in graph for k in e)
+    bert = next(e for e in graph if e["type"] == "ai_AIPackage" and e["name"] == "bert-base-uncased")
+    assert bert["software_packageUrl"] == BERT_REF and bert["ai_hyperparameter"][0]["key"] and "modelCard" not in bert
+    relationships = [e for e in graph if e["type"] == "Relationship"]
+    depends = {r["from"]: set(r["to"]) for r in relationships if r["relationshipType"] == "dependsOn"}
+    assert {bert["spdxId"]} <= set(depends) and len(depends[bert["spdxId"]]) == 2                          # 허브 모델 카드의 데이터셋 둘
+    assert any(r["relationshipType"] == "hasDeclaredLicense" for r in relationships)
+    document = next(e for e in graph if e["type"] == "SpdxDocument")
+    assert document["rootElement"] == [next(e["spdxId"] for e in graph if e.get("name") == "project" and e["type"] == "software_Package")]
+
+    rich = out_file("project.v0.6.spdx.json")
+    doc6 = scan(FIXTURE, rich, "--format", "spdx", "--spec", "v0.6", "--data", str(FIXTURE / "data"))
+    assert main(["validate", str(rich), "--spec", "v0.6"]) == 0
+    bert6 = next(e for e in doc6["@graph"] if e["type"] == "ai_AIPackage" and e["name"] == "bert-base-uncased")
+    recorded = {p["name"]: p["value"] for p in recorded_owasp("google-bert/bert-base-uncased", None)["components"][0]["modelCard"]["properties"]}
+    assert bert6["aibom_parameterCount"] == int(recorded["safetensors_total_parameters"])
+    assert bert6["aibom_inputMaxSize"] == [{"type": "DictionaryEntry", "key": "text", "value": recorded["genai:aibom:modelcard:contextLength"]}]
+    imdb = next(e for e in doc6["@graph"] if e["type"] == "dataset_DatasetPackage" and e["name"] == "imdb")
+    assert (imdb["dataset_datasetSize"], imdb["dataset_datasetType"], imdb["dataset_datasetAvailability"]) == (133190302, ["text"], "directDownload")
+    assert imdb["aibom_statistics"][:2] == [{"type": "DictionaryEntry", "key": "train:label:nan_count", "value": "0"},
+                                            {"type": "DictionaryEntry", "key": "train:label:n_unique", "value": "2"}]
+
+
 def test_scanning_twice_is_byte_identical_apart_from_serial_and_timestamp(tmp_path):
     first = scan(FIXTURE, tmp_path / "1.json")
     second = scan(FIXTURE, tmp_path / "2.json")

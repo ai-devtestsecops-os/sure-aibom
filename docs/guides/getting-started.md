@@ -1,7 +1,7 @@
 # 시작하기
 
 AI-BOM 은 AI 시스템을 이루는 소프트웨어 패키지(S-BOM), 모델(M-BOM), 데이터셋(D-BOM)의 목록이다. aibom-cli 는 디렉터리나
-컨테이너 이미지를 스캔해 이 셋을 CycloneDX 문서 하나로 내고, 규제(EU AI Act, ISO/IEC 42001, NIST AI RMF)가 요구하는 값을
+컨테이너 이미지를 스캔해 이 셋을 CycloneDX 또는 SPDX 문서 하나로 내고, 규제(EU AI Act, ISO/IEC 42001, NIST AI RMF)가 요구하는 값을
 함께 적는다. 이 문서는 설치부터 생성, 출력 확인, 검증까지를 한 번에 따라가 본다.
 
 ## 설치
@@ -48,6 +48,12 @@ aibom-cli scan ./project -o bom.cdx.json
 aibom-cli scan python:3.12-slim -o python.cdx.json
 ```
 
+SPDX 로 내려면 `--format spdx` 를 준다.
+
+```bash
+aibom-cli scan ./project -o bom.spdx.json --format spdx
+```
+
 단계마다 한 줄씩 나오는 로그에 `-v` 를 더하면 항목별 상세가 붙는다. 어떤 파일을 왜 건너뛰었는지, 어느 값을 왜 버렸는지,
 어느 컴포넌트의 어느 규제 필드가 비었는지가 나온다.
 
@@ -56,7 +62,7 @@ aibom-cli scan ./project -o bom.cdx.json -v
 ```
 
 입력으로 무엇을 줄 수 있는지는 [스캔 대상](scan-targets.md)에, 그 안에서 무엇을 찾는지는 [수집 항목](collected-items.md)에,
-결과 문서의 구조와 `--spec` 으로 고르는 두 가지 규제 필드 자리는 [출력 포맷](output-format.md)에 있다.
+결과 문서의 구조와 `--format`·`--spec` 으로 고르는 출력 포맷은 [출력 포맷](output-format.md)에 있다.
 
 ## 출력 확인
 
@@ -92,13 +98,21 @@ data                    imdb
 ...
 ```
 
+SPDX 문서는 모든 것이 `@graph` 배열의 요소라, 종류(`type`)로 골라 본다.
+
+```bash
+jq -r '.["@graph"][] | select(.type == "ai_AIPackage") | .name' bom.spdx.json
+```
+
 컴포넌트 종류와 각 정보가 문서의 어디에 들어가는지는 [출력 포맷](output-format.md)에 있다.
 
 ## 검증
 
-생성된 AI-BOM 을 같은 스키마로 다시 검증할 수 있다. `--spec` 은 필수다.
+생성된 AI-BOM 을 같은 스키마로 다시 검증할 수 있다. `--spec` 은 필수이고, 형식(CycloneDX, SPDX)은 문서에서 알아낸다.
 
 ```bash
 aibom-cli validate bom.cdx.json --spec 1.7
 aibom-cli validate bom.cdx.json --spec v0.6
+aibom-cli validate bom.spdx.json --spec 3.0.1
+aibom-cli validate bom.spdx.json --spec v0.6
 ```

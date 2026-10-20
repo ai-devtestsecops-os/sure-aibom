@@ -21,7 +21,8 @@ import aibom_cli.dataset as ds
 import aibom_cli.enrich as en
 import fieldtrace
 from aibom_cli.runners._proc import RunnerError
-from aibom_cli.validate import validate_cdx
+from aibom_cli.spdx import convert
+from aibom_cli.validate import validate_cdx, validate_spdx
 from test_image import docker_tar
 
 FIELDS = Path(__file__).parent / "data" / "fields"
@@ -123,6 +124,20 @@ def test_the_scans_validate(scans):
         doc = json.loads((OUT / f"{name}.cdx.json").read_text())
         assert validate_cdx(doc, "v0.6", log=lambda m: None), name
     assert validate_cdx(json.loads((OUT / "directory-1.7.cdx.json").read_text()), "1.7", log=lambda m: None)
+
+
+def test_the_spdx_conversion_of_the_scans_validates(scans):
+    """두 v0.6 스캔(디렉터리, 이미지)을 SPDX 로 바꾸면 3.0.1 은 공식 스키마를, v0.6 은 aibom-v0.6 SPDX 스키마를 통과하고,
+    컴포넌트와 서비스마다 요소가 하나씩 있다 (bom-ref 는 확장에 남는다)."""
+    for name in ("directory", "image"):
+        doc = json.loads((OUT / f"{name}.cdx.json").read_text())
+        refs = {c["bom-ref"] for c in doc["components"]} | {s["bom-ref"] for s in doc["services"]} | {doc["metadata"]["component"]["bom-ref"]}
+        for spec in ("3.0.1", "v0.6"):
+            out = convert(doc, spec, log=lambda m: None)
+            assert validate_spdx(out, spec, log=print), (name, spec)
+            kept = {p["extension_cdxPropValue"] for e in out["@graph"] for x in e.get("extension") or []
+                    for p in x["extension_cdxProperty"] if p["extension_cdxPropName"] == "bom-ref"}
+            assert refs <= kept, (name, spec)
 
 
 def test_only_aibom_properties_and_sdk_services_are_left(scans):
