@@ -1272,6 +1272,17 @@
   ]
  },
  {
+  "site": "metadata.lifecycles.phase",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "문서"
+    ]
+   }
+  ]
+ },
+ {
   "site": "metadata.timestamp",
   "sources": [
    {

@@ -191,6 +191,7 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
     assert {t["name"] for t in doc["metadata"]["tools"]["components"]} >= {"syft", "cdxgen", "aibom-cli"}
 
     assert doc["metadata"]["component"] == {"type": "application", "name": "project", "bom-ref": "application:/project@"}
+    assert doc["metadata"]["lifecycles"] == [{"phase": "pre-build"}]                # 디렉터리는 빌드 전 소스
 
 
 def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
@@ -325,6 +326,7 @@ def test_an_image_tar_yields_the_models_inside_it(tmp_path):
     doc = scan(tar, out_file("image.cdx.json"))
     assert main(["validate", str(out_file("image.cdx.json")), "--spec", "1.7"]) == 0
     assert (doc["metadata"]["component"]["type"], doc["metadata"]["component"]["name"]) == ("container", "aiapp:test")
+    assert doc["metadata"]["lifecycles"] == [{"phase": "post-build"}]               # 이미지는 빌드된 결과물
     assert {c["name"] for c in doc["components"] if c["type"] == "machine-learning-model"} == {
         "bert-base-uncased", "llama3.2:1b", "llama", "tiny-random-gpt2", "tiny-gpt2-lora"}
     assert {c["bom-ref"] for c in doc["components"] if c["type"] == "data"} == {BOOK_REF, IMDB_REF, WIKI_REF}   # --data 가 없으니 로컬 데이터는 없다

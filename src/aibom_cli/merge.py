@@ -11,6 +11,8 @@
 bom-ref 는 병합 키로 다시 부여하고 dependencies[] 의 참조를 따라 바꾼다.
 
 root=(이름, 종류) 를 주면 metadata.component 를 만든다 (디렉터리 → application, 이미지 → container).
+생성 맥락(metadata.lifecycles)도 이 종류로 정한다: 디렉터리는 빌드 전 소스라 pre-build, 이미지는 빌드된 결과물이라 post-build.
+도구가 적은 것은 버린다 (cdxgen 은 대상과 상관없이 pre-build 를 적는다).
 두 도구의 metadata.component 는 버리고 이것 하나가 문서의 루트가 된다. 이미지면 syft 가 metadata.properties 에 둔 OCI 라벨
 (syft:image:labels:org.opencontainers.image.*, OCI image-spec annotations.md 의 미리 정한 키)을 루트의 필드로 옮긴다:
     version → version, description → description, licenses(SPDX 식) → licenses, vendor → supplier, authors → authors,
@@ -31,6 +33,7 @@ from .licenses import license_entry
 
 SPEC_VERSION = "1.7"
 ROOT_TYPE_BY_KIND = {"directory": "application", "image": "container"}
+LIFECYCLE_BY_KIND = {"directory": "pre-build", "image": "post-build"}   # CycloneDX metadata.lifecycles 의 미리 정한 단계
 
 
 FILE_TYPE = "file"
@@ -252,8 +255,10 @@ def merge(docs: list[dict], root: tuple[str, str] | None = None) -> dict:
     ]
     metadata: dict = {
         "timestamp": datetime.now(timezone.utc).isoformat(timespec="seconds").replace("+00:00", "Z"),
-        "tools": {"components": list(tools.values())},
     }
+    if root is not None and root[1] in LIFECYCLE_BY_KIND:
+        metadata["lifecycles"] = [{"phase": LIFECYCLE_BY_KIND[root[1]]}]
+    metadata["tools"] = {"components": list(tools.values())}
     if root_comp:
         metadata["component"] = root_comp
 

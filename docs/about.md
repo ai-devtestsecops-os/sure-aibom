@@ -23,7 +23,7 @@ aibom-cli 는 검증된 오픈소스 도구가 찾은 패키지와 모델을 정
     - `-t ai`: AI 관련 항목(모델, 데이터셋, AI 서비스)만 찾는다
     - `--spec-version 1.7`: CycloneDX 1.7 로 낸다
     - `--no-install-deps`: 의존성을 설치하지 않고, 스캔 대상에 이미 있는 파일만 읽는다. cdxgen 은 기본으로 일부 프로젝트의 의존성을 자동 설치한다
-- **BOM 병합 (aibom-cli)**: 두 도구의 결과를 다듬어 AI-BOM 문서 하나로 합친다. 문서 정보(형식, 일련번호, 생성 시각)와 도구 목록을 하나로 통합하고, 두 도구가 각자 만든 루트를 스캔 대상을 나타내는 루트 컴포넌트 하나로 바꾸며, 모든 컴포넌트를 의존 관계로 그 루트에 잇는다.
+- **BOM 병합 (aibom-cli)**: 두 도구의 결과를 다듬어 AI-BOM 문서 하나로 합친다. 문서 정보(형식, 일련번호, 생성 시각, 생성 단계)와 도구 목록을 하나로 통합하고, 두 도구가 각자 만든 루트를 스캔 대상을 나타내는 루트 컴포넌트 하나로 바꾸며, 모든 컴포넌트를 의존 관계로 그 루트에 잇는다.
 - **M-BOM 보강 (aibom-cli, OWASP aibom-generator)**: cdxgen 이 담지 못한 필드를 보강한다. 로컬 모델은 aibom-cli 가 모델 파일에서, 코드에서 참조하는 허브 모델은 aibom-cli 와 OWASP aibom-generator 가 Hub API 응답에서 값을 가져온다.  
   `python -m src.cli <owner/model>`
     - `<owner/model>`: cdxgen 이 찾은 허브 모델 id

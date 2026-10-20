@@ -142,6 +142,15 @@ def test_oci_labels_fill_the_container_root():
                                     "hashes": [{"alg": "SHA-256", "content": "d1" * 32}]}]}}
 
 
+def test_lifecycle_follows_the_target_kind_not_the_tools():
+    """생성 맥락은 스캔 대상 종류로 정한다. cdxgen 이 대상과 상관없이 적는 pre-build 는 버린다."""
+    cdxgen = {"metadata": {"lifecycles": [{"phase": "pre-build"}], "authors": [{"name": "OWASP Foundation"}]}, "components": []}
+    assert merge([cdxgen], root=("acme-app:1.4.0", "image"))["metadata"]["lifecycles"] == [{"phase": "post-build"}]
+    out = merge([cdxgen], root=("proj", "directory"))["metadata"]
+    assert out["lifecycles"] == [{"phase": "pre-build"}] and "authors" not in out
+    assert "lifecycles" not in merge([cdxgen])["metadata"]                          # 대상을 모르면 적지 않는다
+
+
 def test_oci_license_expressions_and_partial_labels():
     out = merge([syft_image_doc(licenses="Apache-2.0 OR MIT", **{"base.name": "alpine:3.20", "base.digest": "sha256:short"})], root=("i", "image"))
     root = out["metadata"]["component"]
