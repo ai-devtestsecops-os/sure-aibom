@@ -1,0 +1,1678 @@
+[
+ {
+  "site": "AIPackage.ai_hyperparameter",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "OWASP aibom-generator",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.ai_informationAboutApplication",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "OWASP aibom-generator",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.ai_metric",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.aibom_architectureFamily",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.aibom_inputMaxSize",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "OWASP aibom-generator",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.aibom_inputs",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.aibom_metricSlice",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.aibom_modelArchitecture",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.aibom_outputs",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.aibom_parameterCount",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "OWASP aibom-generator",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.aibom_task",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.aibom_useCases",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.description",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.extension",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.externalRef",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.name",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.releaseTime",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.software_downloadLocation",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.software_homePage",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.software_packageUrl",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.software_packageVersion",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.software_primaryPurpose",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "AIPackage.suppliedBy",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Agent.name",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "CdxPropertiesExtension.extension_cdxProperty",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "Space",
+     "데이터셋(허브)",
+     "모델(로컬 파일)",
+     "모델(코드 참조)",
+     "서비스",
+     "파일"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "Space",
+     "데이터셋(로컬)",
+     "데이터셋(허브)",
+     "모델(로컬 파일)",
+     "모델(코드 참조)",
+     "문서",
+     "서비스",
+     "스캔 대상",
+     "운영체제",
+     "파일",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "CdxPropertyEntry.extension_cdxPropName",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "Space",
+     "데이터셋(로컬)",
+     "데이터셋(허브)",
+     "모델(로컬 파일)",
+     "모델(코드 참조)",
+     "문서",
+     "서비스",
+     "스캔 대상",
+     "운영체제",
+     "파일",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "CdxPropertyEntry.extension_cdxPropValue",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "Space",
+     "데이터셋(허브)",
+     "모델(로컬 파일)",
+     "모델(코드 참조)",
+     "서비스",
+     "파일"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "Space",
+     "데이터셋(로컬)",
+     "데이터셋(허브)",
+     "모델(로컬 파일)",
+     "모델(코드 참조)",
+     "문서",
+     "서비스",
+     "스캔 대상",
+     "운영체제",
+     "파일",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "CreationInfo.created",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "문서"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "CreationInfo.createdBy",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "문서"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "CreationInfo.createdUsing",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "문서"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "CreationInfo.specVersion",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "문서"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.aibom_statistics",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(로컬)",
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.dataset_dataCollectionProcess",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.dataset_datasetAvailability",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.dataset_datasetSize",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(로컬)",
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.dataset_datasetType",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(로컬)",
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.dataset_intendedUse",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.description",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.extension",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(로컬)",
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.externalRef",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.name",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(로컬)",
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.releaseTime",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.software_downloadLocation",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.software_homePage",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.software_packageUrl",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.software_packageVersion",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.software_primaryPurpose",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(로컬)",
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.software_sourceInfo",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DatasetPackage.suppliedBy",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DictionaryEntry.key",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "OWASP aibom-generator",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(로컬)",
+     "데이터셋(허브)",
+     "모델(로컬 파일)",
+     "모델(코드 참조)",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "DictionaryEntry.value",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "OWASP aibom-generator",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(로컬)",
+     "데이터셋(허브)",
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "ExternalIdentifier.externalIdentifierType",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "도구 목록",
+     "운영체제",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "ExternalIdentifier.identifier",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "운영체제",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "도구 목록"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "ExternalRef.comment",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "운영체제",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "ExternalRef.externalRefType",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "운영체제",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "Space",
+     "데이터셋(허브)",
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)",
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "ExternalRef.locator",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "운영체제",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "Space",
+     "데이터셋(허브)",
+     "모델(로컬 파일)",
+     "모델(코드 참조)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)",
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "File.extension",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "파일"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "파일"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "File.name",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "파일"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "파일"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "File.software_fileKind",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "파일"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "파일"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "File.verifiedUsing",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "파일"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Hash.algorithm",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "파일",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Hash.hashValue",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "파일",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "LicenseExpression.name",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "LicenseExpression.simplelicensing_customIdToUri",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "패키지"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "LicenseExpression.simplelicensing_licenseExpression",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)",
+     "모델(로컬 파일)",
+     "모델(코드 참조)",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Organization.name",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "데이터셋(허브)",
+     "모델(코드 참조)",
+     "서비스"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)",
+     "모델(코드 참조)",
+     "서비스"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.builtTime",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상 (이미지 라벨)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.comment",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "서비스"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.description",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "운영체제",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.extension",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "Space",
+     "서비스"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "Space",
+     "서비스",
+     "스캔 대상",
+     "운영체제",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.externalIdentifier",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "운영체제",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "운영체제",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.externalRef",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "운영체제",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "Space"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.name",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "운영체제",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "Space",
+     "서비스"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "서비스",
+     "스캔 대상"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.originatedBy",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.software_downloadLocation",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "Space"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.software_homePage",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "운영체제",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.software_packageUrl",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "Space"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "Space",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.software_packageVersion",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "운영체제",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.software_primaryPurpose",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "운영체제",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "Space"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "서비스",
+     "스캔 대상"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.suppliedBy",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "서비스"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "서비스"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Package.verifiedUsing",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "패키지"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Relationship.comment",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "모델(코드 참조)"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Relationship.from",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)",
+     "서비스",
+     "스캔 대상",
+     "파일"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)",
+     "모델(로컬 파일)",
+     "모델(코드 참조)",
+     "스캔 대상"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Relationship.relationshipType",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)",
+     "서비스",
+     "스캔 대상",
+     "파일"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)",
+     "모델(로컬 파일)",
+     "모델(코드 참조)",
+     "스캔 대상"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Relationship.to",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "스캔 대상",
+     "패키지"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "모델(로컬 파일)",
+     "서비스",
+     "스캔 대상",
+     "파일"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "데이터셋(허브)",
+     "모델(로컬 파일)",
+     "모델(코드 참조)",
+     "스캔 대상"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "SoftwareAgent.name",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "문서"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "SpdxDocument.element",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "문서"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "SpdxDocument.extension",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "문서"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "SpdxDocument.name",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "문서"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "SpdxDocument.profileConformance",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "문서"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "SpdxDocument.rootElement",
+  "sources": [
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "문서"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Tool.comment",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "도구 목록"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "도구 목록"
+    ]
+   },
+   {
+    "tool": "OWASP aibom-generator",
+    "kinds": [
+     "도구 목록"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "도구 목록"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Tool.externalIdentifier",
+  "sources": [
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "도구 목록"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "도구 목록"
+    ]
+   }
+  ]
+ },
+ {
+  "site": "Tool.name",
+  "sources": [
+   {
+    "tool": "syft",
+    "kinds": [
+     "도구 목록"
+    ]
+   },
+   {
+    "tool": "cdxgen",
+    "kinds": [
+     "도구 목록"
+    ]
+   },
+   {
+    "tool": "OWASP aibom-generator",
+    "kinds": [
+     "도구 목록"
+    ]
+   },
+   {
+    "tool": "aibom-cli",
+    "kinds": [
+     "도구 목록"
+    ]
+   }
+  ]
+ }
+]

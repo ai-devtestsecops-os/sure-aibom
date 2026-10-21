@@ -20,6 +20,7 @@ const PROPS_URL = BASE + "aibom_v0.6_properties.json";
 // aibom-cli 출력에서 자리마다 값을 채우는 도구. 허구의 픽스처를 실제로 스캔해 값 하나하나의 출처를 따라간 결과다
 // (tests/test_fields.py 가 만들고 검사한다). 자리 경로는 아래 renderCdxNode 의 sitePath 와 같은 모양이다.
 const SOURCES_URL = BASE + "aibom_cli_sources.json";
+const SPDX_SOURCES_URL = BASE + "aibom_cli_spdx_sources.json";
 const TOOL_ORDER = ["syft", "cdxgen", "OWASP aibom-generator", "aibom-cli"];
 const TOOL_LABEL = { "syft": "syft", "cdxgen": "cdxgen", "OWASP aibom-generator": "OWASP", "aibom-cli": "aibom-cli" };
 
@@ -64,22 +65,25 @@ let propsByPath = new Map();            // CycloneDX 경로 -> [properties 키 �
 let siteAlias = new Map();              // 접붙인 자리의 경로(…inputs.maxSize) -> 공용 타입 행(inputOutputMLParameters.maxSize)
 let representativeLis = new Set();      // 경로마다 가장 얕은 자리의 <li> 하나 ("추가 필드만" 필터가 남기는 자리)
 let sourcesBySite = new Map();          // 자리 경로 -> [{tool, kinds}] (aibom-cli 출력에서 그 자리의 값을 채우는 도구)
+let spdxSourcesBySite = new Map();      // "클래스.속성" -> [{tool, kinds}] (SPDX 출력에서 그 자리의 값을 채우는 도구)
 const addedOnlyEl = document.getElementById("added-only");
 const generatedOnlyEl = document.getElementById("generated-only");
 
 init();
 
 async function init() {
-  const [cdxRows, spdxRows, mappingRowsRaw, reqRows, propRows, sourceRows] = await Promise.all([
+  const [cdxRows, spdxRows, mappingRowsRaw, reqRows, propRows, sourceRows, spdxSourceRows] = await Promise.all([
     fetch(CDX_URL).then(r => r.json()),
     fetch(SPDX_URL).then(r => r.json()),
     fetch(MAPPING_URL).then(r => r.json()),
     fetch(REQ_URL).then(r => r.json()),
     fetch(PROPS_URL).then(r => r.json()),
     fetch(SOURCES_URL).then(r => (r.ok ? r.json() : [])).catch(() => []),
+    fetch(SPDX_SOURCES_URL).then(r => (r.ok ? r.json() : [])).catch(() => []),
   ]);
 
   for (const r of sourceRows) sourcesBySite.set(r.site, r.sources);
+  for (const r of spdxSourceRows) spdxSourcesBySite.set(r.site, r.sources);
 
   // 그릇(hyperparameters)에는 그 안의 키 전부가, 칸(hyperparameters.name)에는 제 키 하나가 붙는다
   const addProp = (path, p) => { if (!propsByPath.has(path)) propsByPath.set(path, []); propsByPath.get(path).push(p); };
@@ -725,8 +729,12 @@ function renderSpdxProfileNode(node, depth) {
   div.dataset.searchText = searchBits.filter(Boolean).join(" ").toLowerCase();
 
   const enumInfo = parseEnum(node.enumType);
+  // 클래스 행: 그 클래스의 속성들에 붙는 도구 배지의 합집합 (접힌 채로도 어느 도구가 채우는 클래스인지 보인다)
+  const classSources = node.isClass ? mergedSources(node.children.map(c => spdxSourcesBySite.get(`${c.row.class}.${c.row.property}`))) : null;
+  if (classSources) div.classList.add("is-gen");
   div.innerHTML = `<span class="toggle"></span><span class="label">${escapeHtml(node.label)}</span>` +
     (node.isClass && node.kind ? kindBadge(node.kind) : "") +
+    (classSources ? toolBadgesHtml(classSources) : "") +
     (enumInfo ? enumChipsHtml(enumInfo.values, "spdx", node.cls) : "");
 
   if (node.isClass) {
@@ -754,12 +762,15 @@ function renderSpdxPropertyNode(node) {
   const row = node.row;
   const li = document.createElement("li");
   const div = document.createElement("div");
-  div.className = "node-row clickable" + (row.added ? " is-new" : "");
-  div.dataset.searchText = [row.class, row.property, row.summary, row.summary_ko, row.type]
+  // aibom-cli 의 SPDX 출력에서 이 속성의 값을 채우는 도구 (CycloneDX 트리와 같은 배지)
+  const sources = spdxSourcesBySite.get(`${row.class}.${row.property}`);
+  div.className = "node-row clickable" + (row.added ? " is-new" : "") + (sources ? " is-gen" : "");
+  div.dataset.searchText = [row.class, row.property, row.summary, row.summary_ko, row.type, ...(sources || []).map(s => s.tool)]
     .filter(Boolean).join(" ").toLowerCase();
   const enumInfo = parseEnum(row.type);
   div.innerHTML = `<span class="toggle"></span><span class="label">${escapeHtml(row.property)}</span>` +
     (row.added ? `<span class="new-badge" title="AI-BOM v0.6 추가 필드">v0.6</span>` : "") +
+    (sources ? toolBadgesHtml(sources) : "") +
     (row.type ? `<span class="sub">${escapeHtml(enumInfo ? enumInfo.label : row.type)}</span>` : "") +
     (enumInfo ? enumChipsHtml(enumInfo.values, "spdx", row.class) : "");
   div.addEventListener("click", () => selectSpdxNode(node, div));
@@ -1003,10 +1014,22 @@ function selectSpdxNode(node, sourceDiv, scroll = true) {
 
 // ── 오른쪽 패널 공통 렌더러: 어느 쪽에서 클릭했든 CycloneDX/SPDX/G7 Element 세
 // 칸으로 항상 같은 구조를 보여준다 ───────────────────────────────────────
-/** 트리 행의 도구 배지. 도구 순서는 TOOL_ORDER, 마우스를 올리면 그 도구가 채우는 대상 종류가 나온다. */
+/** 트리 행의 도구 배지. 도구 순서는 TOOL_ORDER. 종류(kinds)는 데이터에만 두고 화면에는 내지 않는다. */
 function toolBadgesHtml(sources) {
-  return sortedSources(sources).map(s =>
-    `<span class="tool-badge" title="${escapeHtml(`${s.tool}: ${s.kinds.join(", ")}`)}">${escapeHtml(TOOL_LABEL[s.tool] || s.tool)}</span>`).join("");
+  return sortedSources(sources).map(s => `<span class="tool-badge">${escapeHtml(TOOL_LABEL[s.tool] || s.tool)}</span>`).join("");
+}
+
+/** 여러 자리의 출처를 도구별로 합친다 (종류는 합집합). 출처가 하나도 없으면 null. */
+function mergedSources(sourceLists) {
+  const byTool = new Map();
+  for (const sources of sourceLists) {
+    for (const s of sources || []) {
+      if (!byTool.has(s.tool)) byTool.set(s.tool, new Set());
+      for (const k of s.kinds) byTool.get(s.tool).add(k);
+    }
+  }
+  if (!byTool.size) return null;
+  return [...byTool].map(([tool, kinds]) => ({ tool, kinds: [...kinds].sort() }));
 }
 
 function sortedSources(sources) {
@@ -1450,10 +1473,9 @@ function applyFilter() {
   const query = searchEl.value.trim().toLowerCase();
   const addedOnly = !!(addedOnlyEl && addedOnlyEl.checked);
   const generatedOnly = !!(generatedOnlyEl && generatedOnlyEl.checked);
-  // "생성하는 필드만" 은 CycloneDX 트리에만 건다 (출처는 aibom-cli 가 내는 CycloneDX 자리에만 있다)
-  filterIndex.forEach((nodes, i) => {
-    const genOnly = generatedOnly && i === 0;
-    filterNodes(nodes, query, addedOnly, genOnly, !!(query || addedOnly || genOnly));
+  // "생성하는 필드만" 은 두 트리에 다 건다 (CycloneDX 자리는 aibom_cli_sources, SPDX 자리는 aibom_cli_spdx_sources)
+  filterIndex.forEach(nodes => {
+    filterNodes(nodes, query, addedOnly, generatedOnly, !!(query || addedOnly || generatedOnly));
   });
 }
 

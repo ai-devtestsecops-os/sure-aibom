@@ -25,7 +25,7 @@ OUT = os.path.join(HERE, "data")
 COPY = ("aibom_v0.6_cyclonedx.json", "aibom_v0.6_spdx.json", "aibom_v0.6_spdx_mapping.json",
         "aibom_v0.6_requirement_field_mapping.json")
 # 여기서 만들지 않지만 뷰어가 읽는 파일 — tests/test_fields.py 가 만든다. 지우지 않는다.
-KEEP = ("aibom_cli_sources.json",)
+KEEP = ("aibom_cli_sources.json", "aibom_cli_spdx_sources.json")
 
 
 def save(name, obj):

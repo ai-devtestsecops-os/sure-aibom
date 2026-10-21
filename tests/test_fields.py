@@ -1,7 +1,7 @@
 """fields 픽스처(tests/data/fields, make_fields.py 가 만든다)를 실제 syft·cdxgen 으로 두 번 스캔한다: project/ 디렉터리와,
 rootfs/ 와 project/ 로 만든 이미지 tar (OCI 라벨 포함). 최종 BOM 의 값 하나하나가 어느 도구에서 왔는지 따라가(fieldtrace.py)
-필드 탐색기의 도구 배지 데이터(docs/mapping-viewer/data/aibom_cli_sources.json)와 맞춰 본다. 다르면 탐색기가 실제
-출력과 어긋난 것이다 — AIBOM_UPDATE_SOURCES=1 로 이 테스트를 돌려 파일을 다시 쓰고 바뀐 자리를 확인한다.
+필드 탐색기의 도구 배지 데이터(docs/mapping-viewer/data/aibom_cli_sources.json, SPDX 트리는 aibom_cli_spdx_sources.json)와 맞춰 본다.
+다르면 탐색기가 실제 출력과 어긋난 것이다 — AIBOM_UPDATE_SOURCES=1 로 이 테스트를 돌려 파일을 다시 쓰고 바뀐 자리를 확인한다.
 허브 응답과 OWASP 출력은 tests/data/fields/{hf_api,owasp} 의 허구 녹화본으로 바꿔 끼운다. acme/acme-private 는 응답이 없는 비공개
 저장소이고, 허브는 옛 이름 acmecorpus 를 acme/acmecorpus 로 돌려준다."""
 from __future__ import annotations
@@ -28,6 +28,7 @@ from test_image import docker_tar
 FIELDS = Path(__file__).parent / "data" / "fields"
 PROJECT = FIELDS / "project"
 SOURCES = Path(__file__).parents[1] / "docs" / "mapping-viewer" / "data" / "aibom_cli_sources.json"
+SPDX_SOURCES = SOURCES.with_name("aibom_cli_spdx_sources.json")
 OUT = Path(__file__).parents[1] / "out" / "test_fields"      # 스캔 결과를 남겨 둔다 (.gitignore 의 out/)
 HUB_REDIRECTS = {"acmecorpus": "acme/acmecorpus"}
 sys.path.insert(0, str(FIELDS))
@@ -108,6 +109,15 @@ def test_field_explorer_sources_match_the_scans(scans):
     if os.environ.get("AIBOM_UPDATE_SOURCES"):
         SOURCES.write_text(text, encoding="utf-8")
     assert SOURCES.read_text(encoding="utf-8") == text, "탐색기 데이터가 실제 출력과 다르다. AIBOM_UPDATE_SOURCES=1 로 다시 쓰고 바뀐 자리를 확인한다"
+
+
+def test_field_explorer_spdx_sources_match_the_scans(scans):
+    """SPDX 트리의 도구 배지: 두 v0.6 스캔을 SPDX 로 바꿔 요소의 값마다 CycloneDX 값의 출처를 잇는다 (fieldtrace.spdx_site_sources)."""
+    rows = fieldtrace.as_rows(*(fieldtrace.spdx_site_sources(scans[name][0], scans[name][1]) for name in ("directory", "image")))
+    text = json.dumps(rows, ensure_ascii=False, indent=1) + "\n"
+    if os.environ.get("AIBOM_UPDATE_SOURCES"):
+        SPDX_SOURCES.write_text(text, encoding="utf-8")
+    assert SPDX_SOURCES.read_text(encoding="utf-8") == text, "탐색기의 SPDX 배지 데이터가 실제 출력과 다르다. AIBOM_UPDATE_SOURCES=1 로 다시 쓴다"
 
 
 def test_the_fixture_is_what_the_builder_makes(tmp_path):
