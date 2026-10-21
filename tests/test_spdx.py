@@ -5,6 +5,7 @@ import json
 
 import pytest
 
+from aibom_cli.facts import Facts
 from aibom_cli.spdx import convert
 from aibom_cli.validate import detect_format, schema_for, validate_doc, validate_spdx
 
@@ -260,6 +261,30 @@ def test_relationships_cover_dependencies_lineage_and_licenses():
     tools = [g[t] for t in creation["createdUsing"]]
     assert [(t["name"], t.get("comment")) for t in tools] == [("syft", "version 1.52.0"), ("cdxgen", "version 12.8.4"), ("aibom-cli", "version 0.2.0")]
     assert tools[1]["externalIdentifier"][0]["identifier"] == "pkg:npm/%40cyclonedx/cdxgen@12.8.4"
+
+
+def test_facts_add_training_and_evaluation_relationships_and_times():
+    """수집 단계의 메모리 부가 기록(facts): 데이터셋 역할은 trainedOn·testedOn 관계가 되고 dependsOn 은 그대로 남으며, 시각은
+    builtTime·releaseTime 이 된다. 문서에 없는 요소의 역할은 알리고 건너뛴다. 결과는 두 스키마를 통과한다."""
+    facts = Facts()
+    facts.add_role(BERT, REVIEWS, "training")
+    facts.add_role(BERT, REVIEWS, "evaluation")
+    facts.add_role(BERT, LOCAL, "evaluation")
+    facts.add_role("pkg:huggingface/acme/gone", REVIEWS, "training")
+    facts.set_time(ROOT, "builtTime", "2026-10-01T00:00:00Z")
+    facts.set_time(BERT, "releaseTime", "2024-02-19T11:06:12.000Z")
+    facts.set_time(REVIEWS, "releaseTime", "2024-01-04T21:09:45+09:00")
+    logs: list[str] = []
+    out = convert(doc_of(), "3.0.1", log=logs.append, facts=facts)
+    g = graph_of(out)
+    assert rels(out, "trainedOn") == {sid(BERT): [sid(REVIEWS)]} and rels(out, "testedOn") == {sid(BERT): [sid(REVIEWS), sid(LOCAL)]}
+    assert rels(out, "dependsOn")[sid(BERT)] == [sid(REVIEWS)]                      # dependsOn 은 그대로 (CycloneDX 와 같게)
+    assert g[sid(ROOT)]["builtTime"] == "2026-10-01T00:00:00Z" and g[sid(BERT)]["releaseTime"] == "2024-02-19T11:06:12Z"
+    assert g[sid(REVIEWS)]["releaseTime"] == "2024-01-04T12:09:45Z" and not any("Time" in k for k in g[sid(LIB)])
+    assert f"[spdx] dataset role of unknown element skipped: pkg:huggingface/acme/gone -> {REVIEWS}" in logs
+    assert validate_spdx(out, "3.0.1", log=print) and validate_spdx(convert(doc_of(), "v0.6", log=lambda m: None, facts=facts), "v0.6", log=print)
+    plain = convert(doc_of(), "3.0.1", log=lambda m: None)                             # facts 가 없으면 아무것도 더하지 않는다
+    assert not rels(plain, "trainedOn") and not rels(plain, "testedOn") and "builtTime" not in graph_of(plain)[sid(ROOT)]
 
 
 def test_ids_come_from_the_serial_number_and_bom_refs_and_the_output_is_deterministic():

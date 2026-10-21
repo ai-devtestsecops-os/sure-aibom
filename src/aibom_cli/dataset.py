@@ -42,6 +42,8 @@ form 이 고른 형태의 자리로 옮기며 지운다 — 출력에는 남지 
 관계: 로컬 데이터셋과 코드에서 찾은 HF 데이터셋은 metadata.component(루트)가 dependsOn 한다. 허브·로컬 모델 카드의
 datasets 와 model-index, GGUF 헤더의 general.datasets 에서 온 것은 그 모델이 dependsOn 하고 모델카드
 modelParameters.datasets 에 ref 로 적는다 (루트는 잇지 않는다). 모델 카드 조회가 실패한 허브 모델은 그대로 둔다.
+학습(datasets, general.datasets)·평가(model-index) 역할과 허브 응답의 lastModified 는 CycloneDX 에 자리가 없어 facts(메모리 부가
+기록, facts.py)에 두고 SPDX 변환기가 trainedOn·testedOn 관계와 releaseTime 으로 적는다. CycloneDX 출력에는 없다.
 """
 from __future__ import annotations
 
@@ -64,6 +66,7 @@ from urllib.request import Request, urlopen
 import yaml
 
 from .enrich import hf_reachable, hub_model_id
+from .facts import Facts
 from .merge import fill_missing
 from .form import INTERNAL_PREFIX
 from .licenses import card_licenses
@@ -144,12 +147,13 @@ STATISTICS_FILE_LIMIT = JSON_PARSE_LIMIT                      # 로컬 파일 �
 # ── 진입점 ──────────────────────────────────────────────────────────────────
 
 def discover(merged: dict, target: str, log=print, report: dict | None = None, data_paths: Iterable[str] = (),
-             model_infos: dict | None = None, hub_reachable: bool | None = None) -> dict:
+             model_infos: dict | None = None, hub_reachable: bool | None = None, facts: Facts | None = None) -> dict:
     """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다.
     data_paths 는 로컬 데이터 경로들 (scan --data). model_infos 는 M-BOM 보강이 받아 둔 허브 모델 id → Hub API 응답이고,
     주면 허브 모델 카드를 다시 받지 않는다 (주지 않으면 여기서 받는다). hub_reachable 은 M-BOM 보강이 허브에 닿는지 본
     결과이고, None 이면 물을 것이 있을 때 여기서 본다. report 를 주면 hub_unreachable(허브에 물을 것이 있는데 허브에 닿지
-    않았는지), empty_data_paths(데이터 파일이 하나도 없던 경로)를 적는다."""
+    않았는지), empty_data_paths(데이터 파일이 하나도 없던 경로)를 적는다. facts 를 주면 모델 카드 데이터셋의 역할(학습·평가)과
+    허브 응답의 lastModified 를 거기 적는다 (문서에는 자리가 없다)."""
     components: list[dict] = merged.setdefault("components", [])
     by_hf_id: dict[str, dict] = {}
     for comp in components:
@@ -174,8 +178,8 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
 
     # 로컬 모델 카드는 파일이라 네트워크 없이 읽는다. 여기서 생긴 데이터셋도 아래 허브 확인과 조회에 들어간다.
     if root.is_dir():
-        _datasets_from_local_model_cards(merged, root, by_hf_id, log)
-    _datasets_named_by_models(merged, by_hf_id)
+        _datasets_from_local_model_cards(merged, root, by_hf_id, log, facts)
+    _datasets_named_by_models(merged, by_hf_id, facts)
 
     # 허브에 닿는지는 한 번만 본다. 물을 것(허브 모델의 카드, 허브 데이터셋)이 없으면 보지 않는다.
     hub_models = [(c, model_id) for c in components if (model_id := hub_model_id(c))]
@@ -188,7 +192,7 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
             skipped += [f"{m} hub model card{'s' if m != 1 else ''} not read"] if m else []
             log(f"[dataset] huggingface.co unreachable: {', '.join(skipped)}")
     if reachable and hub_models:
-        _datasets_from_model_cards(merged, hub_models, by_hf_id, log, model_infos)
+        _datasets_from_model_cards(merged, hub_models, by_hf_id, log, model_infos, facts)
 
     empty: list[str] = []
     for comp in _data_components(data_paths, log, empty):
@@ -198,7 +202,7 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
     if new_refs:
         _link_from_root(merged, new_refs)
     if reachable and by_hf_id:
-        _fill_from_hub(merged, by_hf_id, log)
+        _fill_from_hub(merged, by_hf_id, log, facts)
     if report is not None:
         report["hub_unreachable"] = not reachable
         report["empty_data_paths"] = empty
@@ -324,18 +328,19 @@ def _notebook_code(text: str) -> str:
 # ── 허브 모델 카드 ────────────────────────────────────────────────────────────
 
 def _datasets_from_model_cards(merged: dict, hub_models: list[tuple[dict, str]], by_hf_id: dict[str, dict], log,
-                               infos: dict | None = None) -> None:
+                               infos: dict | None = None, facts: Facts | None = None) -> None:
     """허브 모델마다 모델 카드의 데이터셋을 데이터셋 컴포넌트로 만들어 잇는다 (_link_model_datasets). 모델 카드는 infos
     (M-BOM 보강이 받아 둔 Hub API 응답)에서 읽고, infos 가 없으면 여기서 받는다. 모델 카드를 못 읽었거나 데이터셋이 없는
     모델은 손대지 않는다."""
     for model, model_id in hub_models:
         info = infos.get(model_id) if infos is not None else fetch_model_info(model_id, log)
-        ids = model_card_dataset_ids((info or {}).get("cardData"), model_id, log)
+        card = (info or {}).get("cardData")
+        ids = model_card_dataset_ids(card, model_id, log)
         if ids:
-            _link_model_datasets(merged, model, ids, by_hf_id)
+            _link_model_datasets(merged, model, ids, by_hf_id, facts=facts, roles=model_card_dataset_roles(card))
 
 
-def _datasets_from_local_model_cards(merged: dict, root: Path, by_hf_id: dict[str, dict], log) -> None:
+def _datasets_from_local_model_cards(merged: dict, root: Path, by_hf_id: dict[str, dict], log, facts: Facts | None = None) -> None:
     """로컬 모델 폴더의 README.md YAML 헤더에서 datasets(학습)와 model-index 결과의 평가 데이터셋(dataset.type)을 읽어 허브 모델
     카드와 같게 잇는다. 읽을 README 는 cdxgen 이 모델 컴포넌트에 남긴 evidence 에서 온다. cdxgen 은 datasets: 를 데이터셋
     컴포넌트로 만들어 의존 관계는 다 잇지만 modelCard 의 datasets 에는 마지막 ref 하나만 남기고, 평가 데이터셋은 표시
@@ -353,12 +358,13 @@ def _datasets_from_local_model_cards(merged: dict, root: Path, by_hf_id: dict[st
                 continue
             shown = {d["name"] for d in _model_index_datasets(card)
                      if isinstance(d.get("name"), str) and isinstance(d.get("type"), str) and d["type"].strip() in ids}
-            _link_model_datasets(merged, model, ids, by_hf_id, shown, location=rel)
+            _link_model_datasets(merged, model, ids, by_hf_id, shown, location=rel, facts=facts, roles=model_card_dataset_roles(card))
 
 
-def _datasets_named_by_models(merged: dict, by_hf_id: dict[str, dict]) -> None:
+def _datasets_named_by_models(merged: dict, by_hf_id: dict[str, dict], facts: Facts | None = None) -> None:
     """모델카드 datasets 에 ref 없이 이름만 적힌 owner/name 꼴의 허브 id 를 데이터셋 컴포넌트로 잇는다. cdxgen 은 GGUF 헤더의
-    general.datasets 를 이렇게 적는다 (contents.url 에도 id 를 그대로 둔다). 모델 파일 위치를 데이터셋의 evidence 로 더한다."""
+    general.datasets 를 이렇게 적는다 (contents.url 에도 id 를 그대로 둔다). 모델 파일 위치를 데이터셋의 evidence 로 더한다.
+    general.datasets 는 학습 데이터셋이라 역할은 training 이다."""
     for model in [c for c in merged["components"] if c.get("type") == MODEL_TYPE]:
         entries = ((model.get("modelCard") or {}).get("modelParameters") or {}).get("datasets") or []
         ids = _unique(e["name"].strip() for e in entries if isinstance(e, dict) and not e.get("ref") and isinstance(e.get("name"), str)
@@ -366,7 +372,7 @@ def _datasets_named_by_models(merged: dict, by_hf_id: dict[str, dict]) -> None:
         if ids:
             location = next((o.get("location") for o in (model.get("evidence") or {}).get("occurrences") or []
                              if isinstance(o, dict) and isinstance(o.get("location"), str)), None)
-            _link_model_datasets(merged, model, ids, by_hf_id, location=location)
+            _link_model_datasets(merged, model, ids, by_hf_id, location=location, facts=facts, roles={i: {"training"} for i in ids})
 
 
 def _card_files(model: dict, root: Path, root_resolved: Path) -> list[Path]:
@@ -397,10 +403,12 @@ def read_card_header(path: Path, rel: str, log=print) -> dict | None:
 
 
 def _link_model_datasets(merged: dict, model: dict, ids: list[str], by_hf_id: dict[str, dict],
-                         shown: Iterable[str] = (), location: str | None = None) -> None:
+                         shown: Iterable[str] = (), location: str | None = None,
+                         facts: Facts | None = None, roles: dict[str, set[str]] | None = None) -> None:
     """ids 마다 데이터셋 컴포넌트를 찾거나 만들어, 모델카드 modelParameters.datasets 에 ref 로 적고 모델이 dependsOn 한다.
     같은 데이터셋을 이름만 적은 항목(이름이 id 이거나 shown 에 든 표시 이름)은 ref 로 바뀐다. location 은 데이터셋을 적은
-    파일이라 데이터셋 컴포넌트의 evidence 에 더한다. 루트는 잇지 않는다."""
+    파일이라 데이터셋 컴포넌트의 evidence 에 더한다. 루트는 잇지 않는다. roles 는 id → 역할(training·evaluation)이고
+    facts 가 있으면 (모델, 데이터셋) 쌍의 역할로 적는다."""
     components = merged["components"]
     refs: list[str] = []
     for hf_id in ids:
@@ -415,6 +423,9 @@ def _link_model_datasets(merged: dict, model: dict, ids: list[str], by_hf_id: di
                 occurrences.append({"location": location})
         if comp["bom-ref"] not in refs:
             refs.append(comp["bom-ref"])
+        if facts is not None:
+            for role in sorted((roles or {}).get(hf_id, ())):
+                facts.add_role(model["bom-ref"], comp["bom-ref"], role)
     _depend(merged, model["bom-ref"], refs)
     params = model.setdefault("modelCard", {}).setdefault("modelParameters", {})
     named = set(ids) | set(shown)
@@ -427,19 +438,33 @@ def _link_model_datasets(merged: dict, model: dict, ids: list[str], by_hf_id: di
 def model_card_dataset_ids(card, model_id: str, log=print) -> list[str]:
     """모델 카드 YAML 헤더(Hub API 응답의 cardData, 로컬은 README.md)의 datasets 와 model-index 결과의 dataset.type. 둘 다
     허브 데이터셋 id 를 적는 자리다. 순서는 datasets 다음 model-index, 겹치면 한 번. 허브 id 꼴이 아닌 것은 건너뛰고 알린다."""
-    if not isinstance(card, dict):
-        return []
-    names = [v for v in _as_list(card.get("datasets")) if isinstance(v, str)]
-    names += [d["type"] for d in _model_index_datasets(card) if isinstance(d.get("type"), str)]
     ids: list[str] = []
-    for name in (n.strip() for n in names):
-        if not name or name in ids:
+    for name, _ in _card_dataset_names(card):
+        if name in ids:
             continue
         if _looks_like_hub_id(name):
             ids.append(name)
         else:
             log(f"[dataset] {model_id}: model card dataset {name!r} is not a hub id, skipped")
     return ids
+
+
+def model_card_dataset_roles(card) -> dict[str, set[str]]:
+    """허브 id 꼴인 데이터셋마다의 역할. datasets 는 training, model-index 결과의 dataset 은 evaluation (둘 다면 둘 다)."""
+    roles: dict[str, set[str]] = {}
+    for name, role in _card_dataset_names(card):
+        if _looks_like_hub_id(name):
+            roles.setdefault(name, set()).add(role)
+    return roles
+
+
+def _card_dataset_names(card) -> list[tuple[str, str]]:
+    """모델 카드의 (데이터셋 이름, 역할). datasets 다음 model-index 순서, 빈 이름은 뺀다."""
+    if not isinstance(card, dict):
+        return []
+    names = [(v, "training") for v in _as_list(card.get("datasets")) if isinstance(v, str)]
+    names += [(d["type"], "evaluation") for d in _model_index_datasets(card) if isinstance(d.get("type"), str)]
+    return [(n.strip(), role) for n, role in names if n.strip()]
 
 
 def _model_index_datasets(card: dict) -> list[dict]:
@@ -1128,7 +1153,7 @@ def fetch_dataset_statistics(hf_id: str, config: str, split: str, log=print) -> 
     return _get_json(url, hf_id, f"datasets-server /statistics {config}/{split}", log)
 
 
-def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log) -> None:
+def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | None = None) -> None:
     """허브 응답으로 채우고, 같은 데이터셋을 다른 id 로 부른 컴포넌트는 정식 id 의 컴포넌트 하나로 모은다.
     허브에 닿는지는 부르는 쪽(discover)이 먼저 본다."""
     info_by_canonical: dict[str, dict] = {}
@@ -1145,18 +1170,20 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log) -> None:
         comp = by_hf_id[survivor_id]
         for other in ids:
             if other != survivor_id:
-                _absorb(merged, comp, by_hf_id[other])
+                _absorb(merged, comp, by_hf_id[other], facts)
                 log(f"[dataset] {other}: merged into {canonical}, same dataset")
         if survivor_id != canonical:
-            _rename(merged, comp, survivor_id, canonical)
+            _rename(merged, comp, survivor_id, canonical, facts)
             log(f"[dataset] {survivor_id}: renamed to {canonical} (canonical id)")
         elif (m := _HF_DATASET_PURL.match(comp.get("purl") or "")) is None or m["id"].strip("/") != canonical:
-            _rename(merged, comp, survivor_id, canonical)       # cdxgen 이 purl 없이 만든 것도 purl·bom-ref 를 정식 id 로 맞춘다
+            _rename(merged, comp, survivor_id, canonical, facts)   # cdxgen 이 purl 없이 만든 것도 purl·bom-ref 를 정식 id 로 맞춘다
         info = info_by_canonical.get(canonical)
         if info:
             size = fetch_dataset_size(canonical, log)
             statistics = _fetch_statistics(canonical, info, size, log)
             apply_hub_info(comp, canonical, info, size, statistics)
+            if facts is not None:
+                facts.set_time(comp["bom-ref"], "releaseTime", info.get("lastModified"))
     return True
 
 
@@ -1201,7 +1228,7 @@ def canonical_id(hf_id: str, info: dict | None) -> str:
     return cid if cid and _HF_ID.match(cid) else hf_id
 
 
-def _absorb(merged: dict, survivor: dict, loser: dict) -> None:
+def _absorb(merged: dict, survivor: dict, loser: dict, facts: Facts | None = None) -> None:
     """loser 를 survivor 에 합치고 문서에서 뺀다. survivor 에 없는 값만 채우고 properties·externalReferences·evidence.occurrences 는 합친다."""
     occurrences = (loser.get("evidence") or {}).get("occurrences") or []
     fill_missing(survivor, {k: v for k, v in loser.items() if k not in ("bom-ref", "purl", "evidence")})
@@ -1211,14 +1238,14 @@ def _absorb(merged: dict, survivor: dict, loser: dict) -> None:
         target.extend(o for o in occurrences if o.get("location") not in known)
         target.sort(key=lambda o: o.get("location") or "")
     merged["components"] = [c for c in merged["components"] if c is not loser]
-    _repoint(merged, loser["bom-ref"], survivor["bom-ref"])
+    _repoint(merged, loser["bom-ref"], survivor["bom-ref"], facts)
 
 
-def _rename(merged: dict, comp: dict, old_id: str, new_id: str) -> None:
+def _rename(merged: dict, comp: dict, old_id: str, new_id: str, facts: Facts | None = None) -> None:
     """컴포넌트의 id 를 정식 id 로. purl·bom-ref 는 pkg:huggingface/datasets/<id>, group/name 은 owner/name,
     data[].name 은 id 로, data[].contents.url 과 externalReferences 의 허브 주소(cdxgen 이 이름만 있는 id 로 만든
     datasets/datasets/<이름> 포함)는 정식 id 의 주소로 바꾼다. data[] 에 데이터셋 항목이 없으면(코드의 링크로 cdxgen 이 만든 것) 만든다.
-    다른 컴포넌트·관계가 가리키던 bom-ref 는 따라간다."""
+    다른 컴포넌트·관계가 가리키던 bom-ref 는 따라간다 (facts 의 역할·시각도)."""
     old_ref = comp["bom-ref"]
     group, _, name = new_id.rpartition("/")
     if group:
@@ -1245,14 +1272,16 @@ def _rename(merged: dict, comp: dict, old_id: str, new_id: str) -> None:
             refs.append(r)
     if refs:
         comp["externalReferences"] = refs
-    _repoint(merged, old_ref, comp["bom-ref"])
+    _repoint(merged, old_ref, comp["bom-ref"], facts)
 
 
-def _repoint(merged: dict, old: str, new: str) -> None:
+def _repoint(merged: dict, old: str, new: str, facts: Facts | None = None) -> None:
     """bom-ref old 를 가리키던 곳(dependencies[] 의 ref·dependsOn, modelCard.modelParameters.datasets[].ref)을 new 로 돌린다.
-    그 결과 같은 ref 가 된 관계 행과 modelCard 항목은 하나로 합친다."""
+    그 결과 같은 ref 가 된 관계 행과 modelCard 항목은 하나로 합친다. facts 의 역할·시각도 따라간다."""
     if old == new:
         return
+    if facts is not None:
+        facts.repoint(old, new)
     if merged.get("dependencies"):
         rows: dict[str, dict] = {}
         for row in merged["dependencies"]:

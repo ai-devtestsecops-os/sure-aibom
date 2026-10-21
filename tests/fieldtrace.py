@@ -203,8 +203,8 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
             return doc
         return run
 
-    def merge(docs, root=None):
-        out = real["merge"](docs, root=root)
+    def merge(docs, root=None, **k):
+        out = real["merge"](docs, root=root, **k)
         tracker.after_merge(out)
         return out
 

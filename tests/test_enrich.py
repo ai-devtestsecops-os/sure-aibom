@@ -11,6 +11,7 @@ import pytest
 import aibom_cli.dataset as ds
 import aibom_cli.enrich as en
 from aibom_cli.enrich import OWASP_SOURCES, apply_model_info, enrich, hf_id_of, hub_model_id, performance_metrics, skip_reason
+from aibom_cli.facts import Facts
 from aibom_cli.form import apply
 from aibom_cli.runners._proc import RunnerError
 
@@ -256,8 +257,10 @@ def test_hub_api_response_fills_the_empty_fields(monkeypatch, hub):
     modelArchitecture)은 그대로이고, model-index 가 없으니 성능 지표는 없으며, base_model 이 없으니 계보도 없다."""
     stub(monkeypatch, RunnerError("OWASP 는 이 테스트의 관심 밖"))
     report: dict = {}
-    comp = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None, report=report, model_infos={HF_ID: hub})["components"][0]
+    facts = Facts()
+    comp = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None, report=report, model_infos={HF_ID: hub}, facts=facts)["components"][0]
     assert (report["hub"], report["hub_missing"]) == (1, [])
+    assert facts.times == {comp["bom-ref"]: {"releaseTime": "2024-02-19T11:06:12Z"}}     # lastModified 는 문서가 아니라 facts 에
     assert comp["version"] == "86b5e0934494bd15c9632b12f734a8a67f723594"
     assert comp["licenses"] == [{"license": {"id": "Apache-2.0"}}] and comp["supplier"] == {"name": "google-bert"}
     assert comp["externalReferences"] == [{"type": "distribution", "url": "https://huggingface.co/google-bert/bert-base-uncased"},

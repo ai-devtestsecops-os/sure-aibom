@@ -92,11 +92,13 @@ SPDX 문서는 다 만든 CycloneDX 문서를 마지막에 바꾼 것이라 담�
 | `data` (데이터셋) | `dataset_DatasetPackage` |
 | `services[]` | `software_Package` (SPDX 에 서비스 클래스가 없어 comment 에 service 라고 적는다) |
 | `dependencies` | `Relationship` (`dependsOn`) |
+| 모델 카드의 학습·평가 데이터셋 (CycloneDX 에는 구분이 없다) | `Relationship` (`trainedOn`, `testedOn`). `dependsOn` 도 그대로 둔다 |
 | `pedigree` 의 베이스 모델, 베이스 이미지 | 그 모델·이미지의 요소와 `Relationship` (`descendantOf`) |
 | `licenses` | `simplelicensing_LicenseExpression` 요소와 `Relationship` (`hasDeclaredLicense`) |
 | `metadata.tools` | `Tool` 요소. `CreationInfo.createdUsing` 이 가리키고, 작성 주체(`createdBy`)는 aibom-cli 다 |
+| (CycloneDX 에 없음) 이미지의 `created` 라벨, 허브의 `lastModified` | 루트의 `builtTime`, 허브 모델·데이터셋의 `releaseTime` |
 | `bom-ref`, `group`, `tags`, `evidence` 처럼 SPDX 에 자리가 없는 값 | 요소의 `extension` 에 CycloneDX 경로를 이름으로 |
 
 요소의 id 는 문서 일련번호(`urn:uuid:…`) 뒤에 `bom-ref` 를 붙인 것이라, 같은 CycloneDX 문서를 바꾸면 늘 같은 SPDX 가 나온다.
-모델이 학습·평가에 쓴 데이터셋은 CycloneDX 와 같이 `dependsOn` 으로만 잇는다. 학습용과 평가용을 가르는 `trainedOn`·`testedOn` 은
-CycloneDX 출력에 그 구분이 없어 아직 적지 않는다.
+학습·평가 관계와 생성·공개 시각은 CycloneDX 에 자리가 없어, 수집 단계가 메모리로만 들고 가다가 SPDX 로 바꿀 때 더한다.
+모델 카드의 `datasets` 와 GGUF 헤더의 `general.datasets` 는 학습, `model-index` 의 데이터셋은 평가다. CycloneDX 출력에는 이 값이 없다.

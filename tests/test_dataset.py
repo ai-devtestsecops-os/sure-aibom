@@ -14,6 +14,7 @@ import pytest
 
 import aibom_cli.dataset as ds
 from aibom_cli.enrich import skip_reason
+from aibom_cli.facts import Facts
 from aibom_cli.merge import merge
 from aibom_cli.form import INTERNAL_PREFIX, apply
 from aibom_cli.licenses import card_licenses, license_entry
@@ -658,9 +659,11 @@ def test_readme_only_component_is_renamed_to_the_hub_id_and_refs_follow(tmp_path
     monkeypatch.setattr(ds, "hf_reachable", lambda: True)
     monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: bookcorpus_hub(imdb))
     logs: list[str] = []
-    out = ds.discover(readme_doc(), str(tmp_path), log=logs.append)
+    facts = Facts()
+    out = ds.discover(readme_doc(), str(tmp_path), log=logs.append, facts=facts)
     found = datasets(out)
     assert set(found) == {BOOK_CANON}
+    assert facts.times == {BOOK_CANON: {"releaseTime": "2024-01-04T12:09:45Z"}} and not facts.roles   # cdxgen 이 이은 것이라 역할은 모른다
     book = found[BOOK_CANON]
     assert (book["group"], book["name"], book["purl"]) == ("bookcorpus", "bookcorpus", BOOK_CANON)
     assert book["data"][0]["name"] == "bookcorpus/bookcorpus"                             # cdxgen 이 붙인 datasets/ 앞머리는 빼고 정식 id 로
@@ -720,9 +723,12 @@ def test_hub_model_card_datasets_become_components_linked_from_the_model(tmp_pat
     info = model_info(["bookcorpus", IMDB], [{"name": "GLUE SST2", "type": "glue"}, {"name": "x", "type": "./eval.csv"}, {"name": "imdb", "type": IMDB}])
     monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: calls.append(hf_id) or copy.deepcopy(info))
     logs: list[str] = []
-    out = ds.discover(doc_of(hub_bert(), cdxgen_bookcorpus()), str(tmp_path), log=logs.append)
+    facts = Facts()
+    out = ds.discover(doc_of(hub_bert(), cdxgen_bookcorpus()), str(tmp_path), log=logs.append, facts=facts)
     glue = "pkg:huggingface/datasets/glue"
     assert calls == ["google-bert/bert-base-uncased"]
+    assert facts.roles == {(BERT_REF, BOOK_HUB): {"training"}, (BERT_REF, IMDB_REF): {"training", "evaluation"}, (BERT_REF, glue): {"evaluation"}}
+    assert facts.times == {IMDB_REF: {"releaseTime": "2024-01-04T12:09:45Z"}}            # 역할은 바뀐 bom-ref 를 따라가고, 시각은 허브 응답에서
     assert set(datasets(out)) == {BOOK_HUB, IMDB_REF, glue}                              # bookcorpus 는 cdxgen 것을 다시 쓴다 (purl 만 정식으로)
     bert = next(c for c in out["components"] if c["bom-ref"] == BERT_REF)
     assert bert["modelCard"]["modelParameters"]["datasets"] == [{"ref": BOOK_HUB}, {"ref": IMDB_REF}, {"ref": glue}]
@@ -848,10 +854,12 @@ def test_local_model_card_datasets_become_components_linked_from_the_model(tmp_p
     model = local_model(tmp_path, TINY_CARD, [{"ref": cdxgen_imdb()["bom-ref"]}, {"type": "dataset", "name": "GLUE SST2"},
                                               {"type": "dataset", "name": "IMDB"}, {"type": "dataset", "name": "private eval"}])
     logs: list[str] = []
-    out = ds.discover(with_cdxgen_imdb(model), str(tmp_path), log=logs.append)
+    facts = Facts()
+    out = ds.discover(with_cdxgen_imdb(model), str(tmp_path), log=logs.append, facts=facts)
     glue = "pkg:huggingface/datasets/glue"
     found = datasets(out)
     assert set(found) == {IMDB_REF, glue, BOOK_HUB} and online == ["bookcorpus", "glue", IMDB]
+    assert facts.roles == {(TINY_REF, BOOK_HUB): {"training"}, (TINY_REF, glue): {"evaluation"}, (TINY_REF, IMDB_REF): {"evaluation"}}
     tiny = next(c for c in out["components"] if c["bom-ref"] == TINY_REF)
     assert tiny["modelCard"]["modelParameters"]["datasets"] == [{"ref": IMDB_REF}, {"type": "dataset", "name": "private eval"},
                                                                 {"ref": BOOK_HUB}, {"ref": glue}]
@@ -1240,9 +1248,11 @@ def test_owner_name_datasets_named_in_a_model_header_become_components(tmp_path,
             "evidence": {"occurrences": [{"location": "models/tiny.gguf"}]},
             "modelCard": {"modelParameters": {"datasets": [{"type": "dataset", "name": "acme/chat-sft", "contents": {"url": "acme/chat-sft"}},
                                                            {"type": "dataset", "name": "wikitext"}, {"type": "dataset", "name": "Acme Eval"}]}}}
-    out = ds.discover(doc_of(gguf), str(tmp_path), log=lambda m: None)
+    facts = Facts()
+    out = ds.discover(doc_of(gguf), str(tmp_path), log=lambda m: None, facts=facts)
     model = next(c for c in out["components"] if c["type"] == "machine-learning-model")
     ref = "pkg:huggingface/datasets/acme/chat-sft"
+    assert facts.roles == {(model["bom-ref"], ref): {"training"}}                       # general.datasets 는 학습 데이터셋
     assert model["modelCard"]["modelParameters"]["datasets"] == [{"type": "dataset", "name": "wikitext"}, {"type": "dataset", "name": "Acme Eval"}, {"ref": ref}]
     assert datasets(out)[ref]["evidence"]["occurrences"] == [{"location": "models/tiny.gguf"}]
     assert ref in deps_of(out)[model["bom-ref"]]

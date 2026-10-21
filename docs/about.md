@@ -29,5 +29,5 @@ aibom-cli 는 검증된 오픈소스 도구가 찾은 패키지와 모델을 정
     - `<owner/model>`: cdxgen 이 찾은 허브 모델 id
 - **D-BOM 생성 · 보강 (aibom-cli)**: 모델과 코드에서 찾은 허브 데이터셋의 컴포넌트를 만들고 [Hub API](https://huggingface.co/docs/hub/api) 와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 응답으로 보강한다. 지정한 로컬 데이터는 파일을 직접 읽어 컴포넌트를 만든다.
 - **규제 필드 추가 (aibom-cli)**: EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 필드를 `--spec` 에 따라 바탕 표준의 properties·확장 또는 AI-BOM v0.6 필드로 넣고, 채울 수 있는 필드 가운데 채운 수를 로그에 적는다. 두 방식은 [규제 준수](compliance/index.md)에 있다.
-- **SPDX 변환 (aibom-cli, 선택)**: `--format spdx` 면 다 만든 CycloneDX 문서를 SPDX 3.0.1 JSON-LD 로 바꾼다. 값은 그대로이고 모양만 바뀐다. 무엇이 어디로 가는지는 [출력 포맷](guides/output-format.md)에 있다.
+- **SPDX 변환 (aibom-cli, 선택)**: `--format spdx` 면 다 만든 CycloneDX 문서를 SPDX 3.0.1 JSON-LD 로 바꾼다. 값은 그대로이고 모양만 바뀐다. SPDX 에만 자리가 있는 값(학습·평가 관계, 생성·공개 시각)은 수집 단계가 메모리로 들고 가다 여기서 더한다. 무엇이 어디로 가는지는 [출력 포맷](guides/output-format.md)에 있다.
 - **검증 (aibom-cli)**: 생성된 AI-BOM 을 CycloneDX 1.7, SPDX 3.0.1, AI-BOM v0.6 (CycloneDX, SPDX) 스키마로 검증한다. 형식은 문서에서 알아낸다.

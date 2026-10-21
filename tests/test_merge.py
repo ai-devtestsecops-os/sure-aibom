@@ -1,5 +1,6 @@
 import pytest
 
+from aibom_cli.facts import Facts
 from aibom_cli.merge import identity, merge
 
 
@@ -127,11 +128,13 @@ def syft_image_doc(**labels) -> dict:
 
 
 def test_oci_labels_fill_the_container_root():
+    facts = Facts()
     out = merge([syft_image_doc(**{"version": "1.4.0", "description": "Acme app", "vendor": "Acme Corp", "authors": "ML Team <ml@acme.example>",
                                    "licenses": "Apache-2.0", "source": "https://github.com/acme/app", "revision": "0123abcd",
                                    "url": "https://acme.example/app", "documentation": "https://acme.example/docs", "title": "app",
                                    "created": "2026-10-01T00:00:00Z", "base.name": "docker.io/library/debian:12-slim",
-                                   "base.digest": "sha256:" + "d1" * 32})], root=("acme-app:1.4.0", "image"))
+                                   "base.digest": "sha256:" + "d1" * 32})], root=("acme-app:1.4.0", "image"), facts=facts)
+    assert facts.times == {"container:/acme-app:1.4.0@": {"builtTime": "2026-10-01T00:00:00Z"}}   # created 라벨은 문서가 아니라 facts 에
     assert out["metadata"]["component"] == {
         "type": "container", "name": "acme-app:1.4.0", "bom-ref": "container:/acme-app:1.4.0@",       # bom-ref 는 이름으로만 (라벨과 무관)
         "version": "1.4.0", "description": "Acme app", "supplier": {"name": "Acme Corp"}, "authors": [{"name": "ML Team <ml@acme.example>"}],

@@ -14,6 +14,7 @@
                                 .modelArchitecture   config.architectures[0]
                                 .inputs/outputs[].format   task 를 cdxgen 과 같은 표로 바꾼 것, 표에 없으면 widget 예시로
        modelCard.quantitativeAnalysis.performanceMetrics   model-index 결과의 metrics (cdxgen 과 같은 모양: type, value, slice)
+       (facts) releaseTime                          lastModified. CycloneDX 에 자리가 없어 메모리 부가 기록(facts.py)으로만 두고 SPDX 변환기가 적는다
    규제 필드 원본 (aibom-internal:model:*, form 이 옮기고 지운다): parameterCount ← safetensors.total, 없으면 gguf.total;
    inputs maxSize ← gguf.context_length.
 2) OWASP aibom-generator — 규제 필드 원본만 가져온다 (OWASP_SOURCES: modelCard.properties 의 하이퍼파라미터 묶음과 개별 키,
@@ -37,6 +38,7 @@ from pathlib import Path, PurePosixPath
 from typing import Iterable
 from urllib.parse import urlparse
 
+from .facts import Facts
 from .form import HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON, INTERNAL_MODEL_PREFIX
 from .licenses import card_licenses
 from .runners import run_aibom_generator
@@ -112,8 +114,10 @@ def skip_reason() -> str | None:
     return None
 
 
-def enrich(merged: dict, workdir: Path, log=print, report: dict | None = None, model_infos: dict | None = None) -> dict:
+def enrich(merged: dict, workdir: Path, log=print, report: dict | None = None, model_infos: dict | None = None,
+           facts: Facts | None = None) -> dict:
     """model_infos 는 허브 모델 id → Hub API 응답 (실패면 None). 주지 않으면 허브에 닿는지 보고 허브 모델마다 받는다.
+    facts 를 주면 응답의 lastModified 를 그 모델의 releaseTime 으로 적는다.
     report 를 주면 결과를 적는다: models(허브 모델 수) · hub(Hub API 로 채운 수) · hub_missing(응답이 없던 id) ·
     hub_skipped(Hub API 를 쓰지 못한 이유) · hub_reachable(허브에 닿는지 본 결과, 보지 않았으면 None) ·
     model_infos(쓴 응답, D-BOM 이 다시 쓴다) · enriched(OWASP 에서 원본을 가져온 수) · failed(실패한 id) ·
@@ -139,6 +143,8 @@ def enrich(merged: dict, workdir: Path, log=print, report: dict | None = None, m
             info = model_infos.get(hf_id)
             if isinstance(info, dict):
                 apply_model_info(comp, hf_id, info)
+                if facts is not None and comp.get("bom-ref"):
+                    facts.set_time(comp["bom-ref"], "releaseTime", info.get("lastModified"))
                 report["hub"] += 1
             else:
                 report["hub_missing"].append(hf_id)

@@ -254,6 +254,14 @@ def test_spdx_output_validates_and_keeps_the_models_and_datasets(tmp_path, capsy
     depends = {r["from"]: set(r["to"]) for r in relationships if r["relationshipType"] == "dependsOn"}
     assert {bert["spdxId"]} <= set(depends) and len(depends[bert["spdxId"]]) == 2                          # 허브 모델 카드의 데이터셋 둘
     assert any(r["relationshipType"] == "hasDeclaredLicense" for r in relationships)
+    by_name = {e["name"]: e["spdxId"] for e in graph if e["type"] == "dataset_DatasetPackage"}
+    trained = {r["from"]: set(r["to"]) for r in relationships if r["relationshipType"] == "trainedOn"}
+    assert trained[bert["spdxId"]] == {by_name["bookcorpus"], by_name["wikipedia"]}             # bert 카드의 datasets (학습)
+    tiny = next(e for e in graph if e["type"] == "ai_AIPackage" and e["name"] == "tiny-random-gpt2")
+    assert trained[tiny["spdxId"]] == {by_name["bookcorpus"]}                                    # 로컬 모델 README 의 datasets
+    assert not any(r["relationshipType"] == "testedOn" for r in relationships)                   # 픽스처에 model-index 가 없다
+    assert bert["releaseTime"] == "2024-02-19T11:06:12Z" and "builtTime" not in bert             # 허브 lastModified
+    assert next(e for e in graph if e.get("spdxId") == by_name["imdb"])["releaseTime"] == "2024-01-04T12:09:45Z"   # 허브 데이터셋도
     document = next(e for e in graph if e["type"] == "SpdxDocument")
     assert document["rootElement"] == [next(e["spdxId"] for e in graph if e.get("name") == "project" and e["type"] == "software_Package")]
 

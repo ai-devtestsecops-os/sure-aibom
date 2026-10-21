@@ -19,7 +19,8 @@ spec
 
 관계 (Relationship)
     dependencies[]                       dependsOn. 모델 카드의 datasets ref 도 모델 → 데이터셋 dependsOn 에 더한다.
-                                         (학습·평가 구분(trainedOn·testedOn)은 CycloneDX 출력에 그 구분이 없어 아직 적지 않는다)
+    facts.roles                          모델 → 데이터셋 trainedOn(모델 카드 datasets, GGUF general.datasets) · testedOn(model-index).
+                                         CycloneDX 는 dependsOn 뿐이라 구분이 없고, dependsOn 은 그대로 둔 채 더한다
     pedigree.ancestors / variants / descendants   descendantOf / hasVariant / ancestorOf. pedigree.notes 는 그 관계의 comment
     licenses                             hasDeclaredLicense (acknowledgement 가 concluded 면 hasConcludedLicense) → simplelicensing_LicenseExpression 요소.
                                          SPDX id 와 식은 그대로, 이름뿐인 라이선스는 LicenseRef-<이름> 과 customIdToUri(url)
@@ -29,6 +30,8 @@ spec
                      aibom:dataset:statistics:<i>:type …). CycloneDX 1.7 출력의 properties 와 같은 이름이라 두 형식을 같은 키로 읽는다
                    - 그 밖의 값(bom-ref, group, tags, evidence, 로컬 데이터의 data[].name, 신뢰구간 …): CycloneDX 의 JSON 경로(배열 번호 없이)
 작성 주체          CreationInfo.createdBy 가 필수라 aibom-cli 자신을 SoftwareAgent 로 적는다. metadata.tools 는 Tool 요소로 createdUsing 에.
+부가 기록(facts)   CycloneDX 에 자리가 없어 수집 단계가 메모리로만 들고 온 값 (facts.py). 위의 학습·평가 관계와 요소의
+                   builtTime(이미지 created 라벨)·releaseTime(허브 lastModified). CycloneDX 출력에는 없다. 주지 않으면 그냥 뺀다
 식별자             문서 네임스페이스는 serialNumber(urn:uuid:…), 요소 id 는 "<네임스페이스>#<bom-ref>" (IRI 에 못 쓰는 글자만 퍼센트 인코딩).
                    그래서 같은 CycloneDX 문서를 두 번 바꾸면 같은 SPDX 가 나온다.
 """
@@ -41,6 +44,7 @@ import uuid
 from urllib.parse import quote
 
 from .dataset import is_dataset
+from .facts import Facts
 from .merge import identity
 
 SPEC_VERSION = "3.0.1"
@@ -84,16 +88,17 @@ PRESENCE = {"yes": "yes", "no": "no", "unknown": "noAssertion"}
 SAFE = ":/@!$&'()*+,;="                  # IRI 조각(fragment)에 그대로 둘 수 있는 글자. 나머지(공백, %, ?, # …)는 퍼센트 인코딩
 
 
-def convert(doc: dict, spec: str = SPEC_VERSION, log=print) -> dict:
-    """CycloneDX 문서를 SPDX 3.0.1 JSON-LD 로 바꿔 돌려준다 (입력은 그대로 둔다)."""
+def convert(doc: dict, spec: str = SPEC_VERSION, log=print, facts: Facts | None = None) -> dict:
+    """CycloneDX 문서를 SPDX 3.0.1 JSON-LD 로 바꿔 돌려준다 (입력은 그대로 둔다). facts 는 수집 단계의 메모리 부가 기록."""
     if spec not in SPECS:
         raise ValueError(f"spec 은 {SPECS} 중 하나여야 한다: {spec!r}")
-    return _Converter(doc, spec, log).run()
+    return _Converter(doc, spec, log, facts).run()
 
 
 class _Converter:
-    def __init__(self, doc: dict, spec: str, log) -> None:
+    def __init__(self, doc: dict, spec: str, log, facts: Facts | None = None) -> None:
         self.doc = doc
+        self.facts = facts
         self.v06 = spec == "v0.6"
         self.log = log
         self.ns = doc.get("serialNumber") or f"urn:uuid:{uuid.uuid4()}"
@@ -201,6 +206,7 @@ class _Converter:
         ext: list[tuple[str, object]] = [("bom-ref", ref)]
         _set(el, "name", work.pop("name", None))
         _set(el, "description", work.pop("description", None))
+        self._times(el, ref)
         if cls == "software_File":
             el["software_fileKind"] = "file"
             work.pop("version", None)
@@ -230,6 +236,11 @@ class _Converter:
         ext.extend(_leaves(work))
         self._extension(el, ext)
         return spdx_id
+
+    def _times(self, el: dict, ref: str) -> None:
+        """facts 의 builtTime·releaseTime (bom-ref 로 찾는다)."""
+        for key, value in ((self.facts.times.get(ref) if self.facts else None) or {}).items():
+            el[key] = value
 
     def _service(self, service: dict) -> str:
         work = copy.deepcopy(service)
@@ -531,6 +542,23 @@ class _Converter:
                     rows.setdefault(frm, []).append(to)
         for frm, targets in rows.items():
             self._rel("dependsOn", frm, list(dict.fromkeys(targets)))
+        self._dataset_roles()
+
+    def _dataset_roles(self) -> None:
+        """facts.roles → 모델 → 데이터셋 trainedOn(training) · testedOn(evaluation). dependsOn 은 그대로 둔다."""
+        by_type: dict[str, dict[str, list[str]]] = {"trainedOn": {}, "testedOn": {}}
+        for (model_ref, dataset_ref), roles in (self.facts.roles if self.facts else {}).items():
+            frm, to = self.ref.get(model_ref), self.ref.get(dataset_ref)
+            if not frm or not to:
+                self.log(f"[spdx] dataset role of unknown element skipped: {model_ref} -> {dataset_ref}")
+                continue
+            if "training" in roles:
+                by_type["trainedOn"].setdefault(frm, []).append(to)
+            if "evaluation" in roles:
+                by_type["testedOn"].setdefault(frm, []).append(to)
+        for rel_type, rows in by_type.items():
+            for frm, targets in rows.items():
+                self._rel(rel_type, frm, list(dict.fromkeys(targets)))
 
     def _rel(self, rel_type: str, frm: str, to: list[str], comment: str | None = None) -> dict:
         local = frm.split("#", 1)[1] if "#" in frm else frm

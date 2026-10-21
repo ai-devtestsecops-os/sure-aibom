@@ -18,6 +18,7 @@ root=(이름, 종류) 를 주면 metadata.component 를 만든다 (디렉터리 
     version → version, description → description, licenses(SPDX 식) → licenses, vendor → supplier, authors → authors,
     source(+ revision) → externalReferences vcs, url → website, documentation → documentation,
     base.name(+ base.digest) → pedigree.ancestors (베이스 이미지)
+    created → facts 의 builtTime (메모리 부가 기록, facts.py. CycloneDX 에는 자리가 없어 SPDX 출력에만 적는다)
 각 도구가 자기 metadata.component 를 ref 로 쓴 dependencies 행은 새 루트의 행으로 옮기고, 루트는 그 밖에
 아무도(컴포넌트·루트가) 의존하지 않는 컴포넌트에도 의존한다 — 그래프 전체가 루트에서 닿는다.
 ref 가 컴포넌트도 루트도 아닌 행(서비스 등)은 그대로 두되(변환기가 경고하고 건너뛴다) 그 대상을 '의존받음'으로 치지 않는다.
@@ -29,6 +30,7 @@ from datetime import datetime, timezone
 from typing import Iterable
 from urllib.parse import unquote, urlsplit
 
+from .facts import Facts
 from .licenses import license_entry
 
 SPEC_VERSION = "1.7"
@@ -119,13 +121,15 @@ def _walk_components(components: Iterable[dict]):
         yield from _walk_components(c.get("components") or [])
 
 
-def root_component(name: str, kind: str, labels: dict[str, str] | None = None) -> dict:
+def root_component(name: str, kind: str, labels: dict[str, str] | None = None, facts: Facts | None = None) -> dict:
     """스캔 대상 → metadata.component. bom-ref 는 identity 규칙으로 정해 결정적이다 (라벨의 version 은 넣지 않는다).
-    labels 는 이미지의 OCI 라벨 (키 → 값)."""
+    labels 는 이미지의 OCI 라벨 (키 → 값). facts 를 주면 created 라벨을 루트의 builtTime 으로 적는다."""
     comp = {"type": ROOT_TYPE_BY_KIND.get(kind, "application"), "name": name}
     comp["bom-ref"] = identity(comp)
     if labels:
         _apply_image_labels(comp, labels)
+        if facts is not None:
+            facts.set_time(comp["bom-ref"], "builtTime", labels.get(OCI + "created"))
     return comp
 
 
@@ -174,7 +178,7 @@ def image_labels(docs: list[dict]) -> dict[str, str]:
     return labels
 
 
-def merge(docs: list[dict], root: tuple[str, str] | None = None) -> dict:
+def merge(docs: list[dict], root: tuple[str, str] | None = None, facts: Facts | None = None) -> dict:
     components: dict[str, dict] = {}
     ref_map: dict[str, str] = {}          # 원래 bom-ref → 병합 키
     dependencies: dict[str, set[str]] = {}
@@ -211,7 +215,7 @@ def merge(docs: list[dict], root: tuple[str, str] | None = None) -> dict:
     for key, comp in components.items():
         comp["bom-ref"] = key
 
-    root_comp = root_component(*root, labels=image_labels(docs)) if root is not None else None
+    root_comp = root_component(*root, labels=image_labels(docs), facts=facts) if root is not None else None
     root_key = root_comp["bom-ref"] if root_comp else None
     if root_key:
         for ref in producer_roots:            # 도구의 루트 행은 새 루트의 행이 된다 (컴포넌트이기도 하면 컴포넌트가 이긴다)
