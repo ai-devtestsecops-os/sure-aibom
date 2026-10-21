@@ -111,7 +111,7 @@ async function init() {
 
   buildFilterIndex();
   buildSuggestIndex();
-  searchEl.addEventListener("input", debounce(() => { applyFilter(); showSuggestions(); }, 150));
+  searchEl.addEventListener("input", debounce(showSuggestions, 150));     // 검색어는 트리를 거르지 않고 제안 목록만 띄운다
   searchEl.addEventListener("keydown", onSearchKey);
   searchEl.addEventListener("blur", () => setTimeout(hideSuggestions, 150));
   if (addedOnlyEl) addedOnlyEl.addEventListener("change", applyFilter);
@@ -1470,7 +1470,7 @@ function buildFilterIndex() {
 }
 
 function applyFilter() {
-  const query = searchEl.value.trim().toLowerCase();
+  const query = "";                                                  // 검색어로는 거르지 않는다 (제안 목록에서 골라 이동)
   const addedOnly = !!(addedOnlyEl && addedOnlyEl.checked);
   const generatedOnly = !!(generatedOnlyEl && generatedOnlyEl.checked);
   // "생성하는 필드만" 은 두 트리에 다 건다 (CycloneDX 자리는 aibom_cli_sources, SPDX 자리는 aibom_cli_spdx_sources)
@@ -1479,7 +1479,7 @@ function applyFilter() {
   });
 }
 
-/** 검색어에 맞는 행과 그 조상만 남긴다. "추가 필드만" 이면 v0.6 추가 필드(대표 자리)와 그 조상만, "생성하는 필드만" 이면
+/** "추가 필드만" 이면 v0.6 추가 필드(대표 자리)와 그 조상만, "생성하는 필드만" 이면
     aibom-cli 가 값을 채우는 자리와 그 조상만. 필터가 없으면 전부 접어 둔다. */
 function filterNodes(nodes, query, addedOnly, generatedOnly, active) {
   let any = false;
@@ -1500,8 +1500,8 @@ function filterNodes(nodes, query, addedOnly, generatedOnly, active) {
   return any;
 }
 
-/* 검색 제안: 입력하는 동안 이름이 맞는 필드를 몇 개 보여 주고, 각 항목에 다른 형식의 대응 필드를 함께 적는다.
-   고르면 필터를 비우고 그 자리로 가서 누른 것과 같이 동작한다. */
+/* 검색: 입력하는 동안 트리는 그대로 두고, 이름·경로·설명이 맞는 필드를 몇 개 제안한다 (각 항목에 다른 형식의 대응 필드를 함께 적는다).
+   화살표로 고르고 Enter 나 클릭으로 가면 그 자리를 펼쳐 누른 것과 같이 동작한다. 트리를 거르는 건 체크박스 둘뿐이다. */
 let suggestItems = [];
 const suggestEl = document.getElementById("suggest");
 function buildSuggestIndex() {
@@ -1511,13 +1511,13 @@ function buildSuggestIndex() {
     if (row.parent === "" || row.parent === "(공용 타입)" || !row.name) continue;
     const m = mappingByPath.get(path);
     const targets = m ? getTargets(m) : [];
-    items.push({ side: "cdx", key: path, name: row.name, path, isNew: !!row.added,
+    items.push({ side: "cdx", key: path, name: row.name, path, isNew: !!row.added, desc: `${row.description_ko || ""} ${row.description || ""}`.toLowerCase(),
                  to: targets.map(t => `${t.cls}${t.property ? "." + t.property : ""}`).slice(0, 2) });
   }
   for (const [key, row] of spdxRowByKey) {
     if (!row.property) continue;
     const back = (spdxToCdx.get(key) || []).map(m => m.cdxPath);
-    items.push({ side: "spdx", key, name: row.property, path: `${row.class}.${row.property}`, isNew: !!row.added,
+    items.push({ side: "spdx", key, name: row.property, path: `${row.class}.${row.property}`, isNew: !!row.added, desc: `${row.summary_ko || ""} ${row.summary || ""}`.toLowerCase(),
                  to: [...new Set(back)].slice(0, 2) });
   }
   suggestItems = items;
@@ -1527,7 +1527,7 @@ function showSuggestions() {
   if (!suggestEl) return;
   const q = searchEl.value.trim().toLowerCase();
   if (q.length < 2) return hideSuggestions();
-  const rank = it => { const n = it.name.toLowerCase(); return n === q ? 0 : n.startsWith(q) ? 1 : n.includes(q) ? 2 : it.path.toLowerCase().includes(q) ? 3 : 9; };
+  const rank = it => { const n = it.name.toLowerCase(); return n === q ? 0 : n.startsWith(q) ? 1 : n.includes(q) ? 2 : it.path.toLowerCase().includes(q) ? 3 : it.desc.includes(q) ? 4 : 9; };
   const hits = suggestItems.map(it => [rank(it), it]).filter(([r]) => r < 9).sort((a, b) => a[0] - b[0] || a[1].name.length - b[1].name.length).slice(0, 8);
   if (!hits.length) return hideSuggestions();
   suggestEl.innerHTML = hits.map(([, it], i) =>
