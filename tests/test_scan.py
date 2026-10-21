@@ -242,7 +242,7 @@ def test_spdx_output_validates_and_keeps_the_models_and_datasets(tmp_path, capsy
     assert lines[0].startswith("[aibom-cli] Generating SPDX 3.0.1 for ")
     assert any(line.startswith("[aibom-cli] Converting to SPDX 3.0.1 ") and "elements" in line and "relationships" in line for line in lines)
     assert main(["validate", str(plain), "--spec", "3.0.1"]) == 0
-    assert main(["validate", str(plain)]) == 0                       # 안 주면 SPDX 문서의 바탕 표준 3.0.1
+    assert main(["validate", str(plain)]) == 0                       # 안 주면 SPDX 문서는 3.0.1
     assert main(["validate", str(plain), "--spec", "1.7"]) == 2
     graph = doc["@graph"]
     models = {e["name"] for e in graph if e["type"] == "ai_AIPackage"}

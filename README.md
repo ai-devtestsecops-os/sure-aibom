@@ -20,7 +20,7 @@ aibom-cli 는 디렉터리와 컨테이너 이미지를 스캔해 AI-BOM(D/M/S-B
 - 오픈소스 도구 활용: S-BOM 은 syft, M-BOM 은 cdxgen 으로 생성하고 aibom-cli 가 정리해 하나로 병합. 허브 모델은 Hub API 와 OWASP aibom-generator 로 보강
 - D-BOM 생성: 코드와 모델 카드에서 찾은 HuggingFace 데이터셋은 허브 API 로, `--data` 로 지정한 로컬 데이터는 파일을 직접 읽어 데이터셋 컴포넌트 구성
 - 규제 필드 추가: EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 필드를 모델과 데이터셋에 기재
-- 출력과 검증: CycloneDX 1.7 또는 SPDX 3.0.1 로 내고(규제 필드는 properties 나 확장에), AI-BOM v0.6 이면 두 형식 모두 v0.6 필드로 낸다. 같은 스키마로 검증
+- 출력과 검증: CycloneDX 1.7, SPDX 3.0.1 또는 AI-BOM v0.6 (CycloneDX·SPDX) 으로 출력하고 같은 스키마로 검증
 
 ## 설치
 
@@ -62,7 +62,7 @@ Options:
   -o, --output <path>         [scan] 출력 경로 (default: 표준출력)
   --data <path>               [scan] 로컬 데이터 경로. 여러 번 줄 수 있음 (optional)
   --format <cyclonedx|spdx>   [scan] 출력 형식 (default: cyclonedx)
-  --spec <1.7|v0.6|3.0.1>     [scan] 규제 필드를 넣을 스키마 (default: cyclonedx 는 1.7, spdx 는 3.0.1)
+  --spec <1.7|v0.6|3.0.1>     [scan] 출력 스펙 (default: cyclonedx 는 1.7, spdx 는 3.0.1)
                                 1.7    CycloneDX 1.7 의 properties 로 넣음
                                 3.0.1  SPDX 3.0.1 의 CdxPropertiesExtension 으로 넣음
                                 v0.6   AI-BOM v0.6 의 필드로 넣음 (cyclonedx, spdx 모두)

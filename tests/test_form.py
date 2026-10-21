@@ -314,7 +314,7 @@ def test_apply_rejects_unknown_form(sample):
 
 # -- validate CLI --------------------------------------------------------------------
 def test_validate_cli_defaults_to_the_base_standard_and_never_switches(tmp_path, sample, capsys):
-    """--spec 은 scan 과 같은 규칙이다: 안 주면 문서 형식의 바탕 표준(CycloneDX 1.7)이고, 자동으로 다른 스키마를 시도하지 않는다."""
+    """--spec 을 안 주면 CycloneDX 문서는 1.7 스키마이고, 자동으로 다른 스키마를 시도하지 않는다."""
     typed = tmp_path / "typed.json"
     typed.write_text(json.dumps(apply(sample, form="typed", log=lambda m: None)), encoding="utf-8")
     assert main(["validate", str(typed), "--spec", "v0.6"]) == 0

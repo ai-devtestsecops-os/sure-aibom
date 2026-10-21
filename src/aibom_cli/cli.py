@@ -271,7 +271,7 @@ def cmd_validate(args: argparse.Namespace) -> int:
     if fmt is None:
         _log(f"[aibom-cli] error: not a CycloneDX or SPDX document (no bomFormat or @context): {args.bom}")
         return EXIT_TOOL
-    args.spec = args.spec or SPEC_BY_FORMAT[fmt][0]                 # scan 과 같은 규칙: 안 주면 그 형식의 바탕 표준
+    args.spec = args.spec or SPEC_BY_FORMAT[fmt][0]                 # 안 주면 CycloneDX 문서는 1.7, SPDX 문서는 3.0.1
     if schema_for(fmt, args.spec) is None:
         _log(f"[aibom-cli] error: --spec {args.spec} is not a {fmt} spec, and {args.bom} is a {fmt} document "
              f"(use {' or '.join(SPEC_BY_FORMAT[fmt])})")
@@ -309,7 +309,7 @@ Options:
   -o, --output <path>         [scan] 출력 경로 (default: 표준출력)
   --data <path>               [scan] 로컬 데이터 경로. 여러 번 줄 수 있음 (optional)
   --format <cyclonedx|spdx>   [scan] 출력 형식 (default: cyclonedx)
-  --spec <1.7|v0.6|3.0.1>     [scan] 규제 필드를 넣을 스키마 (default: cyclonedx 는 1.7, spdx 는 3.0.1)
+  --spec <1.7|v0.6|3.0.1>     [scan] 출력 스펙 (default: cyclonedx 는 1.7, spdx 는 3.0.1)
                                 1.7    CycloneDX 1.7 의 properties 로 넣음
                                 3.0.1  SPDX 3.0.1 의 CdxPropertiesExtension 으로 넣음
                                 v0.6   AI-BOM v0.6 의 필드로 넣음 (cyclonedx, spdx 모두)
