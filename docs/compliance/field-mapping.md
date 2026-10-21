@@ -2,7 +2,7 @@
 
 AI-BOM v0.6 의 필드를 CycloneDX 1.7 과 SPDX 3.0.1 트리에서 찾아본다. 필드가 BOM 의 어디에 들어가는지, 다른 표준의 대응 필드는 무엇인지,
 어느 규제 조항에 근거하는지를 한 화면에서 본다. 트리는 표준 그대로이고, AI-BOM v0.6 이 더한 필드는 <span class="new-badge">v0.6</span> 로 표시한다.
-필드를 누르면 다른 표준의 대응 필드가 켜지고, 오른쪽 상세에 설명, 대응 필드, properties 키, 근거 조항이 나온다.
+필드를 누르면 다른 표준의 대응 필드가 켜지고, 오른쪽 상세에 설명, 대응 필드, 확장 필드, 근거 조항이 나온다.
 
 두 트리의 <span class="tool-badge">syft</span> <span class="tool-badge">cdxgen</span> <span class="tool-badge">OWASP</span> <span class="tool-badge">aibom-cli</span>
 배지는 aibom-cli 가 내는 BOM 에서 그 필드의 값을 채우는 도구다. CycloneDX 트리는 CycloneDX 출력, SPDX 트리는 `--format spdx --spec v0.6` 출력이 기준이고,

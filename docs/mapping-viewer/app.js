@@ -9,7 +9,7 @@ if (document.querySelector(".mapping-viewer")) (() => {
 //   aibom_v0.6_spdx_mapping.json : 두 형식의 대응 (조인 테이블). 1.7 매핑에 v0.6 추가 필드를 넣은 표로, ai-bom 이 만든다
 //   aibom_v0.6_requirement_field_mapping.json : 규제 요구사항이 어느 v0.6 필드로 충족되는지 (엑셀 「요구사항 매핑」 시트와 같은 표).
 //                                cdx_ref(CDX 경로)·spdx_ref("Class.property") 가 조인 키, version 은 그 필드가 1.7 의 것인지 v0.6 의 것인지
-//   aibom_v0.6_properties.json : 추가 필드를 --spec 1.7 로 낼 때의 properties 키 (ai-bom 의 정의서와 같은 출처)
+//   aibom_v0.6_properties.json : 추가 필드를 --spec 1.7 · 3.0.1 로 낼 때의 확장 필드 (aibom: 키. ai-bom 의 정의서와 같은 출처)
 
 const BASE = document.querySelector(".mapping-viewer").dataset.base || "data/";   // 페이지 기준 상대 경로
 const CDX_URL = BASE + "aibom_v0.6_cyclonedx.json";
@@ -42,7 +42,7 @@ function setDetailPanelOpen(open) {
   detailToggle.classList.toggle("active", open);
   if (open && !detailBody.childElementCount) {                 // 아직 아무 필드도 안 눌렀을 때
     detailBody.innerHTML = `<div class="detail-placeholder">왼쪽 트리에서 필드를 누르면 여기에 설명과 다른 형식의 대응 필드,
-      properties 키, 규제 요구사항이 나온다.</div>`;
+      확장 필드, 규제 요구사항이 나온다.</div>`;
   }
 }
 document.getElementById("detail-close").addEventListener("click", () => setDetailPanelOpen(false));
@@ -61,7 +61,7 @@ const cdxNodeIndex = new Map();         // cdx path -> [<li>, ...]     (그래�
 const cdxChipIndex = new Map();         // "cdxPath::value" -> [<span class=enum-chip>, ...]
 const spdxChipIndex = new Map();        // "cls::value" -> [<span class=enum-chip>, ...]
 let currentHighlighted = [];
-let propsByPath = new Map();            // CycloneDX 경로 -> [properties 키 행, ...] (v0.6 추가 필드만)
+let propsByPath = new Map();            // CycloneDX 경로 -> [확장 필드 행, ...] (v0.6 추가 필드만)
 let siteAlias = new Map();              // 접붙인 자리의 경로(…inputs.maxSize) -> 공용 타입 행(inputOutputMLParameters.maxSize)
 let representativeLis = new Set();      // 경로마다 가장 얕은 자리의 <li> 하나 ("추가 필드만" 필터가 남기는 자리)
 let sourcesBySite = new Map();          // 자리 경로 -> [{tool, kinds}] (aibom-cli 출력에서 그 자리의 값을 채우는 도구)
@@ -218,7 +218,7 @@ function atSite(sitePath, path) {
   return sitePath === tail || sitePath.endsWith("." + tail);
 }
 
-/** properties 키는 접붙인 자리의 경로(component.modelCard.modelParameters.inputs.format)에 걸려 있다. 공용 타입 행의 경로
+/** 확장 필드는 접붙인 자리의 경로(component.modelCard.modelParameters.inputs.format)에 걸려 있다. 공용 타입 행의 경로
  *  (inputOutputMLParameters.format)로는 안 잡히므로 자리 경로로 찾는다. */
 function propsFor(sitePath, defPath) {
   if (propsByPath.has(defPath)) return propsByPath.get(defPath);
@@ -1058,9 +1058,9 @@ function renderDetailPanel({ cdxFields, spdxFields, properties, propsViaChildren
 
   const props = properties || [];
   const propsHtml = propsViaChildren
-    ? `<div class="detail-section section-props"><h4>properties 키<span class="section-via">하위 필드에 대응</span></h4></div>`
+    ? `<div class="detail-section section-props"><h4>확장 필드<span class="section-via">하위 필드에 대응</span></h4></div>`
     : props.length
-    ? `<div class="detail-section section-props"><h4>properties 키${sectionCount(props.length)}</h4>` +
+    ? `<div class="detail-section section-props"><h4>확장 필드${sectionCount(props.length)}</h4>` +
       props.map(propertyBlockHtml).join("") + `</div>`
     : "";
 
@@ -1076,7 +1076,7 @@ function renderDetailPanel({ cdxFields, spdxFields, properties, propsViaChildren
   setDetailPanelOpen(true);
 }
 
-/** --spec 1.7 로 낼 때의 properties 키. 같은 값을 v0.6 필드 대신 이 이름으로 적는다. */
+/** --spec 1.7 · 3.0.1 로 낼 때의 확장 필드(aibom: 키). 같은 값을 v0.6 필드 대신 이 이름으로 적는다 (CycloneDX 는 properties 에, SPDX 는 확장에). */
 function propertyBlockHtml(p) {
   return `<div class="field-block">` +
     `<div class="field-name"><code class="prop-key">${escapeHtml(p.key)}</code></div>` +

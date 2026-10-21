@@ -34,7 +34,7 @@ aibom-cli 는 검증된 오픈소스 도구가 찾은 패키지와 모델을 정
   `python -m src.cli <owner/model>`
     - `<owner/model>`: cdxgen 이 찾은 허브 모델 id
 - **D-BOM 생성 · 보강 (aibom-cli)**: 모델과 코드에서 찾은 허브 데이터셋의 컴포넌트를 만들고 [Hub API](https://huggingface.co/docs/hub/api) 와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 응답으로 보강한다. 지정한 로컬 데이터는 파일을 직접 읽어 컴포넌트를 만든다.
-- **규제 필드 추가 (aibom-cli)**: EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 필드를 `--spec` 에 따라 바탕 표준의 properties·확장 또는 AI-BOM v0.6 필드로 넣고, 채울 수 있는 필드 가운데 채운 수를 로그에 적는다. 두 방식은 [규제 준수](compliance/index.md)에 있다.
+- **규제 필드 추가 (aibom-cli)**: EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 필드를 앞 단계에서 모은 값으로 채운다. 어느 필드를 어떤 키로 적는지는 [확장 필드](compliance/regulation-fields.md)에 있다.
 ### 4. 출력
 
 - **SPDX 변환 (aibom-cli, 선택)**: `--format spdx` 면 CycloneDX 문서를 SPDX 3.0.1 JSON-LD 로 변환한다. 두 형식 간 필드 대응은 [필드 탐색기](compliance/field-mapping.md)에서 확인한다.

@@ -11,7 +11,7 @@ AI 시스템의 소프트웨어 패키지(S-BOM), 모델(M-BOM), 데이터셋(D-
 
 ## 주요 기능
 
-- **AI-BOM 생성**: 디렉터리와 컨테이너 이미지를 스캔하여 규제가 요구하는 값까지 담은 AI-BOM 을 만든다. 출력은 CycloneDX(기본) 또는 SPDX 로 내고, 규제 필드는 [AI-BOM v0.6 필드](compliance/aibom-v0.6.md)와 [properties](compliance/regulation-fields.md) 두 방식 중 고른다.
+- **AI-BOM 생성**: 디렉터리와 컨테이너 이미지를 스캔하여 규제가 요구하는 값까지 담은 AI-BOM 을 만든다. 출력은 CycloneDX(기본) 또는 SPDX 로 내고, 규제 필드는 [AI-BOM v0.6 필드](compliance/aibom-v0.6.md)와 [확장 필드](compliance/regulation-fields.md) 두 방식 중 고른다.
 - **검증**: 생성된 AI-BOM 을 CycloneDX 1.7, SPDX 3.0.1, AI-BOM v0.6 스키마로 검증한다.
 
 ## 문서

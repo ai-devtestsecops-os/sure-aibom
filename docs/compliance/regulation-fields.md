@@ -1,4 +1,4 @@
-# properties 키
+# 확장 필드
 
 `--spec 1.7`(CycloneDX)과 `--spec 3.0.1`(SPDX)로 낼 때 규제 값을 적는 키의 규격이다. 새 필드를 만들지 않고 CycloneDX 는 기존 `properties` 배열에,
 SPDX 는 Extension 프로파일의 `CdxPropertiesExtension` 에 `aibom:` 으로 시작하는 키로 값을 적으므로, 결과는 공식 스키마를 그대로 통과한다.
