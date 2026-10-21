@@ -12,8 +12,8 @@ aibom-cli 는 디렉터리와 컨테이너 이미지를 스캔해 AI-BOM(D/M/S-B
 | 3. 보강 | M-BOM 보강                  | **aibom-cli**, OWASP aibom-generator | `python -m src.cli <owner/model>`                         |
 |         | D-BOM 보강                  | **aibom-cli**   | `aibom-cli scan --data <path>`                            |
 |         | 규제 필드 추가              | **aibom-cli**   | `aibom-cli scan --spec 1.7 \| v0.6 \| 3.0.1`               |
-|         | SPDX 변환 (선택)            | **aibom-cli**   | `aibom-cli scan --format spdx`                             |
-| 4. 검증 | CycloneDX 1.7 / SPDX 3.0.1 / AI-BOM v0.6 | **aibom-cli**   | `aibom-cli validate --spec 1.7 \| v0.6 \| 3.0.1`           |
+| 4. 출력 | SPDX 변환 (선택)            | **aibom-cli**   | `aibom-cli scan --format spdx`                             |
+| 5. 검증 | CycloneDX 1.7 / SPDX 3.0.1 / AI-BOM v0.6 | **aibom-cli**   | `aibom-cli validate --spec 1.7 \| v0.6 \| 3.0.1`           |
 
 ## 주요 기능
 
