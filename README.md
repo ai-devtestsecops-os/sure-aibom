@@ -52,11 +52,11 @@ conda activate aibom-cli
 
 Usage:
   aibom-cli scan <target> [options]
-  aibom-cli validate <bom> --spec <1.7|v0.6|3.0.1>
+  aibom-cli validate <bom> [--spec <1.7|v0.6|3.0.1>]
 
 Commands:
   scan <target>               디렉터리 또는 컨테이너 이미지를 스캔해 AI-BOM 을 만든다
-  validate <bom>              BOM 을 --spec 이 고른 스키마로 검증한다. 형식(CycloneDX, SPDX)은 문서에서 알아낸다
+  validate <bom>              BOM 을 --spec 이 고른 스키마로 검증한다 (형식은 문서에서 알아낸다)
 
 Options:
   -o, --output <path>         [scan] 출력 경로 (default: 표준출력)
@@ -66,26 +66,25 @@ Options:
                                 1.7    CycloneDX 1.7 의 properties 로 넣음
                                 3.0.1  SPDX 3.0.1 의 CdxPropertiesExtension 으로 넣음
                                 v0.6   AI-BOM v0.6 의 필드로 넣음 (cyclonedx, spdx 모두)
-                              [validate] 검증할 스키마 (required)
+                              [validate] 검증할 스키마 (default: CycloneDX 문서는 1.7, SPDX 문서는 3.0.1)
   -v, --verbose               [scan] 항목별 상세 로그
   --version                   버전을 보여 준다
   -h, --help                  도움말을 보여 준다
 
 Examples:
-  aibom-cli scan ./project -o bom.cdx.json                    디렉터리를 스캔하여 규제 필드를 CycloneDX 1.7 properties 로 넣음
-  aibom-cli scan ./project -o bom.cdx.json --spec v0.6        디렉터리를 스캔하여 규제 필드를 AI-BOM v0.6 (CycloneDX) 필드로 넣음
-  aibom-cli scan ./project -o bom.spdx.json --format spdx     SPDX 3.0.1 로 냄
-  aibom-cli scan ./project -o bom.spdx.json --format spdx --spec v0.6
-                                                              AI-BOM v0.6 (SPDX) 로 냄
-  aibom-cli scan ./project -o bom.cdx.json --data ./dataset   로컬 데이터 경로를 함께 지정
+  aibom-cli scan ./project -o bom.cdx.json                               디렉터리를 스캔하여 규제 필드를 CycloneDX 1.7 properties 로 넣음
+  aibom-cli scan ./project -o bom.cdx.json --spec v0.6                   디렉터리를 스캔하여 규제 필드를 AI-BOM v0.6 (CycloneDX) 필드로 넣음
+  aibom-cli scan ./project -o bom.spdx.json --format spdx                SPDX 3.0.1 로 냄
+  aibom-cli scan ./project -o bom.spdx.json --format spdx --spec v0.6    AI-BOM v0.6 (SPDX) 로 냄
+  aibom-cli scan ./project -o bom.cdx.json --data ./dataset              로컬 데이터 경로를 함께 지정
 
-  aibom-cli scan alpine:3.20 -o alpine.cdx.json               컨테이너 이미지를 스캔
-  aibom-cli scan image.tar -o image.cdx.json                  이미지 .tar 를 스캔
+  aibom-cli scan alpine:3.20 -o alpine.cdx.json                          컨테이너 이미지를 스캔
+  aibom-cli scan image.tar -o image.cdx.json                             이미지 .tar 를 스캔
 
-  aibom-cli validate bom.cdx.json --spec 1.7                  CycloneDX 1.7 스키마로 검증
-  aibom-cli validate bom.cdx.json --spec v0.6                 AI-BOM v0.6 (CycloneDX) 스키마로 검증
-  aibom-cli validate bom.spdx.json --spec 3.0.1               SPDX 3.0.1 스키마로 검증
-  aibom-cli validate bom.spdx.json --spec v0.6                AI-BOM v0.6 (SPDX) 스키마로 검증
+  aibom-cli validate bom.cdx.json                                        CycloneDX 1.7 스키마로 검증
+  aibom-cli validate bom.cdx.json --spec v0.6                            AI-BOM v0.6 (CycloneDX) 스키마로 검증
+  aibom-cli validate bom.spdx.json                                       SPDX 3.0.1 스키마로 검증
+  aibom-cli validate bom.spdx.json --spec v0.6                           AI-BOM v0.6 (SPDX) 스키마로 검증
 
 Exit codes:
   0  성공        2  실행 오류        3  스키마 불일치

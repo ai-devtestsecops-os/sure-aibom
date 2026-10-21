@@ -81,7 +81,7 @@ aibom-cli scan ./project -o bom.spdx.json --format spdx --spec v0.6   # AI-BOM v
 
 ## SPDX 문서의 구조
 
-SPDX 문서는 다 만든 CycloneDX 문서를 마지막에 바꾼 것이라 담긴 값이 같고 모양만 다르다. SPDX 3.0.1 JSON-LD 라 모든 것이 `@graph` 안의 요소다.
+SPDX 문서는 CycloneDX 문서를 변환한 것이라 담긴 값이 같다. SPDX 3.0.1 JSON-LD 라 모든 것이 `@graph` 안의 요소다.
 
 | CycloneDX | SPDX |
 |---|---|

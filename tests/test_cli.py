@@ -50,7 +50,7 @@ def test_version(capsys):
     (["scan"], "aibom-cli scan: error: the following arguments are required: <target>"),
     (["scan", "x", "--spec", "2.0"], "aibom-cli scan: error: argument --spec: invalid choice: '2.0'"),
     (["scan", "x", "--form", "typed"], "aibom-cli: error: unrecognized arguments: --form typed"),
-    (["validate", "bom.json"], "aibom-cli validate: error: the following arguments are required: --spec"),
+    (["validate"], "aibom-cli validate: error: the following arguments are required: <bom>"),
 ])
 def test_usage_errors_exit_2_and_name_the_command(argv, message, capsys):
     with pytest.raises(SystemExit) as e:

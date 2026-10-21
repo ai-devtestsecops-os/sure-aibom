@@ -108,11 +108,12 @@ jq -r '.["@graph"][] | select(.type == "ai_AIPackage") | .name' bom.spdx.json
 
 ## 검증
 
-생성된 AI-BOM 을 같은 스키마로 다시 검증할 수 있다. `--spec` 은 필수이고, 형식(CycloneDX, SPDX)은 문서에서 알아낸다.
+생성된 AI-BOM 을 같은 스키마로 다시 검증할 수 있다. `--spec` 을 안 주면 CycloneDX 문서는 1.7, SPDX 문서는 3.0.1 스키마로 검증하고,
+v0.6 으로 만든 문서는 `--spec v0.6` 을 준다. 형식(CycloneDX, SPDX)은 문서에서 알아낸다.
 
 ```bash
-aibom-cli validate bom.cdx.json --spec 1.7
-aibom-cli validate bom.cdx.json --spec v0.6
-aibom-cli validate bom.spdx.json --spec 3.0.1
-aibom-cli validate bom.spdx.json --spec v0.6
+aibom-cli validate bom.cdx.json                  # CycloneDX 1.7
+aibom-cli validate bom.cdx.json --spec v0.6      # AI-BOM v0.6 (CycloneDX)
+aibom-cli validate bom.spdx.json                 # SPDX 3.0.1
+aibom-cli validate bom.spdx.json --spec v0.6     # AI-BOM v0.6 (SPDX)
 ```

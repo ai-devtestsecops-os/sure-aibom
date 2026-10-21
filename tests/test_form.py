@@ -313,19 +313,22 @@ def test_apply_rejects_unknown_form(sample):
 
 
 # -- validate CLI --------------------------------------------------------------------
-def test_validate_cli_requires_spec_and_names_it(tmp_path, sample, capsys):
-    with pytest.raises(SystemExit):
-        main(["validate", str(SAMPLE)])                                            # --spec 은 필수
+def test_validate_cli_defaults_to_the_base_standard_and_never_switches(tmp_path, sample, capsys):
+    """--spec 은 scan 과 같은 규칙이다: 안 주면 문서 형식의 바탕 표준(CycloneDX 1.7)이고, 자동으로 다른 스키마를 시도하지 않는다."""
     typed = tmp_path / "typed.json"
     typed.write_text(json.dumps(apply(sample, form="typed", log=lambda m: None)), encoding="utf-8")
     assert main(["validate", str(typed), "--spec", "v0.6"]) == 0
     assert main(["validate", str(typed), "--spec", "1.7"]) == 3                    # 자동 전환 없음
     assert "--spec 1.7" in capsys.readouterr().err
+    assert main(["validate", str(typed)]) == 3                                     # 안 주면 1.7 이라 v0.6 문서는 틀린다
+    assert "Invalid against the CycloneDX 1.7 schema (--spec 1.7)" in capsys.readouterr().err
     # properties 형은 1.7 에 맞으니 1.7 을 넓힌 v0.6 에도 맞는다. 메시지는 맞은 스키마만 말하고 문서 형태는 말하지 않는다
     props = tmp_path / "properties.json"
     props.write_text(json.dumps(apply(copy.deepcopy(json.loads(SAMPLE.read_text(encoding="utf-8"))), form="properties",
                                       log=lambda m: None)), encoding="utf-8")
     capsys.readouterr()
+    assert main(["validate", str(props)]) == 0                                     # 기본값 1.7
+    assert "Valid against the CycloneDX 1.7 schema" in capsys.readouterr().err
     assert main(["validate", str(props), "--spec", "v0.6"]) == 0
     err = capsys.readouterr().err
     assert "Valid against the AI-BOM v0.6 (CycloneDX) schema" in err and "typed" not in err
