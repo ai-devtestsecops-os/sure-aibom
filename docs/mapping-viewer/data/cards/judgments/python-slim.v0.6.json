@@ -1,0 +1,6309 @@
+{
+ "engine_version": "0.1.0",
+ "run_at": "2026-10-22T22:49:18Z",
+ "bom": {
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:fea1156a-08ee-4f9c-9015-c75cd22395c8",
+  "version": 1,
+  "subject": "python:3.12-slim"
+ },
+ "profile": {
+  "profile_id": "MP-aibom-cyclonedx",
+  "profile_version": 1,
+  "status": "draft",
+  "schema": {
+   "name": "aibom-cyclonedx",
+   "version": "1.7+v0.6",
+   "description": "aibom-cli 가 내는 CycloneDX 1.7 / AI-BOM v0.6 (CycloneDX). spdx_path 는 SPDX 로 바꿀 때 가는 자리"
+  }
+ },
+ "system_profile": {},
+ "checks": {
+  "path_existence": true,
+  "conditions": false,
+  "evidence": false
+ },
+ "summary": {
+  "반영": 3,
+  "부분 반영": 8,
+  "미반영": 89,
+  "비적용": 0,
+  "검토 필요": 32
+ },
+ "cards": [
+  {
+   "card_id": "RC-EUAIA-Annex-IV-1",
+   "card_version": 1,
+   "title": "Annex IV(1): 모델 구조·과업 · 기술문서",
+   "verdict": "부분 반영",
+   "facts": [
+    {
+     "concept": "TECHNICAL_REQUIREMENTS",
+     "label": "소프트웨어 구동 정보",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.technicalRequirements"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TECHNICAL_REQUIREMENTS",
+     "label": "소프트웨어 구동 정보",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.technicalRequirements"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.useCases"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.supplier"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENT_VERSION",
+     "label": "버전",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.version"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENTS",
+     "label": "구성요소 목록",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "components"
+     ],
+     "found_at": {
+      "components": [
+       "$"
+      ]
+     }
+    },
+    {
+     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+     "label": "배포 형태·버전 갱신 요건",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+     "label": "배포 형태·버전 갱신 요건",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "TECHNICAL_REQUIREMENTS",
+     "label": "소프트웨어 구동 정보",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.technicalRequirements"
+     ]
+    },
+    {
+     "concept": "TECHNICAL_REQUIREMENTS",
+     "label": "소프트웨어 구동 정보",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.technicalRequirements"
+     ]
+    },
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:documentation)"
+     ]
+    },
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.useCases"
+     ]
+    },
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.supplier"
+     ]
+    },
+    {
+     "concept": "COMPONENT_VERSION",
+     "label": "버전",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.version"
+     ]
+    },
+    {
+     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+     "label": "배포 형태·버전 갱신 요건",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+     "label": "배포 형태·버전 갱신 요건",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-2",
+   "card_version": 1,
+   "title": "Annex IV(2): 모델 구조·과업 · 데이터셋 수집·출처 · 데이터 전처리 · 성능측정",
+   "verdict": "부분 반영",
+   "facts": [
+    {
+     "concept": "HYPERPARAMETERS",
+     "label": "하이퍼파라미터",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.hyperparameters"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TRAINING_TECHNIQUES",
+     "label": "학습 과정 정보",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.trainingTechniques"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COLLECTION_PROCESS",
+     "label": "데이터 수집 절차",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.collectionProcess"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PREPROCESSING",
+     "label": "데이터 전처리",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.preprocessing"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "SIZE",
+     "label": "데이터셋 크기",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.size"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "MODALITY",
+     "label": "데이터셋 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.modality"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ARCHITECTURE_FAMILY",
+     "label": "아키텍처 계열",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.architectureFamily"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DATASETS",
+     "label": "사용한 데이터셋",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.datasets"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "OUTPUTS",
+     "label": "출력 형식",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.outputs"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PEDIGREE",
+     "label": "계보",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.pedigree"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DEPENDENCIES",
+     "label": "의존관계",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "dependencies"
+     ],
+     "found_at": {
+      "dependencies": [
+       "$"
+      ]
+     }
+    },
+    {
+     "concept": "WORKFLOWS_TASKS",
+     "label": "형성: 태스크",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "formulation.workflows.tasks"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "SYSTEM_DESIGN_CHOICES",
+     "label": "시스템 설계 선택·절충",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "SYSTEM_DEV_TEST_COMPUTE",
+     "label": "시스템 개발·시험 연산자원",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "PREDETERMINED_CHANGES",
+     "label": "사전 명세된 변경사항",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "TEST_LOG_REPORT_REF",
+     "label": "시험 로그·보고서 참조",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "APPLIED_CONTROLS",
+     "label": "적용한 통제",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "SYSTEM_DESIGN_CHOICES",
+     "label": "시스템 설계 선택·절충",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "HYPERPARAMETERS",
+     "label": "하이퍼파라미터",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.hyperparameters"
+     ]
+    },
+    {
+     "concept": "TRAINING_TECHNIQUES",
+     "label": "학습 과정 정보",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.trainingTechniques"
+     ]
+    },
+    {
+     "concept": "COLLECTION_PROCESS",
+     "label": "데이터 수집 절차",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.collectionProcess"
+     ]
+    },
+    {
+     "concept": "PREPROCESSING",
+     "label": "데이터 전처리",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.preprocessing"
+     ]
+    },
+    {
+     "concept": "SIZE",
+     "label": "데이터셋 크기",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.size"
+     ]
+    },
+    {
+     "concept": "MODALITY",
+     "label": "데이터셋 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.modality"
+     ]
+    },
+    {
+     "concept": "ARCHITECTURE_FAMILY",
+     "label": "아키텍처 계열",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.architectureFamily"
+     ]
+    },
+    {
+     "concept": "DATASETS",
+     "label": "사용한 데이터셋",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.datasets"
+     ]
+    },
+    {
+     "concept": "OUTPUTS",
+     "label": "출력 형식",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.outputs"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "PEDIGREE",
+     "label": "계보",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.pedigree"
+     ]
+    },
+    {
+     "concept": "WORKFLOWS_TASKS",
+     "label": "형성: 태스크",
+     "kind": "missing",
+     "suggested_paths": [
+      "formulation.workflows.tasks"
+     ]
+    },
+    {
+     "concept": "SYSTEM_DESIGN_CHOICES",
+     "label": "시스템 설계 선택·절충",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "SYSTEM_DEV_TEST_COMPUTE",
+     "label": "시스템 개발·시험 연산자원",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "PREDETERMINED_CHANGES",
+     "label": "사전 명세된 변경사항",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "TEST_LOG_REPORT_REF",
+     "label": "시험 로그·보고서 참조",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "APPLIED_CONTROLS",
+     "label": "적용한 통제",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "SYSTEM_DESIGN_CHOICES",
+     "label": "시스템 설계 선택·절충",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-3",
+   "card_version": 1,
+   "title": "Annex IV(3): 모델 한계·가정 · 성능측정",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "EXPLAINABILITY_METHODS",
+     "label": "설명 방법",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.explainabilityMethods"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_NAME",
+     "label": "위험의 이름",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.ethicalConsiderations.name"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.inputs"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_SLICE",
+     "label": "성능 지표 구간",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.slice"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "EXPLAINABILITY_METHODS",
+     "label": "설명 방법",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.explainabilityMethods"
+     ]
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_NAME",
+     "label": "위험의 이름",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.ethicalConsiderations.name"
+     ]
+    },
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ]
+    },
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.inputs"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_SLICE",
+     "label": "성능 지표 구간",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.slice"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-4",
+   "card_version": 1,
+   "title": "Annex IV(4): 성능측정 · 입증·검증",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-5",
+   "card_version": 1,
+   "title": "Annex IV(5): 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-6",
+   "card_version": 1,
+   "title": "Annex IV(6): 운용·유지관리",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "PEDIGREE_COMMITS",
+     "label": "계보: 커밋",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.pedigree.commits"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PEDIGREE_COMMITS",
+     "label": "계보: 커밋",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.pedigree.commits"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-7",
+   "card_version": 1,
+   "title": "Annex IV(7): 표준 준수·대체 해결책",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "STANDARDS_NAME",
+     "label": "준수 표준",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "definitions.standards.name"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
+     "label": "표준 대체 준수 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "STANDARDS_NAME",
+     "label": "준수 표준",
+     "kind": "missing",
+     "suggested_paths": [
+      "definitions.standards.name"
+     ]
+    },
+    {
+     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
+     "label": "표준 대체 준수 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-8",
+   "card_version": 1,
+   "title": "Annex IV(8): 적합성 증서·선언서",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ATTESTATION_REF",
+     "label": "외부참조: 증명",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:attestation)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ATTESTATION_REF",
+     "label": "외부참조: 증명",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:attestation)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IX-3",
+   "card_version": 1,
+   "title": "Annex IX(3): 실세계시험 등록",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_CPE",
+     "label": "CPE 식별자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.cpe"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENT_DESCRIPTION",
+     "label": "구성요소 설명",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.description"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.useCases"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COMPONENT_CPE",
+     "label": "CPE 식별자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.cpe"
+     ]
+    },
+    {
+     "concept": "COMPONENT_DESCRIPTION",
+     "label": "구성요소 설명",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.description"
+     ]
+    },
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.useCases"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-V-1",
+   "card_version": 1,
+   "title": "Annex V(1): 적합성 증서·선언서",
+   "verdict": "부분 반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_CPE",
+     "label": "CPE 식별자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.cpe"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENT_NAME",
+     "label": "구성요소 이름",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.name"
+     ],
+     "found_at": {
+      "component.name": [
+       "container:/python:3.12-slim@"
+      ]
+     }
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COMPONENT_CPE",
+     "label": "CPE 식별자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.cpe"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-V-2",
+   "card_version": 1,
+   "title": "Annex V(2): 적합성 증서·선언서",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.supplier"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.supplier"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-V-6",
+   "card_version": 1,
+   "title": "Annex V(6): 표준 준수·대체 해결책",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "STANDARDS_NAME",
+     "label": "준수 표준",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "definitions.standards.name"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "STANDARDS_NAME",
+     "label": "준수 표준",
+     "kind": "missing",
+     "suggested_paths": [
+      "definitions.standards.name"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-V-7",
+   "card_version": 1,
+   "title": "Annex V(7): 적합성 증서·선언서",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "CERTIFICATION_REPORT_REF",
+     "label": "외부참조: 인증 보고서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:certification-report)"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "CONFORMITY_ASSESSMENT_DECLARATION",
+     "label": "적합성평가절차·선언서 발급 정보",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "CERTIFICATION_REPORT_REF",
+     "label": "외부참조: 인증 보고서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:certification-report)"
+     ]
+    },
+    {
+     "concept": "CONFORMITY_ASSESSMENT_DECLARATION",
+     "label": "적합성평가절차·선언서 발급 정보",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-V-8",
+   "card_version": 1,
+   "title": "Annex V(8): 적합성 증서·선언서",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "CONFORMITY_ASSESSMENT_DECLARATION",
+     "label": "적합성평가절차·선언서 발급 정보",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "CONFORMITY_ASSESSMENT_DECLARATION",
+     "label": "적합성평가절차·선언서 발급 정보",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-A-1",
+   "card_version": 1,
+   "title": "Annex VIII §A(1): 등록·배포 정보",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.supplier"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.supplier"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-A-10",
+   "card_version": 1,
+   "title": "Annex VIII §A(10): 등록·배포 정보",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "MARKET_STATUS_REGIONS",
+     "label": "시장 유통 상태·배포 지역",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "MARKET_STATUS_REGIONS",
+     "label": "시장 유통 상태·배포 지역",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-A-11",
+   "card_version": 1,
+   "title": "Annex VIII §A(11): 적합성 증서·선언서",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ATTESTATION_REF",
+     "label": "외부참조: 증명",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:attestation)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ATTESTATION_REF",
+     "label": "외부참조: 증명",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:attestation)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-A-12",
+   "card_version": 1,
+   "title": "Annex VIII §A(12): 기술문서",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:documentation)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-A-13",
+   "card_version": 1,
+   "title": "Annex VIII §A(13): 등록·배포 정보",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "WEBSITE_REF",
+     "label": "외부참조: 웹사이트",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:website)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "WEBSITE_REF",
+     "label": "외부참조: 웹사이트",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:website)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-A-2",
+   "card_version": 1,
+   "title": "Annex VIII §A(2): 등록·배포 정보",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "AUTHORISED_REPRESENTATIVE",
+     "label": "수권대리인·등록 대행자",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "AUTHORISED_REPRESENTATIVE",
+     "label": "수권대리인·등록 대행자",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-A-3",
+   "card_version": 1,
+   "title": "Annex VIII §A(3): 등록·배포 정보",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "AUTHORISED_REPRESENTATIVE",
+     "label": "수권대리인·등록 대행자",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "AUTHORISED_REPRESENTATIVE",
+     "label": "수권대리인·등록 대행자",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-A-4",
+   "card_version": 1,
+   "title": "Annex VIII §A(4): 등록·배포 정보",
+   "verdict": "부분 반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_CPE",
+     "label": "CPE 식별자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.cpe"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENT_NAME",
+     "label": "구성요소 이름",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.name"
+     ],
+     "found_at": {
+      "component.name": [
+       "container:/python:3.12-slim@"
+      ]
+     }
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COMPONENT_CPE",
+     "label": "CPE 식별자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.cpe"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-A-5",
+   "card_version": 1,
+   "title": "Annex VIII §A(5): 의도된 용도·사용자",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_DESCRIPTION",
+     "label": "구성요소 설명",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.description"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.useCases"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COMPONENT_DESCRIPTION",
+     "label": "구성요소 설명",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.description"
+     ]
+    },
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.useCases"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-A-6",
+   "card_version": 1,
+   "title": "Annex VIII §A(6): 모델 구조·과업 · 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ARCHITECTURE_FAMILY",
+     "label": "아키텍처 계열",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.architectureFamily"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DATASETS",
+     "label": "사용한 데이터셋",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.datasets"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ARCHITECTURE_FAMILY",
+     "label": "아키텍처 계열",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.architectureFamily"
+     ]
+    },
+    {
+     "concept": "DATASETS",
+     "label": "사용한 데이터셋",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.datasets"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-A-7",
+   "card_version": 1,
+   "title": "Annex VIII §A(7): 등록·배포 정보",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "MARKET_STATUS_REGIONS",
+     "label": "시장 유통 상태·배포 지역",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "MARKET_STATUS_REGIONS",
+     "label": "시장 유통 상태·배포 지역",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-A-8",
+   "card_version": 1,
+   "title": "Annex VIII §A(8): 적합성 증서·선언서",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "VALID_UNTIL_TIME",
+     "label": "인증서 만료일",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "VALID_UNTIL_TIME",
+     "label": "인증서 만료일",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-A-9",
+   "card_version": 1,
+   "title": "Annex VIII §A(9): 적합성 증서·선언서",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "CERTIFICATION_REPORT_REF",
+     "label": "외부참조: 인증 보고서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:certification-report)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "CERTIFICATION_REPORT_REF",
+     "label": "외부참조: 인증 보고서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:certification-report)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-B-1",
+   "card_version": 1,
+   "title": "Annex VIII §B(1): 등록·배포 정보",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.supplier"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.supplier"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-B-2",
+   "card_version": 1,
+   "title": "Annex VIII §B(2): 등록·배포 정보",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "AUTHORISED_REPRESENTATIVE",
+     "label": "수권대리인·등록 대행자",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "AUTHORISED_REPRESENTATIVE",
+     "label": "수권대리인·등록 대행자",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-B-3",
+   "card_version": 1,
+   "title": "Annex VIII §B(3): 등록·배포 정보",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "AUTHORISED_REPRESENTATIVE",
+     "label": "수권대리인·등록 대행자",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "AUTHORISED_REPRESENTATIVE",
+     "label": "수권대리인·등록 대행자",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-B-4",
+   "card_version": 1,
+   "title": "Annex VIII §B(4): 등록·배포 정보",
+   "verdict": "부분 반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_CPE",
+     "label": "CPE 식별자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.cpe"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENT_NAME",
+     "label": "구성요소 이름",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.name"
+     ],
+     "found_at": {
+      "component.name": [
+       "container:/python:3.12-slim@"
+      ]
+     }
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COMPONENT_CPE",
+     "label": "CPE 식별자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.cpe"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-B-5",
+   "card_version": 1,
+   "title": "Annex VIII §B(5): 의도된 용도·사용자",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.useCases"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.useCases"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-B-6",
+   "card_version": 1,
+   "title": "Annex VIII §B(6): 위험·영향평가",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
+     "label": "고위험 분류 판정 근거",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
+     "label": "고위험 분류 판정 근거",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-B-7",
+   "card_version": 1,
+   "title": "Annex VIII §B(7): 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-B-8",
+   "card_version": 1,
+   "title": "Annex VIII §B(8): 등록·배포 정보",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "MARKET_STATUS_REGIONS",
+     "label": "시장 유통 상태·배포 지역",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "MARKET_STATUS_REGIONS",
+     "label": "시장 유통 상태·배포 지역",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-B-9",
+   "card_version": 1,
+   "title": "Annex VIII §B(9): 등록·배포 정보",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "MARKET_STATUS_REGIONS",
+     "label": "시장 유통 상태·배포 지역",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "MARKET_STATUS_REGIONS",
+     "label": "시장 유통 상태·배포 지역",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-C-1",
+   "card_version": 1,
+   "title": "Annex VIII §C(1): 등록·배포 정보",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "METADATA_MANUFACTURER",
+     "label": "문서 생성 조직",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "metadata.manufacturer"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "METADATA_MANUFACTURER",
+     "label": "문서 생성 조직",
+     "kind": "missing",
+     "suggested_paths": [
+      "metadata.manufacturer"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-C-2",
+   "card_version": 1,
+   "title": "Annex VIII §C(2): 등록·배포 정보",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "METADATA_AUTHORS",
+     "label": "문서 작성자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "metadata.authors"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "METADATA_AUTHORS",
+     "label": "문서 작성자",
+     "kind": "missing",
+     "suggested_paths": [
+      "metadata.authors"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-C-3",
+   "card_version": 1,
+   "title": "Annex VIII §C(3): 등록·배포 정보",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "WEBSITE_REF",
+     "label": "외부참조: 웹사이트",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:website)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "WEBSITE_REF",
+     "label": "외부참조: 웹사이트",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:website)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-C-4",
+   "card_version": 1,
+   "title": "Annex VIII §C(4): 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-VIII-C-5",
+   "card_version": 1,
+   "title": "Annex VIII §C(5): 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-1-1",
+   "card_version": 1,
+   "title": "Annex XI §1(1): 모델 구조·과업",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_LICENSES",
+     "label": "라이선스",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.licenses"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.useCases"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ARCHITECTURE_FAMILY",
+     "label": "아키텍처 계열",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.architectureFamily"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.inputs"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TASK",
+     "label": "과업",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.task"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "RELEASE_NOTES_TIMESTAMP",
+     "label": "출시일",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "releaseNotes.timestamp"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+     "label": "배포 형태·버전 갱신 요건",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "PARAMETER_COUNT",
+     "label": "파라미터 수·모델 크기",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.parameterCount"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COMPONENT_LICENSES",
+     "label": "라이선스",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.licenses"
+     ]
+    },
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.useCases"
+     ]
+    },
+    {
+     "concept": "ARCHITECTURE_FAMILY",
+     "label": "아키텍처 계열",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.architectureFamily"
+     ]
+    },
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.inputs"
+     ]
+    },
+    {
+     "concept": "TASK",
+     "label": "과업",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.task"
+     ]
+    },
+    {
+     "concept": "RELEASE_NOTES_TIMESTAMP",
+     "label": "출시일",
+     "kind": "missing",
+     "suggested_paths": [
+      "releaseNotes.timestamp"
+     ]
+    },
+    {
+     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+     "label": "배포 형태·버전 갱신 요건",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "PARAMETER_COUNT",
+     "label": "파라미터 수·모델 크기",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.parameterCount"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-1-2",
+   "card_version": 1,
+   "title": "Annex XI §1(2): 모델 구조·과업 · 데이터셋 수집·출처 · 데이터 전처리",
+   "verdict": "부분 반영",
+   "facts": [
+    {
+     "concept": "HYPERPARAMETERS",
+     "label": "하이퍼파라미터",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.hyperparameters"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TRAINING_TECHNIQUES",
+     "label": "학습 과정 정보",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.trainingTechniques"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TRAINING_TECHNIQUES",
+     "label": "학습 과정 정보",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.trainingTechniques"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COLLECTION_PROCESS",
+     "label": "데이터 수집 절차",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.collectionProcess"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PREPROCESSING",
+     "label": "데이터 전처리",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.preprocessing"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "SIZE",
+     "label": "데이터셋 크기",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.size"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "MODALITY",
+     "label": "데이터셋 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.modality"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ENERGY_CONSUMPTIONS",
+     "label": "에너지 소비",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.environmentalConsiderations.energyConsumptions"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENTS",
+     "label": "구성요소 목록",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "components"
+     ],
+     "found_at": {
+      "components": [
+       "$"
+      ]
+     }
+    },
+    {
+     "concept": "KNOWN_BIAS_DETECTION_METHOD",
+     "label": "편향 탐지 방법",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.knownBias.detectionMethod"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TRAINING_COMPUTE",
+     "label": "모델 훈련 연산자원",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.trainingCompute"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TRAINING_TIME",
+     "label": "모델 훈련 연산자원",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.trainingTime"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "MODEL_PARAMETERS_DESIGN_CHOICES",
+     "label": "모델 설계 선택",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.designChoices"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "OPTIMIZATION_TARGET",
+     "label": "최적화 목표",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.optimizationTarget"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "HYPERPARAMETERS",
+     "label": "하이퍼파라미터",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.hyperparameters"
+     ]
+    },
+    {
+     "concept": "TRAINING_TECHNIQUES",
+     "label": "학습 과정 정보",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.trainingTechniques"
+     ]
+    },
+    {
+     "concept": "TRAINING_TECHNIQUES",
+     "label": "학습 과정 정보",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.trainingTechniques"
+     ]
+    },
+    {
+     "concept": "COLLECTION_PROCESS",
+     "label": "데이터 수집 절차",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.collectionProcess"
+     ]
+    },
+    {
+     "concept": "PREPROCESSING",
+     "label": "데이터 전처리",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.preprocessing"
+     ]
+    },
+    {
+     "concept": "SIZE",
+     "label": "데이터셋 크기",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.size"
+     ]
+    },
+    {
+     "concept": "MODALITY",
+     "label": "데이터셋 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.modality"
+     ]
+    },
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:documentation)"
+     ]
+    },
+    {
+     "concept": "ENERGY_CONSUMPTIONS",
+     "label": "에너지 소비",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.environmentalConsiderations.energyConsumptions"
+     ]
+    },
+    {
+     "concept": "KNOWN_BIAS_DETECTION_METHOD",
+     "label": "편향 탐지 방법",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.knownBias.detectionMethod"
+     ]
+    },
+    {
+     "concept": "TRAINING_COMPUTE",
+     "label": "모델 훈련 연산자원",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.trainingCompute"
+     ]
+    },
+    {
+     "concept": "TRAINING_TIME",
+     "label": "모델 훈련 연산자원",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.trainingTime"
+     ]
+    },
+    {
+     "concept": "MODEL_PARAMETERS_DESIGN_CHOICES",
+     "label": "모델 설계 선택",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.designChoices"
+     ]
+    },
+    {
+     "concept": "OPTIMIZATION_TARGET",
+     "label": "최적화 목표",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.optimizationTarget"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-2-1",
+   "card_version": 1,
+   "title": "Annex XI §2(1): 성능측정",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "STANDARDS_REQUIREMENTS",
+     "label": "표준 요구사항 정의",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "definitions.standards.requirements"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TASKS_RESOURCE_REFERENCES",
+     "label": "형성: 리소스 참조",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "formulation.workflows.tasks.resourceReferences"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "LIMITATION_IDENTIFICATION_METHODS",
+     "label": "한계 식별방법론",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.limitationIdentificationMethods"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "STANDARDS_REQUIREMENTS",
+     "label": "표준 요구사항 정의",
+     "kind": "missing",
+     "suggested_paths": [
+      "definitions.standards.requirements"
+     ]
+    },
+    {
+     "concept": "TASKS_RESOURCE_REFERENCES",
+     "label": "형성: 리소스 참조",
+     "kind": "missing",
+     "suggested_paths": [
+      "formulation.workflows.tasks.resourceReferences"
+     ]
+    },
+    {
+     "concept": "LIMITATION_IDENTIFICATION_METHODS",
+     "label": "한계 식별방법론",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.limitationIdentificationMethods"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-2-2",
+   "card_version": 1,
+   "title": "Annex XI §2(2): 입증·검증",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "TRAINING_TECHNIQUES",
+     "label": "학습 과정 정보",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.trainingTechniques"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ADVERSARY_MODEL_REF",
+     "label": "외부참조: 적대자 모델",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:adversary-model)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "TRAINING_TECHNIQUES",
+     "label": "학습 과정 정보",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.trainingTechniques"
+     ]
+    },
+    {
+     "concept": "ADVERSARY_MODEL_REF",
+     "label": "외부참조: 적대자 모델",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:adversary-model)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-2-3",
+   "card_version": 1,
+   "title": "Annex XI §2(3): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "DEPENDENCIES",
+     "label": "의존관계",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "dependencies"
+     ],
+     "found_at": {
+      "dependencies": [
+       "$"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XII-1",
+   "card_version": 1,
+   "title": "Annex XII(1): 모델 구조·과업",
+   "verdict": "부분 반영",
+   "facts": [
+    {
+     "concept": "TECHNICAL_REQUIREMENTS",
+     "label": "소프트웨어 구동 정보",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.technicalRequirements"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENT_LICENSES",
+     "label": "라이선스",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.licenses"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ARCHITECTURE_FAMILY",
+     "label": "아키텍처 계열",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.architectureFamily"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.inputs"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TASK",
+     "label": "과업",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.task"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENTS",
+     "label": "구성요소 목록",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "components"
+     ],
+     "found_at": {
+      "components": [
+       "$"
+      ]
+     }
+    },
+    {
+     "concept": "RELEASE_NOTES_TIMESTAMP",
+     "label": "출시일",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "releaseNotes.timestamp"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PARAMETER_COUNT",
+     "label": "파라미터 수·모델 크기",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.parameterCount"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+     "label": "배포 형태·버전 갱신 요건",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "TECHNICAL_REQUIREMENTS",
+     "label": "소프트웨어 구동 정보",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.technicalRequirements"
+     ]
+    },
+    {
+     "concept": "COMPONENT_LICENSES",
+     "label": "라이선스",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.licenses"
+     ]
+    },
+    {
+     "concept": "ARCHITECTURE_FAMILY",
+     "label": "아키텍처 계열",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.architectureFamily"
+     ]
+    },
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.inputs"
+     ]
+    },
+    {
+     "concept": "TASK",
+     "label": "과업",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.task"
+     ]
+    },
+    {
+     "concept": "RELEASE_NOTES_TIMESTAMP",
+     "label": "출시일",
+     "kind": "missing",
+     "suggested_paths": [
+      "releaseNotes.timestamp"
+     ]
+    },
+    {
+     "concept": "PARAMETER_COUNT",
+     "label": "파라미터 수·모델 크기",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.parameterCount"
+     ]
+    },
+    {
+     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+     "label": "배포 형태·버전 갱신 요건",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XII-2",
+   "card_version": 1,
+   "title": "Annex XII(2): 데이터셋 수집·출처 · 데이터 전처리 · 모델 구조·과업",
+   "verdict": "부분 반영",
+   "facts": [
+    {
+     "concept": "COLLECTION_PROCESS",
+     "label": "데이터 수집 절차",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.collectionProcess"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PREPROCESSING",
+     "label": "데이터 전처리",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.preprocessing"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.inputs"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENTS",
+     "label": "구성요소 목록",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "components"
+     ],
+     "found_at": {
+      "components": [
+       "$"
+      ]
+     }
+    },
+    {
+     "concept": "INPUT_OUTPUT_ML_PARAMETERS_MAX_SIZE",
+     "label": "문맥 길이·입출력 최대 크기",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "inputOutputMLParameters.maxSize"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COLLECTION_PROCESS",
+     "label": "데이터 수집 절차",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.collectionProcess"
+     ]
+    },
+    {
+     "concept": "PREPROCESSING",
+     "label": "데이터 전처리",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.preprocessing"
+     ]
+    },
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:documentation)"
+     ]
+    },
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.inputs"
+     ]
+    },
+    {
+     "concept": "INPUT_OUTPUT_ML_PARAMETERS_MAX_SIZE",
+     "label": "문맥 길이·입출력 최대 크기",
+     "kind": "missing",
+     "suggested_paths": [
+      "inputOutputMLParameters.maxSize"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-10-2",
+   "card_version": 1,
+   "title": "Article 10(2): 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "PREPROCESSING",
+     "label": "학습 데이터 전처리",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.preprocessing"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COLLECTION_PROCESS",
+     "label": "데이터 수집 절차",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.collectionProcess"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "AVAILABILITY",
+     "label": "데이터셋 가용성",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.contents.availability"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "SIZE",
+     "label": "데이터셋 크기",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.size"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "UPDATE_MECHANISM",
+     "label": "데이터셋 갱신 방식",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.updateMechanism"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "KNOWN_BIAS_NAME",
+     "label": "알려진 편향",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.knownBias.name"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENT_DATA_DESIGN_CHOICES",
+     "label": "데이터 설계 선택",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.designChoices"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "KNOWN_BIAS_MITIGATION_STRATEGY",
+     "label": "편향 완화 조치",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.knownBias.mitigationStrategy"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "KNOWN_GAPS_NAME",
+     "label": "데이터 공백·결함",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.knownGaps.name"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "KNOWN_GAPS_MITIGATION_STRATEGY",
+     "label": "데이터 공백·결함",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.knownGaps.mitigationStrategy"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ORIGINAL_COLLECTION_PURPOSE",
+     "label": "데이터 수집의 원래 목적",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.originalCollectionPurpose"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "REPRESENTATION_ASSUMPTIONS",
+     "label": "데이터의 표상 가정",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.representationAssumptions"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PREPROCESSING",
+     "label": "학습 데이터 전처리",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.preprocessing"
+     ]
+    },
+    {
+     "concept": "COLLECTION_PROCESS",
+     "label": "데이터 수집 절차",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.collectionProcess"
+     ]
+    },
+    {
+     "concept": "AVAILABILITY",
+     "label": "데이터셋 가용성",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.contents.availability"
+     ]
+    },
+    {
+     "concept": "SIZE",
+     "label": "데이터셋 크기",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.size"
+     ]
+    },
+    {
+     "concept": "UPDATE_MECHANISM",
+     "label": "데이터셋 갱신 방식",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.updateMechanism"
+     ]
+    },
+    {
+     "concept": "KNOWN_BIAS_NAME",
+     "label": "알려진 편향",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.knownBias.name"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    },
+    {
+     "concept": "COMPONENT_DATA_DESIGN_CHOICES",
+     "label": "데이터 설계 선택",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.designChoices"
+     ]
+    },
+    {
+     "concept": "KNOWN_BIAS_MITIGATION_STRATEGY",
+     "label": "편향 완화 조치",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.knownBias.mitigationStrategy"
+     ]
+    },
+    {
+     "concept": "KNOWN_GAPS_NAME",
+     "label": "데이터 공백·결함",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.knownGaps.name"
+     ]
+    },
+    {
+     "concept": "KNOWN_GAPS_MITIGATION_STRATEGY",
+     "label": "데이터 공백·결함",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.knownGaps.mitigationStrategy"
+     ]
+    },
+    {
+     "concept": "ORIGINAL_COLLECTION_PURPOSE",
+     "label": "데이터 수집의 원래 목적",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.originalCollectionPurpose"
+     ]
+    },
+    {
+     "concept": "REPRESENTATION_ASSUMPTIONS",
+     "label": "데이터의 표상 가정",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.representationAssumptions"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-10-3",
+   "card_version": 1,
+   "title": "Article 10(3): 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "NOISE",
+     "label": "데이터셋 잡음",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.noise"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "KNOWN_BIAS_NAME",
+     "label": "알려진 편향",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.knownBias.name"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "KNOWN_GAPS",
+     "label": "데이터 공백·결함",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.knownGaps"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "STATISTICS",
+     "label": "데이터셋 통계 특성",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.statistics"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "NOISE",
+     "label": "데이터셋 잡음",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.noise"
+     ]
+    },
+    {
+     "concept": "KNOWN_BIAS_NAME",
+     "label": "알려진 편향",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.knownBias.name"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    },
+    {
+     "concept": "KNOWN_GAPS",
+     "label": "데이터 공백·결함",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.knownGaps"
+     ]
+    },
+    {
+     "concept": "STATISTICS",
+     "label": "데이터셋 통계 특성",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.statistics"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-10-4",
+   "card_version": 1,
+   "title": "Article 10(4): 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "INTENDED_USE",
+     "label": "데이터셋 의도된 용도",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.intendedUse"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "INTENDED_USE",
+     "label": "데이터셋 의도된 용도",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.intendedUse"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-10-5",
+   "card_version": 1,
+   "title": "Article 10(5): 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "SENSITIVE_PERSONAL_INFORMATION",
+     "label": "민감 개인정보 사용",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.sensitivePersonalInformation"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ANONYMIZATION_METHODS",
+     "label": "익명화 방법",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.anonymizationMethods"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "SENSITIVE_PERSONAL_INFORMATION",
+     "label": "민감 개인정보 사용",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.sensitivePersonalInformation"
+     ]
+    },
+    {
+     "concept": "ANONYMIZATION_METHODS",
+     "label": "익명화 방법",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.anonymizationMethods"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-11-1",
+   "card_version": 1,
+   "title": "Article 11(1): 기술문서",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:documentation)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-11-2",
+   "card_version": 1,
+   "title": "Article 11(2): 기술문서",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:documentation)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-12-1",
+   "card_version": 1,
+   "title": "Article 12(1): 로깅·추적성",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "LOGGING_MECHANISM",
+     "label": "로깅 메커니즘",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "LOGGING_MECHANISM",
+     "label": "로깅 메커니즘",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-12-2",
+   "card_version": 1,
+   "title": "Article 12(2): 로깅·추적성",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "LOGGING_MECHANISM",
+     "label": "로깅 메커니즘",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "LOGGING_MECHANISM",
+     "label": "로깅 메커니즘",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-12-3",
+   "card_version": 1,
+   "title": "Article 12(3): 로깅·추적성",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "LOGGING_MECHANISM",
+     "label": "로깅 메커니즘",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "LOGGING_MECHANISM",
+     "label": "로깅 메커니즘",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-13-1",
+   "card_version": 1,
+   "title": "Article 13(1): 설명가능성",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "EXPLAINABILITY_METHODS",
+     "label": "설명 방법",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.explainabilityMethods"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "EXPLAINABILITY_METHODS",
+     "label": "설명 방법",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.explainabilityMethods"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-13-2",
+   "card_version": 1,
+   "title": "Article 13(2): 기술문서",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:documentation)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-13-3",
+   "card_version": 1,
+   "title": "Article 13(3): 운용·유지관리 · 설명가능성 · 모델 한계·가정 · 의도된 용도·사용자 · 데이터셋 수집·출처 · 성능측정 · 등록·배포 정보 · 로깅·추적성 · 인적 감독",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "TECHNICAL_REQUIREMENTS",
+     "label": "소프트웨어 구동 정보",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.technicalRequirements"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "EXPLAINABILITY_METHODS",
+     "label": "설명 방법",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.explainabilityMethods"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_NAME",
+     "label": "위험의 이름",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.ethicalConsiderations.name"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.useCases"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.inputs"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_SLICE",
+     "label": "성능 지표 구간",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.slice"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.supplier"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "LOGGING_MECHANISM",
+     "label": "로깅 메커니즘",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "EXPECTED_LIFETIME_MAINTENANCE",
+     "label": "예상 수명·유지관리 주기",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "PREDETERMINED_CHANGES",
+     "label": "사전 명세된 변경사항",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "TECHNICAL_REQUIREMENTS",
+     "label": "소프트웨어 구동 정보",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.technicalRequirements"
+     ]
+    },
+    {
+     "concept": "EXPLAINABILITY_METHODS",
+     "label": "설명 방법",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.explainabilityMethods"
+     ]
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_NAME",
+     "label": "위험의 이름",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.ethicalConsiderations.name"
+     ]
+    },
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ]
+    },
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.useCases"
+     ]
+    },
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.inputs"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_SLICE",
+     "label": "성능 지표 구간",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.slice"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.supplier"
+     ]
+    },
+    {
+     "concept": "LOGGING_MECHANISM",
+     "label": "로깅 메커니즘",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "EXPECTED_LIFETIME_MAINTENANCE",
+     "label": "예상 수명·유지관리 주기",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "PREDETERMINED_CHANGES",
+     "label": "사전 명세된 변경사항",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-14-1",
+   "card_version": 1,
+   "title": "Article 14(1): 인적 감독",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-14-3",
+   "card_version": 1,
+   "title": "Article 14(3): 인적 감독",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-14-4",
+   "card_version": 1,
+   "title": "Article 14(4): 인적 감독",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "EXPLAINABILITY_METHODS",
+     "label": "설명 방법",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.explainabilityMethods"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "EXPLAINABILITY_METHODS",
+     "label": "설명 방법",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.explainabilityMethods"
+     ]
+    },
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ]
+    },
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-14-5",
+   "card_version": 1,
+   "title": "Article 14(5): 인적 감독",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-15-3",
+   "card_version": 1,
+   "title": "Article 15(3): 성능측정",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-15-4",
+   "card_version": 1,
+   "title": "Article 15(4): 견고성·회복력",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "RESILIENCE_FAILSAFE_MEASURES",
+     "label": "회복력·안전장애 방안",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RESILIENCE_FAILSAFE_MEASURES",
+     "label": "회복력·안전장애 방안",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-15-5",
+   "card_version": 1,
+   "title": "Article 15(5): 보안평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "THREAT_MODEL_REF",
+     "label": "외부참조: 위협 모델",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:threat-model)"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "RESILIENCE_FAILSAFE_MEASURES",
+     "label": "회복력·안전장애 방안",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "APPLIED_CONTROLS",
+     "label": "적용한 통제",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "THREAT_MODEL_REF",
+     "label": "외부참조: 위협 모델",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:threat-model)"
+     ]
+    },
+    {
+     "concept": "RESILIENCE_FAILSAFE_MEASURES",
+     "label": "회복력·안전장애 방안",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "APPLIED_CONTROLS",
+     "label": "적용한 통제",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-16",
+   "card_version": 1,
+   "title": "Article 16: 적합성 증서·선언서 · 등록·배포 정보",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ATTESTATION_REF",
+     "label": "외부참조: 증명",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:attestation)"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.supplier"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "CONFORMITY_MARKING",
+     "label": "적합성 표시 (CE 마킹)",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ATTESTATION_REF",
+     "label": "외부참조: 증명",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:attestation)"
+     ]
+    },
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.supplier"
+     ]
+    },
+    {
+     "concept": "CONFORMITY_MARKING",
+     "label": "적합성 표시 (CE 마킹)",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-23-3",
+   "card_version": 1,
+   "title": "Article 23(3): 등록·배포 정보",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.supplier"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.supplier"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-25-4",
+   "card_version": 1,
+   "title": "Article 25(4): 제3자·공급망",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "THIRD_PARTY_SUPPORT_SCOPE",
+     "label": "제3자에게 받기로 한 지원 범위",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "THIRD_PARTY_SUPPORT_SCOPE",
+     "label": "제3자에게 받기로 한 지원 범위",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-26-4",
+   "card_version": 1,
+   "title": "Article 26(4): 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "KNOWN_BIAS_NAME",
+     "label": "알려진 편향",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.knownBias.name"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "KNOWN_BIAS_NAME",
+     "label": "알려진 편향",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.knownBias.name"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-27-1",
+   "card_version": 1,
+   "title": "Article 27(1): 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-41-5",
+   "card_version": 1,
+   "title": "Article 41(5): 표준 준수·대체 해결책",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
+     "label": "표준 대체 준수 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    },
+    {
+     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
+     "label": "표준 대체 준수 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-47-1",
+   "card_version": 1,
+   "title": "Article 47(1): 적합성 증서·선언서",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ATTESTATION_REF",
+     "label": "외부참조: 증명",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:attestation)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ATTESTATION_REF",
+     "label": "외부참조: 증명",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:attestation)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-48-2",
+   "card_version": 1,
+   "title": "Article 48(2): 적합성 증서·선언서",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "CONFORMITY_MARKING",
+     "label": "적합성 표시 (CE 마킹)",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "CONFORMITY_MARKING",
+     "label": "적합성 표시 (CE 마킹)",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-48-4",
+   "card_version": 1,
+   "title": "Article 48(4): 적합성 증서·선언서",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "CERTIFICATION_REPORT_REF",
+     "label": "외부참조: 인증 보고서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:certification-report)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "CERTIFICATION_REPORT_REF",
+     "label": "외부참조: 인증 보고서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:certification-report)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-50-1",
+   "card_version": 1,
+   "title": "Article 50(1): 콘텐츠·상호작용 표시",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "CONTENT_INTERACTION_DISCLOSURE",
+     "label": "콘텐츠·상호작용 표시",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "CONTENT_INTERACTION_DISCLOSURE",
+     "label": "콘텐츠·상호작용 표시",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-50-2",
+   "card_version": 1,
+   "title": "Article 50(2): 콘텐츠·상호작용 표시",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "CONTENT_INTERACTION_DISCLOSURE",
+     "label": "콘텐츠·상호작용 표시",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "CONTENT_INTERACTION_DISCLOSURE",
+     "label": "콘텐츠·상호작용 표시",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-53-1",
+   "card_version": 1,
+   "title": "Article 53(1): 모델 구조·과업 · 기술문서 · 성능측정",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "TRAINING_TECHNIQUES",
+     "label": "학습 과정 정보",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.trainingTechniques"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DATASETS",
+     "label": "사용한 데이터셋",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.datasets"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "TRAINING_TECHNIQUES",
+     "label": "학습 과정 정보",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.trainingTechniques"
+     ]
+    },
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:documentation)"
+     ]
+    },
+    {
+     "concept": "DATASETS",
+     "label": "사용한 데이터셋",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.datasets"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-53-4",
+   "card_version": 1,
+   "title": "Article 53(4): 표준 준수·대체 해결책",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "STANDARDS_NAME",
+     "label": "준수 표준",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "definitions.standards.name"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
+     "label": "표준 대체 준수 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    },
+    {
+     "concept": "STANDARDS_NAME",
+     "label": "준수 표준",
+     "kind": "missing",
+     "suggested_paths": [
+      "definitions.standards.name"
+     ]
+    },
+    {
+     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
+     "label": "표준 대체 준수 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-55-1",
+   "card_version": 1,
+   "title": "Article 55(1): 입증·검증 · 위험·영향평가 · 성능측정 · 보안평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ADVERSARY_MODEL_REF",
+     "label": "외부참조: 적대자 모델",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:adversary-model)"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
+     "label": "위험 완화 전략",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_NAME",
+     "label": "위험의 이름",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.ethicalConsiderations.name"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "APPLIED_CONTROLS",
+     "label": "적용한 통제",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ADVERSARY_MODEL_REF",
+     "label": "외부참조: 적대자 모델",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:adversary-model)"
+     ]
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
+     "label": "위험 완화 전략",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
+     ]
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_NAME",
+     "label": "위험의 이름",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.ethicalConsiderations.name"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "APPLIED_CONTROLS",
+     "label": "적용한 통제",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-55-2",
+   "card_version": 1,
+   "title": "Article 55(2): 표준 준수·대체 해결책",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "STANDARDS_NAME",
+     "label": "준수 표준",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "definitions.standards.name"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
+     "label": "표준 대체 준수 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    },
+    {
+     "concept": "STANDARDS_NAME",
+     "label": "준수 표준",
+     "kind": "missing",
+     "suggested_paths": [
+      "definitions.standards.name"
+     ]
+    },
+    {
+     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
+     "label": "표준 대체 준수 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-6-4",
+   "card_version": 1,
+   "title": "Article 6(4): 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-9-2",
+   "card_version": 1,
+   "title": "Article 9(2): 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
+     "label": "위험 완화 전략",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_NAME",
+     "label": "위험의 이름",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.ethicalConsiderations.name"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
+     "label": "위험 완화 전략",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
+     ]
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_NAME",
+     "label": "위험의 이름",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.ethicalConsiderations.name"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-9-5",
+   "card_version": 1,
+   "title": "Article 9(5): 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
+     "label": "위험 완화 전략",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "RESIDUAL_RISK_ACCEPTANCE",
+     "label": "잔여위험 수용 판정",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
+     "label": "위험 완화 전략",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
+     ]
+    },
+    {
+     "concept": "RESIDUAL_RISK_ACCEPTANCE",
+     "label": "잔여위험 수용 판정",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-9-8",
+   "card_version": 1,
+   "title": "Article 9(8): 성능측정",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "DECISION_THRESHOLD",
+     "label": "지표 임계값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.decisionThreshold"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DECISION_THRESHOLD",
+     "label": "지표 임계값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.decisionThreshold"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-9-9",
+   "card_version": 1,
+   "title": "Article 9(9): 집단·환경 영향",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "GROUP_AT_RISK",
+     "label": "위험에 놓인 집단",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "HARMS",
+     "label": "집단에 대한 피해",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.fairnessAssessments.harms"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "GROUP_AT_RISK",
+     "label": "위험에 놓인 집단",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
+     ]
+    },
+    {
+     "concept": "HARMS",
+     "label": "집단에 대한 피해",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.fairnessAssessments.harms"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.4.2",
+   "card_version": 1,
+   "title": "A.4.2: 자원 인벤토리(데이터·도구·인프라)",
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "COMPONENTS",
+     "label": "구성요소 목록",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "components"
+     ],
+     "found_at": {
+      "components": [
+       "$"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-ISO42001-A.4.3",
+   "card_version": 1,
+   "title": "A.4.3: 자원 인벤토리(데이터·도구·인프라)",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_DATA",
+     "label": "데이터 컴포넌트",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COMPONENT_DATA",
+     "label": "데이터 컴포넌트",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.4.4",
+   "card_version": 1,
+   "title": "A.4.4: 자원 인벤토리(데이터·도구·인프라)",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "FORMULATION_COMPONENTS",
+     "label": "형성: 일시적 구성요소",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "formulation.components"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "FORMULATION_COMPONENTS",
+     "label": "형성: 일시적 구성요소",
+     "kind": "missing",
+     "suggested_paths": [
+      "formulation.components"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.4.5",
+   "card_version": 1,
+   "title": "A.4.5: 자원 인벤토리(데이터·도구·인프라)",
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "COMPONENTS",
+     "label": "구성요소 목록",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "components"
+     ],
+     "found_at": {
+      "components": [
+       "$"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-ISO42001-A.5.3",
+   "card_version": 1,
+   "title": "A.5.3: 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.5.4",
+   "card_version": 1,
+   "title": "A.5.4: 집단·환경 영향",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "BENEFITS",
+     "label": "집단에 대한 이익",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.fairnessAssessments.benefits"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "BENEFITS",
+     "label": "집단에 대한 이익",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.fairnessAssessments.benefits"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.5.5",
+   "card_version": 1,
+   "title": "A.5.5: 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.6.2.2",
+   "card_version": 1,
+   "title": "A.6.2.2: 요구사항 명세",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "STANDARDS_REQUIREMENTS",
+     "label": "표준 요구사항 정의",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "definitions.standards.requirements"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "STANDARDS_REQUIREMENTS",
+     "label": "표준 요구사항 정의",
+     "kind": "missing",
+     "suggested_paths": [
+      "definitions.standards.requirements"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.6.2.3",
+   "card_version": 1,
+   "title": "A.6.2.3: 모델 구조·과업",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:documentation)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.6.2.4",
+   "card_version": 1,
+   "title": "A.6.2.4: 입증·검증 · 요구사항 명세",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ATTESTATIONS_MAP",
+     "label": "요구사항↔주장 연결",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.attestations.map"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "STANDARDS_REQUIREMENTS",
+     "label": "표준 요구사항 정의",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "definitions.standards.requirements"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ATTESTATIONS_MAP",
+     "label": "요구사항↔주장 연결",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.attestations.map"
+     ]
+    },
+    {
+     "concept": "STANDARDS_REQUIREMENTS",
+     "label": "표준 요구사항 정의",
+     "kind": "missing",
+     "suggested_paths": [
+      "definitions.standards.requirements"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.6.2.7",
+   "card_version": 1,
+   "title": "A.6.2.7: 기술문서",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:documentation)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.6.2.8",
+   "card_version": 1,
+   "title": "A.6.2.8: 로깅·추적성",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "LOGGING_MECHANISM",
+     "label": "로깅 메커니즘",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "LOGGING_MECHANISM",
+     "label": "로깅 메커니즘",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.7.3",
+   "card_version": 1,
+   "title": "A.7.3: 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "COLLECTION_PROCESS",
+     "label": "데이터 수집 절차",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.collectionProcess"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COLLECTION_PROCESS",
+     "label": "데이터 수집 절차",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.collectionProcess"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.7.4",
+   "card_version": 1,
+   "title": "A.7.4: 입증·검증 · 요구사항 명세",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ATTESTATIONS_MAP",
+     "label": "요구사항↔주장 연결",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.attestations.map"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "STANDARDS_REQUIREMENTS",
+     "label": "표준 요구사항 정의",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "definitions.standards.requirements"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ATTESTATIONS_MAP",
+     "label": "요구사항↔주장 연결",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.attestations.map"
+     ]
+    },
+    {
+     "concept": "STANDARDS_REQUIREMENTS",
+     "label": "표준 요구사항 정의",
+     "kind": "missing",
+     "suggested_paths": [
+      "definitions.standards.requirements"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.7.5",
+   "card_version": 1,
+   "title": "A.7.5: 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "PROVENANCE",
+     "label": "패키지 출처 정보",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.provenance"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PROVENANCE",
+     "label": "패키지 출처 정보",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.provenance"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.7.6",
+   "card_version": 1,
+   "title": "A.7.6: 데이터 전처리",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "PREPROCESSING",
+     "label": "데이터 전처리",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.preprocessing"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PREPROCESSING",
+     "label": "데이터 전처리",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.preprocessing"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-ISO42001-A.8.2",
+   "card_version": 1,
+   "title": "A.8.2: 기술문서",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:documentation)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-GOVERN-4.2",
+   "card_version": 1,
+   "title": "GOVERN 4.2: 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MANAGE-1.1",
+   "card_version": 1,
+   "title": "MANAGE 1.1: 입증·검증",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "GO_NO_GO_DECISION",
+     "label": "개발·배포 게이트 판정",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    },
+    {
+     "concept": "GO_NO_GO_DECISION",
+     "label": "개발·배포 게이트 판정",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MANAGE-1.4",
+   "card_version": 1,
+   "title": "MANAGE 1.4: 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MANAGE-3.1",
+   "card_version": 1,
+   "title": "MANAGE 3.1: 제3자·공급망",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "APPLIED_CONTROLS",
+     "label": "적용한 통제",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "APPLIED_CONTROLS",
+     "label": "적용한 통제",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MAP-1.1",
+   "card_version": 1,
+   "title": "MAP 1.1: 모델 한계·가정 · 의도된 용도·사용자 · 성능측정 · 배포 예상 환경 · 적용 법률·규범·기대 · 집단·환경 영향",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.useCases"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "USERS",
+     "label": "의도된 사용자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.users"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "USE_RISK_ASSUMPTIONS",
+     "label": "용도·위험의 가정",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "EXPECTED_DEPLOYMENT_ENVIRONMENT",
+     "label": "배포 예상 환경",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "USER_EXPECTATIONS",
+     "label": "사용자의 기대",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "APPLICABLE_LAWS_NORMS",
+     "label": "적용받는 법률·규범",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "SOCIETAL_ENVIRONMENTAL_IMPACT",
+     "label": "시스템의 사회·환경 영향",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ]
+    },
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.useCases"
+     ]
+    },
+    {
+     "concept": "USERS",
+     "label": "의도된 사용자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.users"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "USE_RISK_ASSUMPTIONS",
+     "label": "용도·위험의 가정",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "EXPECTED_DEPLOYMENT_ENVIRONMENT",
+     "label": "배포 예상 환경",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "USER_EXPECTATIONS",
+     "label": "사용자의 기대",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "APPLICABLE_LAWS_NORMS",
+     "label": "적용받는 법률·규범",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "SOCIETAL_ENVIRONMENTAL_IMPACT",
+     "label": "시스템의 사회·환경 영향",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MAP-1.4",
+   "card_version": 1,
+   "title": "MAP 1.4: 의도된 용도·사용자",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "BUSINESS_USE_CONTEXT",
+     "label": "사업적 사용 맥락",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "BUSINESS_USE_CONTEXT",
+     "label": "사업적 사용 맥락",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MAP-1.6",
+   "card_version": 1,
+   "title": "MAP 1.6: 요구사항 명세",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "STANDARDS_REQUIREMENTS",
+     "label": "표준 요구사항 정의",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "definitions.standards.requirements"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "STANDARDS_REQUIREMENTS",
+     "label": "표준 요구사항 정의",
+     "kind": "missing",
+     "suggested_paths": [
+      "definitions.standards.requirements"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MAP-2.1",
+   "card_version": 1,
+   "title": "MAP 2.1: 모델 구조·과업",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "TASK",
+     "label": "과업",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.task"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TASK_IMPLEMENTATION_FAMILY",
+     "label": "과업 구현 계열",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "TASK",
+     "label": "과업",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.task"
+     ]
+    },
+    {
+     "concept": "TASK_IMPLEMENTATION_FAMILY",
+     "label": "과업 구현 계열",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MAP-2.2",
+   "card_version": 1,
+   "title": "MAP 2.2: 모델 한계·가정 · 인적 감독",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ]
+    },
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MAP-2.3",
+   "card_version": 1,
+   "title": "MAP 2.3: 데이터셋 수집·출처 · 위험·영향평가 · 입증·검증",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "COLLECTION_PROCESS",
+     "label": "데이터 수집 절차",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.collectionProcess"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "VERIFICATION_METHODOLOGY",
+     "label": "검증 방법론",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "COLLECTION_PROCESS",
+     "label": "데이터 수집 절차",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.collectionProcess"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    },
+    {
+     "concept": "VERIFICATION_METHODOLOGY",
+     "label": "검증 방법론",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MAP-3.1",
+   "card_version": 1,
+   "title": "MAP 3.1: 잠재적 이점·비용",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "POTENTIAL_BENEFITS_COSTS",
+     "label": "잠재적 이점·비용",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "POTENTIAL_BENEFITS_COSTS",
+     "label": "잠재적 이점·비용",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MAP-3.2",
+   "card_version": 1,
+   "title": "MAP 3.2: 잠재적 이점·비용",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "POTENTIAL_BENEFITS_COSTS",
+     "label": "잠재적 이점·비용",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "POTENTIAL_BENEFITS_COSTS",
+     "label": "잠재적 이점·비용",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MAP-3.3",
+   "card_version": 1,
+   "title": "MAP 3.3: 의도된 용도·사용자",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.useCases"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.useCases"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MAP-4.2",
+   "card_version": 1,
+   "title": "MAP 4.2: 제3자·공급망",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "APPLIED_CONTROLS",
+     "label": "적용한 통제",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "APPLIED_CONTROLS",
+     "label": "적용한 통제",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MAP-5.1",
+   "card_version": 1,
+   "title": "MAP 5.1: 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MEASURE-1.1",
+   "card_version": 1,
+   "title": "MEASURE 1.1: 위험·영향평가",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "UNMEASURED_RISKS",
+     "label": "측정하지 못한 위험 목록",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "UNMEASURED_RISKS",
+     "label": "측정하지 못한 위험 목록",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MEASURE-2.1",
+   "card_version": 1,
+   "title": "MEASURE 2.1: 성능측정",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "DATASETS",
+     "label": "사용한 데이터셋",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.datasets"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TASKS_RESOURCE_REFERENCES",
+     "label": "형성: 리소스 참조",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "formulation.workflows.tasks.resourceReferences"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DATASETS",
+     "label": "사용한 데이터셋",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.datasets"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "TASKS_RESOURCE_REFERENCES",
+     "label": "형성: 리소스 참조",
+     "kind": "missing",
+     "suggested_paths": [
+      "formulation.workflows.tasks.resourceReferences"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MEASURE-2.10",
+   "card_version": 1,
+   "title": "MEASURE 2.10: 프라이버시 평가",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "PRIVACY_ASSESSMENT_REF",
+     "label": "외부참조: 프라이버시 평가",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PRIVACY_ASSESSMENT_REF",
+     "label": "외부참조: 프라이버시 평가",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MEASURE-2.11",
+   "card_version": 1,
+   "title": "MEASURE 2.11: 집단·환경 영향",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "BENEFITS",
+     "label": "집단에 대한 이익",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.fairnessAssessments.benefits"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "BENEFITS",
+     "label": "집단에 대한 이익",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.fairnessAssessments.benefits"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MEASURE-2.12",
+   "card_version": 1,
+   "title": "MEASURE 2.12: 집단·환경 영향",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ENERGY_CONSUMPTIONS",
+     "label": "에너지 소비",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.environmentalConsiderations.energyConsumptions"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ENERGY_CONSUMPTIONS",
+     "label": "에너지 소비",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.environmentalConsiderations.energyConsumptions"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MEASURE-2.3",
+   "card_version": 1,
+   "title": "MEASURE 2.3: 성능측정 · 입증·검증",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "FORMULATION",
+     "label": "형성 기록",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "formulation"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ASSURANCE_CRITERIA_RESULT",
+     "label": "보증 기준 평가 결과",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    },
+    {
+     "concept": "FORMULATION",
+     "label": "형성 기록",
+     "kind": "missing",
+     "suggested_paths": [
+      "formulation"
+     ]
+    },
+    {
+     "concept": "ASSURANCE_CRITERIA_RESULT",
+     "label": "보증 기준 평가 결과",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MEASURE-2.5",
+   "card_version": 1,
+   "title": "MEASURE 2.5: 모델 한계·가정 · 입증·검증",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MEASURE-2.6",
+   "card_version": 1,
+   "title": "MEASURE 2.6: 위험·영향평가 · 입증·검증",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "SAFETY_RISK_ASSESSMENT",
+     "label": "안전 위험 평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.safetyRiskAssessment"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "OPERATIONAL_KPI",
+     "label": "운영 성과 KPI",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "RESIDUAL_RISK_ACCEPTANCE",
+     "label": "잔여위험 수용 판정",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "SAFETY_RISK_ASSESSMENT",
+     "label": "안전 위험 평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.safetyRiskAssessment"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    },
+    {
+     "concept": "OPERATIONAL_KPI",
+     "label": "운영 성과 KPI",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "RESIDUAL_RISK_ACCEPTANCE",
+     "label": "잔여위험 수용 판정",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MEASURE-2.7",
+   "card_version": 1,
+   "title": "MEASURE 2.7: 보안평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "PENTEST_REPORT_REF",
+     "label": "외부참조: 침투시험 보고서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:pentest-report)"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "RESILIENCE_FAILSAFE_MEASURES",
+     "label": "회복력·안전장애 방안",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PENTEST_REPORT_REF",
+     "label": "외부참조: 침투시험 보고서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:pentest-report)"
+     ]
+    },
+    {
+     "concept": "RESILIENCE_FAILSAFE_MEASURES",
+     "label": "회복력·안전장애 방안",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MEASURE-2.8",
+   "card_version": 1,
+   "title": "MEASURE 2.8: 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MEASURE-2.9",
+   "card_version": 1,
+   "title": "MEASURE 2.9: 설명가능성 · 기술문서 · 입증·검증",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "EXPLAINABILITY_METHODS",
+     "label": "설명 방법",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.explainabilityMethods"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "EXPLAINABILITY_METHODS",
+     "label": "설명 방법",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.explainabilityMethods"
+     ]
+    },
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:documentation)"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MEASURE-4.2",
+   "card_version": 1,
+   "title": "MEASURE 4.2: 위험·영향평가",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "TRUSTWORTHINESS_COMPOSITE_MEASURE",
+     "label": "신뢰성 종합 측정",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "TRUSTWORTHINESS_COMPOSITE_MEASURE",
+     "label": "신뢰성 종합 측정",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-NISTRMF-MEASURE-4.3",
+   "card_version": 1,
+   "title": "MEASURE 4.3: 성능측정",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "PERFORMANCE_CHANGE",
+     "label": "성능 변화량",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PERFORMANCE_CHANGE",
+     "label": "성능 변화량",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  }
+ ]
+}

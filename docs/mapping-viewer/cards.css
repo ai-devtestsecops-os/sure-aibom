@@ -1,0 +1,62 @@
+/* 규제 카드 화면 (compliance/regulation-cards.md). 필드 탐색기(viewer.css)와 같은 색 변수를 쓴다. */
+.card-viewer {--bg: #fff; --bg-subtle: #f6f8fa; --border: #d8dee4; --text: #1f2328; --text-muted: #656d76; --accent: #0969da; --accent-soft: #ddf0ff;
+  --hit-bg: #dafbe1; --hit-fg: #116329; --extra-bg: #fff8c5; --extra-fg: #7d5b00; --miss-bg: #eaeef2; --miss-fg: #57606a; --gap-bg: #ffebe9; --gap-fg: #cf222e;
+  --sans: var(--md-text-font-family, system-ui, sans-serif); --mono: var(--md-code-font-family, ui-monospace, monospace);
+  font-family: var(--sans); color: var(--text); font-size: .8rem; margin: 1rem 0 1.5rem;}
+[data-md-color-scheme="slate"] .card-viewer {--bg: var(--md-default-bg-color); --bg-subtle: var(--md-code-bg-color); --border: var(--md-default-fg-color--lightest);
+  --text: var(--md-default-fg-color); --text-muted: var(--md-default-fg-color--light); --accent: #58a6ff; --accent-soft: rgba(56, 139, 253, .2);
+  --hit-bg: rgba(34, 197, 94, .22); --hit-fg: #86efac; --extra-bg: rgba(234, 179, 8, .22); --extra-fg: #fde68a; --miss-bg: rgba(148, 163, 184, .2); --miss-fg: #cbd5e1;
+  --gap-bg: rgba(248, 113, 113, .22); --gap-fg: #fca5a5;}
+.card-viewer .cv-tabs {display: flex; gap: .25rem; border-bottom: 1px solid var(--border); margin-bottom: .6rem;}
+.card-viewer .cv-tab {background: none; border: 0; border-bottom: 2px solid transparent; padding: .45rem .9rem; cursor: pointer; color: var(--text-muted); font: inherit; font-weight: 600;}
+.card-viewer .cv-tab.active {color: var(--accent); border-bottom-color: var(--accent);}
+.card-viewer .cv-panel {display: none;}
+.card-viewer .cv-panel.active {display: block;}
+.card-viewer .cv-toolbar {display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: .6rem;}
+.card-viewer select, .card-viewer input[type=text] {font: inherit; padding: .3rem .5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text);}
+.card-viewer input[type=text] {min-width: 16rem;}
+.card-viewer .cv-upload {padding: .3rem .6rem; border: 1px dashed var(--border); border-radius: 6px; cursor: pointer; color: var(--text-muted);}
+.card-viewer .cv-upload input {display: none;}
+.card-viewer .cv-muted {color: var(--text-muted);}
+.card-viewer .cv-split {display: grid; grid-template-columns: minmax(14rem, 1fr) minmax(0, 2.2fr); gap: .8rem; min-height: 24rem;}
+@media (max-width: 900px) {.card-viewer .cv-split {grid-template-columns: 1fr;}}
+.card-viewer .cv-list {border: 1px solid var(--border); border-radius: 8px; max-height: 70vh; overflow: auto; background: var(--bg);}
+.card-viewer .cv-group {padding: .35rem .6rem; font-weight: 700; font-size: .72rem; color: var(--text-muted); background: var(--bg-subtle); position: sticky; top: 0;}
+.card-viewer .cv-item {padding: .4rem .6rem; border-top: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; gap: .5rem; align-items: baseline;}
+.card-viewer .cv-item:hover {background: var(--bg-subtle);}
+.card-viewer .cv-item.active {background: var(--accent-soft);}
+.card-viewer .cv-item .cv-id {font-family: var(--mono); font-size: .74rem;}
+.card-viewer .cv-item .cv-sub {color: var(--text-muted); font-size: .7rem; white-space: nowrap;}
+.card-viewer .cv-detail {border: 1px solid var(--border); border-radius: 8px; padding: .8rem 1rem; background: var(--bg); overflow: auto; max-height: 70vh;}
+.card-viewer .cv-detail h3 {margin: 0 0 .3rem; font-size: 1rem;}
+.card-viewer .cv-detail h4 {margin: .9rem 0 .3rem; font-size: .82rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em;}
+.card-viewer .cv-meta {display: flex; flex-wrap: wrap; gap: .35rem .5rem; margin: .3rem 0 .6rem;}
+.card-viewer .cv-chip {display: inline-block; padding: .1rem .5rem; border-radius: 999px; background: var(--bg-subtle); border: 1px solid var(--border); font-size: .7rem;}
+.card-viewer .cv-chip.hit {background: var(--hit-bg); color: var(--hit-fg); border-color: transparent;}
+.card-viewer .cv-chip.extra {background: var(--extra-bg); color: var(--extra-fg); border-color: transparent;}
+.card-viewer .cv-chip.miss {background: var(--miss-bg); color: var(--miss-fg); border-color: transparent;}
+.card-viewer .cv-chip.gap, .card-viewer .cv-chip.missing {background: var(--gap-bg); color: var(--gap-fg); border-color: transparent;}
+.card-viewer .cv-chip.present {background: var(--hit-bg); color: var(--hit-fg); border-color: transparent;}
+.card-viewer .cv-text {line-height: 1.6; padding: .6rem .8rem; background: var(--bg-subtle); border-radius: 6px; font-size: .78rem;}
+.card-viewer .cv-text mark {background: var(--hit-bg); color: inherit; border-radius: 3px; padding: 0 .1em; cursor: pointer; border-bottom: 2px solid var(--hit-fg);}
+.card-viewer .cv-text mark.extra {background: var(--extra-bg); border-bottom-color: var(--extra-fg);}
+.card-viewer .cv-text mark.gap {background: var(--gap-bg); border-bottom-color: var(--gap-fg);}
+.card-viewer .cv-text mark.focus {outline: 2px solid var(--accent);}
+.card-viewer .cv-text .cv-trans {display: block; margin-top: .5rem; color: var(--text-muted); font-size: .74rem;}
+.card-viewer table.cv-facts {width: 100%; border-collapse: collapse; font-size: .76rem; margin: .2rem 0;}
+.card-viewer table.cv-facts th, .card-viewer table.cv-facts td {text-align: left; padding: .3rem .45rem; border-bottom: 1px solid var(--border); vertical-align: top;}
+.card-viewer table.cv-facts th {color: var(--text-muted); font-weight: 600;}
+.card-viewer table.cv-facts tr.focus td {background: var(--accent-soft);}
+.card-viewer table.cv-facts code, .card-viewer .cv-path {font-family: var(--mono); font-size: .72rem; background: var(--bg-subtle); padding: .05rem .3rem; border-radius: 4px; white-space: nowrap;}
+.card-viewer .cv-path a {color: var(--accent); text-decoration: none;}
+.card-viewer .cv-verdict {font-weight: 700; padding: .1rem .5rem; border-radius: 999px; font-size: .7rem; white-space: nowrap;}
+.card-viewer .v-반영 {background: var(--hit-bg); color: var(--hit-fg);}
+.card-viewer .v-부분반영 {background: var(--extra-bg); color: var(--extra-fg);}
+.card-viewer .v-미반영 {background: var(--gap-bg); color: var(--gap-fg);}
+.card-viewer .v-검토필요, .card-viewer .v-비적용 {background: var(--miss-bg); color: var(--miss-fg);}
+.card-viewer #cv-judg-summary {display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .6rem;}
+.card-viewer .cv-stat {padding: .35rem .7rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); font-size: .76rem;}
+.card-viewer .cv-stat b {font-size: 1rem; margin-right: .3rem;}
+.card-viewer .cv-bar {display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--bg-subtle); margin: .3rem 0 .6rem;}
+.card-viewer .cv-bar span {display: block; height: 100%;}
+.card-viewer .cv-note {font-size: .74rem; color: var(--text-muted); margin-top: .5rem;}
