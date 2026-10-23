@@ -110,8 +110,8 @@ def cards():
     # 추출기 비교: 카드마다 자기 용어를 뺀 용어집으로 영어 원문을 추출해 정답과 맞춘다
     comparison = []
     for c in gold:
-        lexicon = build_lexicon(gold, vocab, {c["card_id"]}, "en")
-        pred, explain = extract(ABBR_TO_NAME[c["card_id"].split("-")[1]], c["source"]["clause_id"], card_text(c, "en"), lexicon, vocab, "en")
+        lexicon = build_lexicon(gold, vocab, {c["card_id"]})
+        pred, explain = extract(ABBR_TO_NAME[c["card_id"].split("-")[1]], c["source"]["clause_id"], card_text(c), lexicon, vocab)
         gold_concepts = {f["concept"]: f for f in c["facts"]}
         pred_facts = [f for f in pred["facts"] if f["concept"] != "UNRESOLVED"]
         hidden = c["card_id"] in iso

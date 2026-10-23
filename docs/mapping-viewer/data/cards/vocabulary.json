@@ -1,4 +1,5 @@
 {
+  "_comment": "통제 어휘. 카드의 fact 와 프로파일 줄이 가리키는 개념 id 의 사전이다. 사람이 관리한다 (생성물이 아니다). 항목: id (대문자 스네이크, 규제·스키마와 무관한 이름표), label_ko (표시 이름), aliases (같은 뜻의 다른 표시 이름), gap (CycloneDX·SPDX 모두 자리가 없는 개념이면 true), synonyms (영어 원문에서 이 개념을 부르는 말. 추출기 용어집과 매핑 후보 생성기가 쓴다). 새 개념은 여기 한 항목을 더한다. build_cards.py 는 표의 개념이 여기 없으면 멈춘다. 처음 125개는 요구사항 표에서 만들고 (id 는 필드 경로 끝 이름, 격차 개념은 손으로 지음) 동의어를 Claude 가 적었다 (2026-10-22).",
   "version": 1,
   "concepts": [
     {
@@ -6,1334 +7,798 @@
       "label_ko": "외부참조: 적대자 모델",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "적대적 공격",
-          "적대적 사례",
-          "공격자 모델",
-          "적대적 취약점"
-        ],
-        "en": [
-          "adversarial testing",
-          "adversarial attack",
-          "red teaming",
-          "adversarial examples",
-          "attacker model"
-        ]
-      }
+      "synonyms": [
+        "adversarial testing",
+        "adversarial attack",
+        "red teaming",
+        "adversarial examples",
+        "attacker model"
+      ]
     },
     {
       "id": "ANONYMIZATION_METHODS",
       "label_ko": "익명화 방법",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "익명화",
-          "가명처리",
-          "가명화",
-          "비식별화",
-          "비식별 조치"
-        ],
-        "en": [
-          "anonymisation",
-          "anonymization",
-          "pseudonymisation",
-          "pseudonymization",
-          "de-identification",
-          "privacy-preserving measures"
-        ]
-      }
+      "synonyms": [
+        "anonymisation",
+        "anonymization",
+        "pseudonymisation",
+        "pseudonymization",
+        "de-identification",
+        "privacy-preserving measures"
+      ]
     },
     {
       "id": "ARCHITECTURE_FAMILY",
       "label_ko": "아키텍처 계열",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "모델 아키텍처",
-          "모델 구조",
-          "아키텍처",
-          "모델의 구조"
-        ],
-        "en": [
-          "architecture",
-          "model architecture",
-          "operating logic",
-          "general logic of the AI system"
-        ]
-      }
+      "synonyms": [
+        "architecture",
+        "model architecture",
+        "operating logic",
+        "general logic of the AI system"
+      ]
     },
     {
       "id": "ATTESTATIONS_MAP",
       "label_ko": "요구사항↔주장 연결",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "요구사항과 주장의 대응",
-          "요건별 준수 주장",
-          "적합성 주장의 연결"
-        ],
-        "en": [
-          "verification and validation measures",
-          "demonstrate compliance",
-          "meet those requirements"
-        ]
-      }
+      "synonyms": [
+        "verification and validation measures",
+        "demonstrate compliance",
+        "meet those requirements"
+      ]
     },
     {
       "id": "ATTESTATION_REF",
       "label_ko": "외부참조: 증명",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "적합성 선언",
-          "적합성 선언서",
-          "EU 적합성 선언",
-          "자기 선언",
-          "증명서"
-        ],
-        "en": [
-          "declaration of conformity",
-          "EU declaration of conformity",
-          "attestation",
-          "self-declaration"
-        ]
-      }
+      "synonyms": [
+        "declaration of conformity",
+        "EU declaration of conformity",
+        "attestation",
+        "self-declaration"
+      ]
     },
     {
       "id": "AVAILABILITY",
       "label_ko": "데이터셋 가용성",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "데이터의 가용성",
-          "데이터 세트의 가용성",
-          "이용 가능성",
-          "데이터 접근 가능성"
-        ],
-        "en": [
-          "availability",
-          "availability of the data",
-          "data availability"
-        ]
-      }
+      "synonyms": [
+        "availability",
+        "availability of the data",
+        "data availability"
+      ]
     },
     {
       "id": "BENEFITS",
       "label_ko": "집단에 대한 이익",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "집단에 미치는 이익",
-          "편익",
-          "긍정적 영향",
-          "혜택"
-        ],
-        "en": [
-          "benefits",
-          "potential impacts",
-          "positive impacts",
-          "fairness"
-        ]
-      }
+      "synonyms": [
+        "benefits",
+        "potential impacts",
+        "positive impacts",
+        "fairness"
+      ]
     },
     {
       "id": "CERTIFICATION_REPORT_REF",
       "label_ko": "외부참조: 인증 보고서",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "인증서",
-          "인증 보고서",
-          "인증 결과",
-          "적합성 인증"
-        ],
-        "en": [
-          "certificate",
-          "certificate issued",
-          "notified body",
-          "certification"
-        ]
-      }
+      "synonyms": [
+        "certificate",
+        "certificate issued",
+        "notified body",
+        "certification"
+      ]
     },
     {
       "id": "COLLECTION_PROCESS",
       "label_ko": "데이터 수집 절차",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "데이터 수집",
-          "데이터 취득",
-          "데이터 획득",
-          "데이터의 취득",
-          "데이터의 획득",
-          "데이터 선정",
-          "데이터의 선택",
-          "수집 방법",
-          "수집 과정",
-          "수집 방식",
-          "데이터의 출처",
-          "데이터 출처",
-          "데이터 원천",
-          "데이터 소스"
-        ],
-        "en": [
-          "data collection",
-          "collection process",
-          "collection processes",
-          "origin of data",
-          "provenance",
-          "acquisition of the data",
-          "data acquisition",
-          "how the data was obtained",
-          "obtained and selected",
-          "data sources",
-          "source of data",
-          "collection and selection"
-        ]
-      }
+      "synonyms": [
+        "data collection",
+        "collection process",
+        "collection processes",
+        "origin of data",
+        "provenance",
+        "acquisition of the data",
+        "data acquisition",
+        "how the data was obtained",
+        "obtained and selected",
+        "data sources",
+        "source of data",
+        "collection and selection"
+      ]
     },
     {
       "id": "COMPONENTS",
       "label_ko": "구성요소 목록",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "구성요소",
-          "소프트웨어 구성요소",
-          "시스템의 구성요소",
-          "구성 요소 목록",
-          "시스템 구조"
-        ],
-        "en": [
-          "software components",
-          "components",
-          "relevant resources",
-          "computing resources",
-          "infrastructure, tools",
-          "versions of relevant software"
-        ]
-      }
+      "synonyms": [
+        "software components",
+        "components",
+        "relevant resources",
+        "computing resources",
+        "infrastructure, tools",
+        "versions of relevant software"
+      ]
     },
     {
       "id": "COMPONENT_CPE",
       "label_ko": "CPE 식별자",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "고유 식별",
-          "제품 식별"
-        ],
-        "en": [
-          "identification of the system",
-          "unambiguous reference",
-          "identification and traceability",
-          "identifier"
-        ]
-      }
+      "synonyms": [
+        "identification of the system",
+        "unambiguous reference",
+        "identification and traceability",
+        "identifier"
+      ]
     },
     {
       "id": "COMPONENT_DATA",
       "label_ko": "데이터 컴포넌트",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "데이터 세트",
-          "데이터셋",
-          "훈련 데이터",
-          "학습 데이터",
-          "데이터 자산"
-        ],
-        "en": [
-          "data sets",
-          "datasets",
-          "data resources",
-          "training data",
-          "data used"
-        ]
-      }
+      "synonyms": [
+        "data sets",
+        "datasets",
+        "data resources",
+        "training data",
+        "data used"
+      ]
     },
     {
       "id": "COMPONENT_DATA_DESIGN_CHOICES",
       "label_ko": "데이터 설계 선택",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "데이터 설계",
-          "데이터 세트의 설계",
-          "데이터 관련 설계상의 선택",
-          "데이터 구성 결정"
-        ],
-        "en": [
-          "relevant design choices",
-          "design of the data",
-          "data design choices"
-        ]
-      }
+      "synonyms": [
+        "relevant design choices",
+        "design of the data",
+        "data design choices"
+      ]
     },
     {
       "id": "COMPONENT_DESCRIPTION",
       "label_ko": "구성요소 설명",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "일반적 설명",
-          "구성요소의 설명"
-        ],
-        "en": [
-          "general description",
-          "brief description",
-          "description of the AI system",
-          "components and functions supported"
-        ]
-      }
+      "synonyms": [
+        "general description",
+        "brief description",
+        "description of the AI system",
+        "components and functions supported"
+      ]
     },
     {
       "id": "COMPONENT_LICENSES",
       "label_ko": "라이선스",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "라이선스",
-          "이용 약관",
-          "사용 조건",
-          "허용사용정책",
-          "이용 허락"
-        ],
-        "en": [
-          "licence",
-          "license",
-          "acceptable use policies",
-          "terms of use",
-          "licensing"
-        ]
-      }
+      "synonyms": [
+        "licence",
+        "license",
+        "acceptable use policies",
+        "terms of use",
+        "licensing"
+      ]
     },
     {
       "id": "COMPONENT_NAME",
       "label_ko": "구성요소 이름",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "시스템의 명칭",
-          "모델의 명칭",
-          "상표명",
-          "제품명"
-        ],
-        "en": [
-          "name and type",
-          "trade name",
-          "system name",
-          "model name",
-          "product name"
-        ]
-      }
+      "synonyms": [
+        "name and type",
+        "trade name",
+        "system name",
+        "model name",
+        "product name"
+      ]
     },
     {
       "id": "COMPONENT_PURL",
       "label_ko": "purl 식별자",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "패키지 식별자",
-          "패키지 URL",
-          "고유 참조"
-        ],
-        "en": [
-          "package identifier",
-          "package url",
-          "unique reference"
-        ]
-      }
+      "synonyms": [
+        "package identifier",
+        "package url",
+        "unique reference"
+      ]
     },
     {
       "id": "COMPONENT_SUPPLIER",
       "label_ko": "공급자",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "제공자의 신원",
-          "제공자의 명칭",
-          "공급자",
-          "공급업체",
-          "제조자",
-          "제3자가 제공한"
-        ],
-        "en": [
-          "name of the provider",
-          "name and address of the provider",
-          "contact details of the provider",
-          "identity and the contact details of the provider",
-          "registered trade name",
-          "supplier",
-          "manufacturer",
-          "provided by third parties"
-        ]
-      }
+      "synonyms": [
+        "name of the provider",
+        "name and address of the provider",
+        "contact details of the provider",
+        "identity and the contact details of the provider",
+        "registered trade name",
+        "supplier",
+        "manufacturer",
+        "provided by third parties"
+      ]
     },
     {
       "id": "COMPONENT_TYPE",
       "label_ko": "구성요소 유형",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "구성요소의 유형",
-          "모델 유형"
-        ],
-        "en": [
-          "type of AI system",
-          "type of model",
-          "system type"
-        ]
-      }
+      "synonyms": [
+        "type of AI system",
+        "type of model",
+        "system type"
+      ]
     },
     {
       "id": "COMPONENT_VERSION",
       "label_ko": "버전",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "버전",
-          "판본",
-          "버전 번호",
-          "릴리스"
-        ],
-        "en": [
-          "version",
-          "version of the system",
-          "versions",
-          "release"
-        ]
-      }
+      "synonyms": [
+        "version",
+        "version of the system",
+        "versions",
+        "release"
+      ]
     },
     {
       "id": "DATASETS",
       "label_ko": "사용한 데이터셋",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "사용된 데이터 세트",
-          "훈련 데이터 세트",
-          "검증 데이터 세트",
-          "시험 데이터 세트",
-          "훈련·검증·시험 데이터",
-          "학습에 사용한 데이터",
-          "훈련에 사용된 데이터"
-        ],
-        "en": [
-          "training data sets",
-          "data sets used",
-          "test sets",
-          "validation and testing data",
-          "training, validation and testing data sets",
-          "content used for training",
-          "information used by the system"
-        ]
-      }
+      "synonyms": [
+        "training data sets",
+        "data sets used",
+        "test sets",
+        "validation and testing data",
+        "training, validation and testing data sets",
+        "content used for training",
+        "information used by the system"
+      ]
     },
     {
       "id": "DECISION_THRESHOLD",
       "label_ko": "지표 임계값",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "임계값",
-          "판정 기준치",
-          "결정 임계치"
-        ],
-        "en": [
-          "threshold",
-          "thresholds",
-          "probabilistic thresholds",
-          "decision threshold"
-        ]
-      }
+      "synonyms": [
+        "threshold",
+        "thresholds",
+        "probabilistic thresholds",
+        "decision threshold"
+      ]
     },
     {
       "id": "DECLARATIONS_CLAIMS",
       "label_ko": "주장",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "적합성",
-          "준수 주장",
-          "요건 충족",
-          "요건의 준수",
-          "적합함을 입증"
-        ],
-        "en": [
-          "suitability",
-          "compliance with the requirements",
-          "demonstrate",
-          "demonstrated",
-          "conformity",
-          "claims",
-          "relevant"
-        ]
-      }
+      "synonyms": [
+        "suitability",
+        "compliance with the requirements",
+        "demonstrate",
+        "demonstrated",
+        "conformity",
+        "claims",
+        "relevant"
+      ]
     },
     {
       "id": "DECLARATIONS_EVIDENCE",
       "label_ko": "증거",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "증거",
-          "입증 자료",
-          "근거 자료",
-          "입증"
-        ],
-        "en": [
-          "evidence",
-          "supporting evidence",
-          "proof"
-        ]
-      }
+      "synonyms": [
+        "evidence",
+        "supporting evidence",
+        "proof"
+      ]
     },
     {
       "id": "DEPENDENCIES",
       "label_ko": "의존관계",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "의존성",
-          "연계",
-          "통합되는지",
-          "상호 연계",
-          "구성요소 간 관계"
-        ],
-        "en": [
-          "dependencies",
-          "system architecture",
-          "integrate into the overall processing",
-          "build on or feed into each other",
-          "interaction between components"
-        ]
-      }
+      "synonyms": [
+        "dependencies",
+        "system architecture",
+        "integrate into the overall processing",
+        "build on or feed into each other",
+        "interaction between components"
+      ]
     },
     {
       "id": "DOCUMENTATION_REF",
       "label_ko": "외부참조: 문서",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "기술문서",
-          "기술 문서",
-          "사용설명서",
-          "사용 설명서",
-          "문서화된 정보",
-          "설명서",
-          "매뉴얼"
-        ],
-        "en": [
-          "technical documentation",
-          "instructions for use",
-          "instructions of use",
-          "documentation",
-          "user documentation",
-          "manual",
-          "necessary information to users"
-        ]
-      }
+      "synonyms": [
+        "technical documentation",
+        "instructions for use",
+        "instructions of use",
+        "documentation",
+        "user documentation",
+        "manual",
+        "necessary information to users"
+      ]
     },
     {
       "id": "ENERGY_CONSUMPTIONS",
       "label_ko": "에너지 소비",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "에너지 소비량",
-          "에너지 사용",
-          "전력 소비",
-          "탄소 배출",
-          "환경 영향"
-        ],
-        "en": [
-          "energy consumption",
-          "energy use",
-          "environmental impact",
-          "carbon footprint",
-          "sustainability"
-        ]
-      }
+      "synonyms": [
+        "energy consumption",
+        "energy use",
+        "environmental impact",
+        "carbon footprint",
+        "sustainability"
+      ]
     },
     {
       "id": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
       "label_ko": "위험 완화 전략",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "위험 완화",
-          "위험 관리 조치",
-          "완화 조치",
-          "위험의 제거 또는 감소",
-          "완화·통제조치",
-          "위험 저감"
-        ],
-        "en": [
-          "risk management measures",
-          "mitigation measures",
-          "mitigate",
-          "elimination or reduction of risks",
-          "mitigation and control measures",
-          "risk mitigation"
-        ]
-      }
+      "synonyms": [
+        "risk management measures",
+        "mitigation measures",
+        "mitigate",
+        "elimination or reduction of risks",
+        "mitigation and control measures",
+        "risk mitigation"
+      ]
     },
     {
       "id": "ETHICAL_CONSIDERATIONS_NAME",
       "label_ko": "위험의 이름",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "알려진 위험",
-          "예견 가능한 위험",
-          "잠재적 위험",
-          "위험의 식별",
-          "식별된 위험",
-          "건강·안전·기본권에 대한 위험"
-        ],
-        "en": [
-          "known and the reasonably foreseeable risks",
-          "foreseeable risks",
-          "sources of risks",
-          "systemic risks",
-          "risks to health and safety",
-          "identification and analysis of the known",
-          "potential risks"
-        ]
-      }
+      "synonyms": [
+        "known and the reasonably foreseeable risks",
+        "foreseeable risks",
+        "sources of risks",
+        "systemic risks",
+        "risks to health and safety",
+        "identification and analysis of the known",
+        "potential risks"
+      ]
     },
     {
       "id": "EXPLAINABILITY_METHODS",
       "label_ko": "설명 방법",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "설명가능성",
-          "설명 가능성",
-          "해석 가능성",
-          "산출물의 해석",
-          "설명 방법",
-          "산출물을 설명"
-        ],
-        "en": [
-          "explainability",
-          "interpret the output",
-          "interpretation of the outputs",
-          "explain its output",
-          "transparent",
-          "explained",
-          "interpretability"
-        ]
-      }
+      "synonyms": [
+        "explainability",
+        "interpret the output",
+        "interpretation of the outputs",
+        "explain its output",
+        "transparent",
+        "explained",
+        "interpretability"
+      ]
     },
     {
       "id": "FORMULATION",
       "label_ko": "형성 기록",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "개발 절차",
-          "훈련 과정",
-          "구축 과정",
-          "제작 과정"
-        ],
-        "en": [
-          "development process",
-          "process for its development",
-          "training process",
-          "conditions similar to deployment"
-        ]
-      }
+      "synonyms": [
+        "development process",
+        "process for its development",
+        "training process",
+        "conditions similar to deployment"
+      ]
     },
     {
       "id": "FORMULATION_COMPONENTS",
       "label_ko": "형성: 일시적 구성요소",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "개발에 사용된 도구",
-          "개발 도구",
-          "사전훈련된 시스템이나 도구",
-          "구축에 쓰인 구성요소"
-        ],
-        "en": [
-          "tools used",
-          "tooling resources",
-          "pre-trained systems or tools",
-          "development tools"
-        ]
-      }
+      "synonyms": [
+        "tools used",
+        "tooling resources",
+        "pre-trained systems or tools",
+        "development tools"
+      ]
     },
     {
       "id": "FORMULATION_SERVICES",
       "label_ko": "형성: 일시적 서비스",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "개발에 사용된 서비스",
-          "외부 서비스",
-          "클라우드 서비스"
-        ],
-        "en": [
-          "services used",
-          "external services",
-          "cloud services"
-        ]
-      }
+      "synonyms": [
+        "services used",
+        "external services",
+        "cloud services"
+      ]
     },
     {
       "id": "GROUP_AT_RISK",
       "label_ko": "위험에 놓인 집단",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "영향을 받는 집단",
-          "취약 집단",
-          "특정 집단",
-          "개인 또는 집단",
-          "대상 집단"
-        ],
-        "en": [
-          "vulnerable groups",
-          "persons or groups of persons",
-          "affected groups",
-          "persons under the age of 18",
-          "specific persons or groups"
-        ]
-      }
+      "synonyms": [
+        "vulnerable groups",
+        "persons or groups of persons",
+        "affected groups",
+        "persons under the age of 18",
+        "specific persons or groups"
+      ]
     },
     {
       "id": "HARMS",
       "label_ko": "집단에 대한 피해",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "부정적 영향",
-          "해악",
-          "위해",
-          "손해"
-        ],
-        "en": [
-          "harm",
-          "harms",
-          "adverse impact",
-          "negative impact",
-          "negative impacts"
-        ]
-      }
+      "synonyms": [
+        "harm",
+        "harms",
+        "adverse impact",
+        "negative impact",
+        "negative impacts"
+      ]
     },
     {
       "id": "HYPERPARAMETERS",
       "label_ko": "하이퍼파라미터",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "매개변수",
-          "학습률",
-          "하이퍼파라미터",
-          "파라미터의 관련성"
-        ],
-        "en": [
-          "hyperparameters",
-          "parameters",
-          "relevance of the different parameters",
-          "learning rate"
-        ]
-      }
+      "synonyms": [
+        "hyperparameters",
+        "parameters",
+        "relevance of the different parameters",
+        "learning rate"
+      ]
     },
     {
       "id": "INPUTS",
       "label_ko": "입력 형식",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "입력 데이터",
-          "입력 양식",
-          "입력 형식",
-          "입력의 사양"
-        ],
-        "en": [
-          "input data",
-          "inputs",
-          "specifications for the input data",
-          "specifications on input data",
-          "format of inputs"
-        ]
-      }
+      "synonyms": [
+        "input data",
+        "inputs",
+        "specifications for the input data",
+        "specifications on input data",
+        "format of inputs"
+      ]
     },
     {
       "id": "INPUT_OUTPUT_ML_PARAMETERS_MAX_SIZE",
       "label_ko": "문맥 길이·입출력 최대 크기",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "컨텍스트 길이",
-          "문맥 길이",
-          "최대 입력 길이",
-          "입출력 크기"
-        ],
-        "en": [
-          "maximum size",
-          "context window",
-          "context window length",
-          "maximum input length"
-        ]
-      }
+      "synonyms": [
+        "maximum size",
+        "context window",
+        "context window length",
+        "maximum input length"
+      ]
     },
     {
       "id": "INTENDED_USE",
       "label_ko": "데이터셋 의도된 용도",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "데이터의 용도",
-          "데이터 세트의 목적",
-          "데이터 사용 목적",
-          "데이터의 의도된 용도"
-        ],
-        "en": [
-          "intended purpose of the data",
-          "purpose of the data set",
-          "setting within which the high-risk AI system is intended to be used",
-          "geographical, contextual, behavioural or functional setting"
-        ]
-      }
+      "synonyms": [
+        "intended purpose of the data",
+        "purpose of the data set",
+        "setting within which the high-risk AI system is intended to be used",
+        "geographical, contextual, behavioural or functional setting"
+      ]
     },
     {
       "id": "KNOWN_BIAS_DETECTION_METHOD",
       "label_ko": "편향 탐지 방법",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "편향 탐지",
-          "편향을 탐지",
-          "편향 검토",
-          "편향의 식별",
-          "편향 검사"
-        ],
-        "en": [
-          "detect identifiable biases",
-          "bias detection",
-          "methods to detect",
-          "examination in view of possible biases",
-          "detect biases"
-        ]
-      }
+      "synonyms": [
+        "detect identifiable biases",
+        "bias detection",
+        "methods to detect",
+        "examination in view of possible biases",
+        "detect biases"
+      ]
     },
     {
       "id": "KNOWN_BIAS_MITIGATION_STRATEGY",
       "label_ko": "편향 완화 조치",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "편향 완화",
-          "편향을 예방",
-          "편향 방지",
-          "편향의 완화",
-          "편향 시정"
-        ],
-        "en": [
-          "mitigate possible biases",
-          "bias mitigation",
-          "prevent and mitigate",
-          "bias correction",
-          "correct biases"
-        ]
-      }
+      "synonyms": [
+        "mitigate possible biases",
+        "bias mitigation",
+        "prevent and mitigate",
+        "bias correction",
+        "correct biases"
+      ]
     },
     {
       "id": "KNOWN_BIAS_NAME",
       "label_ko": "알려진 편향",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "편향의 발생 가능성",
-          "대표성",
-          "편향성",
-          "차별로 이어질 가능성"
-        ],
-        "en": [
-          "bias",
-          "biases",
-          "possible biases",
-          "representative",
-          "sufficiently representative",
-          "discrimination"
-        ]
-      }
+      "synonyms": [
+        "bias",
+        "biases",
+        "possible biases",
+        "representative",
+        "sufficiently representative",
+        "discrimination"
+      ]
     },
     {
       "id": "KNOWN_GAPS",
       "label_ko": "데이터 공백·결함",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "데이터 공백",
-          "데이터 결함",
-          "데이터의 결함",
-          "데이터 부족",
-          "데이터의 완전성"
-        ],
-        "en": [
-          "data gaps",
-          "shortcomings",
-          "complete",
-          "completeness",
-          "unsuitability of data"
-        ]
-      }
+      "synonyms": [
+        "data gaps",
+        "shortcomings",
+        "complete",
+        "completeness",
+        "unsuitability of data"
+      ]
     },
     {
       "id": "KNOWN_GAPS_MITIGATION_STRATEGY",
       "label_ko": "데이터 공백·결함",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "공백을 해결",
-          "결함을 해결",
-          "결함의 해결 방법",
-          "데이터 보완"
-        ],
-        "en": [
-          "gaps and shortcomings can be addressed",
-          "address data gaps",
-          "remedy shortcomings"
-        ]
-      }
+      "synonyms": [
+        "gaps and shortcomings can be addressed",
+        "address data gaps",
+        "remedy shortcomings"
+      ]
     },
     {
       "id": "KNOWN_GAPS_NAME",
       "label_ko": "데이터 공백·결함",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "공백의 식별",
-          "결함의 식별",
-          "데이터 공백 또는 결함"
-        ],
-        "en": [
-          "identification of relevant data gaps",
-          "data gaps or shortcomings",
-          "identified gaps"
-        ]
-      }
+      "synonyms": [
+        "identification of relevant data gaps",
+        "data gaps or shortcomings",
+        "identified gaps"
+      ]
     },
     {
       "id": "LIMITATION_IDENTIFICATION_METHODS",
       "label_ko": "한계 식별방법론",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "한계의 식별",
-          "한계를 식별",
-          "제약사항 파악",
-          "한계 분석"
-        ],
-        "en": [
-          "identification of limitations",
-          "identify limitations",
-          "limitation analysis"
-        ]
-      }
+      "synonyms": [
+        "identification of limitations",
+        "identify limitations",
+        "limitation analysis"
+      ]
     },
     {
       "id": "METADATA_AUTHORS",
       "label_ko": "문서 작성자",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "작성자",
-          "문서 작성자",
-          "기록 책임자",
-          "작성 책임자"
-        ],
-        "en": [
-          "person submitting information",
-          "author",
-          "authors",
-          "person who signed"
-        ]
-      }
+      "synonyms": [
+        "person submitting information",
+        "author",
+        "authors",
+        "person who signed"
+      ]
     },
     {
       "id": "METADATA_MANUFACTURER",
       "label_ko": "문서 생성 조직",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "작성 조직",
-          "발행 기관",
-          "문서를 작성한 조직"
-        ],
-        "en": [
-          "name, address and contact details of the deployer",
-          "issuing organisation",
-          "organisation submitting"
-        ]
-      }
+      "synonyms": [
+        "name, address and contact details of the deployer",
+        "issuing organisation",
+        "organisation submitting"
+      ]
     },
     {
       "id": "MODALITY",
       "label_ko": "데이터셋 유형",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "데이터의 유형",
-          "데이터 유형",
-          "데이터 종류",
-          "데이터의 종류",
-          "데이터 형태",
-          "모달리티"
-        ],
-        "en": [
-          "modality",
-          "type of data",
-          "type and provenance of data",
-          "data type",
-          "general description of these data sets"
-        ]
-      }
+      "synonyms": [
+        "modality",
+        "type of data",
+        "type and provenance of data",
+        "data type",
+        "general description of these data sets"
+      ]
     },
     {
       "id": "MODEL_ARCHITECTURE",
       "label_ko": "구체적 아키텍처",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "알고리즘의 일반적 논리",
-          "모델 설계 사양",
-          "네트워크 구조",
-          "알고리즘"
-        ],
-        "en": [
-          "algorithms",
-          "logic of the AI system and of the algorithms",
-          "design specifications",
-          "network architecture"
-        ]
-      }
+      "synonyms": [
+        "algorithms",
+        "logic of the AI system and of the algorithms",
+        "design specifications",
+        "network architecture"
+      ]
     },
     {
       "id": "MODEL_PARAMETERS_DESIGN_CHOICES",
       "label_ko": "모델 설계 선택",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "설계상의 선택",
-          "설계 결정",
-          "설계사양",
-          "주요 설계 선택",
-          "설계의 근거"
-        ],
-        "en": [
-          "key design choices",
-          "design choices",
-          "design specifications of the model",
-          "rationale and assumptions made"
-        ]
-      }
+      "synonyms": [
+        "key design choices",
+        "design choices",
+        "design specifications of the model",
+        "rationale and assumptions made"
+      ]
     },
     {
       "id": "NOISE",
       "label_ko": "데이터셋 잡음",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "잡음",
-          "노이즈",
-          "오염된 데이터",
-          "이상치"
-        ],
-        "en": [
-          "free of errors",
-          "errors",
-          "noise",
-          "outliers",
-          "data errors"
-        ]
-      }
+      "synonyms": [
+        "free of errors",
+        "errors",
+        "noise",
+        "outliers",
+        "data errors"
+      ]
     },
     {
       "id": "OPTIMIZATION_TARGET",
       "label_ko": "최적화 목표",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "최적화하도록 설계된 대상",
-          "최적화 대상",
-          "목적 함수",
-          "최적화 목표"
-        ],
-        "en": [
-          "designed to optimise for",
-          "optimisation target",
-          "optimization target",
-          "objective function"
-        ]
-      }
+      "synonyms": [
+        "designed to optimise for",
+        "optimisation target",
+        "optimization target",
+        "objective function"
+      ]
     },
     {
       "id": "ORIGINAL_COLLECTION_PURPOSE",
       "label_ko": "데이터 수집의 원래 목적",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "수집의 원래 목적",
-          "원래 목적",
-          "최초 수집 목적",
-          "당초 수집 목적",
-          "수집 목적"
-        ],
-        "en": [
-          "original purpose of the data collection",
-          "original purpose",
-          "purpose of the data collection",
-          "purpose for which the data was collected"
-        ]
-      }
+      "synonyms": [
+        "original purpose of the data collection",
+        "original purpose",
+        "purpose of the data collection",
+        "purpose for which the data was collected"
+      ]
     },
     {
       "id": "OUTPUTS",
       "label_ko": "출력 형식",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "산출물",
-          "예상 산출물",
-          "출력 형식",
-          "산출물의 양식"
-        ],
-        "en": [
-          "output",
-          "outputs",
-          "expected output",
-          "format of outputs",
-          "output quality"
-        ]
-      }
+      "synonyms": [
+        "output",
+        "outputs",
+        "expected output",
+        "format of outputs",
+        "output quality"
+      ]
     },
     {
       "id": "PARAMETER_COUNT",
       "label_ko": "파라미터 수·모델 크기",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "파라미터 수",
-          "매개변수의 수",
-          "모델 크기",
-          "모델의 규모",
-          "파라미터 개수"
-        ],
-        "en": [
-          "number of parameters",
-          "parameter count",
-          "model size"
-        ]
-      }
+      "synonyms": [
+        "number of parameters",
+        "parameter count",
+        "model size"
+      ]
     },
     {
       "id": "PEDIGREE",
       "label_ko": "계보",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "계보",
-          "변경 이력",
-          "원본과의 관계"
-        ],
-        "en": [
-          "pre-trained systems or tools",
-          "derived from",
-          "lineage",
-          "pedigree",
-          "modified by the provider"
-        ]
-      }
+      "synonyms": [
+        "pre-trained systems or tools",
+        "derived from",
+        "lineage",
+        "pedigree",
+        "modified by the provider"
+      ]
     },
     {
       "id": "PEDIGREE_COMMITS",
       "label_ko": "계보: 커밋",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "변경 내역",
-          "수정 이력",
-          "커밋",
-          "변경 기록"
-        ],
-        "en": [
-          "changes made",
-          "relevant changes",
-          "change history",
-          "modifications"
-        ]
-      }
+      "synonyms": [
+        "changes made",
+        "relevant changes",
+        "change history",
+        "modifications"
+      ]
     },
     {
       "id": "PEDIGREE_NOTES",
       "label_ko": "계보: 메모",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "수정한 방식",
-          "변경 사유",
-          "통합 또는 수정",
-          "수정 내용"
-        ],
-        "en": [
-          "how those were used, integrated or modified",
-          "integrated or modified",
-          "modification notes"
-        ]
-      }
+      "synonyms": [
+        "how those were used, integrated or modified",
+        "integrated or modified",
+        "modification notes"
+      ]
     },
     {
       "id": "PENTEST_REPORT_REF",
       "label_ko": "외부참조: 침투시험 보고서",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "침투 시험",
-          "침투시험",
-          "보안 시험",
-          "취약점 점검",
-          "모의 해킹"
-        ],
-        "en": [
-          "penetration test",
-          "security testing",
-          "security",
-          "vulnerability assessment"
-        ]
-      }
+      "synonyms": [
+        "penetration test",
+        "security testing",
+        "security",
+        "vulnerability assessment"
+      ]
     },
     {
       "id": "PERFORMANCE_METRICS_SLICE",
       "label_ko": "성능 지표 구간",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "집단별 성능",
-          "하위 집단",
-          "세부 집단",
-          "구간별"
-        ],
-        "en": [
-          "specific persons or groups of persons",
-          "performance regarding specific persons",
-          "degrees of accuracy for specific persons",
-          "subgroup performance"
-        ]
-      }
+      "synonyms": [
+        "specific persons or groups of persons",
+        "performance regarding specific persons",
+        "degrees of accuracy for specific persons",
+        "subgroup performance"
+      ]
     },
     {
       "id": "PERFORMANCE_METRICS_TYPE",
       "label_ko": "성능 지표 유형",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "성능 지표",
-          "측정 지표",
-          "정확성",
-          "정확도",
-          "측정 기준",
-          "평가 지표"
-        ],
-        "en": [
-          "metrics",
-          "accuracy metrics",
-          "performance metrics",
-          "evaluation results",
-          "level of accuracy",
-          "levels of accuracy",
-          "model evaluation",
-          "measured qualitatively or quantitatively"
-        ]
-      }
+      "synonyms": [
+        "metrics",
+        "accuracy metrics",
+        "performance metrics",
+        "evaluation results",
+        "level of accuracy",
+        "levels of accuracy",
+        "model evaluation",
+        "measured qualitatively or quantitatively"
+      ]
     },
     {
       "id": "PERFORMANCE_METRICS_VALUE",
       "label_ko": "성능 지표 값",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "성능 수준",
-          "지표 값",
-          "측정값",
-          "달성 수준",
-          "정확성의 수준"
-        ],
-        "en": [
-          "level of performance",
-          "metric value",
-          "measured value",
-          "achieved accuracy"
-        ]
-      }
+      "synonyms": [
+        "level of performance",
+        "metric value",
+        "measured value",
+        "achieved accuracy"
+      ]
     },
     {
       "id": "PREPROCESSING",
@@ -1342,1347 +807,820 @@
         "학습 데이터 전처리"
       ],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "전처리",
-          "데이터 준비",
-          "데이터 처리 작업",
-          "라벨링",
-          "주석 처리",
-          "정제",
-          "데이터 정제",
-          "보강",
-          "집계",
-          "가공"
-        ],
-        "en": [
-          "data-preparation",
-          "data preparation",
-          "preprocessing",
-          "pre-processing",
-          "labelling",
-          "annotation",
-          "cleaning",
-          "data cleaning",
-          "curation methodologies",
-          "curation",
-          "labelling procedures",
-          "enrichment and aggregation"
-        ]
-      }
+      "synonyms": [
+        "data-preparation",
+        "data preparation",
+        "preprocessing",
+        "pre-processing",
+        "labelling",
+        "annotation",
+        "cleaning",
+        "data cleaning",
+        "curation methodologies",
+        "curation",
+        "labelling procedures",
+        "enrichment and aggregation"
+      ]
     },
     {
       "id": "PRIVACY_ASSESSMENT_REF",
       "label_ko": "외부참조: 프라이버시 평가",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "개인정보 영향평가",
-          "프라이버시 평가",
-          "개인정보 보호 평가",
-          "프라이버시 영향"
-        ],
-        "en": [
-          "privacy risk",
-          "data protection impact assessment",
-          "privacy impact assessment",
-          "privacy assessment"
-        ]
-      }
+      "synonyms": [
+        "privacy risk",
+        "data protection impact assessment",
+        "privacy impact assessment",
+        "privacy assessment"
+      ]
     },
     {
       "id": "PROVENANCE",
       "label_ko": "패키지 출처 정보",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "출처 정보",
-          "출처의 기록",
-          "데이터의 원천"
-        ],
-        "en": [
-          "provenance of data",
-          "recording the provenance",
-          "data provenance",
-          "origin"
-        ]
-      }
+      "synonyms": [
+        "provenance of data",
+        "recording the provenance",
+        "data provenance",
+        "origin"
+      ]
     },
     {
       "id": "RELEASE_NOTES_TIMESTAMP",
       "label_ko": "출시일",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "출시일",
-          "출시 시점",
-          "시장 출시",
-          "배포일",
-          "서비스 공급 시점",
-          "출시 또는 서비스 공급"
-        ],
-        "en": [
-          "date of release",
-          "release date",
-          "placed on the market",
-          "put into service",
-          "date of issue"
-        ]
-      }
+      "synonyms": [
+        "date of release",
+        "release date",
+        "placed on the market",
+        "put into service",
+        "date of issue"
+      ]
     },
     {
       "id": "REPRESENTATION_ASSUMPTIONS",
       "label_ko": "데이터의 표상 가정",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "가정의 설정",
-          "표상",
-          "측정하도록 되어 있는 정보",
-          "데이터가 나타내는"
-        ],
-        "en": [
-          "formulation of assumptions",
-          "assumptions",
-          "supposed to measure and represent",
-          "represent"
-        ]
-      }
+      "synonyms": [
+        "formulation of assumptions",
+        "assumptions",
+        "supposed to measure and represent",
+        "represent"
+      ]
     },
     {
       "id": "RISK_ASSESSMENT_REF",
       "label_ko": "외부참조: 위험평가",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "위험 평가",
-          "위험평가",
-          "위험관리 시스템",
-          "위험의 식별과 분석",
-          "위험의 추정",
-          "영향평가",
-          "리스크 평가"
-        ],
-        "en": [
-          "risk management system",
-          "risk assessment",
-          "impact assessment",
-          "identification and analysis of the known and the reasonably foreseeable risks",
-          "estimation and evaluation of the risks",
-          "fundamental rights impact assessment",
-          "risks and potential impacts",
-          "residual risks"
-        ]
-      }
+      "synonyms": [
+        "risk management system",
+        "risk assessment",
+        "impact assessment",
+        "identification and analysis of the known and the reasonably foreseeable risks",
+        "estimation and evaluation of the risks",
+        "fundamental rights impact assessment",
+        "risks and potential impacts",
+        "residual risks"
+      ]
     },
     {
       "id": "SAFETY_RISK_ASSESSMENT",
       "label_ko": "안전 위험 평가",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "안전 위험",
-          "건강 및 안전에 대한 위험",
-          "안전성 평가",
-          "안전 평가"
-        ],
-        "en": [
-          "safety risks",
-          "risks to health and safety",
-          "safety assessment",
-          "safety"
-        ]
-      }
+      "synonyms": [
+        "safety risks",
+        "risks to health and safety",
+        "safety assessment",
+        "safety"
+      ]
     },
     {
       "id": "SENSITIVE_DATA",
       "label_ko": "민감 데이터",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "민감 데이터",
-          "개인데이터",
-          "개인 데이터",
-          "특별한 범주의 개인데이터",
-          "민감정보"
-        ],
-        "en": [
-          "personal data",
-          "special categories of personal data",
-          "sensitive data",
-          "sensitive information"
-        ]
-      }
+      "synonyms": [
+        "personal data",
+        "special categories of personal data",
+        "sensitive data",
+        "sensitive information"
+      ]
     },
     {
       "id": "SENSITIVE_PERSONAL_INFORMATION",
       "label_ko": "민감 개인정보 사용",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "민감 개인정보",
-          "특별한 범주의 개인데이터를 처리",
-          "개인정보 처리",
-          "개인정보의 사용"
-        ],
-        "en": [
-          "process special categories of personal data",
-          "processing of personal data",
-          "use of personal data",
-          "processing of special categories"
-        ]
-      }
+      "synonyms": [
+        "process special categories of personal data",
+        "processing of personal data",
+        "use of personal data",
+        "processing of special categories"
+      ]
     },
     {
       "id": "SERVICES",
       "label_ko": "서비스 목록",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "API",
-          "외부 서비스",
-          "서비스 목록"
-        ],
-        "en": [
-          "services",
-          "APIs",
-          "external services",
-          "service"
-        ]
-      }
+      "synonyms": [
+        "services",
+        "APIs",
+        "external services",
+        "service"
+      ]
     },
     {
       "id": "SIZE",
       "label_ko": "데이터셋 크기",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "데이터의 양",
-          "데이터 세트의 양",
-          "데이터 규모",
-          "데이터 크기",
-          "데이터포인트",
-          "표본 수",
-          "데이터의 범위"
-        ],
-        "en": [
-          "quantity",
-          "number of data points",
-          "scope and main characteristics",
-          "size of the data set",
-          "dataset size",
-          "volume of data"
-        ]
-      }
+      "synonyms": [
+        "quantity",
+        "number of data points",
+        "scope and main characteristics",
+        "size of the data set",
+        "dataset size",
+        "volume of data"
+      ]
     },
     {
       "id": "STANDARDS_NAME",
       "label_ko": "준수 표준",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "조화된 표준",
-          "공통 규격",
-          "적용한 표준",
-          "준수한 표준"
-        ],
-        "en": [
-          "harmonised standards",
-          "harmonised standard",
-          "common specification",
-          "common specifications",
-          "codes of practice",
-          "standards applied",
-          "technical specifications"
-        ]
-      }
+      "synonyms": [
+        "harmonised standards",
+        "harmonised standard",
+        "common specification",
+        "common specifications",
+        "codes of practice",
+        "standards applied",
+        "technical specifications"
+      ]
     },
     {
       "id": "STANDARDS_REQUIREMENTS",
       "label_ko": "표준 요구사항 정의",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "요구사항",
-          "요건",
-          "표준의 요구사항",
-          "요건 목록"
-        ],
-        "en": [
-          "requirements",
-          "evaluation criteria",
-          "criteria",
-          "system requirements",
-          "requirements for data quality"
-        ]
-      }
+      "synonyms": [
+        "requirements",
+        "evaluation criteria",
+        "criteria",
+        "system requirements",
+        "requirements for data quality"
+      ]
     },
     {
       "id": "STATISTICS",
       "label_ko": "데이터셋 통계 특성",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "통계적 특성",
-          "분포",
-          "주요 특성"
-        ],
-        "en": [
-          "statistical properties",
-          "statistics",
-          "distribution",
-          "main characteristics",
-          "statistical characteristics"
-        ]
-      }
+      "synonyms": [
+        "statistical properties",
+        "statistics",
+        "distribution",
+        "main characteristics",
+        "statistical characteristics"
+      ]
     },
     {
       "id": "TASK",
       "label_ko": "과업",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "과업",
-          "태스크",
-          "수행하는 작업"
-        ],
-        "en": [
-          "tasks",
-          "tasks that the model is intended to perform",
-          "specific tasks",
-          "intended to perform",
-          "task"
-        ]
-      }
+      "synonyms": [
+        "tasks",
+        "tasks that the model is intended to perform",
+        "specific tasks",
+        "intended to perform",
+        "task"
+      ]
     },
     {
       "id": "TASKS_RESOURCE_REFERENCES",
       "label_ko": "형성: 리소스 참조",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "개발 도구",
-          "사용된 도구",
-          "리소스",
-          "연산 자원 참조"
-        ],
-        "en": [
-          "tools",
-          "evaluation protocols and tools",
-          "tools used during",
-          "protocols and tools"
-        ]
-      }
+      "synonyms": [
+        "tools",
+        "evaluation protocols and tools",
+        "tools used during",
+        "protocols and tools"
+      ]
     },
     {
       "id": "TECHNICAL_LIMITATIONS",
       "label_ko": "기술적 한계",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "기술적 한계",
-          "성능의 한계",
-          "역량 및 한계",
-          "알려진 한계"
-        ],
-        "en": [
-          "limitations",
-          "limitations in performance",
-          "capabilities and limitations",
-          "knowledge limits",
-          "known limitations",
-          "limitations of the generalizability"
-        ]
-      }
+      "synonyms": [
+        "limitations",
+        "limitations in performance",
+        "capabilities and limitations",
+        "knowledge limits",
+        "known limitations",
+        "limitations of the generalizability"
+      ]
     },
     {
       "id": "TECHNICAL_REQUIREMENTS",
       "label_ko": "소프트웨어 구동 정보",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "필요한 하드웨어",
-          "컴퓨팅 요건",
-          "구동 환경",
-          "시스템 요구사양",
-          "하드웨어"
-        ],
-        "en": [
-          "hardware",
-          "hardware on which the AI system is intended to run",
-          "computational and hardware resources needed",
-          "interacts with, or can be used to interact with, hardware or software",
-          "system requirements",
-          "runtime requirements"
-        ]
-      }
+      "synonyms": [
+        "hardware",
+        "hardware on which the AI system is intended to run",
+        "computational and hardware resources needed",
+        "interacts with, or can be used to interact with, hardware or software",
+        "system requirements",
+        "runtime requirements"
+      ]
     },
     {
       "id": "THREAT_MODEL_REF",
       "label_ko": "외부참조: 위협 모델",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "위협 모델",
-          "위협 분석",
-          "사이버보안 위협",
-          "보안 위협"
-        ],
-        "en": [
-          "threat model",
-          "data poisoning",
-          "model poisoning",
-          "model evasion",
-          "adversarial examples",
-          "system vulnerabilities",
-          "cybersecurity threats"
-        ]
-      }
+      "synonyms": [
+        "threat model",
+        "data poisoning",
+        "model poisoning",
+        "model evasion",
+        "adversarial examples",
+        "system vulnerabilities",
+        "cybersecurity threats"
+      ]
     },
     {
       "id": "TRAINING_COMPUTE",
       "label_ko": "모델 훈련 연산자원",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "연산 자원",
-          "연산자원",
-          "컴퓨팅 자원",
-          "훈련에 사용된 연산",
-          "연산량",
-          "컴퓨팅 파워"
-        ],
-        "en": [
-          "computational resources used to train",
-          "computational resources",
-          "number of floating point operations",
-          "compute",
-          "computing resources used"
-        ]
-      }
+      "synonyms": [
+        "computational resources used to train",
+        "computational resources",
+        "number of floating point operations",
+        "compute",
+        "computing resources used"
+      ]
     },
     {
       "id": "TRAINING_TECHNIQUES",
       "label_ko": "학습 과정 정보",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "훈련 방법",
-          "훈련방법론",
-          "학습 방법",
-          "훈련 기법",
-          "학습 기법",
-          "훈련 과정",
-          "훈련 절차"
-        ],
-        "en": [
-          "training methodologies and techniques",
-          "training methodologies",
-          "training techniques",
-          "training process",
-          "training and testing process",
-          "fine-tuning",
-          "alignment",
-          "model adaptations",
-          "details related to the training"
-        ]
-      }
+      "synonyms": [
+        "training methodologies and techniques",
+        "training methodologies",
+        "training techniques",
+        "training process",
+        "training and testing process",
+        "fine-tuning",
+        "alignment",
+        "model adaptations",
+        "details related to the training"
+      ]
     },
     {
       "id": "TRAINING_TIME",
       "label_ko": "모델 훈련 연산자원",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "훈련 시간",
-          "학습 시간",
-          "훈련에 걸린 시간",
-          "훈련 기간"
-        ],
-        "en": [
-          "training time",
-          "time to train",
-          "training duration"
-        ]
-      }
+      "synonyms": [
+        "training time",
+        "time to train",
+        "training duration"
+      ]
     },
     {
       "id": "UPDATE_MECHANISM",
       "label_ko": "데이터셋 갱신 방식",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "업데이트",
-          "데이터 갱신",
-          "데이터의 갱신",
-          "최신성"
-        ],
-        "en": [
-          "updating",
-          "updates",
-          "update mechanism",
-          "kept up-to-date",
-          "data updates"
-        ]
-      }
+      "synonyms": [
+        "updating",
+        "updates",
+        "update mechanism",
+        "kept up-to-date",
+        "data updates"
+      ]
     },
     {
       "id": "USERS",
       "label_ko": "의도된 사용자",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "사용자",
-          "의도된 사용자",
-          "대상 사용자",
-          "이용자"
-        ],
-        "en": [
-          "users",
-          "intended users",
-          "types of users",
-          "deployers",
-          "end users"
-        ]
-      }
+      "synonyms": [
+        "users",
+        "intended users",
+        "types of users",
+        "deployers",
+        "end users"
+      ]
     },
     {
       "id": "USE_CASES",
       "label_ko": "의도된 용도",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "의도된 목적",
-          "사용 목적",
-          "용도",
-          "사용 사례",
-          "적용 분야",
-          "활용 목적"
-        ],
-        "en": [
-          "intended purpose",
-          "intended purposes",
-          "intended use",
-          "beneficial uses",
-          "use cases",
-          "application scope",
-          "type and nature of AI systems in which it can be integrated"
-        ]
-      }
+      "synonyms": [
+        "intended purpose",
+        "intended purposes",
+        "intended use",
+        "beneficial uses",
+        "use cases",
+        "application scope",
+        "type and nature of AI systems in which it can be integrated"
+      ]
     },
     {
       "id": "VALID_UNTIL_TIME",
       "label_ko": "인증서 만료일",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "유효기간",
-          "만료일",
-          "유효 기간",
-          "인증서의 유효"
-        ],
-        "en": [
-          "expiry date",
-          "valid until",
-          "validity period",
-          "expiration"
-        ]
-      }
+      "synonyms": [
+        "expiry date",
+        "valid until",
+        "validity period",
+        "expiration"
+      ]
     },
     {
       "id": "WEBSITE_REF",
       "label_ko": "외부참조: 웹사이트",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "웹사이트",
-          "웹 주소",
-          "홈페이지"
-        ],
-        "en": [
-          "URL",
-          "website",
-          "web address",
-          "web page"
-        ]
-      }
+      "synonyms": [
+        "URL",
+        "website",
+        "web address",
+        "web page"
+      ]
     },
     {
       "id": "WORKFLOWS_TASKS",
       "label_ko": "형성: 태스크",
       "aliases": [],
       "gap": false,
-      "synonyms": {
-        "ko": [
-          "개발을 위해 수행된 방법과 절차",
-          "개발 절차",
-          "개발 단계",
-          "작업 흐름",
-          "시험 절차",
-          "검증 절차"
-        ],
-        "en": [
-          "methods and steps performed for the development",
-          "validation and testing procedures",
-          "development steps",
-          "testing procedures",
-          "workflow",
-          "development procedures"
-        ]
-      }
+      "synonyms": [
+        "methods and steps performed for the development",
+        "validation and testing procedures",
+        "development steps",
+        "testing procedures",
+        "workflow",
+        "development procedures"
+      ]
     },
     {
       "id": "ALTERNATIVE_COMPLIANCE_MEANS",
       "label_ko": "표준 대체 준수 수단",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "다른 수단",
-          "대체 수단",
-          "표준을 적용하지 않은 경우",
-          "동등한 수준"
-        ],
-        "en": [
-          "alternative adequate means of compliance",
-          "solutions adopted to meet the requirements",
-          "technical solutions that meet the requirements",
-          "alternative means",
-          "equivalent"
-        ]
-      }
+      "synonyms": [
+        "alternative adequate means of compliance",
+        "solutions adopted to meet the requirements",
+        "technical solutions that meet the requirements",
+        "alternative means",
+        "equivalent"
+      ]
     },
     {
       "id": "APPLICABLE_LAWS_NORMS",
       "label_ko": "적용받는 법률·규범",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "적용되는 법률",
-          "관련 법령",
-          "법적 요구사항",
-          "규범",
-          "적용 법규"
-        ],
-        "en": [
-          "laws, norms and expectations",
-          "applicable laws",
-          "legal requirements",
-          "norms",
-          "regulatory requirements"
-        ]
-      }
+      "synonyms": [
+        "laws, norms and expectations",
+        "applicable laws",
+        "legal requirements",
+        "norms",
+        "regulatory requirements"
+      ]
     },
     {
       "id": "APPLIED_CONTROLS",
       "label_ko": "적용한 통제",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "통제 조치",
-          "관리 조치",
-          "적용된 통제",
-          "안전조치"
-        ],
-        "en": [
-          "risk controls",
-          "controls",
-          "cybersecurity measures",
-          "measures to prevent, detect, respond to",
-          "cybersecurity protection",
-          "control measures"
-        ]
-      }
+      "synonyms": [
+        "risk controls",
+        "controls",
+        "cybersecurity measures",
+        "measures to prevent, detect, respond to",
+        "cybersecurity protection",
+        "control measures"
+      ]
     },
     {
       "id": "ASSURANCE_CRITERIA_RESULT",
       "label_ko": "보증 기준 평가 결과",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "보증 기준",
-          "평가 기준",
-          "평가 결과",
-          "판정 결과"
-        ],
-        "en": [
-          "assurance criteria",
-          "evaluation criteria",
-          "assessment results",
-          "criteria are measured"
-        ]
-      }
+      "synonyms": [
+        "assurance criteria",
+        "evaluation criteria",
+        "assessment results",
+        "criteria are measured"
+      ]
     },
     {
       "id": "AUTHORISED_REPRESENTATIVE",
       "label_ko": "수권대리인·등록 대행자",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "수권대리인",
-          "대리인",
-          "등록 대행자",
-          "대리인의 신원"
-        ],
-        "en": [
-          "authorised representative",
-          "authorized representative",
-          "representative",
-          "person on behalf of the provider"
-        ]
-      }
+      "synonyms": [
+        "authorised representative",
+        "authorized representative",
+        "representative",
+        "person on behalf of the provider"
+      ]
     },
     {
       "id": "BUSINESS_USE_CONTEXT",
       "label_ko": "사업적 사용 맥락",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "사업적 맥락",
-          "업무 환경",
-          "비즈니스 목적"
-        ],
-        "en": [
-          "context of business use",
-          "business value",
-          "business context",
-          "business use"
-        ]
-      }
+      "synonyms": [
+        "context of business use",
+        "business value",
+        "business context",
+        "business use"
+      ]
     },
     {
       "id": "CONFORMITY_ASSESSMENT_DECLARATION",
       "label_ko": "적합성평가절차·선언서 발급 정보",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "적합성 평가 절차",
-          "적합성평가",
-          "적합성 선언서",
-          "평가 절차"
-        ],
-        "en": [
-          "conformity assessment procedure",
-          "conformity assessment",
-          "declaration",
-          "place and date of issue"
-        ]
-      }
+      "synonyms": [
+        "conformity assessment procedure",
+        "conformity assessment",
+        "declaration",
+        "place and date of issue"
+      ]
     },
     {
       "id": "CONFORMITY_MARKING",
       "label_ko": "적합성 표시 (CE 마킹)",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "CE 마킹",
-          "CE 표시",
-          "적합성 표시",
-          "마킹"
-        ],
-        "en": [
-          "CE marking",
-          "CE mark",
-          "marking",
-          "affix the CE marking"
-        ]
-      }
+      "synonyms": [
+        "CE marking",
+        "CE mark",
+        "marking",
+        "affix the CE marking"
+      ]
     },
     {
       "id": "CONTENT_INTERACTION_DISCLOSURE",
       "label_ko": "콘텐츠·상호작용 표시",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "인공적으로 생성",
-          "조작된 콘텐츠",
-          "AI 와 상호작용",
-          "표시 의무",
-          "딥페이크",
-          "기계 판독 가능한 형식"
-        ],
-        "en": [
-          "artificially generated or manipulated",
-          "machine-readable format",
-          "interacting with an AI system",
-          "informed that they are interacting",
-          "synthetic",
-          "deep fake",
-          "watermark"
-        ]
-      }
+      "synonyms": [
+        "artificially generated or manipulated",
+        "machine-readable format",
+        "interacting with an AI system",
+        "informed that they are interacting",
+        "synthetic",
+        "deep fake",
+        "watermark"
+      ]
     },
     {
       "id": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
       "label_ko": "배포 형태·버전 갱신 요건",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "배포 형태",
-          "소프트웨어 업데이트",
-          "펌웨어",
-          "버전 갱신",
-          "업데이트 요건"
-        ],
-        "en": [
-          "methods of distribution",
-          "forms in which the AI system is placed on the market",
-          "version updates",
-          "software updates",
-          "distribution"
-        ]
-      }
+      "synonyms": [
+        "methods of distribution",
+        "forms in which the AI system is placed on the market",
+        "version updates",
+        "software updates",
+        "distribution"
+      ]
     },
     {
       "id": "EXPECTED_DEPLOYMENT_ENVIRONMENT",
       "label_ko": "배포 예상 환경",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "배포 환경",
-          "사용 환경",
-          "운영 환경",
-          "배포 맥락"
-        ],
-        "en": [
-          "settings in which the AI system will be deployed",
-          "deployment environment",
-          "deployment setting",
-          "operating environment",
-          "context of use"
-        ]
-      }
+      "synonyms": [
+        "settings in which the AI system will be deployed",
+        "deployment environment",
+        "deployment setting",
+        "operating environment",
+        "context of use"
+      ]
     },
     {
       "id": "EXPECTED_LIFETIME_MAINTENANCE",
       "label_ko": "예상 수명·유지관리 주기",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "예상 수명",
-          "유지관리",
-          "유지보수",
-          "유지관리 조치"
-        ],
-        "en": [
-          "expected lifetime",
-          "maintenance and care measures",
-          "maintenance",
-          "lifecycle",
-          "life cycle"
-        ]
-      }
+      "synonyms": [
+        "expected lifetime",
+        "maintenance and care measures",
+        "maintenance",
+        "lifecycle",
+        "life cycle"
+      ]
     },
     {
       "id": "GO_NO_GO_DECISION",
       "label_ko": "개발·배포 게이트 판정",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "진행 여부",
-          "배포 결정",
-          "승인 결정",
-          "중단 결정",
-          "출시 결정"
-        ],
-        "en": [
-          "development or deployment should proceed",
-          "go/no-go",
-          "decision to deploy",
-          "whether to proceed"
-        ]
-      }
+      "synonyms": [
+        "development or deployment should proceed",
+        "go/no-go",
+        "decision to deploy",
+        "whether to proceed"
+      ]
     },
     {
       "id": "HIGH_RISK_CLASSIFICATION_RATIONALE",
       "label_ko": "고위험 분류 판정 근거",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "고위험으로 분류",
-          "고위험 분류",
-          "분류 근거",
-          "고위험이 아니라고 판단"
-        ],
-        "en": [
-          "considered to be not-high-risk",
-          "not high-risk",
-          "classification",
-          "conditions under Article 6(3)",
-          "grounds on which the AI system is considered"
-        ]
-      }
+      "synonyms": [
+        "considered to be not-high-risk",
+        "not high-risk",
+        "classification",
+        "conditions under Article 6(3)",
+        "grounds on which the AI system is considered"
+      ]
     },
     {
       "id": "HUMAN_OVERSIGHT_MEASURES",
       "label_ko": "인적 감독 수단",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "인적 감독",
-          "인간의 감독",
-          "감독 조치",
-          "개입",
-          "무효화",
-          "중단시킬",
-          "사람의 감독",
-          "감독할 수 있도록"
-        ],
-        "en": [
-          "human oversight",
-          "human oversight measures",
-          "overseen by natural persons",
-          "overseen by humans",
-          "intervene in the operation",
-          "interrupt the system",
-          "override or reverse the output",
-          "human-machine interface",
-          "user-interface provided to the deployer",
-          "natural persons"
-        ]
-      }
+      "synonyms": [
+        "human oversight",
+        "human oversight measures",
+        "overseen by natural persons",
+        "overseen by humans",
+        "intervene in the operation",
+        "interrupt the system",
+        "override or reverse the output",
+        "human-machine interface",
+        "user-interface provided to the deployer",
+        "natural persons"
+      ]
     },
     {
       "id": "LOGGING_MECHANISM",
       "label_ko": "로깅 메커니즘",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "로그",
-          "로깅",
-          "기록 보관",
-          "자동 기록",
-          "이벤트 기록",
-          "로그의 기록"
-        ],
-        "en": [
-          "logs",
-          "logging",
-          "logging capabilities",
-          "recording of events",
-          "event logs",
-          "record keeping",
-          "automatic recording"
-        ]
-      }
+      "synonyms": [
+        "logs",
+        "logging",
+        "logging capabilities",
+        "recording of events",
+        "event logs",
+        "record keeping",
+        "automatic recording"
+      ]
     },
     {
       "id": "MARKET_STATUS_REGIONS",
       "label_ko": "시장 유통 상태·배포 지역",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "시장 출시",
-          "유통",
-          "회원국",
-          "출시된 지역",
-          "서비스 공급 지역"
-        ],
-        "en": [
-          "status of the AI system",
-          "Member States",
-          "on the market",
-          "made available in the Union",
-          "recalled",
-          "placed on the market"
-        ]
-      }
+      "synonyms": [
+        "status of the AI system",
+        "Member States",
+        "on the market",
+        "made available in the Union",
+        "recalled",
+        "placed on the market"
+      ]
     },
     {
       "id": "OPERATIONAL_KPI",
       "label_ko": "운영 성과 KPI",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "성과 지표",
-          "KPI",
-          "운영 성과",
-          "핵심 성과"
-        ],
-        "en": [
-          "safety metrics",
-          "key performance indicators",
-          "operational metrics",
-          "response times",
-          "real-time monitoring"
-        ]
-      }
+      "synonyms": [
+        "safety metrics",
+        "key performance indicators",
+        "operational metrics",
+        "response times",
+        "real-time monitoring"
+      ]
     },
     {
       "id": "PERFORMANCE_CHANGE",
       "label_ko": "성능 변화량",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "성능 변화",
-          "성능 저하",
-          "성능의 변동",
-          "성능 차이"
-        ],
-        "en": [
-          "performance improvements or declines",
-          "performance change",
-          "performance degradation",
-          "drift"
-        ]
-      }
+      "synonyms": [
+        "performance improvements or declines",
+        "performance change",
+        "performance degradation",
+        "drift"
+      ]
     },
     {
       "id": "POTENTIAL_BENEFITS_COSTS",
       "label_ko": "잠재적 이점·비용",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "편익과 비용",
-          "잠재적 이익"
-        ],
-        "en": [
-          "potential benefits",
-          "potential costs",
-          "non-monetary costs",
-          "costs and benefits"
-        ]
-      }
+      "synonyms": [
+        "potential benefits",
+        "potential costs",
+        "non-monetary costs",
+        "costs and benefits"
+      ]
     },
     {
       "id": "PREDETERMINED_CHANGES",
       "label_ko": "사전 명세된 변경사항",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "미리 정해진 변경",
-          "사전에 결정된 변경",
-          "예정된 변경사항",
-          "미리 결정된 변경"
-        ],
-        "en": [
-          "pre-determined changes",
-          "predetermined changes",
-          "changes to the high-risk AI system and its performance which have been pre-determined",
-          "planned changes"
-        ]
-      }
+      "synonyms": [
+        "pre-determined changes",
+        "predetermined changes",
+        "changes to the high-risk AI system and its performance which have been pre-determined",
+        "planned changes"
+      ]
     },
     {
       "id": "RESIDUAL_RISK_ACCEPTANCE",
       "label_ko": "잔여위험 수용 판정",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "잔여위험",
-          "잔여 위험",
-          "수용 가능",
-          "허용 가능한 위험"
-        ],
-        "en": [
-          "residual risk",
-          "residual risks",
-          "residual negative risk",
-          "judged to be acceptable",
-          "risk tolerance",
-          "acceptable risk"
-        ]
-      }
+      "synonyms": [
+        "residual risk",
+        "residual risks",
+        "residual negative risk",
+        "judged to be acceptable",
+        "risk tolerance",
+        "acceptable risk"
+      ]
     },
     {
       "id": "RESILIENCE_FAILSAFE_MEASURES",
       "label_ko": "회복력·안전장애 방안",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "회복력",
-          "복원력",
-          "안전장애",
-          "백업",
-          "장애 안전",
-          "견고성"
-        ],
-        "en": [
-          "resilient",
-          "resilience",
-          "fail-safe",
-          "backup or fail-safe plans",
-          "feedback loops",
-          "robustness",
-          "fail safely"
-        ]
-      }
+      "synonyms": [
+        "resilient",
+        "resilience",
+        "fail-safe",
+        "backup or fail-safe plans",
+        "feedback loops",
+        "robustness",
+        "fail safely"
+      ]
     },
     {
       "id": "SOCIETAL_ENVIRONMENTAL_IMPACT",
       "label_ko": "시스템의 사회·환경 영향",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "사회적 영향",
-          "환경 영향",
-          "사회·환경",
-          "사회에 미치는"
-        ],
-        "en": [
-          "societal impacts",
-          "impacts of system uses to individuals, communities, organizations, society, and the planet",
-          "social impact",
-          "environmental impact",
-          "impact on society"
-        ]
-      }
+      "synonyms": [
+        "societal impacts",
+        "impacts of system uses to individuals, communities, organizations, society, and the planet",
+        "social impact",
+        "environmental impact",
+        "impact on society"
+      ]
     },
     {
       "id": "SYSTEM_DESIGN_CHOICES",
       "label_ko": "시스템 설계 선택·절충",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "설계상의 선택",
-          "절충",
-          "기술적 해결책",
-          "설계 결정",
-          "절충에 대한 결정"
-        ],
-        "en": [
-          "key design choices",
-          "trade-off",
-          "trade-offs",
-          "technical solutions adopted",
-          "main classification choices",
-          "design choices",
-          "designed to optimise for"
-        ]
-      }
+      "synonyms": [
+        "key design choices",
+        "trade-off",
+        "trade-offs",
+        "technical solutions adopted",
+        "main classification choices",
+        "design choices",
+        "designed to optimise for"
+      ]
     },
     {
       "id": "SYSTEM_DEV_TEST_COMPUTE",
       "label_ko": "시스템 개발·시험 연산자원",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "개발, 훈련, 시험 및 검증에 사용된 연산자원",
-          "시험에 사용된 연산",
-          "개발에 사용된 자원"
-        ],
-        "en": [
-          "computational resources used to develop, train, test and validate",
-          "resources used to develop",
-          "development and testing resources"
-        ]
-      }
+      "synonyms": [
+        "computational resources used to develop, train, test and validate",
+        "resources used to develop",
+        "development and testing resources"
+      ]
     },
     {
       "id": "TASK_IMPLEMENTATION_FAMILY",
       "label_ko": "과업 구현 계열",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "구현 방식",
-          "구현 계열",
-          "접근 방식"
-        ],
-        "en": [
-          "methods used to implement the tasks",
-          "classifiers, generative models, recommenders",
-          "implementation approach",
-          "model family"
-        ]
-      }
+      "synonyms": [
+        "methods used to implement the tasks",
+        "classifiers, generative models, recommenders",
+        "implementation approach",
+        "model family"
+      ]
     },
     {
       "id": "TEST_LOG_REPORT_REF",
       "label_ko": "시험 로그·보고서 참조",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "시험 로그",
-          "시험 보고서",
-          "시험 결과",
-          "테스트 보고서",
-          "시험 기록"
-        ],
-        "en": [
-          "test logs",
-          "test reports",
-          "test logs and all test reports",
-          "test results",
-          "testing records"
-        ]
-      }
+      "synonyms": [
+        "test logs",
+        "test reports",
+        "test logs and all test reports",
+        "test results",
+        "testing records"
+      ]
     },
     {
       "id": "THIRD_PARTY_SUPPORT_SCOPE",
       "label_ko": "제3자에게 받기로 한 지원 범위",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "제3자의 지원",
-          "제3자가 제공",
-          "외부 지원",
-          "협력 범위"
-        ],
-        "en": [
-          "third party",
-          "necessary information, capabilities, technical access and other assistance",
-          "assistance",
-          "third-party resources",
-          "written agreement"
-        ]
-      }
+      "synonyms": [
+        "third party",
+        "necessary information, capabilities, technical access and other assistance",
+        "assistance",
+        "third-party resources",
+        "written agreement"
+      ]
     },
     {
       "id": "TRUSTWORTHINESS_COMPOSITE_MEASURE",
       "label_ko": "신뢰성 종합 측정",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "신뢰성",
-          "신뢰할 수 있는",
-          "신뢰성 측정",
-          "종합 측정"
-        ],
-        "en": [
-          "trustworthiness",
-          "trustworthy",
-          "measurement results regarding AI system trustworthiness",
-          "trustworthiness characteristics"
-        ]
-      }
+      "synonyms": [
+        "trustworthiness",
+        "trustworthy",
+        "measurement results regarding AI system trustworthiness",
+        "trustworthiness characteristics"
+      ]
     },
     {
       "id": "UNMEASURED_RISKS",
       "label_ko": "측정하지 못한 위험 목록",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "측정할 수 없는 위험",
-          "측정되지 않은 위험",
-          "평가할 수 없는 위험",
-          "측정 불가"
-        ],
-        "en": [
-          "cannot – be measured",
-          "will not – or cannot – be measured",
-          "unmeasured risks",
-          "risks that cannot be measured",
-          "not measured"
-        ]
-      }
+      "synonyms": [
+        "cannot – be measured",
+        "will not – or cannot – be measured",
+        "unmeasured risks",
+        "risks that cannot be measured",
+        "not measured"
+      ]
     },
     {
       "id": "USER_EXPECTATIONS",
       "label_ko": "사용자의 기대",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "사용자의 기대",
-          "기대 수준",
-          "사용자 요구",
-          "이용자 기대"
-        ],
-        "en": [
-          "expectations",
-          "their expectations",
-          "user expectations",
-          "expectations of users"
-        ]
-      }
+      "synonyms": [
+        "expectations",
+        "their expectations",
+        "user expectations",
+        "expectations of users"
+      ]
     },
     {
       "id": "USE_RISK_ASSUMPTIONS",
       "label_ko": "용도·위험의 가정",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "전제",
-          "용도에 대한 가정",
-          "위험에 대한 가정"
-        ],
-        "en": [
-          "assumptions",
-          "assumptions and related limitations",
-          "assumptions about AI system purposes, uses, and risks",
-          "assumptions about use"
-        ]
-      }
+      "synonyms": [
+        "assumptions",
+        "assumptions and related limitations",
+        "assumptions about AI system purposes, uses, and risks",
+        "assumptions about use"
+      ]
     },
     {
       "id": "VERIFICATION_METHODOLOGY",
       "label_ko": "검증 방법론",
       "aliases": [],
       "gap": true,
-      "synonyms": {
-        "ko": [
-          "검증 방법",
-          "검증 방법론",
-          "검증 절차",
-          "확인 방법",
-          "시험 방법"
-        ],
-        "en": [
-          "experimental design",
-          "construct validation",
-          "verification methodology",
-          "validation methodology",
-          "verification and validation",
-          "test methodology"
-        ]
-      }
+      "synonyms": [
+        "experimental design",
+        "construct validation",
+        "verification methodology",
+        "validation methodology",
+        "verification and validation",
+        "test methodology"
+      ]
     }
   ]
 }
