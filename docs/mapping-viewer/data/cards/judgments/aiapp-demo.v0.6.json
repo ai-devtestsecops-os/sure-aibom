@@ -1,6 +1,6 @@
 {
  "engine_version": "0.3.0",
- "run_at": "2026-10-23T05:35:27Z",
+ "run_at": "2026-10-23T05:44:33Z",
  "bom": {
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
@@ -382,12 +382,15 @@
      "found_at": {}
     },
     {
-     "concept": "SYSTEM_DESIGN_CHOICES",
+     "concept": "DESIGN_CHOICES",
      "label": "시스템 설계 선택·절충",
      "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
+     ],
+     "found_at": {}
     },
     {
      "concept": "SYSTEM_DEV_TEST_COMPUTE",
@@ -430,12 +433,15 @@
      "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
     },
     {
-     "concept": "SYSTEM_DESIGN_CHOICES",
+     "concept": "DESIGN_CHOICES",
      "label": "시스템 설계 선택·절충",
      "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -472,10 +478,13 @@
      ]
     },
     {
-     "concept": "SYSTEM_DESIGN_CHOICES",
+     "concept": "DESIGN_CHOICES",
      "label": "시스템 설계 선택·절충",
-     "kind": "gap",
-     "suggested_paths": []
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
+     ]
     },
     {
      "concept": "SYSTEM_DEV_TEST_COMPUTE",
@@ -508,10 +517,13 @@
      "suggested_paths": []
     },
     {
-     "concept": "SYSTEM_DESIGN_CHOICES",
+     "concept": "DESIGN_CHOICES",
      "label": "시스템 설계 선택·절충",
-     "kind": "gap",
-     "suggested_paths": []
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
+     ]
     }
    ]
   },
@@ -2100,12 +2112,13 @@
      "found_at": {}
     },
     {
-     "concept": "MODEL_PARAMETERS_DESIGN_CHOICES",
+     "concept": "DESIGN_CHOICES",
      "label": "모델 설계 선택",
      "required": "always",
      "status": "missing",
      "paths": [
-      "component.modelCard.modelParameters.designChoices"
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
      ],
      "found_at": {}
     },
@@ -2178,11 +2191,12 @@
      ]
     },
     {
-     "concept": "MODEL_PARAMETERS_DESIGN_CHOICES",
+     "concept": "DESIGN_CHOICES",
      "label": "모델 설계 선택",
      "kind": "missing",
      "suggested_paths": [
-      "component.modelCard.modelParameters.designChoices"
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
      ]
     },
     {
@@ -2707,11 +2721,12 @@
      "found_at": {}
     },
     {
-     "concept": "COMPONENT_DATA_DESIGN_CHOICES",
+     "concept": "DESIGN_CHOICES",
      "label": "데이터 설계 선택",
      "required": "always",
      "status": "missing",
      "paths": [
+      "component.modelCard.modelParameters.designChoices",
       "componentData.designChoices"
      ],
      "found_at": {}
@@ -2727,11 +2742,12 @@
      "found_at": {}
     },
     {
-     "concept": "KNOWN_GAPS_NAME",
+     "concept": "KNOWN_GAPS",
      "label": "데이터 공백·결함",
      "required": "always",
      "status": "missing",
      "paths": [
+      "componentData.knownGaps",
       "componentData.knownGaps.name"
      ],
      "found_at": {}
@@ -2803,10 +2819,11 @@
      ]
     },
     {
-     "concept": "COMPONENT_DATA_DESIGN_CHOICES",
+     "concept": "DESIGN_CHOICES",
      "label": "데이터 설계 선택",
      "kind": "missing",
      "suggested_paths": [
+      "component.modelCard.modelParameters.designChoices",
       "componentData.designChoices"
      ]
     },
@@ -2819,10 +2836,11 @@
      ]
     },
     {
-     "concept": "KNOWN_GAPS_NAME",
+     "concept": "KNOWN_GAPS",
      "label": "데이터 공백·결함",
      "kind": "missing",
      "suggested_paths": [
+      "componentData.knownGaps",
       "componentData.knownGaps.name"
      ]
     },
@@ -2886,7 +2904,8 @@
      "required": "always",
      "status": "missing",
      "paths": [
-      "componentData.knownGaps"
+      "componentData.knownGaps",
+      "componentData.knownGaps.name"
      ],
      "found_at": {}
     },
@@ -2935,7 +2954,8 @@
      "label": "데이터 공백·결함",
      "kind": "missing",
      "suggested_paths": [
-      "componentData.knownGaps"
+      "componentData.knownGaps",
+      "componentData.knownGaps.name"
      ]
     }
    ]

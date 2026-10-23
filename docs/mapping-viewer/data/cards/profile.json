@@ -163,8 +163,18 @@
       "note": "요구사항 표에서 (카드 1장이 씀)"
     },
     {
-      "concept": "SYSTEM_DESIGN_CHOICES",
-      "status": "gap",
+      "concept": "DESIGN_CHOICES",
+      "cdx_path": "component.modelCard.modelParameters.designChoices",
+      "cdx_paths_more": [
+        "componentData.designChoices"
+      ],
+      "spdx_path": "AIPackage.aibom_designChoices",
+      "spdx_paths_more": [
+        "DatasetPackage.aibom_designChoices"
+      ],
+      "spec": "v0.6",
+      "coverage": "필드",
+      "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)"
     },
@@ -258,16 +268,6 @@
       "concept": "TRAINING_TIME",
       "cdx_path": "component.modelCard.modelParameters.trainingTime",
       "spdx_path": "AIPackage.aibom_trainingTime",
-      "spec": "v0.6",
-      "coverage": "필드",
-      "status": "linked",
-      "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)"
-    },
-    {
-      "concept": "MODEL_PARAMETERS_DESIGN_CHOICES",
-      "cdx_path": "component.modelCard.modelParameters.designChoices",
-      "spdx_path": "AIPackage.aibom_designChoices",
       "spec": "v0.6",
       "coverage": "필드",
       "status": "linked",
@@ -509,16 +509,6 @@
       "note": "요구사항 표에서 (카드 15장이 씀)"
     },
     {
-      "concept": "COMPONENT_DATA_DESIGN_CHOICES",
-      "cdx_path": "componentData.designChoices",
-      "spdx_path": "DatasetPackage.aibom_designChoices",
-      "spec": "v0.6",
-      "coverage": "필드",
-      "status": "linked",
-      "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)"
-    },
-    {
       "concept": "KNOWN_BIAS_MITIGATION_STRATEGY",
       "cdx_path": "componentData.knownBias.mitigationStrategy",
       "spdx_path": "DatasetPackage.aibom_knownBiasMitigationStrategy",
@@ -529,8 +519,11 @@
       "note": "요구사항 표에서 (카드 1장이 씀)"
     },
     {
-      "concept": "KNOWN_GAPS_NAME",
+      "concept": "KNOWN_GAPS",
       "cdx_path": "componentData.knownGaps.name",
+      "cdx_paths_more": [
+        "componentData.knownGaps"
+      ],
       "spdx_path": "DatasetPackage.aibom_knownGaps",
       "spec": "v0.6",
       "coverage": "필드",
@@ -643,16 +636,6 @@
       "concept": "NOISE",
       "cdx_path": "componentData.noise",
       "spdx_path": "DatasetPackage.dataset_datasetNoise",
-      "spec": "v0.6",
-      "coverage": "필드",
-      "status": "linked",
-      "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)"
-    },
-    {
-      "concept": "KNOWN_GAPS",
-      "cdx_path": "componentData.knownGaps",
-      "spdx_path": "DatasetPackage.aibom_knownGaps",
       "spec": "v0.6",
       "coverage": "필드",
       "status": "linked",

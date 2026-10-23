@@ -108,7 +108,12 @@ def cards():
         json.dump([public_card(c) for c in shown], fh, ensure_ascii=False, indent=1)
     with open(os.path.join(out, "source.json"), "w", encoding="utf-8") as fh:
         json.dump({"cards": "approved" if approved else "gold", "count": len(shown)}, fh)
-    shutil.copy(os.path.join(CARDS, "vocabulary.json"), os.path.join(out, "vocabulary.json"))
+    with open(os.path.join(CARDS, "vocabulary.json"), encoding="utf-8") as fh:
+        voc = json.load(fh)
+    for c in voc["concepts"]:
+        c.pop("synonyms_private", None)                  # 저작권 있는 원문의 구절은 문서 사이트에 싣지 않는다
+    with open(os.path.join(out, "vocabulary.json"), "w", encoding="utf-8") as fh:
+        json.dump(voc, fh, ensure_ascii=False, indent=1)
     shutil.copy(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"), os.path.join(out, "profile.json"))
     # 추출기 비교: 카드마다 자기 용어를 뺀 용어집으로 영어 원문을 추출해 정답과 맞춘다
     comparison = []

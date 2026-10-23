@@ -1,1855 +1,1807 @@
 {
-  "_comment": "통제 어휘. 카드의 fact 와 프로파일 줄이 가리키는 개념 id 의 사전이다. 사람이 관리한다 (생성물이 아니다). 항목: id (대문자 스네이크, 규제·스키마와 무관한 이름표), label_ko (표시 이름), aliases (같은 뜻의 다른 표시 이름), gap (CycloneDX·SPDX 모두 자리가 없는 개념이면 true), synonyms (영어 원문에서 이 개념을 부르는 말. 추출기 용어집과 매핑 후보 생성기가 쓴다). 새 개념은 여기 한 항목을 더한다. build_cards.py 는 표의 개념이 여기 없으면 멈춘다. 처음 125개는 요구사항 표에서 만들고 (id 는 필드 경로 끝 이름, 격차 개념은 손으로 지음) 동의어는 Claude 가 적은 것과 요구사항 표에서 사람이 표시한 영어 원문 구절(ISO 제외)을 합친 것이다 (2026-10-23).",
-  "version": 1,
-  "concepts": [
-    {
-      "id": "ADVERSARY_MODEL_REF",
-      "label_ko": "외부참조: 적대자 모델",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "adversarial testing",
-        "adversarial attack",
-        "red teaming",
-        "adversarial examples",
-        "attacker model",
-        "adversarial testing of the model"
-      ]
-    },
-    {
-      "id": "ANONYMIZATION_METHODS",
-      "label_ko": "익명화 방법",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "anonymisation",
-        "anonymization",
-        "pseudonymisation",
-        "pseudonymization",
-        "de-identification",
-        "privacy-preserving measures",
-        "state-of-the-art security and privacy-preserving measures, including pseudonymisation"
-      ]
-    },
-    {
-      "id": "ARCHITECTURE_FAMILY",
-      "label_ko": "아키텍처 계열",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "architecture",
-        "model architecture",
-        "operating logic",
-        "general logic of the AI system",
-        "the general logic of the AI system and of the algorithms",
-        "its operating logic",
-        "the architecture"
-      ]
-    },
-    {
-      "id": "ATTESTATIONS_MAP",
-      "label_ko": "요구사항↔주장 연결",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "verification and validation measures",
-        "demonstrate compliance",
-        "meet those requirements"
-      ]
-    },
-    {
-      "id": "ATTESTATION_REF",
-      "label_ko": "외부참조: 증명",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "declaration of conformity",
-        "EU declaration of conformity",
-        "attestation",
-        "self-declaration",
-        "A copy of the EU declaration of conformity",
-        "draw up an EU declaration of conformity",
-        "draw up a written machine readable, physical or electronically signed EU declaration of conformity"
-      ]
-    },
-    {
-      "id": "AVAILABILITY",
-      "label_ko": "데이터셋 가용성",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "availability",
-        "availability of the data",
-        "data availability"
-      ]
-    },
-    {
-      "id": "BENEFITS",
-      "label_ko": "집단에 대한 이익",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "benefits",
-        "potential impacts",
-        "positive impacts",
-        "fairness",
-        "Fairness and bias"
-      ]
-    },
-    {
-      "id": "CERTIFICATION_REPORT_REF",
-      "label_ko": "외부참조: 인증 보고서",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "certificate",
-        "certificate issued",
-        "notified body",
-        "certification",
-        "the name and identification number of the notified body",
-        "identification of the certificate issued",
-        "A scanned copy of the certificate",
-        "the identification number of the notified body"
-      ]
-    },
-    {
-      "id": "COLLECTION_PROCESS",
-      "label_ko": "데이터 수집 절차",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "data collection",
-        "collection process",
-        "collection processes",
-        "origin of data",
-        "provenance",
-        "acquisition of the data",
-        "data acquisition",
-        "how the data was obtained",
-        "obtained and selected",
-        "data sources",
-        "source of data",
-        "collection and selection",
-        "how the data was obtained and selected",
-        "the type and provenance of data",
-        "the type and provenance of data and curation methodologies",
-        "data collection processes and the origin of data",
-        "data collection and selection"
-      ]
-    },
-    {
-      "id": "COMPONENTS",
-      "label_ko": "구성요소 목록",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "software components",
-        "components",
-        "relevant resources",
-        "computing resources",
-        "infrastructure, tools",
-        "versions of relevant software",
-        "the versions of relevant software or firmware",
-        "the versions of relevant software related to the use of the general-purpose AI model"
-      ]
-    },
-    {
-      "id": "COMPONENT_CPE",
-      "label_ko": "CPE 식별자",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "identification of the system",
-        "unambiguous reference",
-        "identification and traceability",
-        "identifier",
-        "other information necessary for the identification of the system",
-        "any additional unambiguous reference allowing the identification and traceability of the AI system"
-      ]
-    },
-    {
-      "id": "COMPONENT_DATA",
-      "label_ko": "데이터 컴포넌트",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "data sets",
-        "datasets",
-        "data resources",
-        "training data",
-        "data used"
-      ]
-    },
-    {
-      "id": "COMPONENT_DATA_DESIGN_CHOICES",
-      "label_ko": "데이터 설계 선택",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "relevant design choices",
-        "design of the data",
-        "data design choices",
-        "the relevant design choices"
-      ]
-    },
-    {
-      "id": "COMPONENT_DESCRIPTION",
-      "label_ko": "구성요소 설명",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "general description",
-        "brief description",
-        "description of the AI system",
-        "components and functions supported",
-        "A brief description of the AI system",
-        "the components and functions supported through this AI system"
-      ]
-    },
-    {
-      "id": "COMPONENT_LICENSES",
-      "label_ko": "라이선스",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "licence",
-        "license",
-        "acceptable use policies",
-        "terms of use",
-        "licensing",
-        "the acceptable use policies applicable",
-        "the licence",
-        "the licence for the model"
-      ]
-    },
-    {
-      "id": "COMPONENT_NAME",
-      "label_ko": "구성요소 이름",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "name and type",
-        "trade name",
-        "system name",
-        "model name",
-        "product name",
-        "AI system name and type",
-        "The AI system trade name"
-      ]
-    },
-    {
-      "id": "COMPONENT_PURL",
-      "label_ko": "purl 식별자",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "package identifier",
-        "package url",
-        "unique reference"
-      ]
-    },
-    {
-      "id": "COMPONENT_SUPPLIER",
-      "label_ko": "공급자",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "name of the provider",
-        "name and address of the provider",
-        "contact details of the provider",
-        "identity and the contact details of the provider",
-        "registered trade name",
-        "supplier",
-        "manufacturer",
-        "provided by third parties",
-        "the name of the provider",
-        "The name and address of the provider",
-        "The name, address and contact details of the provider",
-        "the identity and the contact details of the provider and, where applicable, of its authorised representative",
-        "their name",
-        "registered trade name or registered trade mark",
-        "the address at which they can be contacted",
-        "their name, registered trade name or registered trade mark, and the address at which they can be contacted"
-      ]
-    },
-    {
-      "id": "COMPONENT_TYPE",
-      "label_ko": "구성요소 유형",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "type of AI system",
-        "type of model",
-        "system type"
-      ]
-    },
-    {
-      "id": "COMPONENT_VERSION",
-      "label_ko": "버전",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "version",
-        "version of the system",
-        "versions",
-        "release",
-        "the version of the system"
-      ]
-    },
-    {
-      "id": "DATASETS",
-      "label_ko": "사용한 데이터셋",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "training data sets",
-        "data sets used",
-        "test sets",
-        "validation and testing data",
-        "training, validation and testing data sets",
-        "content used for training",
-        "information used by the system",
-        "the training data sets used",
-        "the information used by the system (data, inputs)",
-        "a sufficiently detailed summary about the content used for training of the general-purpose AI model"
-      ]
-    },
-    {
-      "id": "DECISION_THRESHOLD",
-      "label_ko": "지표 임계값",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "threshold",
-        "thresholds",
-        "probabilistic thresholds",
-        "decision threshold"
-      ]
-    },
-    {
-      "id": "DECLARATIONS_CLAIMS",
-      "label_ko": "주장",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "suitability",
-        "compliance with the requirements",
-        "demonstrate",
-        "demonstrated",
-        "conformity",
-        "claims",
-        "relevant",
-        "A description of the appropriateness of the performance metrics",
-        "input data is relevant",
-        "duly justify that they have adopted technical solutions that meet the requirements",
-        "shall demonstrate alternative adequate means of compliance",
-        "whether the AI system achieves its intended purposes and stated objectives",
-        "system trustworthiness",
-        "AI system performance",
-        "assurance criteria",
-        "demonstrated to be valid and reliable",
-        "demonstrated to be safe",
-        "it can fail safely",
-        "validated"
-      ]
-    },
-    {
-      "id": "DECLARATIONS_EVIDENCE",
-      "label_ko": "증거",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "evidence",
-        "supporting evidence",
-        "proof"
-      ]
-    },
-    {
-      "id": "DEPENDENCIES",
-      "label_ko": "의존관계",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "dependencies",
-        "system architecture",
-        "integrate into the overall processing",
-        "build on or feed into each other",
-        "interaction between components",
-        "the description of the system architecture explaining how software components build on or feed into each other and integrate into the overall processing",
-        "the system architecture explaining how software components build or feed into each other and integrate into the overall processing"
-      ]
-    },
-    {
-      "id": "DOCUMENTATION_REF",
-      "label_ko": "외부참조: 문서",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "technical documentation",
-        "instructions for use",
-        "instructions of use",
-        "documentation",
-        "user documentation",
-        "manual",
-        "necessary information to users",
-        "instructions for use for the deployer",
-        "Electronic instructions for use",
-        "The technical documentation of a high-risk AI system",
-        "a single set of technical documentation",
-        "draw up and keep up-to-date the technical documentation of the model",
-        "documented"
-      ]
-    },
-    {
-      "id": "ENERGY_CONSUMPTIONS",
-      "label_ko": "에너지 소비",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "energy consumption",
-        "energy use",
-        "environmental impact",
-        "carbon footprint",
-        "sustainability",
-        "energy consumption of the model",
-        "Environmental impact and sustainability"
-      ]
-    },
-    {
-      "id": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
-      "label_ko": "위험 완화 전략",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "risk management measures",
-        "mitigation measures",
-        "mitigate",
-        "elimination or reduction of risks",
-        "mitigation and control measures",
-        "risk mitigation",
-        "assess and mitigate possible systemic risks",
-        "the adoption of appropriate and targeted risk management measures",
-        "implementation of adequate mitigation and control measures"
-      ]
-    },
-    {
-      "id": "ETHICAL_CONSIDERATIONS_NAME",
-      "label_ko": "위험의 이름",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "known and the reasonably foreseeable risks",
-        "foreseeable risks",
-        "sources of risks",
-        "systemic risks",
-        "risks to health and safety",
-        "identification and analysis of the known",
-        "potential risks",
-        "the foreseeable unintended outcomes and sources of risks to health and safety, fundamental rights and discrimination",
-        "any known or foreseeable circumstance, related to the use of the high-risk AI system in accordance with its intended purpose or under conditions of reasonably foreseeable misuse, which may lead to risks to the health and safety or fundamental rights",
-        "assess and mitigate possible systemic risks at Union level, including their sources",
-        "the identification and analysis of the known and the reasonably foreseeable risks"
-      ]
-    },
-    {
-      "id": "EXPLAINABILITY_METHODS",
-      "label_ko": "설명 방법",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "explainability",
-        "interpret the output",
-        "interpretation of the outputs",
-        "explain its output",
-        "transparent",
-        "explained",
-        "interpretability",
-        "the technical measures put in place to facilitate the interpretation of the outputs of AI systems",
-        "sufficiently transparent",
-        "the technical capabilities and characteristics of the high-risk AI system to provide information that is relevant to explain its output",
-        "information to enable deployers to interpret the output of the high-risk AI system and use it appropriately",
-        "to correctly interpret the high-risk AI system’s output"
-      ]
-    },
-    {
-      "id": "FORMULATION",
-      "label_ko": "형성 기록",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "development process",
-        "process for its development",
-        "training process",
-        "conditions similar to deployment",
-        "conditions similar to deployment setting(s)"
-      ]
-    },
-    {
-      "id": "FORMULATION_COMPONENTS",
-      "label_ko": "형성: 일시적 구성요소",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "tools used",
-        "tooling resources",
-        "pre-trained systems or tools",
-        "development tools"
-      ]
-    },
-    {
-      "id": "FORMULATION_SERVICES",
-      "label_ko": "형성: 일시적 서비스",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "services used",
-        "external services",
-        "cloud services"
-      ]
-    },
-    {
-      "id": "GROUP_AT_RISK",
-      "label_ko": "위험에 놓인 집단",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "vulnerable groups",
-        "persons or groups of persons",
-        "affected groups",
-        "persons under the age of 18",
-        "specific persons or groups",
-        "other vulnerable groups"
-      ]
-    },
-    {
-      "id": "HARMS",
-      "label_ko": "집단에 대한 피해",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "harm",
-        "harms",
-        "adverse impact",
-        "negative impact",
-        "negative impacts",
-        "likely to have an adverse impact"
-      ]
-    },
-    {
-      "id": "HYPERPARAMETERS",
-      "label_ko": "하이퍼파라미터",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "hyperparameters",
-        "parameters",
-        "relevance of the different parameters",
-        "learning rate",
-        "the relevance of the different parameters"
-      ]
-    },
-    {
-      "id": "INPUTS",
-      "label_ko": "입력 형식",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "input data",
-        "inputs",
-        "specifications for the input data",
-        "specifications on input data",
-        "format of inputs",
-        "the modality (e.g. text, image) and format of inputs and outputs",
-        "the modality (e.g. text, image, etc.) and format of the inputs and outputs"
-      ]
-    },
-    {
-      "id": "INPUT_OUTPUT_ML_PARAMETERS_MAX_SIZE",
-      "label_ko": "문맥 길이·입출력 최대 크기",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "maximum size",
-        "context window",
-        "context window length",
-        "maximum input length",
-        "their maximum size (e.g. context window length, etc.)"
-      ]
-    },
-    {
-      "id": "INTENDED_USE",
-      "label_ko": "데이터셋 의도된 용도",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "intended purpose of the data",
-        "purpose of the data set",
-        "setting within which the high-risk AI system is intended to be used",
-        "geographical, contextual, behavioural or functional setting",
-        "the characteristics or elements that are particular to the specific geographical, contextual, behavioural or functional setting"
-      ]
-    },
-    {
-      "id": "KNOWN_BIAS_DETECTION_METHOD",
-      "label_ko": "편향 탐지 방법",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "detect identifiable biases",
-        "bias detection",
-        "methods to detect",
-        "examination in view of possible biases",
-        "detect biases",
-        "methods to detect identifiable biases"
-      ]
-    },
-    {
-      "id": "KNOWN_BIAS_MITIGATION_STRATEGY",
-      "label_ko": "편향 완화 조치",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "mitigate possible biases",
-        "bias mitigation",
-        "prevent and mitigate",
-        "bias correction",
-        "correct biases",
-        "appropriate measures to detect, prevent and mitigate possible biases"
-      ]
-    },
-    {
-      "id": "KNOWN_BIAS_NAME",
-      "label_ko": "알려진 편향",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "bias",
-        "biases",
-        "possible biases",
-        "representative",
-        "sufficiently representative",
-        "discrimination",
-        "examination in view of possible biases"
-      ]
-    },
-    {
-      "id": "KNOWN_GAPS",
-      "label_ko": "데이터 공백·결함",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "data gaps",
-        "shortcomings",
-        "complete",
-        "completeness",
-        "unsuitability of data",
-        "complete in view of the intended purpose"
-      ]
-    },
-    {
-      "id": "KNOWN_GAPS_MITIGATION_STRATEGY",
-      "label_ko": "데이터 공백·결함",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "gaps and shortcomings can be addressed",
-        "address data gaps",
-        "remedy shortcomings",
-        "how those gaps and shortcomings can be addressed"
-      ]
-    },
-    {
-      "id": "KNOWN_GAPS_NAME",
-      "label_ko": "데이터 공백·결함",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "identification of relevant data gaps",
-        "data gaps or shortcomings",
-        "identified gaps",
-        "the identification of relevant data gaps or shortcomings"
-      ]
-    },
-    {
-      "id": "LIMITATION_IDENTIFICATION_METHODS",
-      "label_ko": "한계 식별방법론",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "identification of limitations",
-        "identify limitations",
-        "limitation analysis",
-        "the methodology on the identification of limitations"
-      ]
-    },
-    {
-      "id": "METADATA_AUTHORS",
-      "label_ko": "문서 작성자",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "person submitting information",
-        "author",
-        "authors",
-        "person who signed",
-        "The name, address and contact details of the person submitting information on behalf of the deployer"
-      ]
-    },
-    {
-      "id": "METADATA_MANUFACTURER",
-      "label_ko": "문서 생성 조직",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "name, address and contact details of the deployer",
-        "issuing organisation",
-        "organisation submitting",
-        "The name, address and contact details of the deployer"
-      ]
-    },
-    {
-      "id": "MODALITY",
-      "label_ko": "데이터셋 유형",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "modality",
-        "type of data",
-        "type and provenance of data",
-        "data type",
-        "general description of these data sets",
-        "a general description of these data sets",
-        "the type and provenance of data"
-      ]
-    },
-    {
-      "id": "MODEL_ARCHITECTURE",
-      "label_ko": "구체적 아키텍처",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "algorithms",
-        "logic of the AI system and of the algorithms",
-        "design specifications",
-        "network architecture"
-      ]
-    },
-    {
-      "id": "MODEL_PARAMETERS_DESIGN_CHOICES",
-      "label_ko": "모델 설계 선택",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "key design choices",
-        "design choices",
-        "design specifications of the model",
-        "rationale and assumptions made",
-        "the key design choices including the rationale and assumptions made"
-      ]
-    },
-    {
-      "id": "NOISE",
-      "label_ko": "데이터셋 잡음",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "free of errors",
-        "errors",
-        "noise",
-        "outliers",
-        "data errors"
-      ]
-    },
-    {
-      "id": "OPTIMIZATION_TARGET",
-      "label_ko": "최적화 목표",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "designed to optimise for",
-        "optimisation target",
-        "optimization target",
-        "objective function",
-        "what the model is designed to optimise for"
-      ]
-    },
-    {
-      "id": "ORIGINAL_COLLECTION_PURPOSE",
-      "label_ko": "데이터 수집의 원래 목적",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "original purpose of the data collection",
-        "original purpose",
-        "purpose of the data collection",
-        "purpose for which the data was collected",
-        "the original purpose of the data collection"
-      ]
-    },
-    {
-      "id": "OUTPUTS",
-      "label_ko": "출력 형식",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "output",
-        "outputs",
-        "expected output",
-        "format of outputs",
-        "output quality",
-        "the expected output"
-      ]
-    },
-    {
-      "id": "PARAMETER_COUNT",
-      "label_ko": "파라미터 수·모델 크기",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "number of parameters",
-        "parameter count",
-        "model size"
-      ]
-    },
-    {
-      "id": "PEDIGREE",
-      "label_ko": "계보",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "pre-trained systems or tools",
-        "derived from",
-        "lineage",
-        "pedigree",
-        "modified by the provider",
-        "recourse to pre-trained systems or tools provided by third parties"
-      ]
-    },
-    {
-      "id": "PEDIGREE_COMMITS",
-      "label_ko": "계보: 커밋",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "changes made",
-        "relevant changes",
-        "change history",
-        "modifications",
-        "relevant changes made by the provider to the system through its lifecycle"
-      ]
-    },
-    {
-      "id": "PEDIGREE_NOTES",
-      "label_ko": "계보: 메모",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "how those were used, integrated or modified",
-        "integrated or modified",
-        "modification notes"
-      ]
-    },
-    {
-      "id": "PENTEST_REPORT_REF",
-      "label_ko": "외부참조: 침투시험 보고서",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "penetration test",
-        "security testing",
-        "security",
-        "vulnerability assessment",
-        "AI system security"
-      ]
-    },
-    {
-      "id": "PERFORMANCE_METRICS_SLICE",
-      "label_ko": "성능 지표 구간",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "specific persons or groups of persons",
-        "performance regarding specific persons",
-        "degrees of accuracy for specific persons",
-        "subgroup performance",
-        "the degrees of accuracy for specific persons or groups of persons",
-        "its performance regarding specific persons or groups of persons"
-      ]
-    },
-    {
-      "id": "PERFORMANCE_METRICS_TYPE",
-      "label_ko": "성능 지표 유형",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "metrics",
-        "accuracy metrics",
-        "performance metrics",
-        "evaluation results",
-        "level of accuracy",
-        "levels of accuracy",
-        "model evaluation",
-        "measured qualitatively or quantitatively",
-        "output quality of the system",
-        "metrics used to measure accuracy, robustness and compliance",
-        "the degrees of accuracy for specific persons or groups of persons",
-        "the overall expected level of accuracy",
-        "the appropriateness of the performance metrics",
-        "the level of accuracy, including its metrics, robustness and cybersecurity",
-        "The levels of accuracy and the relevant accuracy metrics",
-        "the results of its evaluation",
-        "perform model evaluation in accordance with standardised protocols and tools",
-        "prior defined metrics",
-        "related TEVV and system metrics",
-        "AI system performance"
-      ]
-    },
-    {
-      "id": "PERFORMANCE_METRICS_VALUE",
-      "label_ko": "성능 지표 값",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "level of performance",
-        "metric value",
-        "measured value",
-        "achieved accuracy"
-      ]
-    },
-    {
-      "id": "PREPROCESSING",
-      "label_ko": "데이터 전처리",
-      "aliases": [
-        "학습 데이터 전처리"
-      ],
-      "gap": false,
-      "synonyms": [
-        "data-preparation",
-        "data preparation",
-        "preprocessing",
-        "pre-processing",
-        "labelling",
-        "annotation",
-        "cleaning",
-        "data cleaning",
-        "curation methodologies",
-        "curation",
-        "labelling procedures",
-        "enrichment and aggregation",
-        "data cleaning methodologies",
-        "the type and provenance of data and curation methodologies",
-        "relevant data-preparation processing operations, such as annotation, labelling, cleaning, updating, enrichment and aggregation"
-      ]
-    },
-    {
-      "id": "PRIVACY_ASSESSMENT_REF",
-      "label_ko": "외부참조: 프라이버시 평가",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "privacy risk",
-        "data protection impact assessment",
-        "privacy impact assessment",
-        "privacy assessment",
-        "Privacy risk of the AI system"
-      ]
-    },
-    {
-      "id": "PROVENANCE",
-      "label_ko": "패키지 출처 정보",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "provenance of data",
-        "recording the provenance",
-        "data provenance",
-        "origin"
-      ]
-    },
-    {
-      "id": "RELEASE_NOTES_TIMESTAMP",
-      "label_ko": "출시일",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "date of release",
-        "release date",
-        "placed on the market",
-        "put into service",
-        "date of issue",
-        "the date of release"
-      ]
-    },
-    {
-      "id": "REPRESENTATION_ASSUMPTIONS",
-      "label_ko": "데이터의 표상 가정",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "formulation of assumptions",
-        "assumptions",
-        "supposed to measure and represent",
-        "represent",
-        "the formulation of assumptions"
-      ]
-    },
-    {
-      "id": "RISK_ASSESSMENT_REF",
-      "label_ko": "외부참조: 위험평가",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "risk management system",
-        "risk assessment",
-        "impact assessment",
-        "identification and analysis of the known and the reasonably foreseeable risks",
-        "estimation and evaluation of the risks",
-        "fundamental rights impact assessment",
-        "risks and potential impacts",
-        "residual risks",
-        "A detailed description of the risk management system",
-        "A short summary of the grounds on which the AI system is considered to be not-high-risk",
-        "A summary of the findings of the fundamental rights impact assessment",
-        "A summary of the data protection impact assessment",
-        "perform an assessment of the impact on fundamental rights",
-        "document its assessment",
-        "the identification and analysis of the known and the reasonably foreseeable risks",
-        "the estimation and evaluation of the risks",
-        "the evaluation of other risks possibly arising",
-        "the risks and potential impacts of the AI technology",
-        "Negative residual risks",
-        "Likelihood and magnitude of each identified impact (both potentially beneficial and harmful)",
-        "Risks associated with transparency and accountability"
-      ]
-    },
-    {
-      "id": "SAFETY_RISK_ASSESSMENT",
-      "label_ko": "안전 위험 평가",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "safety risks",
-        "risks to health and safety",
-        "safety assessment",
-        "safety"
-      ]
-    },
-    {
-      "id": "SENSITIVE_DATA",
-      "label_ko": "민감 데이터",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "personal data",
-        "special categories of personal data",
-        "sensitive data",
-        "sensitive information"
-      ]
-    },
-    {
-      "id": "SENSITIVE_PERSONAL_INFORMATION",
-      "label_ko": "민감 개인정보 사용",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "process special categories of personal data",
-        "processing of personal data",
-        "use of personal data",
-        "processing of special categories",
-        "may exceptionally process special categories of personal data"
-      ]
-    },
-    {
-      "id": "SERVICES",
-      "label_ko": "서비스 목록",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "services",
-        "APIs",
-        "external services",
-        "service"
-      ]
-    },
-    {
-      "id": "SIZE",
-      "label_ko": "데이터셋 크기",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "quantity",
-        "number of data points",
-        "scope and main characteristics",
-        "size of the data set",
-        "dataset size",
-        "volume of data",
-        "the number of data points"
-      ]
-    },
-    {
-      "id": "STANDARDS_NAME",
-      "label_ko": "준수 표준",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "harmonised standards",
-        "harmonised standard",
-        "common specification",
-        "common specifications",
-        "codes of practice",
-        "standards applied",
-        "technical specifications",
-        "A list of the harmonised standards applied",
-        "a list of other relevant standards and technical specifications applied",
-        "any relevant harmonised standards used or any other common specification",
-        "codes of practice within the meaning of Article 56"
-      ]
-    },
-    {
-      "id": "STANDARDS_REQUIREMENTS",
-      "label_ko": "표준 요구사항 정의",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "requirements",
-        "evaluation criteria",
-        "criteria",
-        "system requirements",
-        "requirements for data quality"
-      ]
-    },
-    {
-      "id": "STATISTICS",
-      "label_ko": "데이터셋 통계 특성",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "statistical properties",
-        "statistics",
-        "distribution",
-        "main characteristics",
-        "statistical characteristics",
-        "the appropriate statistical properties"
-      ]
-    },
-    {
-      "id": "TASK",
-      "label_ko": "과업",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "tasks",
-        "tasks that the model is intended to perform",
-        "specific tasks",
-        "intended to perform",
-        "task",
-        "the tasks that the model is intended to perform",
-        "The specific tasks"
-      ]
-    },
-    {
-      "id": "TASKS_RESOURCE_REFERENCES",
-      "label_ko": "형성: 리소스 참조",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "tools",
-        "evaluation protocols and tools",
-        "tools used during",
-        "protocols and tools",
-        "the tools used during TEVV"
-      ]
-    },
-    {
-      "id": "TECHNICAL_LIMITATIONS",
-      "label_ko": "기술적 한계",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "limitations",
-        "limitations in performance",
-        "capabilities and limitations",
-        "knowledge limits",
-        "known limitations",
-        "limitations of the generalizability",
-        "its capabilities and limitations in performance",
-        "limitations of performance",
-        "any known and foreseeable circumstances that may have an impact on that expected level of accuracy, robustness and cybersecurity",
-        "the relevant capacities and limitations of the high-risk AI system",
-        "related limitations"
-      ]
-    },
-    {
-      "id": "TECHNICAL_REQUIREMENTS",
-      "label_ko": "소프트웨어 구동 정보",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "hardware",
-        "hardware on which the AI system is intended to run",
-        "computational and hardware resources needed",
-        "interacts with, or can be used to interact with, hardware or software",
-        "system requirements",
-        "runtime requirements",
-        "how the AI system interacts with, or can be used to interact with, hardware or software, including with other AI systems",
-        "the description of the hardware on which the AI system is intended to run",
-        "how the model interacts, or can be used to interact, with hardware or software",
-        "the computational and hardware resources needed"
-      ]
-    },
-    {
-      "id": "THREAT_MODEL_REF",
-      "label_ko": "외부참조: 위협 모델",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "threat model",
-        "data poisoning",
-        "model poisoning",
-        "model evasion",
-        "adversarial examples",
-        "system vulnerabilities",
-        "cybersecurity threats",
-        "exploiting system vulnerabilities",
-        "adversarial examples or model evasion"
-      ]
-    },
-    {
-      "id": "TRAINING_COMPUTE",
-      "label_ko": "모델 훈련 연산자원",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "computational resources used to train",
-        "computational resources",
-        "number of floating point operations",
-        "compute",
-        "computing resources used",
-        "the computational resources used to train the model"
-      ]
-    },
-    {
-      "id": "TRAINING_TECHNIQUES",
-      "label_ko": "학습 과정 정보",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "training methodologies and techniques",
-        "training methodologies",
-        "training techniques",
-        "training process",
-        "training and testing process",
-        "fine-tuning",
-        "alignment",
-        "model adaptations",
-        "details related to the training",
-        "the training methodologies and techniques",
-        "other relevant details related to the training",
-        "model adaptations, including alignment and fine-tuning",
-        "its training and testing process"
-      ]
-    },
-    {
-      "id": "TRAINING_TIME",
-      "label_ko": "모델 훈련 연산자원",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "training time",
-        "time to train",
-        "training duration"
-      ]
-    },
-    {
-      "id": "UPDATE_MECHANISM",
-      "label_ko": "데이터셋 갱신 방식",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "updating",
-        "updates",
-        "update mechanism",
-        "kept up-to-date",
-        "data updates"
-      ]
-    },
-    {
-      "id": "USERS",
-      "label_ko": "의도된 사용자",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "users",
-        "intended users",
-        "types of users",
-        "deployers",
-        "end users",
-        "the specific set or types of users"
-      ]
-    },
-    {
-      "id": "USE_CASES",
-      "label_ko": "의도된 용도",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "intended purpose",
-        "intended purposes",
-        "intended use",
-        "beneficial uses",
-        "use cases",
-        "application scope",
-        "type and nature of AI systems in which it can be integrated",
-        "its intended purpose",
-        "the intended purpose of the AI system",
-        "the type and nature of AI systems in which it can be integrated",
-        "potentially beneficial uses",
-        "Targeted application scope"
-      ]
-    },
-    {
-      "id": "VALID_UNTIL_TIME",
-      "label_ko": "인증서 만료일",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "expiry date",
-        "valid until",
-        "validity period",
-        "expiration",
-        "The type, number and expiry date of the certificate issued by the notified body",
-        "the name or identification number of that notified body"
-      ]
-    },
-    {
-      "id": "WEBSITE_REF",
-      "label_ko": "외부참조: 웹사이트",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "URL",
-        "website",
-        "web address",
-        "web page",
-        "A URL for additional information",
-        "The URL of the entry of the AI system in the EU database"
-      ]
-    },
-    {
-      "id": "WORKFLOWS_TASKS",
-      "label_ko": "형성: 태스크",
-      "aliases": [],
-      "gap": false,
-      "synonyms": [
-        "methods and steps performed for the development",
-        "validation and testing procedures",
-        "development steps",
-        "testing procedures",
-        "workflow",
-        "development procedures",
-        "the methods and steps performed for the development of the AI system",
-        "the validation and testing procedures used"
-      ]
-    },
-    {
-      "id": "ALTERNATIVE_COMPLIANCE_MEANS",
-      "label_ko": "표준 대체 준수 수단",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "alternative adequate means of compliance",
-        "solutions adopted to meet the requirements",
-        "technical solutions that meet the requirements",
-        "alternative means",
-        "equivalent",
-        "the solutions adopted to meet the requirements",
-        "technical solutions that meet the requirements referred to in Section 2 of this Chapter"
-      ]
-    },
-    {
-      "id": "APPLICABLE_LAWS_NORMS",
-      "label_ko": "적용받는 법률·규범",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "laws, norms and expectations",
-        "applicable laws",
-        "legal requirements",
-        "norms",
-        "regulatory requirements",
-        "contextspecific laws, norms and expectations"
-      ]
-    },
-    {
-      "id": "APPLIED_CONTROLS",
-      "label_ko": "적용한 통제",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "risk controls",
-        "controls",
-        "cybersecurity measures",
-        "measures to prevent, detect, respond to",
-        "cybersecurity protection",
-        "control measures",
-        "cybersecurity measures put in place",
-        "measures to prevent, detect, respond to, resolve and control for attacks",
-        "ensure an adequate level of cybersecurity protection",
-        "risk controls are applied and documented",
-        "Internal risk controls for components of the AI system"
-      ]
-    },
-    {
-      "id": "ASSURANCE_CRITERIA_RESULT",
-      "label_ko": "보증 기준 평가 결과",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "assurance criteria",
-        "evaluation criteria",
-        "assessment results",
-        "criteria are measured",
-        "assurance criteria are measured qualitatively or quantitatively"
-      ]
-    },
-    {
-      "id": "AUTHORISED_REPRESENTATIVE",
-      "label_ko": "수권대리인·등록 대행자",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "authorised representative",
-        "authorized representative",
-        "representative",
-        "person on behalf of the provider",
-        "the name, address and contact details of that person",
-        "The name, address and contact details of the authorised representative"
-      ]
-    },
-    {
-      "id": "BUSINESS_USE_CONTEXT",
-      "label_ko": "사업적 사용 맥락",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "context of business use",
-        "business value",
-        "business context",
-        "business use"
-      ]
-    },
-    {
-      "id": "CONFORMITY_ASSESSMENT_DECLARATION",
-      "label_ko": "적합성평가절차·선언서 발급 정보",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "conformity assessment procedure",
-        "conformity assessment",
-        "declaration",
-        "place and date of issue",
-        "a description of the conformity assessment procedure performed",
-        "The place and date of issue of the declaration",
-        "the name and function of the person who signed it"
-      ]
-    },
-    {
-      "id": "CONFORMITY_MARKING",
-      "label_ko": "적합성 표시 (CE 마킹)",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "CE marking",
-        "CE mark",
-        "marking",
-        "affix the CE marking",
-        "affix the CE marking to the high-risk AI system",
-        "a digital CE marking shall be used"
-      ]
-    },
-    {
-      "id": "CONTENT_INTERACTION_DISCLOSURE",
-      "label_ko": "콘텐츠·상호작용 표시",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "artificially generated or manipulated",
-        "machine-readable format",
-        "interacting with an AI system",
-        "informed that they are interacting",
-        "synthetic",
-        "deep fake",
-        "watermark",
-        "designed and developed in such a way that the natural persons concerned are informed that they are interacting with an AI system",
-        "marked in a machine-readable format and detectable as artificially generated or manipulated"
-      ]
-    },
-    {
-      "id": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
-      "label_ko": "배포 형태·버전 갱신 요건",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "methods of distribution",
-        "forms in which the AI system is placed on the market",
-        "version updates",
-        "software updates",
-        "distribution",
-        "any requirements related to version updates",
-        "the description of all the forms in which the AI system is placed on the market or put into service"
-      ]
-    },
-    {
-      "id": "EXPECTED_DEPLOYMENT_ENVIRONMENT",
-      "label_ko": "배포 예상 환경",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "settings in which the AI system will be deployed",
-        "deployment environment",
-        "deployment setting",
-        "operating environment",
-        "context of use",
-        "prospective settings in which the AI system will be deployed"
-      ]
-    },
-    {
-      "id": "EXPECTED_LIFETIME_MAINTENANCE",
-      "label_ko": "예상 수명·유지관리 주기",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "expected lifetime",
-        "maintenance and care measures",
-        "maintenance",
-        "lifecycle",
-        "life cycle",
-        "the expected lifetime of the high-risk AI system and any necessary maintenance and care measures, including their frequency"
-      ]
-    },
-    {
-      "id": "GO_NO_GO_DECISION",
-      "label_ko": "개발·배포 게이트 판정",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "development or deployment should proceed",
-        "go/no-go",
-        "decision to deploy",
-        "whether to proceed",
-        "whether its development or deployment should proceed"
-      ]
-    },
-    {
-      "id": "HIGH_RISK_CLASSIFICATION_RATIONALE",
-      "label_ko": "고위험 분류 판정 근거",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "considered to be not-high-risk",
-        "not high-risk",
-        "classification",
-        "conditions under Article 6(3)",
-        "grounds on which the AI system is considered",
-        "The condition or conditions under Article 6(3)"
-      ]
-    },
-    {
-      "id": "HUMAN_OVERSIGHT_MEASURES",
-      "label_ko": "인적 감독 수단",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "human oversight",
-        "human oversight measures",
-        "overseen by natural persons",
-        "overseen by humans",
-        "intervene in the operation",
-        "interrupt the system",
-        "override or reverse the output",
-        "human-machine interface",
-        "user-interface provided to the deployer",
-        "natural persons",
-        "a basic description of the user-interface provided to the deployer",
-        "assessment of the human oversight measures needed",
-        "the human oversight measures needed in accordance with Article 14",
-        "the human oversight measures referred to in Article 14",
-        "designed and developed in such a way, including with appropriate human-machine interface tools",
-        "measures identified and built, when technically feasible, into the high-risk AI system by the provider",
-        "measures identified by the provider before placing the high-risk AI system on the market or putting it into service and that are appropriate to be implemented by the deployer",
-        "disregard, override or reverse the output of the high-risk AI system",
-        "to intervene in the operation of the high-risk AI system or interrupt the system",
-        "at least two natural persons",
-        "how system output may be utilized and overseen by humans"
-      ]
-    },
-    {
-      "id": "LOGGING_MECHANISM",
-      "label_ko": "로깅 메커니즘",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "logs",
-        "logging",
-        "logging capabilities",
-        "recording of events",
-        "event logs",
-        "record keeping",
-        "automatic recording",
-        "the automatic recording of events (logs)",
-        "recording of the period of each use of the system",
-        "a description of the mechanisms included within the high-risk AI system that allows deployers to properly collect, store and interpret the logs"
-      ]
-    },
-    {
-      "id": "MARKET_STATUS_REGIONS",
-      "label_ko": "시장 유통 상태·배포 지역",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "status of the AI system",
-        "Member States",
-        "on the market",
-        "made available in the Union",
-        "recalled",
-        "placed on the market",
-        "Any Member States in which the AI system has been placed on the market, put into service or made available in the Union",
-        "The status of the AI system"
-      ]
-    },
-    {
-      "id": "OPERATIONAL_KPI",
-      "label_ko": "운영 성과 KPI",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "safety metrics",
-        "key performance indicators",
-        "operational metrics",
-        "response times",
-        "real-time monitoring",
-        "Safety metrics reflect system reliability and robustness, real-time monitoring, and response times for AI system failures"
-      ]
-    },
-    {
-      "id": "PERFORMANCE_CHANGE",
-      "label_ko": "성능 변화량",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "performance improvements or declines",
-        "performance change",
-        "performance degradation",
-        "drift",
-        "Measurable performance improvements or declines"
-      ]
-    },
-    {
-      "id": "POTENTIAL_BENEFITS_COSTS",
-      "label_ko": "잠재적 이점·비용",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "potential benefits",
-        "potential costs",
-        "non-monetary costs",
-        "costs and benefits",
-        "Potential benefits of intended AI system functionality and performance"
-      ]
-    },
-    {
-      "id": "PREDETERMINED_CHANGES",
-      "label_ko": "사전 명세된 변경사항",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "pre-determined changes",
-        "predetermined changes",
-        "changes to the high-risk AI system and its performance which have been pre-determined",
-        "planned changes",
-        "a detailed description of pre-determined changes to the AI system and its performance",
-        "the changes to the high-risk AI system and its performance which have been pre-determined by the provider at the moment of the initial conformity assessment"
-      ]
-    },
-    {
-      "id": "RESIDUAL_RISK_ACCEPTANCE",
-      "label_ko": "잔여위험 수용 판정",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "residual risk",
-        "residual risks",
-        "residual negative risk",
-        "judged to be acceptable",
-        "risk tolerance",
-        "acceptable risk",
-        "its residual negative risk does not exceed the risk tolerance"
-      ]
-    },
-    {
-      "id": "RESILIENCE_FAILSAFE_MEASURES",
-      "label_ko": "회복력·안전장애 방안",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "resilient",
-        "resilience",
-        "fail-safe",
-        "backup or fail-safe plans",
-        "feedback loops",
-        "robustness",
-        "fail safely",
-        "shall be resilient against attempts by unauthorised third parties"
-      ]
-    },
-    {
-      "id": "SOCIETAL_ENVIRONMENTAL_IMPACT",
-      "label_ko": "시스템의 사회·환경 영향",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "societal impacts",
-        "impacts of system uses to individuals, communities, organizations, society, and the planet",
-        "social impact",
-        "environmental impact",
-        "impact on society",
-        "potential positive and negative impacts of system uses to individuals, communities, organizations, society, and the planet"
-      ]
-    },
-    {
-      "id": "SYSTEM_DESIGN_CHOICES",
-      "label_ko": "시스템 설계 선택·절충",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "key design choices",
-        "trade-off",
-        "trade-offs",
-        "technical solutions adopted",
-        "main classification choices",
-        "design choices",
-        "designed to optimise for",
-        "the key design choices including the rationale and assumptions made",
-        "the main classification choices",
-        "what the system is designed to optimise for",
-        "the decisions about any possible trade-off made regarding the technical solutions adopted"
-      ]
-    },
-    {
-      "id": "SYSTEM_DEV_TEST_COMPUTE",
-      "label_ko": "시스템 개발·시험 연산자원",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "computational resources used to develop, train, test and validate",
-        "resources used to develop",
-        "development and testing resources",
-        "the computational resources used to develop, train, test and validate the AI system"
-      ]
-    },
-    {
-      "id": "TASK_IMPLEMENTATION_FAMILY",
-      "label_ko": "과업 구현 계열",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "methods used to implement the tasks",
-        "classifiers, generative models, recommenders",
-        "implementation approach",
-        "model family"
-      ]
-    },
-    {
-      "id": "TEST_LOG_REPORT_REF",
-      "label_ko": "시험 로그·보고서 참조",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "test logs",
-        "test reports",
-        "test logs and all test reports",
-        "test results",
-        "testing records"
-      ]
-    },
-    {
-      "id": "THIRD_PARTY_SUPPORT_SCOPE",
-      "label_ko": "제3자에게 받기로 한 지원 범위",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "third party",
-        "necessary information, capabilities, technical access and other assistance",
-        "assistance",
-        "third-party resources",
-        "written agreement",
-        "the necessary information, capabilities, technical access and other assistance"
-      ]
-    },
-    {
-      "id": "TRUSTWORTHINESS_COMPOSITE_MEASURE",
-      "label_ko": "신뢰성 종합 측정",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "trustworthiness",
-        "trustworthy",
-        "measurement results regarding AI system trustworthiness",
-        "trustworthiness characteristics"
-      ]
-    },
-    {
-      "id": "UNMEASURED_RISKS",
-      "label_ko": "측정하지 못한 위험 목록",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "cannot – be measured",
-        "will not – or cannot – be measured",
-        "unmeasured risks",
-        "risks that cannot be measured",
-        "not measured",
-        "The risks or trustworthiness characteristics that will not – or cannot – be measured"
-      ]
-    },
-    {
-      "id": "USER_EXPECTATIONS",
-      "label_ko": "사용자의 기대",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "expectations",
-        "their expectations",
-        "user expectations",
-        "expectations of users"
-      ]
-    },
-    {
-      "id": "USE_RISK_ASSUMPTIONS",
-      "label_ko": "용도·위험의 가정",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "assumptions",
-        "assumptions and related limitations",
-        "assumptions about AI system purposes, uses, and risks",
-        "assumptions about use",
-        "assumptions and related limitations about AI system purposes, uses, and risks"
-      ]
-    },
-    {
-      "id": "VERIFICATION_METHODOLOGY",
-      "label_ko": "검증 방법론",
-      "aliases": [],
-      "gap": true,
-      "synonyms": [
-        "experimental design",
-        "construct validation",
-        "verification methodology",
-        "validation methodology",
-        "verification and validation",
-        "test methodology"
-      ]
-    }
-  ]
+ "_comment": "통제 어휘. 카드의 fact 와 프로파일 줄이 가리키는 개념 id 의 사전이다. 사람이 관리한다 (생성물이 아니다). 항목: id (대문자 스네이크, 규제·스키마와 무관한 이름표), label_ko (표시 이름), aliases (같은 뜻의 다른 표시 이름), gap (CycloneDX·SPDX 모두 자리가 없는 개념이면 true), synonyms (영어 원문에서 이 개념을 부르는 말. 추출기 용어집과 매핑 후보 생성기가 쓴다), synonyms_private (같은 것이지만 저작권 있는 원문(ISO/IEC 42001)의 구절이라 문서 사이트로 내보내지 않는 것). 새 개념은 여기 한 항목을 더한다. build_cards.py 는 표의 개념이 여기 없으면 멈춘다. 처음 125개는 요구사항 표에서 만들고 (id 는 필드 경로 끝 이름, 격차 개념은 손으로 지음) 동의어는 Claude 가 적은 것과 요구사항 표에서 사람이 표시한 영어 원문 구절(ISO 제외)을 합친 것이다 (2026-10-23).",
+ "version": 1,
+ "concepts": [
+  {
+   "id": "ADVERSARY_MODEL_REF",
+   "label_ko": "외부참조: 적대자 모델",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "adversarial testing",
+    "adversarial attack",
+    "red teaming",
+    "adversarial examples",
+    "attacker model",
+    "adversarial testing of the model"
+   ]
+  },
+  {
+   "id": "ANONYMIZATION_METHODS",
+   "label_ko": "익명화 방법",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "anonymisation",
+    "anonymization",
+    "pseudonymisation",
+    "pseudonymization",
+    "de-identification",
+    "privacy-preserving measures",
+    "state-of-the-art security and privacy-preserving measures, including pseudonymisation"
+   ]
+  },
+  {
+   "id": "ARCHITECTURE_FAMILY",
+   "label_ko": "아키텍처 계열",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "architecture",
+    "model architecture",
+    "operating logic",
+    "general logic of the AI system",
+    "the general logic of the AI system and of the algorithms",
+    "its operating logic",
+    "the architecture"
+   ]
+  },
+  {
+   "id": "ATTESTATIONS_MAP",
+   "label_ko": "요구사항↔주장 연결",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "verification and validation measures",
+    "demonstrate compliance",
+    "meet those requirements"
+   ]
+  },
+  {
+   "id": "ATTESTATION_REF",
+   "label_ko": "외부참조: 증명",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "declaration of conformity",
+    "EU declaration of conformity",
+    "attestation",
+    "self-declaration",
+    "A copy of the EU declaration of conformity",
+    "draw up an EU declaration of conformity",
+    "draw up a written machine readable, physical or electronically signed EU declaration of conformity"
+   ]
+  },
+  {
+   "id": "AVAILABILITY",
+   "label_ko": "데이터셋 가용성",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "availability",
+    "availability of the data",
+    "data availability"
+   ]
+  },
+  {
+   "id": "BENEFITS",
+   "label_ko": "집단에 대한 이익",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "benefits",
+    "potential impacts",
+    "positive impacts",
+    "fairness",
+    "Fairness and bias"
+   ]
+  },
+  {
+   "id": "CERTIFICATION_REPORT_REF",
+   "label_ko": "외부참조: 인증 보고서",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "certificate",
+    "certificate issued",
+    "notified body",
+    "certification",
+    "the name and identification number of the notified body",
+    "identification of the certificate issued",
+    "A scanned copy of the certificate",
+    "the identification number of the notified body"
+   ]
+  },
+  {
+   "id": "COLLECTION_PROCESS",
+   "label_ko": "데이터 수집 절차",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "data collection",
+    "collection process",
+    "collection processes",
+    "origin of data",
+    "provenance",
+    "acquisition of the data",
+    "data acquisition",
+    "how the data was obtained",
+    "obtained and selected",
+    "data sources",
+    "source of data",
+    "collection and selection",
+    "how the data was obtained and selected",
+    "the type and provenance of data",
+    "the type and provenance of data and curation methodologies",
+    "data collection processes and the origin of data",
+    "data collection and selection"
+   ]
+  },
+  {
+   "id": "COMPONENTS",
+   "label_ko": "구성요소 목록",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "software components",
+    "components",
+    "relevant resources",
+    "computing resources",
+    "infrastructure, tools",
+    "versions of relevant software",
+    "the versions of relevant software or firmware",
+    "the versions of relevant software related to the use of the general-purpose AI model"
+   ]
+  },
+  {
+   "id": "COMPONENT_CPE",
+   "label_ko": "CPE 식별자",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "identification of the system",
+    "unambiguous reference",
+    "identification and traceability",
+    "identifier",
+    "other information necessary for the identification of the system",
+    "any additional unambiguous reference allowing the identification and traceability of the AI system"
+   ]
+  },
+  {
+   "id": "COMPONENT_DATA",
+   "label_ko": "데이터 컴포넌트",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "data sets",
+    "datasets",
+    "data resources",
+    "training data",
+    "data used"
+   ]
+  },
+  {
+   "id": "COMPONENT_DESCRIPTION",
+   "label_ko": "구성요소 설명",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "general description",
+    "brief description",
+    "description of the AI system",
+    "components and functions supported",
+    "A brief description of the AI system",
+    "the components and functions supported through this AI system"
+   ]
+  },
+  {
+   "id": "COMPONENT_LICENSES",
+   "label_ko": "라이선스",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "licence",
+    "license",
+    "acceptable use policies",
+    "terms of use",
+    "licensing",
+    "the acceptable use policies applicable",
+    "the licence",
+    "the licence for the model"
+   ]
+  },
+  {
+   "id": "COMPONENT_NAME",
+   "label_ko": "구성요소 이름",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "name and type",
+    "trade name",
+    "system name",
+    "model name",
+    "product name",
+    "AI system name and type",
+    "The AI system trade name"
+   ]
+  },
+  {
+   "id": "COMPONENT_PURL",
+   "label_ko": "purl 식별자",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "package identifier",
+    "package url",
+    "unique reference"
+   ]
+  },
+  {
+   "id": "COMPONENT_SUPPLIER",
+   "label_ko": "공급자",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "name of the provider",
+    "name and address of the provider",
+    "contact details of the provider",
+    "identity and the contact details of the provider",
+    "registered trade name",
+    "supplier",
+    "manufacturer",
+    "provided by third parties",
+    "the name of the provider",
+    "The name and address of the provider",
+    "The name, address and contact details of the provider",
+    "the identity and the contact details of the provider and, where applicable, of its authorised representative",
+    "their name",
+    "registered trade name or registered trade mark",
+    "the address at which they can be contacted",
+    "their name, registered trade name or registered trade mark, and the address at which they can be contacted"
+   ]
+  },
+  {
+   "id": "COMPONENT_TYPE",
+   "label_ko": "구성요소 유형",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "type of AI system",
+    "type of model",
+    "system type"
+   ]
+  },
+  {
+   "id": "COMPONENT_VERSION",
+   "label_ko": "버전",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "version",
+    "version of the system",
+    "versions",
+    "release",
+    "the version of the system"
+   ]
+  },
+  {
+   "id": "DATASETS",
+   "label_ko": "사용한 데이터셋",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "training data sets",
+    "data sets used",
+    "test sets",
+    "validation and testing data",
+    "training, validation and testing data sets",
+    "content used for training",
+    "information used by the system",
+    "the training data sets used",
+    "the information used by the system (data, inputs)",
+    "a sufficiently detailed summary about the content used for training of the general-purpose AI model"
+   ]
+  },
+  {
+   "id": "DECISION_THRESHOLD",
+   "label_ko": "지표 임계값",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "threshold",
+    "thresholds",
+    "probabilistic thresholds",
+    "decision threshold"
+   ]
+  },
+  {
+   "id": "DECLARATIONS_CLAIMS",
+   "label_ko": "주장",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "compliance with the requirements",
+    "demonstrate",
+    "demonstrated",
+    "conformity",
+    "claims",
+    "A description of the appropriateness of the performance metrics",
+    "input data is relevant",
+    "duly justify that they have adopted technical solutions that meet the requirements",
+    "shall demonstrate alternative adequate means of compliance",
+    "whether the AI system achieves its intended purposes and stated objectives",
+    "system trustworthiness",
+    "AI system performance",
+    "assurance criteria",
+    "demonstrated to be valid and reliable",
+    "demonstrated to be safe",
+    "it can fail safely"
+   ]
+  },
+  {
+   "id": "DECLARATIONS_EVIDENCE",
+   "label_ko": "증거",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "evidence",
+    "supporting evidence",
+    "proof"
+   ]
+  },
+  {
+   "id": "DEPENDENCIES",
+   "label_ko": "의존관계",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "dependencies",
+    "system architecture",
+    "integrate into the overall processing",
+    "build on or feed into each other",
+    "interaction between components",
+    "the description of the system architecture explaining how software components build on or feed into each other and integrate into the overall processing",
+    "the system architecture explaining how software components build or feed into each other and integrate into the overall processing"
+   ]
+  },
+  {
+   "id": "DESIGN_CHOICES",
+   "label_ko": "설계 선택",
+   "aliases": [
+    "모델 설계 선택",
+    "데이터 설계 선택",
+    "시스템 설계 선택·절충"
+   ],
+   "gap": false,
+   "synonyms": [
+    "key design choices",
+    "design choices",
+    "design specifications of the model",
+    "rationale and assumptions made",
+    "the key design choices including the rationale and assumptions made",
+    "relevant design choices",
+    "design of the data",
+    "data design choices",
+    "the relevant design choices",
+    "trade-off",
+    "trade-offs",
+    "technical solutions adopted",
+    "main classification choices",
+    "designed to optimise for",
+    "the main classification choices",
+    "what the system is designed to optimise for",
+    "the decisions about any possible trade-off made regarding the technical solutions adopted"
+   ]
+  },
+  {
+   "id": "DOCUMENTATION_REF",
+   "label_ko": "외부참조: 문서",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "technical documentation",
+    "instructions for use",
+    "instructions of use",
+    "user documentation",
+    "manual",
+    "necessary information to users",
+    "instructions for use for the deployer",
+    "Electronic instructions for use",
+    "The technical documentation of a high-risk AI system",
+    "a single set of technical documentation",
+    "draw up and keep up-to-date the technical documentation of the model",
+    "documented"
+   ]
+  },
+  {
+   "id": "ENERGY_CONSUMPTIONS",
+   "label_ko": "에너지 소비",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "energy consumption",
+    "energy use",
+    "environmental impact",
+    "carbon footprint",
+    "sustainability",
+    "energy consumption of the model",
+    "Environmental impact and sustainability"
+   ]
+  },
+  {
+   "id": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
+   "label_ko": "위험 완화 전략",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "risk management measures",
+    "mitigation measures",
+    "elimination or reduction of risks",
+    "mitigation and control measures",
+    "risk mitigation",
+    "assess and mitigate possible systemic risks",
+    "the adoption of appropriate and targeted risk management measures",
+    "implementation of adequate mitigation and control measures"
+   ]
+  },
+  {
+   "id": "ETHICAL_CONSIDERATIONS_NAME",
+   "label_ko": "위험의 이름",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "known and the reasonably foreseeable risks",
+    "foreseeable risks",
+    "sources of risks",
+    "systemic risks",
+    "risks to health and safety",
+    "identification and analysis of the known",
+    "potential risks",
+    "the foreseeable unintended outcomes and sources of risks to health and safety, fundamental rights and discrimination",
+    "any known or foreseeable circumstance, related to the use of the high-risk AI system in accordance with its intended purpose or under conditions of reasonably foreseeable misuse, which may lead to risks to the health and safety or fundamental rights",
+    "assess and mitigate possible systemic risks at Union level, including their sources",
+    "the identification and analysis of the known and the reasonably foreseeable risks"
+   ]
+  },
+  {
+   "id": "EXPLAINABILITY_METHODS",
+   "label_ko": "설명 방법",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "explainability",
+    "interpret the output",
+    "interpretation of the outputs",
+    "explain its output",
+    "transparent",
+    "explained",
+    "interpretability",
+    "the technical measures put in place to facilitate the interpretation of the outputs of AI systems",
+    "sufficiently transparent",
+    "the technical capabilities and characteristics of the high-risk AI system to provide information that is relevant to explain its output",
+    "information to enable deployers to interpret the output of the high-risk AI system and use it appropriately",
+    "to correctly interpret the high-risk AI system’s output"
+   ]
+  },
+  {
+   "id": "FORMULATION",
+   "label_ko": "형성 기록",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "development process",
+    "process for its development",
+    "training process",
+    "conditions similar to deployment",
+    "conditions similar to deployment setting(s)"
+   ]
+  },
+  {
+   "id": "FORMULATION_COMPONENTS",
+   "label_ko": "형성: 일시적 구성요소",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "tools used",
+    "tooling resources",
+    "pre-trained systems or tools",
+    "development tools"
+   ]
+  },
+  {
+   "id": "FORMULATION_SERVICES",
+   "label_ko": "형성: 일시적 서비스",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "services used",
+    "external services",
+    "cloud services"
+   ]
+  },
+  {
+   "id": "GROUP_AT_RISK",
+   "label_ko": "위험에 놓인 집단",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "vulnerable groups",
+    "persons or groups of persons",
+    "affected groups",
+    "persons under the age of 18",
+    "specific persons or groups",
+    "other vulnerable groups"
+   ]
+  },
+  {
+   "id": "HARMS",
+   "label_ko": "집단에 대한 피해",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "harm",
+    "harms",
+    "adverse impact",
+    "negative impact",
+    "negative impacts",
+    "likely to have an adverse impact"
+   ]
+  },
+  {
+   "id": "HYPERPARAMETERS",
+   "label_ko": "하이퍼파라미터",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "hyperparameters",
+    "relevance of the different parameters",
+    "learning rate",
+    "the relevance of the different parameters"
+   ]
+  },
+  {
+   "id": "INPUTS",
+   "label_ko": "입력 형식",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "input data",
+    "specifications for the input data",
+    "specifications on input data",
+    "format of inputs",
+    "the modality (e.g. text, image) and format of inputs and outputs",
+    "the modality (e.g. text, image, etc.) and format of the inputs and outputs"
+   ]
+  },
+  {
+   "id": "INPUT_OUTPUT_ML_PARAMETERS_MAX_SIZE",
+   "label_ko": "문맥 길이·입출력 최대 크기",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "maximum size",
+    "context window",
+    "context window length",
+    "maximum input length",
+    "their maximum size (e.g. context window length, etc.)"
+   ]
+  },
+  {
+   "id": "INTENDED_USE",
+   "label_ko": "데이터셋 의도된 용도",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "intended purpose of the data",
+    "purpose of the data set",
+    "setting within which the high-risk AI system is intended to be used",
+    "geographical, contextual, behavioural or functional setting",
+    "the characteristics or elements that are particular to the specific geographical, contextual, behavioural or functional setting"
+   ]
+  },
+  {
+   "id": "KNOWN_BIAS_DETECTION_METHOD",
+   "label_ko": "편향 탐지 방법",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "detect identifiable biases",
+    "bias detection",
+    "methods to detect",
+    "examination in view of possible biases",
+    "detect biases",
+    "methods to detect identifiable biases"
+   ]
+  },
+  {
+   "id": "KNOWN_BIAS_MITIGATION_STRATEGY",
+   "label_ko": "편향 완화 조치",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "mitigate possible biases",
+    "bias mitigation",
+    "prevent and mitigate",
+    "bias correction",
+    "correct biases",
+    "appropriate measures to detect, prevent and mitigate possible biases"
+   ]
+  },
+  {
+   "id": "KNOWN_BIAS_NAME",
+   "label_ko": "알려진 편향",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "bias",
+    "possible biases",
+    "representative",
+    "sufficiently representative",
+    "examination in view of possible biases"
+   ]
+  },
+  {
+   "id": "KNOWN_GAPS",
+   "label_ko": "데이터 공백·결함",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "data gaps",
+    "shortcomings",
+    "completeness",
+    "unsuitability of data",
+    "complete in view of the intended purpose",
+    "identification of relevant data gaps",
+    "data gaps or shortcomings",
+    "identified gaps",
+    "the identification of relevant data gaps or shortcomings"
+   ]
+  },
+  {
+   "id": "KNOWN_GAPS_MITIGATION_STRATEGY",
+   "label_ko": "데이터 공백·결함",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "gaps and shortcomings can be addressed",
+    "address data gaps",
+    "remedy shortcomings",
+    "how those gaps and shortcomings can be addressed"
+   ]
+  },
+  {
+   "id": "LIMITATION_IDENTIFICATION_METHODS",
+   "label_ko": "한계 식별방법론",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "identification of limitations",
+    "identify limitations",
+    "limitation analysis",
+    "the methodology on the identification of limitations"
+   ]
+  },
+  {
+   "id": "METADATA_AUTHORS",
+   "label_ko": "문서 작성자",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "person submitting information",
+    "author",
+    "authors",
+    "person who signed",
+    "The name, address and contact details of the person submitting information on behalf of the deployer"
+   ]
+  },
+  {
+   "id": "METADATA_MANUFACTURER",
+   "label_ko": "문서 생성 조직",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "name, address and contact details of the deployer",
+    "issuing organisation",
+    "organisation submitting",
+    "The name, address and contact details of the deployer"
+   ]
+  },
+  {
+   "id": "MODALITY",
+   "label_ko": "데이터셋 유형",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "modality",
+    "type of data",
+    "type and provenance of data",
+    "data type",
+    "general description of these data sets",
+    "a general description of these data sets",
+    "the type and provenance of data"
+   ]
+  },
+  {
+   "id": "MODEL_ARCHITECTURE",
+   "label_ko": "구체적 아키텍처",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "algorithms",
+    "logic of the AI system and of the algorithms",
+    "design specifications",
+    "network architecture"
+   ]
+  },
+  {
+   "id": "NOISE",
+   "label_ko": "데이터셋 잡음",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "free of errors",
+    "noise",
+    "outliers",
+    "data errors"
+   ]
+  },
+  {
+   "id": "OPTIMIZATION_TARGET",
+   "label_ko": "최적화 목표",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "designed to optimise for",
+    "optimisation target",
+    "optimization target",
+    "objective function",
+    "what the model is designed to optimise for"
+   ]
+  },
+  {
+   "id": "ORIGINAL_COLLECTION_PURPOSE",
+   "label_ko": "데이터 수집의 원래 목적",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "original purpose of the data collection",
+    "original purpose",
+    "purpose of the data collection",
+    "purpose for which the data was collected",
+    "the original purpose of the data collection"
+   ]
+  },
+  {
+   "id": "OUTPUTS",
+   "label_ko": "출력 형식",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "output",
+    "outputs",
+    "expected output",
+    "format of outputs",
+    "output quality",
+    "the expected output"
+   ]
+  },
+  {
+   "id": "PARAMETER_COUNT",
+   "label_ko": "파라미터 수·모델 크기",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "number of parameters",
+    "parameter count",
+    "model size"
+   ]
+  },
+  {
+   "id": "PEDIGREE",
+   "label_ko": "계보",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "pre-trained systems or tools",
+    "derived from",
+    "lineage",
+    "pedigree",
+    "modified by the provider",
+    "recourse to pre-trained systems or tools provided by third parties"
+   ]
+  },
+  {
+   "id": "PEDIGREE_COMMITS",
+   "label_ko": "계보: 커밋",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "changes made",
+    "relevant changes",
+    "change history",
+    "modifications",
+    "relevant changes made by the provider to the system through its lifecycle"
+   ]
+  },
+  {
+   "id": "PEDIGREE_NOTES",
+   "label_ko": "계보: 메모",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "how those were used, integrated or modified",
+    "integrated or modified",
+    "modification notes"
+   ]
+  },
+  {
+   "id": "PENTEST_REPORT_REF",
+   "label_ko": "외부참조: 침투시험 보고서",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "penetration test",
+    "security testing",
+    "security",
+    "vulnerability assessment",
+    "AI system security"
+   ]
+  },
+  {
+   "id": "PERFORMANCE_METRICS_SLICE",
+   "label_ko": "성능 지표 구간",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "specific persons or groups of persons",
+    "performance regarding specific persons",
+    "degrees of accuracy for specific persons",
+    "subgroup performance",
+    "the degrees of accuracy for specific persons or groups of persons",
+    "its performance regarding specific persons or groups of persons"
+   ]
+  },
+  {
+   "id": "PERFORMANCE_METRICS_TYPE",
+   "label_ko": "성능 지표 유형",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "metrics",
+    "accuracy metrics",
+    "performance metrics",
+    "evaluation results",
+    "level of accuracy",
+    "levels of accuracy",
+    "model evaluation",
+    "measured qualitatively or quantitatively",
+    "output quality of the system",
+    "metrics used to measure accuracy, robustness and compliance",
+    "the degrees of accuracy for specific persons or groups of persons",
+    "the overall expected level of accuracy",
+    "the appropriateness of the performance metrics",
+    "the level of accuracy, including its metrics, robustness and cybersecurity",
+    "The levels of accuracy and the relevant accuracy metrics",
+    "the results of its evaluation",
+    "perform model evaluation in accordance with standardised protocols and tools",
+    "prior defined metrics",
+    "related TEVV and system metrics",
+    "AI system performance"
+   ]
+  },
+  {
+   "id": "PERFORMANCE_METRICS_VALUE",
+   "label_ko": "성능 지표 값",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "level of performance",
+    "metric value",
+    "measured value",
+    "achieved accuracy"
+   ]
+  },
+  {
+   "id": "PREPROCESSING",
+   "label_ko": "데이터 전처리",
+   "aliases": [
+    "학습 데이터 전처리"
+   ],
+   "gap": false,
+   "synonyms": [
+    "data-preparation",
+    "data preparation",
+    "preprocessing",
+    "pre-processing",
+    "labelling",
+    "annotation",
+    "cleaning",
+    "data cleaning",
+    "curation methodologies",
+    "curation",
+    "labelling procedures",
+    "enrichment and aggregation",
+    "data cleaning methodologies",
+    "the type and provenance of data and curation methodologies",
+    "relevant data-preparation processing operations, such as annotation, labelling, cleaning, updating, enrichment and aggregation"
+   ]
+  },
+  {
+   "id": "PRIVACY_ASSESSMENT_REF",
+   "label_ko": "외부참조: 프라이버시 평가",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "privacy risk",
+    "data protection impact assessment",
+    "privacy impact assessment",
+    "privacy assessment",
+    "Privacy risk of the AI system"
+   ]
+  },
+  {
+   "id": "PROVENANCE",
+   "label_ko": "패키지 출처 정보",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "provenance of data",
+    "recording the provenance",
+    "data provenance"
+   ]
+  },
+  {
+   "id": "RELEASE_NOTES_TIMESTAMP",
+   "label_ko": "출시일",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "date of release",
+    "release date",
+    "placed on the market",
+    "put into service",
+    "date of issue",
+    "the date of release"
+   ]
+  },
+  {
+   "id": "REPRESENTATION_ASSUMPTIONS",
+   "label_ko": "데이터의 표상 가정",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "formulation of assumptions",
+    "supposed to measure and represent",
+    "represent",
+    "the formulation of assumptions"
+   ]
+  },
+  {
+   "id": "RISK_ASSESSMENT_REF",
+   "label_ko": "외부참조: 위험평가",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "risk management system",
+    "risk assessment",
+    "impact assessment",
+    "identification and analysis of the known and the reasonably foreseeable risks",
+    "estimation and evaluation of the risks",
+    "fundamental rights impact assessment",
+    "risks and potential impacts",
+    "residual risks",
+    "A detailed description of the risk management system",
+    "A short summary of the grounds on which the AI system is considered to be not-high-risk",
+    "A summary of the findings of the fundamental rights impact assessment",
+    "A summary of the data protection impact assessment",
+    "perform an assessment of the impact on fundamental rights",
+    "document its assessment",
+    "the identification and analysis of the known and the reasonably foreseeable risks",
+    "the estimation and evaluation of the risks",
+    "the evaluation of other risks possibly arising",
+    "the risks and potential impacts of the AI technology",
+    "Negative residual risks",
+    "Likelihood and magnitude of each identified impact (both potentially beneficial and harmful)",
+    "Risks associated with transparency and accountability"
+   ]
+  },
+  {
+   "id": "SAFETY_RISK_ASSESSMENT",
+   "label_ko": "안전 위험 평가",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "safety risks",
+    "risks to health and safety",
+    "safety assessment",
+    "safety"
+   ]
+  },
+  {
+   "id": "SENSITIVE_DATA",
+   "label_ko": "민감 데이터",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "personal data",
+    "special categories of personal data",
+    "sensitive data",
+    "sensitive information"
+   ]
+  },
+  {
+   "id": "SENSITIVE_PERSONAL_INFORMATION",
+   "label_ko": "민감 개인정보 사용",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "process special categories of personal data",
+    "processing of personal data",
+    "use of personal data",
+    "processing of special categories",
+    "may exceptionally process special categories of personal data"
+   ]
+  },
+  {
+   "id": "SERVICES",
+   "label_ko": "서비스 목록",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "services",
+    "external services",
+    "service"
+   ]
+  },
+  {
+   "id": "SIZE",
+   "label_ko": "데이터셋 크기",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "quantity",
+    "number of data points",
+    "scope and main characteristics",
+    "size of the data set",
+    "dataset size",
+    "volume of data",
+    "the number of data points"
+   ]
+  },
+  {
+   "id": "STANDARDS_NAME",
+   "label_ko": "준수 표준",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "harmonised standards",
+    "harmonised standard",
+    "common specification",
+    "common specifications",
+    "codes of practice",
+    "standards applied",
+    "technical specifications",
+    "A list of the harmonised standards applied",
+    "a list of other relevant standards and technical specifications applied",
+    "any relevant harmonised standards used or any other common specification",
+    "codes of practice within the meaning of Article 56"
+   ]
+  },
+  {
+   "id": "STANDARDS_REQUIREMENTS",
+   "label_ko": "표준 요구사항 정의",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "requirements",
+    "evaluation criteria",
+    "system requirements",
+    "requirements for data quality"
+   ]
+  },
+  {
+   "id": "STATISTICS",
+   "label_ko": "데이터셋 통계 특성",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "statistical properties",
+    "statistics",
+    "distribution",
+    "main characteristics",
+    "statistical characteristics",
+    "the appropriate statistical properties"
+   ]
+  },
+  {
+   "id": "TASK",
+   "label_ko": "과업",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "tasks",
+    "tasks that the model is intended to perform",
+    "specific tasks",
+    "task",
+    "the tasks that the model is intended to perform",
+    "The specific tasks"
+   ]
+  },
+  {
+   "id": "TASKS_RESOURCE_REFERENCES",
+   "label_ko": "형성: 리소스 참조",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "tools",
+    "evaluation protocols and tools",
+    "tools used during",
+    "protocols and tools",
+    "the tools used during TEVV"
+   ]
+  },
+  {
+   "id": "TECHNICAL_LIMITATIONS",
+   "label_ko": "기술적 한계",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "limitations in performance",
+    "capabilities and limitations",
+    "knowledge limits",
+    "known limitations",
+    "limitations of the generalizability",
+    "its capabilities and limitations in performance",
+    "limitations of performance",
+    "any known and foreseeable circumstances that may have an impact on that expected level of accuracy, robustness and cybersecurity",
+    "the relevant capacities and limitations of the high-risk AI system",
+    "related limitations"
+   ]
+  },
+  {
+   "id": "TECHNICAL_REQUIREMENTS",
+   "label_ko": "소프트웨어 구동 정보",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "hardware",
+    "hardware on which the AI system is intended to run",
+    "computational and hardware resources needed",
+    "interacts with, or can be used to interact with, hardware or software",
+    "system requirements",
+    "runtime requirements",
+    "how the AI system interacts with, or can be used to interact with, hardware or software, including with other AI systems",
+    "the description of the hardware on which the AI system is intended to run",
+    "how the model interacts, or can be used to interact, with hardware or software",
+    "the computational and hardware resources needed"
+   ]
+  },
+  {
+   "id": "THREAT_MODEL_REF",
+   "label_ko": "외부참조: 위협 모델",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "threat model",
+    "data poisoning",
+    "model poisoning",
+    "model evasion",
+    "adversarial examples",
+    "system vulnerabilities",
+    "cybersecurity threats",
+    "exploiting system vulnerabilities",
+    "adversarial examples or model evasion"
+   ]
+  },
+  {
+   "id": "TRAINING_COMPUTE",
+   "label_ko": "모델 훈련 연산자원",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "computational resources used to train",
+    "computational resources",
+    "number of floating point operations",
+    "compute",
+    "computing resources used",
+    "the computational resources used to train the model"
+   ]
+  },
+  {
+   "id": "TRAINING_TECHNIQUES",
+   "label_ko": "학습 과정 정보",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "training methodologies and techniques",
+    "training methodologies",
+    "training techniques",
+    "training process",
+    "training and testing process",
+    "fine-tuning",
+    "alignment",
+    "model adaptations",
+    "details related to the training",
+    "the training methodologies and techniques",
+    "other relevant details related to the training",
+    "model adaptations, including alignment and fine-tuning",
+    "its training and testing process"
+   ]
+  },
+  {
+   "id": "TRAINING_TIME",
+   "label_ko": "모델 훈련 연산자원",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "training time",
+    "time to train",
+    "training duration"
+   ]
+  },
+  {
+   "id": "UPDATE_MECHANISM",
+   "label_ko": "데이터셋 갱신 방식",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "updating",
+    "updates",
+    "update mechanism",
+    "kept up-to-date",
+    "data updates"
+   ]
+  },
+  {
+   "id": "USERS",
+   "label_ko": "의도된 사용자",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "users",
+    "intended users",
+    "types of users",
+    "deployers",
+    "end users",
+    "the specific set or types of users"
+   ]
+  },
+  {
+   "id": "USE_CASES",
+   "label_ko": "의도된 용도",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "intended purpose",
+    "intended purposes",
+    "intended use",
+    "beneficial uses",
+    "use cases",
+    "application scope",
+    "type and nature of AI systems in which it can be integrated",
+    "its intended purpose",
+    "the intended purpose of the AI system",
+    "the type and nature of AI systems in which it can be integrated",
+    "potentially beneficial uses",
+    "Targeted application scope"
+   ]
+  },
+  {
+   "id": "VALID_UNTIL_TIME",
+   "label_ko": "인증서 만료일",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "expiry date",
+    "valid until",
+    "validity period",
+    "expiration",
+    "The type, number and expiry date of the certificate issued by the notified body",
+    "the name or identification number of that notified body"
+   ]
+  },
+  {
+   "id": "WEBSITE_REF",
+   "label_ko": "외부참조: 웹사이트",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "URL",
+    "website",
+    "web address",
+    "web page",
+    "A URL for additional information",
+    "The URL of the entry of the AI system in the EU database"
+   ]
+  },
+  {
+   "id": "WORKFLOWS_TASKS",
+   "label_ko": "형성: 태스크",
+   "aliases": [],
+   "gap": false,
+   "synonyms": [
+    "methods and steps performed for the development",
+    "validation and testing procedures",
+    "development steps",
+    "testing procedures",
+    "workflow",
+    "development procedures",
+    "the methods and steps performed for the development of the AI system",
+    "the validation and testing procedures used"
+   ]
+  },
+  {
+   "id": "ALTERNATIVE_COMPLIANCE_MEANS",
+   "label_ko": "표준 대체 준수 수단",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "alternative adequate means of compliance",
+    "solutions adopted to meet the requirements",
+    "technical solutions that meet the requirements",
+    "alternative means",
+    "equivalent",
+    "the solutions adopted to meet the requirements",
+    "technical solutions that meet the requirements referred to in Section 2 of this Chapter"
+   ]
+  },
+  {
+   "id": "APPLICABLE_LAWS_NORMS",
+   "label_ko": "적용받는 법률·규범",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "laws, norms and expectations",
+    "applicable laws",
+    "legal requirements",
+    "norms",
+    "regulatory requirements",
+    "contextspecific laws, norms and expectations"
+   ]
+  },
+  {
+   "id": "APPLIED_CONTROLS",
+   "label_ko": "적용한 통제",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "risk controls",
+    "cybersecurity measures",
+    "measures to prevent, detect, respond to",
+    "cybersecurity protection",
+    "control measures",
+    "cybersecurity measures put in place",
+    "measures to prevent, detect, respond to, resolve and control for attacks",
+    "ensure an adequate level of cybersecurity protection",
+    "risk controls are applied and documented",
+    "Internal risk controls for components of the AI system"
+   ]
+  },
+  {
+   "id": "ASSURANCE_CRITERIA_RESULT",
+   "label_ko": "보증 기준 평가 결과",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "assurance criteria",
+    "evaluation criteria",
+    "assessment results",
+    "criteria are measured",
+    "assurance criteria are measured qualitatively or quantitatively"
+   ]
+  },
+  {
+   "id": "AUTHORISED_REPRESENTATIVE",
+   "label_ko": "수권대리인·등록 대행자",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "authorised representative",
+    "authorized representative",
+    "representative",
+    "person on behalf of the provider",
+    "the name, address and contact details of that person",
+    "The name, address and contact details of the authorised representative"
+   ]
+  },
+  {
+   "id": "BUSINESS_USE_CONTEXT",
+   "label_ko": "사업적 사용 맥락",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "context of business use",
+    "business value",
+    "business context",
+    "business use"
+   ]
+  },
+  {
+   "id": "CONFORMITY_ASSESSMENT_DECLARATION",
+   "label_ko": "적합성평가절차·선언서 발급 정보",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "conformity assessment procedure",
+    "conformity assessment",
+    "declaration",
+    "place and date of issue",
+    "a description of the conformity assessment procedure performed",
+    "The place and date of issue of the declaration",
+    "the name and function of the person who signed it"
+   ]
+  },
+  {
+   "id": "CONFORMITY_MARKING",
+   "label_ko": "적합성 표시 (CE 마킹)",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "CE marking",
+    "CE mark",
+    "affix the CE marking",
+    "affix the CE marking to the high-risk AI system",
+    "a digital CE marking shall be used"
+   ]
+  },
+  {
+   "id": "CONTENT_INTERACTION_DISCLOSURE",
+   "label_ko": "콘텐츠·상호작용 표시",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "artificially generated or manipulated",
+    "machine-readable format",
+    "interacting with an AI system",
+    "informed that they are interacting",
+    "deep fake",
+    "watermark",
+    "designed and developed in such a way that the natural persons concerned are informed that they are interacting with an AI system",
+    "marked in a machine-readable format and detectable as artificially generated or manipulated"
+   ]
+  },
+  {
+   "id": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+   "label_ko": "배포 형태·버전 갱신 요건",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "methods of distribution",
+    "forms in which the AI system is placed on the market",
+    "version updates",
+    "software updates",
+    "distribution",
+    "any requirements related to version updates",
+    "the description of all the forms in which the AI system is placed on the market or put into service"
+   ]
+  },
+  {
+   "id": "EXPECTED_DEPLOYMENT_ENVIRONMENT",
+   "label_ko": "배포 예상 환경",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "settings in which the AI system will be deployed",
+    "deployment environment",
+    "deployment setting",
+    "operating environment",
+    "context of use",
+    "prospective settings in which the AI system will be deployed"
+   ]
+  },
+  {
+   "id": "EXPECTED_LIFETIME_MAINTENANCE",
+   "label_ko": "예상 수명·유지관리 주기",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "expected lifetime",
+    "maintenance and care measures",
+    "maintenance",
+    "lifecycle",
+    "life cycle",
+    "the expected lifetime of the high-risk AI system and any necessary maintenance and care measures, including their frequency"
+   ]
+  },
+  {
+   "id": "GO_NO_GO_DECISION",
+   "label_ko": "개발·배포 게이트 판정",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "development or deployment should proceed",
+    "go/no-go",
+    "decision to deploy",
+    "whether to proceed",
+    "whether its development or deployment should proceed"
+   ]
+  },
+  {
+   "id": "HIGH_RISK_CLASSIFICATION_RATIONALE",
+   "label_ko": "고위험 분류 판정 근거",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "considered to be not-high-risk",
+    "not high-risk",
+    "conditions under Article 6(3)",
+    "grounds on which the AI system is considered",
+    "The condition or conditions under Article 6(3)"
+   ]
+  },
+  {
+   "id": "HUMAN_OVERSIGHT_MEASURES",
+   "label_ko": "인적 감독 수단",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "human oversight",
+    "human oversight measures",
+    "overseen by natural persons",
+    "overseen by humans",
+    "intervene in the operation",
+    "interrupt the system",
+    "override or reverse the output",
+    "human-machine interface",
+    "user-interface provided to the deployer",
+    "a basic description of the user-interface provided to the deployer",
+    "assessment of the human oversight measures needed",
+    "the human oversight measures needed in accordance with Article 14",
+    "the human oversight measures referred to in Article 14",
+    "designed and developed in such a way, including with appropriate human-machine interface tools",
+    "measures identified and built, when technically feasible, into the high-risk AI system by the provider",
+    "measures identified by the provider before placing the high-risk AI system on the market or putting it into service and that are appropriate to be implemented by the deployer",
+    "disregard, override or reverse the output of the high-risk AI system",
+    "to intervene in the operation of the high-risk AI system or interrupt the system",
+    "at least two natural persons",
+    "how system output may be utilized and overseen by humans"
+   ]
+  },
+  {
+   "id": "LOGGING_MECHANISM",
+   "label_ko": "로깅 메커니즘",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "logging",
+    "logging capabilities",
+    "recording of events",
+    "event logs",
+    "record keeping",
+    "automatic recording",
+    "the automatic recording of events (logs)",
+    "recording of the period of each use of the system",
+    "a description of the mechanisms included within the high-risk AI system that allows deployers to properly collect, store and interpret the logs"
+   ]
+  },
+  {
+   "id": "MARKET_STATUS_REGIONS",
+   "label_ko": "시장 유통 상태·배포 지역",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "status of the AI system",
+    "Member States",
+    "on the market",
+    "made available in the Union",
+    "recalled",
+    "placed on the market",
+    "Any Member States in which the AI system has been placed on the market, put into service or made available in the Union",
+    "The status of the AI system"
+   ]
+  },
+  {
+   "id": "OPERATIONAL_KPI",
+   "label_ko": "운영 성과 KPI",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "safety metrics",
+    "key performance indicators",
+    "operational metrics",
+    "response times",
+    "real-time monitoring",
+    "Safety metrics reflect system reliability and robustness, real-time monitoring, and response times for AI system failures"
+   ]
+  },
+  {
+   "id": "PERFORMANCE_CHANGE",
+   "label_ko": "성능 변화량",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "performance improvements or declines",
+    "performance change",
+    "performance degradation",
+    "drift",
+    "Measurable performance improvements or declines"
+   ]
+  },
+  {
+   "id": "POTENTIAL_BENEFITS_COSTS",
+   "label_ko": "잠재적 이점·비용",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "potential benefits",
+    "potential costs",
+    "non-monetary costs",
+    "costs and benefits",
+    "Potential benefits of intended AI system functionality and performance"
+   ]
+  },
+  {
+   "id": "PREDETERMINED_CHANGES",
+   "label_ko": "사전 명세된 변경사항",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "pre-determined changes",
+    "predetermined changes",
+    "changes to the high-risk AI system and its performance which have been pre-determined",
+    "planned changes",
+    "a detailed description of pre-determined changes to the AI system and its performance",
+    "the changes to the high-risk AI system and its performance which have been pre-determined by the provider at the moment of the initial conformity assessment"
+   ]
+  },
+  {
+   "id": "RESIDUAL_RISK_ACCEPTANCE",
+   "label_ko": "잔여위험 수용 판정",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "residual risk",
+    "residual risks",
+    "residual negative risk",
+    "judged to be acceptable",
+    "risk tolerance",
+    "acceptable risk",
+    "its residual negative risk does not exceed the risk tolerance"
+   ]
+  },
+  {
+   "id": "RESILIENCE_FAILSAFE_MEASURES",
+   "label_ko": "회복력·안전장애 방안",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "resilient",
+    "resilience",
+    "fail-safe",
+    "backup or fail-safe plans",
+    "feedback loops",
+    "fail safely",
+    "shall be resilient against attempts by unauthorised third parties"
+   ]
+  },
+  {
+   "id": "SOCIETAL_ENVIRONMENTAL_IMPACT",
+   "label_ko": "시스템의 사회·환경 영향",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "societal impacts",
+    "impacts of system uses to individuals, communities, organizations, society, and the planet",
+    "social impact",
+    "environmental impact",
+    "impact on society",
+    "potential positive and negative impacts of system uses to individuals, communities, organizations, society, and the planet"
+   ]
+  },
+  {
+   "id": "SYSTEM_DEV_TEST_COMPUTE",
+   "label_ko": "시스템 개발·시험 연산자원",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "computational resources used to develop, train, test and validate",
+    "resources used to develop",
+    "development and testing resources",
+    "the computational resources used to develop, train, test and validate the AI system"
+   ]
+  },
+  {
+   "id": "TASK_IMPLEMENTATION_FAMILY",
+   "label_ko": "과업 구현 계열",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "methods used to implement the tasks",
+    "classifiers, generative models, recommenders",
+    "implementation approach",
+    "model family"
+   ]
+  },
+  {
+   "id": "TEST_LOG_REPORT_REF",
+   "label_ko": "시험 로그·보고서 참조",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "test logs",
+    "test reports",
+    "test logs and all test reports",
+    "test results",
+    "testing records"
+   ]
+  },
+  {
+   "id": "THIRD_PARTY_SUPPORT_SCOPE",
+   "label_ko": "제3자에게 받기로 한 지원 범위",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "third party",
+    "necessary information, capabilities, technical access and other assistance",
+    "assistance",
+    "third-party resources",
+    "written agreement",
+    "the necessary information, capabilities, technical access and other assistance"
+   ]
+  },
+  {
+   "id": "TRUSTWORTHINESS_COMPOSITE_MEASURE",
+   "label_ko": "신뢰성 종합 측정",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "trustworthiness",
+    "trustworthy",
+    "measurement results regarding AI system trustworthiness",
+    "trustworthiness characteristics"
+   ]
+  },
+  {
+   "id": "UNMEASURED_RISKS",
+   "label_ko": "측정하지 못한 위험 목록",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "cannot – be measured",
+    "will not – or cannot – be measured",
+    "unmeasured risks",
+    "risks that cannot be measured",
+    "not measured",
+    "The risks or trustworthiness characteristics that will not – or cannot – be measured"
+   ]
+  },
+  {
+   "id": "USER_EXPECTATIONS",
+   "label_ko": "사용자의 기대",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "expectations",
+    "their expectations",
+    "user expectations",
+    "expectations of users"
+   ]
+  },
+  {
+   "id": "USE_RISK_ASSUMPTIONS",
+   "label_ko": "용도·위험의 가정",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "assumptions and related limitations",
+    "assumptions about AI system purposes, uses, and risks",
+    "assumptions about use",
+    "assumptions and related limitations about AI system purposes, uses, and risks"
+   ]
+  },
+  {
+   "id": "VERIFICATION_METHODOLOGY",
+   "label_ko": "검증 방법론",
+   "aliases": [],
+   "gap": true,
+   "synonyms": [
+    "experimental design",
+    "construct validation",
+    "verification methodology",
+    "validation methodology",
+    "verification and validation",
+    "test methodology"
+   ]
+  }
+ ]
 }

@@ -277,7 +277,7 @@
     "highlight_en": "the methods and steps performed for the development of the AI system | the validation and testing procedures used"
    },
    {
-    "concept": "SYSTEM_DESIGN_CHOICES",
+    "concept": "DESIGN_CHOICES",
     "label": "시스템 설계 선택·절충",
     "clause": "(b)",
     "gap_highlight": "그 근거와 가정을 포함한 주요 설계상의 선택 | 주요 분류 선택 | 시스템이 최적화하도록 설계된 대상",
@@ -331,7 +331,7 @@
     "gap_highlight_en": "cybersecurity measures put in place"
    },
    {
-    "concept": "SYSTEM_DESIGN_CHOICES",
+    "concept": "DESIGN_CHOICES",
     "label": "시스템 설계 선택·절충",
     "clause": "(b)",
     "gap_highlight": "채택된 기술적 해결책에 관하여 이루어진 발생 가능한 절충에 대한 결정",
@@ -2527,7 +2527,7 @@
     "highlight_en": "training time"
    },
    {
-    "concept": "MODEL_PARAMETERS_DESIGN_CHOICES",
+    "concept": "DESIGN_CHOICES",
     "label": "모델 설계 선택",
     "clause": "(b)",
     "highlight": "그 근거와 가정을 포함한 주요 설계상의 선택",
@@ -3027,7 +3027,7 @@
     "highlight_en": "suitability"
    },
    {
-    "concept": "COMPONENT_DATA_DESIGN_CHOICES",
+    "concept": "DESIGN_CHOICES",
     "label": "데이터 설계 선택",
     "clause": "(a)",
     "highlight": "관련 설계상의 선택",
@@ -3045,7 +3045,7 @@
     "highlight_en": "appropriate measures to detect, prevent and mitigate possible biases"
    },
    {
-    "concept": "KNOWN_GAPS_NAME",
+    "concept": "KNOWN_GAPS",
     "label": "데이터 공백·결함",
     "clause": "(h)",
     "highlight": "데이터 공백 또는 결함의 식별",
