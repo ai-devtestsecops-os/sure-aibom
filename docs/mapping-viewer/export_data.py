@@ -96,21 +96,24 @@ def public_card(card):
 def cards():
     """ai-bom/cards 의 카드·어휘·프로파일을 복사하고, 추출기 비교와 예제 BOM 판정 기록을 만든다."""
     sys.path.insert(0, CARDS); sys.path.insert(0, os.path.join(CARDS, "extract")); sys.path.insert(0, os.path.join(CARDS, "judge"))
-    from lexicon import build_lexicon, card_text, load_cards, load_vocab
-    from extract import extract
-    from build_cards import ABBR_TO_NAME
+    from common import ABBR_TO_NAME, load_cards, load_gold, load_vocab
+    from lexicon import build_lexicon, card_text
+    from extract import extract, gold_phrases
     import judge as J
     out = os.path.join(OUT, "cards"); os.makedirs(os.path.join(out, "judgments"), exist_ok=True)
-    gold, vocab = load_cards(), load_vocab()
+    approved, gold, vocab = load_cards(), load_gold(), load_vocab()
+    shown = approved or gold          # 승인된 카드가 생기면 그것을, 아직 없으면 정답 카드를 보여 준다
     iso = {c["card_id"] for c in gold if c["regulation"]["title"].startswith("ISO/IEC")}
     with open(os.path.join(out, "cards.json"), "w", encoding="utf-8") as fh:
-        json.dump([public_card(c) for c in gold], fh, ensure_ascii=False, indent=1)
+        json.dump([public_card(c) for c in shown], fh, ensure_ascii=False, indent=1)
+    with open(os.path.join(out, "source.json"), "w", encoding="utf-8") as fh:
+        json.dump({"cards": "approved" if approved else "gold", "count": len(shown)}, fh)
     shutil.copy(os.path.join(CARDS, "vocabulary.json"), os.path.join(out, "vocabulary.json"))
     shutil.copy(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"), os.path.join(out, "profile.json"))
     # 추출기 비교: 카드마다 자기 용어를 뺀 용어집으로 영어 원문을 추출해 정답과 맞춘다
     comparison = []
     for c in gold:
-        lexicon = build_lexicon(gold, vocab, {c["card_id"]})
+        lexicon = build_lexicon(approved, vocab, {c["card_id"]}, gold_phrases(c), corpus_extra=gold)
         pred, explain = extract(ABBR_TO_NAME[c["card_id"].split("-")[1]], c["source"]["clause_id"], card_text(c), lexicon, vocab)
         gold_concepts = {f["concept"]: f for f in c["facts"]}
         pred_facts = [f for f in pred["facts"] if f["concept"] != "UNRESOLVED"]
@@ -141,7 +144,7 @@ def cards():
                 continue
             with open(path, encoding="utf-8") as fh:
                 bom = json.load(fh)
-            record = J.judge(bom, gold, profile, {})
+            record = J.judge(bom, shown, profile, {})
             fname = name.replace(".cdx.json", ".json")
             with open(os.path.join(out, "judgments", fname), "w", encoding="utf-8") as fh:
                 json.dump(record, fh, ensure_ascii=False, indent=1)

@@ -1,6 +1,6 @@
 {
- "engine_version": "0.2.0",
- "run_at": "2026-10-23T05:26:16Z",
+ "engine_version": "0.3.0",
+ "run_at": "2026-10-23T05:35:27Z",
  "bom": {
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
@@ -11,7 +11,7 @@
  "profile": {
   "profile_id": "MP-aibom-cyclonedx",
   "profile_version": 1,
-  "status": "draft",
+  "status": "approved",
   "schema": {
    "name": "aibom-cyclonedx",
    "version": "1.7+v0.6",

@@ -14,9 +14,14 @@ let cards = [], vocab = {}, profile = {}, extraction = {}, judgIndex = [];
 async function load(name) { const r = await fetch(BASE + name); if (!r.ok) throw new Error(name); return r.json(); }
 
 async function init() {
-  const [c, v, p, e, j] = await Promise.all([load("cards.json"), load("vocabulary.json"), load("profile.json"), load("extraction.json"), load("judgments/index.json")]);
+  const [c, v, p, e, j, src] = await Promise.all([load("cards.json"), load("vocabulary.json"), load("profile.json"), load("extraction.json"), load("judgments/index.json"), load("source.json").catch(() => ({}))]);
   cards = c; vocab = Object.fromEntries(v.concepts.map((x) => [x.id, x])); judgIndex = j;
-  for (const line of p.lines) ((profile[line.card_id] ||= {})[line.concept] ||= []).push(line);
+  if (src.cards === "gold") { const n = document.createElement("p"); n.className = "cv-note"; n.textContent = "지금 보이는 카드는 요구사항 표에서 변환한 정답 카드(cards/gold)다. 추출기 초안을 승인한 카드가 생기면 그것으로 바뀐다."; root.querySelector(".cv-tabs").after(n); }
+  for (const line of p.lines) {                       // 개념별 줄: concept → {cdx: [...], spdx: [...]}
+    const e = (profile[line.concept] ||= {cdx: [], spdx: []});
+    for (const x of [line.cdx_path, ...(line.cdx_paths_more || [])]) if (x && !e.cdx.includes(x)) e.cdx.push(x);
+    for (const x of [line.spdx_path, ...(line.spdx_paths_more || [])]) if (x && !e.spdx.includes(x)) e.spdx.push(x);
+  }
   extraction = Object.fromEntries(e.map((x) => [x.card_id, x]));
   root.querySelectorAll(".cv-tab").forEach((b) => b.addEventListener("click", () => {
     root.querySelectorAll(".cv-tab").forEach((t) => t.classList.toggle("active", t === b));
@@ -77,9 +82,7 @@ function focusFact(detail, idx) {
   const m = detail.querySelector(`mark[data-idx="${idx}"]`); if (m) m.scrollIntoView({block: "nearest"});
 }
 function pathCell(cardId, concept) {
-  const lines = (profile[cardId] || {})[concept] || [];
-  const cdx = [...new Set(lines.map((l) => l.cdx_path).filter(Boolean))];
-  const spdx = [...new Set(lines.map((l) => l.spdx_path).filter(Boolean))];
+  const {cdx = [], spdx = []} = profile[concept] || {};
   if (!cdx.length && !spdx.length) return `<span class="cv-chip gap">자리 없음</span>`;
   return [...cdx.map((p) => `<span class="cv-path">${esc(p)}</span>`), ...spdx.map((p) => `<span class="cv-path cv-muted">${esc(p)}</span>`)].join(" ");
 }
@@ -229,9 +232,7 @@ function judgeBom(bom, name) {
     return [];
   };
   // 조건식 변수(개념 id): 그 개념의 프로파일 경로(어느 카드든)에 BOM 값이 있으면 참
-  const conceptPaths = {};
-  for (const byConcept of Object.values(profile)) for (const [k, lines] of Object.entries(byConcept)) for (const l of lines) if (l.cdx_path) (conceptPaths[k] ||= new Set()).add(l.cdx_path);
-  const presentInBom = (k) => [...(conceptPaths[k] || [])].some((p) => resolve(p).length);
+  const presentInBom = (k) => (profile[k]?.cdx || []).some((p) => resolve(p).length);
   const logic = (expr) => {
     if (expr === null || typeof expr !== "object" || Array.isArray(expr)) return expr;
     const [op, raw] = Object.entries(expr)[0]; const args = Array.isArray(raw) ? raw : [raw];
@@ -252,16 +253,16 @@ function judgeBom(bom, name) {
       else conditions[cond.id] = {text: cond.text, result: null};
     }
     const facts = c.facts.map((f) => {
-      const lines = ((profile[c.card_id] || {})[f.concept] || []).filter((l) => l.cdx_path);
+      const paths = profile[f.concept]?.cdx || [];
       const entry = {concept: f.concept, label: label(f.concept), required: f.required};
       if (f.required === "conditional") {
         const cond = conditions[f.condition] || {};
         entry.condition = f.condition; entry.condition_evaluated = cond.result !== null && cond.result !== undefined;
-        if (cond.result === false) return {...entry, status: "not_required", paths: lines.map((l) => l.cdx_path), reason: `조건 ${f.condition} 이 거짓이라 요구되지 않음: ${cond.text}`};
+        if (cond.result === false) return {...entry, status: "not_required", paths, reason: `조건 ${f.condition} 이 거짓이라 요구되지 않음: ${cond.text}`};
       }
-      if (!lines.length) return {...entry, status: "gap", paths: [], reason: "프로파일에 경로 없음 (스키마에 자리 없음)"};
-      const found = {}; for (const l of lines) { const refs = resolve(l.cdx_path); if (refs.length) found[l.cdx_path] = refs.slice(0, 5); }
-      return {...entry, status: Object.keys(found).length ? "present" : "missing", paths: lines.map((l) => l.cdx_path), found_at: found};
+      if (!paths.length) return {...entry, status: "gap", paths: [], reason: "프로파일에 경로 없음 (스키마에 자리 없음)"};
+      const found = {}; for (const p of paths) { const refs = resolve(p); if (refs.length) found[p] = refs.slice(0, 5); }
+      return {...entry, status: Object.keys(found).length ? "present" : "missing", paths, found_at: found};
     });
     const checkable = facts.filter((f) => f.status !== "gap" && f.status !== "not_required"), present = checkable.filter((f) => f.status === "present");
     const verdict = !checkable.length ? "검토 필요" : present.length === checkable.length ? "반영" : present.length ? "부분 반영" : "미반영";

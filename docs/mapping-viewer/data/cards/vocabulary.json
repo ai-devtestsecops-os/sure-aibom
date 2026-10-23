@@ -1,5 +1,5 @@
 {
-  "_comment": "통제 어휘. 카드의 fact 와 프로파일 줄이 가리키는 개념 id 의 사전이다. 사람이 관리한다 (생성물이 아니다). 항목: id (대문자 스네이크, 규제·스키마와 무관한 이름표), label_ko (표시 이름), aliases (같은 뜻의 다른 표시 이름), gap (CycloneDX·SPDX 모두 자리가 없는 개념이면 true), synonyms (영어 원문에서 이 개념을 부르는 말. 추출기 용어집과 매핑 후보 생성기가 쓴다). 새 개념은 여기 한 항목을 더한다. build_cards.py 는 표의 개념이 여기 없으면 멈춘다. 처음 125개는 요구사항 표에서 만들고 (id 는 필드 경로 끝 이름, 격차 개념은 손으로 지음) 동의어를 Claude 가 적었다 (2026-10-22).",
+  "_comment": "통제 어휘. 카드의 fact 와 프로파일 줄이 가리키는 개념 id 의 사전이다. 사람이 관리한다 (생성물이 아니다). 항목: id (대문자 스네이크, 규제·스키마와 무관한 이름표), label_ko (표시 이름), aliases (같은 뜻의 다른 표시 이름), gap (CycloneDX·SPDX 모두 자리가 없는 개념이면 true), synonyms (영어 원문에서 이 개념을 부르는 말. 추출기 용어집과 매핑 후보 생성기가 쓴다). 새 개념은 여기 한 항목을 더한다. build_cards.py 는 표의 개념이 여기 없으면 멈춘다. 처음 125개는 요구사항 표에서 만들고 (id 는 필드 경로 끝 이름, 격차 개념은 손으로 지음) 동의어는 Claude 가 적은 것과 요구사항 표에서 사람이 표시한 영어 원문 구절(ISO 제외)을 합친 것이다 (2026-10-23).",
   "version": 1,
   "concepts": [
     {
@@ -12,7 +12,8 @@
         "adversarial attack",
         "red teaming",
         "adversarial examples",
-        "attacker model"
+        "attacker model",
+        "adversarial testing of the model"
       ]
     },
     {
@@ -26,7 +27,8 @@
         "pseudonymisation",
         "pseudonymization",
         "de-identification",
-        "privacy-preserving measures"
+        "privacy-preserving measures",
+        "state-of-the-art security and privacy-preserving measures, including pseudonymisation"
       ]
     },
     {
@@ -38,7 +40,10 @@
         "architecture",
         "model architecture",
         "operating logic",
-        "general logic of the AI system"
+        "general logic of the AI system",
+        "the general logic of the AI system and of the algorithms",
+        "its operating logic",
+        "the architecture"
       ]
     },
     {
@@ -61,7 +66,10 @@
         "declaration of conformity",
         "EU declaration of conformity",
         "attestation",
-        "self-declaration"
+        "self-declaration",
+        "A copy of the EU declaration of conformity",
+        "draw up an EU declaration of conformity",
+        "draw up a written machine readable, physical or electronically signed EU declaration of conformity"
       ]
     },
     {
@@ -84,7 +92,8 @@
         "benefits",
         "potential impacts",
         "positive impacts",
-        "fairness"
+        "fairness",
+        "Fairness and bias"
       ]
     },
     {
@@ -96,7 +105,11 @@
         "certificate",
         "certificate issued",
         "notified body",
-        "certification"
+        "certification",
+        "the name and identification number of the notified body",
+        "identification of the certificate issued",
+        "A scanned copy of the certificate",
+        "the identification number of the notified body"
       ]
     },
     {
@@ -116,7 +129,12 @@
         "obtained and selected",
         "data sources",
         "source of data",
-        "collection and selection"
+        "collection and selection",
+        "how the data was obtained and selected",
+        "the type and provenance of data",
+        "the type and provenance of data and curation methodologies",
+        "data collection processes and the origin of data",
+        "data collection and selection"
       ]
     },
     {
@@ -130,7 +148,9 @@
         "relevant resources",
         "computing resources",
         "infrastructure, tools",
-        "versions of relevant software"
+        "versions of relevant software",
+        "the versions of relevant software or firmware",
+        "the versions of relevant software related to the use of the general-purpose AI model"
       ]
     },
     {
@@ -142,7 +162,9 @@
         "identification of the system",
         "unambiguous reference",
         "identification and traceability",
-        "identifier"
+        "identifier",
+        "other information necessary for the identification of the system",
+        "any additional unambiguous reference allowing the identification and traceability of the AI system"
       ]
     },
     {
@@ -166,7 +188,8 @@
       "synonyms": [
         "relevant design choices",
         "design of the data",
-        "data design choices"
+        "data design choices",
+        "the relevant design choices"
       ]
     },
     {
@@ -178,7 +201,9 @@
         "general description",
         "brief description",
         "description of the AI system",
-        "components and functions supported"
+        "components and functions supported",
+        "A brief description of the AI system",
+        "the components and functions supported through this AI system"
       ]
     },
     {
@@ -191,7 +216,10 @@
         "license",
         "acceptable use policies",
         "terms of use",
-        "licensing"
+        "licensing",
+        "the acceptable use policies applicable",
+        "the licence",
+        "the licence for the model"
       ]
     },
     {
@@ -204,7 +232,9 @@
         "trade name",
         "system name",
         "model name",
-        "product name"
+        "product name",
+        "AI system name and type",
+        "The AI system trade name"
       ]
     },
     {
@@ -231,7 +261,15 @@
         "registered trade name",
         "supplier",
         "manufacturer",
-        "provided by third parties"
+        "provided by third parties",
+        "the name of the provider",
+        "The name and address of the provider",
+        "The name, address and contact details of the provider",
+        "the identity and the contact details of the provider and, where applicable, of its authorised representative",
+        "their name",
+        "registered trade name or registered trade mark",
+        "the address at which they can be contacted",
+        "their name, registered trade name or registered trade mark, and the address at which they can be contacted"
       ]
     },
     {
@@ -254,7 +292,8 @@
         "version",
         "version of the system",
         "versions",
-        "release"
+        "release",
+        "the version of the system"
       ]
     },
     {
@@ -269,7 +308,10 @@
         "validation and testing data",
         "training, validation and testing data sets",
         "content used for training",
-        "information used by the system"
+        "information used by the system",
+        "the training data sets used",
+        "the information used by the system (data, inputs)",
+        "a sufficiently detailed summary about the content used for training of the general-purpose AI model"
       ]
     },
     {
@@ -296,7 +338,19 @@
         "demonstrated",
         "conformity",
         "claims",
-        "relevant"
+        "relevant",
+        "A description of the appropriateness of the performance metrics",
+        "input data is relevant",
+        "duly justify that they have adopted technical solutions that meet the requirements",
+        "shall demonstrate alternative adequate means of compliance",
+        "whether the AI system achieves its intended purposes and stated objectives",
+        "system trustworthiness",
+        "AI system performance",
+        "assurance criteria",
+        "demonstrated to be valid and reliable",
+        "demonstrated to be safe",
+        "it can fail safely",
+        "validated"
       ]
     },
     {
@@ -320,7 +374,9 @@
         "system architecture",
         "integrate into the overall processing",
         "build on or feed into each other",
-        "interaction between components"
+        "interaction between components",
+        "the description of the system architecture explaining how software components build on or feed into each other and integrate into the overall processing",
+        "the system architecture explaining how software components build or feed into each other and integrate into the overall processing"
       ]
     },
     {
@@ -335,7 +391,13 @@
         "documentation",
         "user documentation",
         "manual",
-        "necessary information to users"
+        "necessary information to users",
+        "instructions for use for the deployer",
+        "Electronic instructions for use",
+        "The technical documentation of a high-risk AI system",
+        "a single set of technical documentation",
+        "draw up and keep up-to-date the technical documentation of the model",
+        "documented"
       ]
     },
     {
@@ -348,7 +410,9 @@
         "energy use",
         "environmental impact",
         "carbon footprint",
-        "sustainability"
+        "sustainability",
+        "energy consumption of the model",
+        "Environmental impact and sustainability"
       ]
     },
     {
@@ -362,7 +426,10 @@
         "mitigate",
         "elimination or reduction of risks",
         "mitigation and control measures",
-        "risk mitigation"
+        "risk mitigation",
+        "assess and mitigate possible systemic risks",
+        "the adoption of appropriate and targeted risk management measures",
+        "implementation of adequate mitigation and control measures"
       ]
     },
     {
@@ -377,7 +444,11 @@
         "systemic risks",
         "risks to health and safety",
         "identification and analysis of the known",
-        "potential risks"
+        "potential risks",
+        "the foreseeable unintended outcomes and sources of risks to health and safety, fundamental rights and discrimination",
+        "any known or foreseeable circumstance, related to the use of the high-risk AI system in accordance with its intended purpose or under conditions of reasonably foreseeable misuse, which may lead to risks to the health and safety or fundamental rights",
+        "assess and mitigate possible systemic risks at Union level, including their sources",
+        "the identification and analysis of the known and the reasonably foreseeable risks"
       ]
     },
     {
@@ -392,7 +463,12 @@
         "explain its output",
         "transparent",
         "explained",
-        "interpretability"
+        "interpretability",
+        "the technical measures put in place to facilitate the interpretation of the outputs of AI systems",
+        "sufficiently transparent",
+        "the technical capabilities and characteristics of the high-risk AI system to provide information that is relevant to explain its output",
+        "information to enable deployers to interpret the output of the high-risk AI system and use it appropriately",
+        "to correctly interpret the high-risk AI system’s output"
       ]
     },
     {
@@ -404,7 +480,8 @@
         "development process",
         "process for its development",
         "training process",
-        "conditions similar to deployment"
+        "conditions similar to deployment",
+        "conditions similar to deployment setting(s)"
       ]
     },
     {
@@ -440,7 +517,8 @@
         "persons or groups of persons",
         "affected groups",
         "persons under the age of 18",
-        "specific persons or groups"
+        "specific persons or groups",
+        "other vulnerable groups"
       ]
     },
     {
@@ -453,7 +531,8 @@
         "harms",
         "adverse impact",
         "negative impact",
-        "negative impacts"
+        "negative impacts",
+        "likely to have an adverse impact"
       ]
     },
     {
@@ -465,7 +544,8 @@
         "hyperparameters",
         "parameters",
         "relevance of the different parameters",
-        "learning rate"
+        "learning rate",
+        "the relevance of the different parameters"
       ]
     },
     {
@@ -478,7 +558,9 @@
         "inputs",
         "specifications for the input data",
         "specifications on input data",
-        "format of inputs"
+        "format of inputs",
+        "the modality (e.g. text, image) and format of inputs and outputs",
+        "the modality (e.g. text, image, etc.) and format of the inputs and outputs"
       ]
     },
     {
@@ -490,7 +572,8 @@
         "maximum size",
         "context window",
         "context window length",
-        "maximum input length"
+        "maximum input length",
+        "their maximum size (e.g. context window length, etc.)"
       ]
     },
     {
@@ -502,7 +585,8 @@
         "intended purpose of the data",
         "purpose of the data set",
         "setting within which the high-risk AI system is intended to be used",
-        "geographical, contextual, behavioural or functional setting"
+        "geographical, contextual, behavioural or functional setting",
+        "the characteristics or elements that are particular to the specific geographical, contextual, behavioural or functional setting"
       ]
     },
     {
@@ -515,7 +599,8 @@
         "bias detection",
         "methods to detect",
         "examination in view of possible biases",
-        "detect biases"
+        "detect biases",
+        "methods to detect identifiable biases"
       ]
     },
     {
@@ -528,7 +613,8 @@
         "bias mitigation",
         "prevent and mitigate",
         "bias correction",
-        "correct biases"
+        "correct biases",
+        "appropriate measures to detect, prevent and mitigate possible biases"
       ]
     },
     {
@@ -542,7 +628,8 @@
         "possible biases",
         "representative",
         "sufficiently representative",
-        "discrimination"
+        "discrimination",
+        "examination in view of possible biases"
       ]
     },
     {
@@ -555,7 +642,8 @@
         "shortcomings",
         "complete",
         "completeness",
-        "unsuitability of data"
+        "unsuitability of data",
+        "complete in view of the intended purpose"
       ]
     },
     {
@@ -566,7 +654,8 @@
       "synonyms": [
         "gaps and shortcomings can be addressed",
         "address data gaps",
-        "remedy shortcomings"
+        "remedy shortcomings",
+        "how those gaps and shortcomings can be addressed"
       ]
     },
     {
@@ -577,7 +666,8 @@
       "synonyms": [
         "identification of relevant data gaps",
         "data gaps or shortcomings",
-        "identified gaps"
+        "identified gaps",
+        "the identification of relevant data gaps or shortcomings"
       ]
     },
     {
@@ -588,7 +678,8 @@
       "synonyms": [
         "identification of limitations",
         "identify limitations",
-        "limitation analysis"
+        "limitation analysis",
+        "the methodology on the identification of limitations"
       ]
     },
     {
@@ -600,7 +691,8 @@
         "person submitting information",
         "author",
         "authors",
-        "person who signed"
+        "person who signed",
+        "The name, address and contact details of the person submitting information on behalf of the deployer"
       ]
     },
     {
@@ -611,7 +703,8 @@
       "synonyms": [
         "name, address and contact details of the deployer",
         "issuing organisation",
-        "organisation submitting"
+        "organisation submitting",
+        "The name, address and contact details of the deployer"
       ]
     },
     {
@@ -624,7 +717,9 @@
         "type of data",
         "type and provenance of data",
         "data type",
-        "general description of these data sets"
+        "general description of these data sets",
+        "a general description of these data sets",
+        "the type and provenance of data"
       ]
     },
     {
@@ -648,7 +743,8 @@
         "key design choices",
         "design choices",
         "design specifications of the model",
-        "rationale and assumptions made"
+        "rationale and assumptions made",
+        "the key design choices including the rationale and assumptions made"
       ]
     },
     {
@@ -673,7 +769,8 @@
         "designed to optimise for",
         "optimisation target",
         "optimization target",
-        "objective function"
+        "objective function",
+        "what the model is designed to optimise for"
       ]
     },
     {
@@ -685,7 +782,8 @@
         "original purpose of the data collection",
         "original purpose",
         "purpose of the data collection",
-        "purpose for which the data was collected"
+        "purpose for which the data was collected",
+        "the original purpose of the data collection"
       ]
     },
     {
@@ -698,7 +796,8 @@
         "outputs",
         "expected output",
         "format of outputs",
-        "output quality"
+        "output quality",
+        "the expected output"
       ]
     },
     {
@@ -722,7 +821,8 @@
         "derived from",
         "lineage",
         "pedigree",
-        "modified by the provider"
+        "modified by the provider",
+        "recourse to pre-trained systems or tools provided by third parties"
       ]
     },
     {
@@ -734,7 +834,8 @@
         "changes made",
         "relevant changes",
         "change history",
-        "modifications"
+        "modifications",
+        "relevant changes made by the provider to the system through its lifecycle"
       ]
     },
     {
@@ -757,7 +858,8 @@
         "penetration test",
         "security testing",
         "security",
-        "vulnerability assessment"
+        "vulnerability assessment",
+        "AI system security"
       ]
     },
     {
@@ -769,7 +871,9 @@
         "specific persons or groups of persons",
         "performance regarding specific persons",
         "degrees of accuracy for specific persons",
-        "subgroup performance"
+        "subgroup performance",
+        "the degrees of accuracy for specific persons or groups of persons",
+        "its performance regarding specific persons or groups of persons"
       ]
     },
     {
@@ -785,7 +889,19 @@
         "level of accuracy",
         "levels of accuracy",
         "model evaluation",
-        "measured qualitatively or quantitatively"
+        "measured qualitatively or quantitatively",
+        "output quality of the system",
+        "metrics used to measure accuracy, robustness and compliance",
+        "the degrees of accuracy for specific persons or groups of persons",
+        "the overall expected level of accuracy",
+        "the appropriateness of the performance metrics",
+        "the level of accuracy, including its metrics, robustness and cybersecurity",
+        "The levels of accuracy and the relevant accuracy metrics",
+        "the results of its evaluation",
+        "perform model evaluation in accordance with standardised protocols and tools",
+        "prior defined metrics",
+        "related TEVV and system metrics",
+        "AI system performance"
       ]
     },
     {
@@ -819,7 +935,10 @@
         "curation methodologies",
         "curation",
         "labelling procedures",
-        "enrichment and aggregation"
+        "enrichment and aggregation",
+        "data cleaning methodologies",
+        "the type and provenance of data and curation methodologies",
+        "relevant data-preparation processing operations, such as annotation, labelling, cleaning, updating, enrichment and aggregation"
       ]
     },
     {
@@ -831,7 +950,8 @@
         "privacy risk",
         "data protection impact assessment",
         "privacy impact assessment",
-        "privacy assessment"
+        "privacy assessment",
+        "Privacy risk of the AI system"
       ]
     },
     {
@@ -856,7 +976,8 @@
         "release date",
         "placed on the market",
         "put into service",
-        "date of issue"
+        "date of issue",
+        "the date of release"
       ]
     },
     {
@@ -868,7 +989,8 @@
         "formulation of assumptions",
         "assumptions",
         "supposed to measure and represent",
-        "represent"
+        "represent",
+        "the formulation of assumptions"
       ]
     },
     {
@@ -884,7 +1006,20 @@
         "estimation and evaluation of the risks",
         "fundamental rights impact assessment",
         "risks and potential impacts",
-        "residual risks"
+        "residual risks",
+        "A detailed description of the risk management system",
+        "A short summary of the grounds on which the AI system is considered to be not-high-risk",
+        "A summary of the findings of the fundamental rights impact assessment",
+        "A summary of the data protection impact assessment",
+        "perform an assessment of the impact on fundamental rights",
+        "document its assessment",
+        "the identification and analysis of the known and the reasonably foreseeable risks",
+        "the estimation and evaluation of the risks",
+        "the evaluation of other risks possibly arising",
+        "the risks and potential impacts of the AI technology",
+        "Negative residual risks",
+        "Likelihood and magnitude of each identified impact (both potentially beneficial and harmful)",
+        "Risks associated with transparency and accountability"
       ]
     },
     {
@@ -920,7 +1055,8 @@
         "process special categories of personal data",
         "processing of personal data",
         "use of personal data",
-        "processing of special categories"
+        "processing of special categories",
+        "may exceptionally process special categories of personal data"
       ]
     },
     {
@@ -946,7 +1082,8 @@
         "scope and main characteristics",
         "size of the data set",
         "dataset size",
-        "volume of data"
+        "volume of data",
+        "the number of data points"
       ]
     },
     {
@@ -961,7 +1098,11 @@
         "common specifications",
         "codes of practice",
         "standards applied",
-        "technical specifications"
+        "technical specifications",
+        "A list of the harmonised standards applied",
+        "a list of other relevant standards and technical specifications applied",
+        "any relevant harmonised standards used or any other common specification",
+        "codes of practice within the meaning of Article 56"
       ]
     },
     {
@@ -987,7 +1128,8 @@
         "statistics",
         "distribution",
         "main characteristics",
-        "statistical characteristics"
+        "statistical characteristics",
+        "the appropriate statistical properties"
       ]
     },
     {
@@ -1000,7 +1142,9 @@
         "tasks that the model is intended to perform",
         "specific tasks",
         "intended to perform",
-        "task"
+        "task",
+        "the tasks that the model is intended to perform",
+        "The specific tasks"
       ]
     },
     {
@@ -1012,7 +1156,8 @@
         "tools",
         "evaluation protocols and tools",
         "tools used during",
-        "protocols and tools"
+        "protocols and tools",
+        "the tools used during TEVV"
       ]
     },
     {
@@ -1026,7 +1171,12 @@
         "capabilities and limitations",
         "knowledge limits",
         "known limitations",
-        "limitations of the generalizability"
+        "limitations of the generalizability",
+        "its capabilities and limitations in performance",
+        "limitations of performance",
+        "any known and foreseeable circumstances that may have an impact on that expected level of accuracy, robustness and cybersecurity",
+        "the relevant capacities and limitations of the high-risk AI system",
+        "related limitations"
       ]
     },
     {
@@ -1040,7 +1190,11 @@
         "computational and hardware resources needed",
         "interacts with, or can be used to interact with, hardware or software",
         "system requirements",
-        "runtime requirements"
+        "runtime requirements",
+        "how the AI system interacts with, or can be used to interact with, hardware or software, including with other AI systems",
+        "the description of the hardware on which the AI system is intended to run",
+        "how the model interacts, or can be used to interact, with hardware or software",
+        "the computational and hardware resources needed"
       ]
     },
     {
@@ -1055,7 +1209,9 @@
         "model evasion",
         "adversarial examples",
         "system vulnerabilities",
-        "cybersecurity threats"
+        "cybersecurity threats",
+        "exploiting system vulnerabilities",
+        "adversarial examples or model evasion"
       ]
     },
     {
@@ -1068,7 +1224,8 @@
         "computational resources",
         "number of floating point operations",
         "compute",
-        "computing resources used"
+        "computing resources used",
+        "the computational resources used to train the model"
       ]
     },
     {
@@ -1085,7 +1242,11 @@
         "fine-tuning",
         "alignment",
         "model adaptations",
-        "details related to the training"
+        "details related to the training",
+        "the training methodologies and techniques",
+        "other relevant details related to the training",
+        "model adaptations, including alignment and fine-tuning",
+        "its training and testing process"
       ]
     },
     {
@@ -1122,7 +1283,8 @@
         "intended users",
         "types of users",
         "deployers",
-        "end users"
+        "end users",
+        "the specific set or types of users"
       ]
     },
     {
@@ -1137,7 +1299,12 @@
         "beneficial uses",
         "use cases",
         "application scope",
-        "type and nature of AI systems in which it can be integrated"
+        "type and nature of AI systems in which it can be integrated",
+        "its intended purpose",
+        "the intended purpose of the AI system",
+        "the type and nature of AI systems in which it can be integrated",
+        "potentially beneficial uses",
+        "Targeted application scope"
       ]
     },
     {
@@ -1149,7 +1316,9 @@
         "expiry date",
         "valid until",
         "validity period",
-        "expiration"
+        "expiration",
+        "The type, number and expiry date of the certificate issued by the notified body",
+        "the name or identification number of that notified body"
       ]
     },
     {
@@ -1161,7 +1330,9 @@
         "URL",
         "website",
         "web address",
-        "web page"
+        "web page",
+        "A URL for additional information",
+        "The URL of the entry of the AI system in the EU database"
       ]
     },
     {
@@ -1175,7 +1346,9 @@
         "development steps",
         "testing procedures",
         "workflow",
-        "development procedures"
+        "development procedures",
+        "the methods and steps performed for the development of the AI system",
+        "the validation and testing procedures used"
       ]
     },
     {
@@ -1188,7 +1361,9 @@
         "solutions adopted to meet the requirements",
         "technical solutions that meet the requirements",
         "alternative means",
-        "equivalent"
+        "equivalent",
+        "the solutions adopted to meet the requirements",
+        "technical solutions that meet the requirements referred to in Section 2 of this Chapter"
       ]
     },
     {
@@ -1201,7 +1376,8 @@
         "applicable laws",
         "legal requirements",
         "norms",
-        "regulatory requirements"
+        "regulatory requirements",
+        "contextspecific laws, norms and expectations"
       ]
     },
     {
@@ -1215,7 +1391,12 @@
         "cybersecurity measures",
         "measures to prevent, detect, respond to",
         "cybersecurity protection",
-        "control measures"
+        "control measures",
+        "cybersecurity measures put in place",
+        "measures to prevent, detect, respond to, resolve and control for attacks",
+        "ensure an adequate level of cybersecurity protection",
+        "risk controls are applied and documented",
+        "Internal risk controls for components of the AI system"
       ]
     },
     {
@@ -1227,7 +1408,8 @@
         "assurance criteria",
         "evaluation criteria",
         "assessment results",
-        "criteria are measured"
+        "criteria are measured",
+        "assurance criteria are measured qualitatively or quantitatively"
       ]
     },
     {
@@ -1239,7 +1421,9 @@
         "authorised representative",
         "authorized representative",
         "representative",
-        "person on behalf of the provider"
+        "person on behalf of the provider",
+        "the name, address and contact details of that person",
+        "The name, address and contact details of the authorised representative"
       ]
     },
     {
@@ -1263,7 +1447,10 @@
         "conformity assessment procedure",
         "conformity assessment",
         "declaration",
-        "place and date of issue"
+        "place and date of issue",
+        "a description of the conformity assessment procedure performed",
+        "The place and date of issue of the declaration",
+        "the name and function of the person who signed it"
       ]
     },
     {
@@ -1275,7 +1462,9 @@
         "CE marking",
         "CE mark",
         "marking",
-        "affix the CE marking"
+        "affix the CE marking",
+        "affix the CE marking to the high-risk AI system",
+        "a digital CE marking shall be used"
       ]
     },
     {
@@ -1290,7 +1479,9 @@
         "informed that they are interacting",
         "synthetic",
         "deep fake",
-        "watermark"
+        "watermark",
+        "designed and developed in such a way that the natural persons concerned are informed that they are interacting with an AI system",
+        "marked in a machine-readable format and detectable as artificially generated or manipulated"
       ]
     },
     {
@@ -1303,7 +1494,9 @@
         "forms in which the AI system is placed on the market",
         "version updates",
         "software updates",
-        "distribution"
+        "distribution",
+        "any requirements related to version updates",
+        "the description of all the forms in which the AI system is placed on the market or put into service"
       ]
     },
     {
@@ -1316,7 +1509,8 @@
         "deployment environment",
         "deployment setting",
         "operating environment",
-        "context of use"
+        "context of use",
+        "prospective settings in which the AI system will be deployed"
       ]
     },
     {
@@ -1329,7 +1523,8 @@
         "maintenance and care measures",
         "maintenance",
         "lifecycle",
-        "life cycle"
+        "life cycle",
+        "the expected lifetime of the high-risk AI system and any necessary maintenance and care measures, including their frequency"
       ]
     },
     {
@@ -1341,7 +1536,8 @@
         "development or deployment should proceed",
         "go/no-go",
         "decision to deploy",
-        "whether to proceed"
+        "whether to proceed",
+        "whether its development or deployment should proceed"
       ]
     },
     {
@@ -1354,7 +1550,8 @@
         "not high-risk",
         "classification",
         "conditions under Article 6(3)",
-        "grounds on which the AI system is considered"
+        "grounds on which the AI system is considered",
+        "The condition or conditions under Article 6(3)"
       ]
     },
     {
@@ -1372,7 +1569,18 @@
         "override or reverse the output",
         "human-machine interface",
         "user-interface provided to the deployer",
-        "natural persons"
+        "natural persons",
+        "a basic description of the user-interface provided to the deployer",
+        "assessment of the human oversight measures needed",
+        "the human oversight measures needed in accordance with Article 14",
+        "the human oversight measures referred to in Article 14",
+        "designed and developed in such a way, including with appropriate human-machine interface tools",
+        "measures identified and built, when technically feasible, into the high-risk AI system by the provider",
+        "measures identified by the provider before placing the high-risk AI system on the market or putting it into service and that are appropriate to be implemented by the deployer",
+        "disregard, override or reverse the output of the high-risk AI system",
+        "to intervene in the operation of the high-risk AI system or interrupt the system",
+        "at least two natural persons",
+        "how system output may be utilized and overseen by humans"
       ]
     },
     {
@@ -1387,7 +1595,10 @@
         "recording of events",
         "event logs",
         "record keeping",
-        "automatic recording"
+        "automatic recording",
+        "the automatic recording of events (logs)",
+        "recording of the period of each use of the system",
+        "a description of the mechanisms included within the high-risk AI system that allows deployers to properly collect, store and interpret the logs"
       ]
     },
     {
@@ -1401,7 +1612,9 @@
         "on the market",
         "made available in the Union",
         "recalled",
-        "placed on the market"
+        "placed on the market",
+        "Any Member States in which the AI system has been placed on the market, put into service or made available in the Union",
+        "The status of the AI system"
       ]
     },
     {
@@ -1414,7 +1627,8 @@
         "key performance indicators",
         "operational metrics",
         "response times",
-        "real-time monitoring"
+        "real-time monitoring",
+        "Safety metrics reflect system reliability and robustness, real-time monitoring, and response times for AI system failures"
       ]
     },
     {
@@ -1426,7 +1640,8 @@
         "performance improvements or declines",
         "performance change",
         "performance degradation",
-        "drift"
+        "drift",
+        "Measurable performance improvements or declines"
       ]
     },
     {
@@ -1438,7 +1653,8 @@
         "potential benefits",
         "potential costs",
         "non-monetary costs",
-        "costs and benefits"
+        "costs and benefits",
+        "Potential benefits of intended AI system functionality and performance"
       ]
     },
     {
@@ -1450,7 +1666,9 @@
         "pre-determined changes",
         "predetermined changes",
         "changes to the high-risk AI system and its performance which have been pre-determined",
-        "planned changes"
+        "planned changes",
+        "a detailed description of pre-determined changes to the AI system and its performance",
+        "the changes to the high-risk AI system and its performance which have been pre-determined by the provider at the moment of the initial conformity assessment"
       ]
     },
     {
@@ -1464,7 +1682,8 @@
         "residual negative risk",
         "judged to be acceptable",
         "risk tolerance",
-        "acceptable risk"
+        "acceptable risk",
+        "its residual negative risk does not exceed the risk tolerance"
       ]
     },
     {
@@ -1479,7 +1698,8 @@
         "backup or fail-safe plans",
         "feedback loops",
         "robustness",
-        "fail safely"
+        "fail safely",
+        "shall be resilient against attempts by unauthorised third parties"
       ]
     },
     {
@@ -1492,7 +1712,8 @@
         "impacts of system uses to individuals, communities, organizations, society, and the planet",
         "social impact",
         "environmental impact",
-        "impact on society"
+        "impact on society",
+        "potential positive and negative impacts of system uses to individuals, communities, organizations, society, and the planet"
       ]
     },
     {
@@ -1507,7 +1728,11 @@
         "technical solutions adopted",
         "main classification choices",
         "design choices",
-        "designed to optimise for"
+        "designed to optimise for",
+        "the key design choices including the rationale and assumptions made",
+        "the main classification choices",
+        "what the system is designed to optimise for",
+        "the decisions about any possible trade-off made regarding the technical solutions adopted"
       ]
     },
     {
@@ -1518,7 +1743,8 @@
       "synonyms": [
         "computational resources used to develop, train, test and validate",
         "resources used to develop",
-        "development and testing resources"
+        "development and testing resources",
+        "the computational resources used to develop, train, test and validate the AI system"
       ]
     },
     {
@@ -1556,7 +1782,8 @@
         "necessary information, capabilities, technical access and other assistance",
         "assistance",
         "third-party resources",
-        "written agreement"
+        "written agreement",
+        "the necessary information, capabilities, technical access and other assistance"
       ]
     },
     {
@@ -1581,7 +1808,8 @@
         "will not – or cannot – be measured",
         "unmeasured risks",
         "risks that cannot be measured",
-        "not measured"
+        "not measured",
+        "The risks or trustworthiness characteristics that will not – or cannot – be measured"
       ]
     },
     {
@@ -1605,7 +1833,8 @@
         "assumptions",
         "assumptions and related limitations",
         "assumptions about AI system purposes, uses, and risks",
-        "assumptions about use"
+        "assumptions about use",
+        "assumptions and related limitations about AI system purposes, uses, and risks"
       ]
     },
     {
