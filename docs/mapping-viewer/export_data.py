@@ -130,10 +130,13 @@ def cards():
         json.dump(comparison, fh, ensure_ascii=False, indent=1)
     # 예제 BOM 판정
     index = []
+    profile = J.load_profile(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"))
+    bom_paths = [os.path.join(CARDS, "judge", "examples", "recruit-screening.cdx.json")]       # 특허 실시예를 흉내 낸 작은 BOM
     if os.path.isdir(EXAMPLES):
-        profile = J.load_profile(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"))
-        for name in EXAMPLE_BOMS:
-            path = os.path.join(EXAMPLES, name)
+        bom_paths += [os.path.join(EXAMPLES, n) for n in EXAMPLE_BOMS]
+    if True:
+        for path in bom_paths:
+            name = os.path.basename(path)
             if not os.path.exists(path):
                 continue
             with open(path, encoding="utf-8") as fh:

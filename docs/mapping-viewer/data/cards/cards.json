@@ -3067,9 +3067,10 @@
     "label": "데이터 수집의 원래 목적",
     "clause": "(b)",
     "highlight": "그 수집의 원래 목적",
-    "required": "always",
+    "required": "conditional",
     "value_kind": "value",
-    "highlight_en": "the original purpose of the data collection"
+    "highlight_en": "the original purpose of the data collection",
+    "condition": "C1"
    },
    {
     "concept": "REPRESENTATION_ASSUMPTIONS",
@@ -3081,10 +3082,24 @@
     "highlight_en": "the formulation of assumptions"
    }
   ],
-  "conditions": [],
+  "conditions": [
+   {
+    "id": "C1",
+    "text": "in the case of personal data",
+    "expr": {
+     "==": [
+      {
+       "var": "SENSITIVE_DATA"
+      },
+      true
+     ]
+    }
+   }
+  ],
   "exceptions": [],
   "evidence": [],
-  "notes": "표에서 자동 생성한 초안. 적용대상·의무주체·행위·조건·예외·증빙은 확인 필요."
+  "notes": "표에서 자동 생성한 초안. 조건 C1 과 ORIGINAL_COLLECTION_PURPOSE 의 conditional 은 손으로 넣음 (overrides).",
+  "decision_rule": "always 사실이 모두 있고, C1 이 참일 때 ORIGINAL_COLLECTION_PURPOSE 가 있으면 반영. C1 이 참인데 없으면 부분 반영이고 보완 위치는 componentData.originalCollectionPurpose."
  },
  {
   "card_id": "RC-EUAIA-Article-10-3",

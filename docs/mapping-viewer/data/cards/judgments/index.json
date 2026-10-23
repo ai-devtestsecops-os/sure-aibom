@@ -1,5 +1,16 @@
 [
  {
+  "file": "recruit-screening.json",
+  "subject": "recruit-screening",
+  "summary": {
+   "반영": 13,
+   "부분 반영": 18,
+   "미반영": 69,
+   "비적용": 0,
+   "검토 필요": 32
+  }
+ },
+ {
   "file": "aiapp-demo.v0.6.json",
   "subject": "aiapp:demo",
   "summary": {

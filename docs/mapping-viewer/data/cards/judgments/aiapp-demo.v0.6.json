@@ -1,6 +1,6 @@
 {
- "engine_version": "0.1.0",
- "run_at": "2026-10-23T02:05:48Z",
+ "engine_version": "0.2.0",
+ "run_at": "2026-10-23T05:26:16Z",
  "bom": {
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
@@ -21,7 +21,7 @@
  "system_profile": {},
  "checks": {
   "path_existence": true,
-  "conditions": false,
+  "conditions": "카드에 조건식(expr)이 있는 것만",
   "evidence": false
  },
  "summary": {
@@ -2610,6 +2610,12 @@
    "card_id": "RC-EUAIA-Article-10-2",
    "card_version": 1,
    "title": "Article 10(2): 데이터셋 수집·출처",
+   "conditions": {
+    "C1": {
+     "text": "in the case of personal data",
+     "result": false
+    }
+   },
    "verdict": "부분 반영",
    "facts": [
     {
@@ -2743,12 +2749,14 @@
     {
      "concept": "ORIGINAL_COLLECTION_PURPOSE",
      "label": "데이터 수집의 원래 목적",
-     "required": "always",
-     "status": "missing",
+     "required": "conditional",
+     "condition": "C1",
+     "condition_evaluated": true,
+     "status": "not_required",
      "paths": [
       "componentData.originalCollectionPurpose"
      ],
-     "found_at": {}
+     "reason": "조건 C1 이 거짓이라 요구되지 않음: in the case of personal data"
     },
     {
      "concept": "REPRESENTATION_ASSUMPTIONS",
@@ -2824,14 +2832,6 @@
      "kind": "missing",
      "suggested_paths": [
       "componentData.knownGaps.mitigationStrategy"
-     ]
-    },
-    {
-     "concept": "ORIGINAL_COLLECTION_PURPOSE",
-     "label": "데이터 수집의 원래 목적",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.originalCollectionPurpose"
      ]
     },
     {

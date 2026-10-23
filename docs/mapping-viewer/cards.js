@@ -197,13 +197,14 @@ function renderJudg(r) {
     <h3>${esc(card?.title || r.card_id)} <span class="cv-verdict ${vclass(r.verdict)}">${r.verdict}</span></h3>
     ${r.reason ? `<p class="cv-note">${esc(r.reason)}</p>` : ""}
     <table class="cv-facts"><thead><tr><th>상태</th><th>개념</th><th>BOM 경로</th><th>값이 있는 구성요소</th></tr></thead><tbody>
-    ${(r.facts || []).map((f) => `<tr><td><span class="cv-chip ${f.status}">${{present: "있음", missing: "비어 있음", gap: "자리 없음"}[f.status] || f.status}</span>
-      ${f.condition_evaluated === false ? `<br><span class="cv-muted">조건 미평가</span>` : ""}</td>
+    ${r.conditions ? `<h4>조건</h4><ul>${Object.entries(r.conditions).map(([k, c]) => `<li><code>${esc(k)}</code> ${esc(c.text)} → <b>${c.result === null || c.result === undefined ? "평가 못 함 (조건식 없음)" : c.result ? "참" : "거짓"}</b></li>`).join("")}</ul>` : ""}
+    ${(r.facts || []).map((f) => `<tr><td><span class="cv-chip ${f.status}">${{present: "있음", missing: "비어 있음", gap: "자리 없음", not_required: "요구 안 됨"}[f.status] || f.status}</span>
+      ${f.condition_evaluated === false ? `<br><span class="cv-muted">조건 미평가</span>` : f.condition ? `<br><span class="cv-muted">조건 ${esc(f.condition)}</span>` : ""}</td>
       <td><code>${esc(f.concept)}</code><br>${esc(f.label || label(f.concept))}</td>
       <td>${(f.paths || []).map((p) => `<span class="cv-path">${esc(p)}</span>`).join(" ") || `<span class="cv-muted">${esc(f.reason || "")}</span>`}</td>
       <td>${Object.values(f.found_at || {}).flat().map((x) => `<code>${esc(x)}</code>`).join(" ")}</td></tr>`).join("")}
     </tbody></table>
-    <p class="cv-note">"비어 있음" 의 경로가 보완 위치다. 판정은 경로 존재만 본다. 조건식과 증빙 검사는 아직 없다.</p>`;
+    <p class="cv-note">"비어 있음" 의 경로가 보완 위치다. 조건식(JSON Logic)이 있는 카드는 조건이 거짓이면 그 사실을 "요구 안 됨" 으로 뺀다. 증빙 검사는 아직 없다.</p>`;
 }
 
 // 브라우저 안 판정 (cards/judge/judge.py 와 같은 규칙). 검사 대상은 metadata.component 와 모델·데이터셋 구성요소.
@@ -227,18 +228,44 @@ function judgeBom(bom, name) {
     if (["components", "services", "dependencies", "formulation", "declarations", "definitions", "metadata", "compositions"].includes(rootKey)) return get(bom, [rootKey, ...rest]).length ? ["$"] : [];
     return [];
   };
+  // 조건식 변수(개념 id): 그 개념의 프로파일 경로(어느 카드든)에 BOM 값이 있으면 참
+  const conceptPaths = {};
+  for (const byConcept of Object.values(profile)) for (const [k, lines] of Object.entries(byConcept)) for (const l of lines) if (l.cdx_path) (conceptPaths[k] ||= new Set()).add(l.cdx_path);
+  const presentInBom = (k) => [...(conceptPaths[k] || [])].some((p) => resolve(p).length);
+  const logic = (expr) => {
+    if (expr === null || typeof expr !== "object" || Array.isArray(expr)) return expr;
+    const [op, raw] = Object.entries(expr)[0]; const args = Array.isArray(raw) ? raw : [raw];
+    if (op === "var") return presentInBom(args[0]);
+    const v = args.map(logic);
+    switch (op) {
+      case "==": return v[0] === v[1]; case "!=": return v[0] !== v[1]; case "!": return !v[0];
+      case "and": return v.every(Boolean); case "or": return v.some(Boolean);
+      case "if": return v[0] ? v[1] : v[2]; case "in": return (v[1] || []).includes(v[0]);
+      case ">": return v[0] > v[1]; case "<": return v[0] < v[1]; case ">=": return v[0] >= v[1]; case "<=": return v[0] <= v[1];
+      default: throw new Error("조건식 연산자를 모른다: " + op);
+    }
+  };
   const results = cards.map((c) => {
+    const conditions = {};
+    for (const cond of c.conditions || []) {
+      if (cond.expr) { try { conditions[cond.id] = {text: cond.text, result: !!logic(cond.expr)}; } catch (e) { conditions[cond.id] = {text: cond.text, result: null, error: e.message}; } }
+      else conditions[cond.id] = {text: cond.text, result: null};
+    }
     const facts = c.facts.map((f) => {
       const lines = ((profile[c.card_id] || {})[f.concept] || []).filter((l) => l.cdx_path);
       const entry = {concept: f.concept, label: label(f.concept), required: f.required};
-      if (f.required === "conditional") { entry.condition = f.condition; entry.condition_evaluated = false; }
+      if (f.required === "conditional") {
+        const cond = conditions[f.condition] || {};
+        entry.condition = f.condition; entry.condition_evaluated = cond.result !== null && cond.result !== undefined;
+        if (cond.result === false) return {...entry, status: "not_required", paths: lines.map((l) => l.cdx_path), reason: `조건 ${f.condition} 이 거짓이라 요구되지 않음: ${cond.text}`};
+      }
       if (!lines.length) return {...entry, status: "gap", paths: [], reason: "프로파일에 경로 없음 (스키마에 자리 없음)"};
       const found = {}; for (const l of lines) { const refs = resolve(l.cdx_path); if (refs.length) found[l.cdx_path] = refs.slice(0, 5); }
       return {...entry, status: Object.keys(found).length ? "present" : "missing", paths: lines.map((l) => l.cdx_path), found_at: found};
     });
-    const checkable = facts.filter((f) => f.status !== "gap"), present = checkable.filter((f) => f.status === "present");
+    const checkable = facts.filter((f) => f.status !== "gap" && f.status !== "not_required"), present = checkable.filter((f) => f.status === "present");
     const verdict = !checkable.length ? "검토 필요" : present.length === checkable.length ? "반영" : present.length ? "부분 반영" : "미반영";
-    return {card_id: c.card_id, verdict, facts};
+    return {card_id: c.card_id, verdict, facts, ...(Object.keys(conditions).length ? {conditions} : {})};
   });
   const summary = Object.fromEntries(VERDICTS.map((v) => [v, results.filter((r) => r.verdict === v).length]));
   return {bom: {bomFormat: bom.bomFormat, specVersion: bom.specVersion, serialNumber: bom.serialNumber, subject: bom.metadata?.component?.name || name}, summary, cards: results};
