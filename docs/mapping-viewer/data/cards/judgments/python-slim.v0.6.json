@@ -1,6 +1,6 @@
 {
  "engine_version": "0.3.0",
- "run_at": "2026-10-26T23:17:22Z",
+ "run_at": "2026-10-26T23:30:33Z",
  "bom": {
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
@@ -25,11 +25,11 @@
   "evidence": false
  },
  "summary": {
-  "반영": 3,
-  "부분 반영": 8,
+  "반영": 1,
+  "부분 반영": 11,
   "미반영": 89,
   "비적용": 0,
-  "검토 필요": 32
+  "검토 필요": 31
  },
  "cards": [
   {
@@ -293,6 +293,16 @@
      "found_at": {}
     },
     {
+     "concept": "MODEL_ARCHITECTURE",
+     "label": "구체적 아키텍처",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.modelArchitecture"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "OUTPUTS",
      "label": "출력 형식",
      "required": "always",
@@ -309,6 +319,16 @@
      "status": "missing",
      "paths": [
       "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
      ],
      "found_at": {}
     },
@@ -475,6 +495,14 @@
      ]
     },
     {
+     "concept": "MODEL_ARCHITECTURE",
+     "label": "구체적 아키텍처",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.modelArchitecture"
+     ]
+    },
+    {
      "concept": "OUTPUTS",
      "label": "출력 형식",
      "kind": "missing",
@@ -488,6 +516,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
      ]
     },
     {
@@ -623,6 +659,16 @@
      "found_at": {}
     },
     {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "HUMAN_OVERSIGHT_MEASURES",
      "label": "인적 감독 수단",
      "required": "always",
@@ -681,6 +727,14 @@
      ]
     },
     {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ]
+    },
+    {
      "concept": "HUMAN_OVERSIGHT_MEASURES",
      "label": "인적 감독 수단",
      "kind": "gap",
@@ -705,12 +759,32 @@
      "found_at": {}
     },
     {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "DECLARATIONS_CLAIMS",
      "label": "주장",
      "required": "always",
      "status": "missing",
      "paths": [
       "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
      ],
      "found_at": {}
     }
@@ -725,11 +799,27 @@
      ]
     },
     {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ]
+    },
+    {
      "concept": "DECLARATIONS_CLAIMS",
      "label": "주장",
      "kind": "missing",
      "suggested_paths": [
       "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     }
    ]
@@ -777,6 +867,16 @@
       "component.pedigree.commits"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "PEDIGREE_NOTES",
+     "label": "계보: 메모",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.pedigree.notes"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -786,6 +886,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.pedigree.commits"
+     ]
+    },
+    {
+     "concept": "PEDIGREE_NOTES",
+     "label": "계보: 메모",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.pedigree.notes"
      ]
     }
    ]
@@ -895,6 +1003,16 @@
       "component.modelCard.considerations.useCases"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "COMPONENT_PURL",
+     "label": "purl 식별자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.purl"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -920,6 +1038,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.considerations.useCases"
+     ]
+    },
+    {
+     "concept": "COMPONENT_PURL",
+     "label": "purl 식별자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.purl"
      ]
     }
    ]
@@ -953,6 +1079,30 @@
        "container:/python:3.12-slim@"
       ]
      }
+    },
+    {
+     "concept": "COMPONENT_PURL",
+     "label": "purl 식별자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.purl"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "COMPONENT_TYPE",
+     "label": "구성요소 유형",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.type"
+     ],
+     "found_at": {
+      "component.type": [
+       "container:/python:3.12-slim@"
+      ]
+     }
     }
    ],
    "gaps": [
@@ -962,6 +1112,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.cpe"
+     ]
+    },
+    {
+     "concept": "COMPONENT_PURL",
+     "label": "purl 식별자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.purl"
      ]
     }
    ]
@@ -1301,6 +1459,16 @@
        "container:/python:3.12-slim@"
       ]
      }
+    },
+    {
+     "concept": "COMPONENT_PURL",
+     "label": "purl 식별자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.purl"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -1311,6 +1479,14 @@
      "suggested_paths": [
       "component.cpe"
      ]
+    },
+    {
+     "concept": "COMPONENT_PURL",
+     "label": "purl 식별자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.purl"
+     ]
     }
    ]
   },
@@ -1318,7 +1494,7 @@
    "card_id": "RC-EUAIA-Annex-VIII-A-5",
    "card_version": 1,
    "title": "Annex VIII §A(5): 의도된 용도·사용자",
-   "verdict": "미반영",
+   "verdict": "부분 반영",
    "facts": [
     {
      "concept": "COMPONENT_DESCRIPTION",
@@ -1339,6 +1515,20 @@
       "component.modelCard.considerations.useCases"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "COMPONENTS",
+     "label": "구성요소 목록",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "components"
+     ],
+     "found_at": {
+      "components": [
+       "$"
+      ]
+     }
     }
    ],
    "gaps": [
@@ -1385,6 +1575,26 @@
       "component.modelCard.modelParameters.datasets"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.inputs"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "MODEL_ARCHITECTURE",
+     "label": "구체적 아키텍처",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.modelArchitecture"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -1402,6 +1612,22 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.modelParameters.datasets"
+     ]
+    },
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.inputs"
+     ]
+    },
+    {
+     "concept": "MODEL_ARCHITECTURE",
+     "label": "구체적 아키텍처",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.modelArchitecture"
      ]
     }
    ]
@@ -1434,7 +1660,7 @@
    "card_id": "RC-EUAIA-Annex-VIII-A-8",
    "card_version": 1,
    "title": "Annex VIII §A(8): 적합성 증서·선언서",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "facts": [
     {
      "concept": "VALID_UNTIL_TIME",
@@ -1443,6 +1669,16 @@
      "status": "gap",
      "paths": [],
      "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "CERTIFICATION_REPORT_REF",
+     "label": "외부참조: 인증 보고서",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:certification-report)"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -1451,6 +1687,14 @@
      "label": "인증서 만료일",
      "kind": "gap",
      "suggested_paths": []
+    },
+    {
+     "concept": "CERTIFICATION_REPORT_REF",
+     "label": "외부참조: 인증 보고서",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:certification-report)"
+     ]
     }
    ]
   },
@@ -1587,6 +1831,16 @@
        "container:/python:3.12-slim@"
       ]
      }
+    },
+    {
+     "concept": "COMPONENT_PURL",
+     "label": "purl 식별자",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.purl"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -1596,6 +1850,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.cpe"
+     ]
+    },
+    {
+     "concept": "COMPONENT_PURL",
+     "label": "purl 식별자",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.purl"
      ]
     }
    ]
@@ -1915,6 +2177,26 @@
      "found_at": {}
     },
     {
+     "concept": "MODEL_ARCHITECTURE",
+     "label": "구체적 아키텍처",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.modelArchitecture"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "OUTPUTS",
+     "label": "출력 형식",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.outputs"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "TASK",
      "label": "과업",
      "required": "always",
@@ -1984,6 +2266,22 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.modelParameters.inputs"
+     ]
+    },
+    {
+     "concept": "MODEL_ARCHITECTURE",
+     "label": "구체적 아키텍처",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.modelArchitecture"
+     ]
+    },
+    {
+     "concept": "OUTPUTS",
+     "label": "출력 형식",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.outputs"
      ]
     },
     {
@@ -2313,6 +2611,16 @@
      "found_at": {}
     },
     {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "STANDARDS_REQUIREMENTS",
      "label": "표준 요구사항 정의",
      "required": "always",
@@ -2350,6 +2658,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
      ]
     },
     {
@@ -2494,6 +2810,26 @@
      "found_at": {}
     },
     {
+     "concept": "MODEL_ARCHITECTURE",
+     "label": "구체적 아키텍처",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.modelArchitecture"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "OUTPUTS",
+     "label": "출력 형식",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.outputs"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "TASK",
      "label": "과업",
      "required": "always",
@@ -2580,6 +2916,22 @@
      ]
     },
     {
+     "concept": "MODEL_ARCHITECTURE",
+     "label": "구체적 아키텍처",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.modelArchitecture"
+     ]
+    },
+    {
+     "concept": "OUTPUTS",
+     "label": "출력 형식",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.outputs"
+     ]
+    },
+    {
      "concept": "TASK",
      "label": "과업",
      "kind": "missing",
@@ -2638,6 +2990,16 @@
      "found_at": {}
     },
     {
+     "concept": "MODALITY",
+     "label": "데이터셋 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.modality"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "DOCUMENTATION_REF",
      "label": "외부참조: 문서",
      "required": "always",
@@ -2654,6 +3016,16 @@
      "status": "missing",
      "paths": [
       "component.modelCard.modelParameters.inputs"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "OUTPUTS",
+     "label": "출력 형식",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.outputs"
      ],
      "found_at": {}
     },
@@ -2700,6 +3072,14 @@
      ]
     },
     {
+     "concept": "MODALITY",
+     "label": "데이터셋 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.modality"
+     ]
+    },
+    {
      "concept": "DOCUMENTATION_REF",
      "label": "외부참조: 문서",
      "kind": "missing",
@@ -2713,6 +3093,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.modelParameters.inputs"
+     ]
+    },
+    {
+     "concept": "OUTPUTS",
+     "label": "출력 형식",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.outputs"
      ]
     },
     {
@@ -2804,6 +3192,16 @@
      "status": "missing",
      "paths": [
       "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
      ],
      "found_at": {}
     },
@@ -2930,6 +3328,14 @@
      ]
     },
     {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
+     ]
+    },
+    {
      "concept": "DESIGN_CHOICES",
      "label": "데이터 설계 선택",
      "kind": "missing",
@@ -3010,6 +3416,16 @@
      "found_at": {}
     },
     {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "KNOWN_GAPS",
      "label": "데이터 공백·결함",
      "required": "always",
@@ -3054,6 +3470,14 @@
      "kind": "missing",
      "suggested_paths": [
       "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     },
     {
@@ -3128,6 +3552,16 @@
       "componentData.anonymizationMethods"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "SENSITIVE_DATA",
+     "label": "민감 데이터",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.sensitiveData"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -3145,6 +3579,14 @@
      "kind": "missing",
      "suggested_paths": [
       "componentData.anonymizationMethods"
+     ]
+    },
+    {
+     "concept": "SENSITIVE_DATA",
+     "label": "민감 데이터",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.sensitiveData"
      ]
     }
    ]
@@ -3420,6 +3862,36 @@
      "found_at": {}
     },
     {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "COMPONENT_SUPPLIER",
      "label": "공급자",
      "required": "always",
@@ -3525,6 +3997,30 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
      ]
     },
     {
@@ -3708,6 +4204,16 @@
       "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -3717,6 +4223,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
      ]
     }
    ]
@@ -3938,6 +4452,16 @@
       "declarations.claims"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -3955,6 +4479,14 @@
      "kind": "missing",
      "suggested_paths": [
       "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     }
    ]
@@ -4004,6 +4536,16 @@
      "found_at": {}
     },
     {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
      "label": "표준 대체 준수 수단",
      "required": "always",
@@ -4019,6 +4561,14 @@
      "kind": "missing",
      "suggested_paths": [
       "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     },
     {
@@ -4202,6 +4752,16 @@
       "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -4236,6 +4796,14 @@
      "suggested_paths": [
       "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
      ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ]
     }
    ]
   },
@@ -4252,6 +4820,16 @@
      "status": "missing",
      "paths": [
       "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
      ],
      "found_at": {}
     },
@@ -4281,6 +4859,14 @@
      "kind": "missing",
      "suggested_paths": [
       "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     },
     {
@@ -4346,6 +4932,16 @@
      "found_at": {}
     },
     {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "APPLIED_CONTROLS",
      "label": "적용한 통제",
      "required": "always",
@@ -4388,6 +4984,14 @@
      ]
     },
     {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ]
+    },
+    {
      "concept": "APPLIED_CONTROLS",
      "label": "적용한 통제",
      "kind": "gap",
@@ -4408,6 +5012,16 @@
      "status": "missing",
      "paths": [
       "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
      ],
      "found_at": {}
     },
@@ -4437,6 +5051,14 @@
      "kind": "missing",
      "suggested_paths": [
       "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     },
     {
@@ -4614,6 +5236,16 @@
       "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -4631,6 +5263,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
      ]
     }
    ]
@@ -4685,7 +5325,7 @@
    "card_id": "RC-ISO42001-A.4.2",
    "card_version": 1,
    "title": "A.4.2: 자원 인벤토리(데이터·도구·인프라)",
-   "verdict": "반영",
+   "verdict": "부분 반영",
    "facts": [
     {
      "concept": "COMPONENTS",
@@ -4700,9 +5340,28 @@
        "$"
       ]
      }
+    },
+    {
+     "concept": "SERVICES",
+     "label": "서비스 목록",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "services"
+     ],
+     "found_at": {}
     }
    ],
-   "gaps": []
+   "gaps": [
+    {
+     "concept": "SERVICES",
+     "label": "서비스 목록",
+     "kind": "missing",
+     "suggested_paths": [
+      "services"
+     ]
+    }
+   ]
   },
   {
    "card_id": "RC-ISO42001-A.4.3",
@@ -4747,6 +5406,16 @@
       "formulation.components"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "FORMULATION_SERVICES",
+     "label": "형성: 일시적 서비스",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "formulation.services"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -4757,6 +5426,14 @@
      "suggested_paths": [
       "formulation.components"
      ]
+    },
+    {
+     "concept": "FORMULATION_SERVICES",
+     "label": "형성: 일시적 서비스",
+     "kind": "missing",
+     "suggested_paths": [
+      "formulation.services"
+     ]
     }
    ]
   },
@@ -4764,7 +5441,7 @@
    "card_id": "RC-ISO42001-A.4.5",
    "card_version": 1,
    "title": "A.4.5: 자원 인벤토리(데이터·도구·인프라)",
-   "verdict": "반영",
+   "verdict": "부분 반영",
    "facts": [
     {
      "concept": "COMPONENTS",
@@ -4779,9 +5456,28 @@
        "$"
       ]
      }
+    },
+    {
+     "concept": "SERVICES",
+     "label": "서비스 목록",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "services"
+     ],
+     "found_at": {}
     }
    ],
-   "gaps": []
+   "gaps": [
+    {
+     "concept": "SERVICES",
+     "label": "서비스 목록",
+     "kind": "missing",
+     "suggested_paths": [
+      "services"
+     ]
+    }
+   ]
   },
   {
    "card_id": "RC-ISO42001-A.5.3",
@@ -4826,6 +5522,26 @@
       "component.modelCard.considerations.fairnessAssessments.benefits"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "GROUP_AT_RISK",
+     "label": "위험에 놓인 집단",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "HARMS",
+     "label": "집단에 대한 피해",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.fairnessAssessments.harms"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -4835,6 +5551,22 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.considerations.fairnessAssessments.benefits"
+     ]
+    },
+    {
+     "concept": "GROUP_AT_RISK",
+     "label": "위험에 놓인 집단",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
+     ]
+    },
+    {
+     "concept": "HARMS",
+     "label": "집단에 대한 피해",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.fairnessAssessments.harms"
      ]
     }
    ]
@@ -4940,6 +5672,26 @@
      "found_at": {}
     },
     {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "STANDARDS_REQUIREMENTS",
      "label": "표준 요구사항 정의",
      "required": "always",
@@ -4957,6 +5709,22 @@
      "kind": "missing",
      "suggested_paths": [
       "declarations.attestations.map"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     },
     {
@@ -5066,6 +5834,26 @@
      "found_at": {}
     },
     {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "STANDARDS_REQUIREMENTS",
      "label": "표준 요구사항 정의",
      "required": "always",
@@ -5083,6 +5871,22 @@
      "kind": "missing",
      "suggested_paths": [
       "declarations.attestations.map"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_CLAIMS",
+     "label": "주장",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     },
     {
@@ -5224,6 +6028,16 @@
      "found_at": {}
     },
     {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "GO_NO_GO_DECISION",
      "label": "개발·배포 게이트 판정",
      "required": "always",
@@ -5239,6 +6053,14 @@
      "kind": "missing",
      "suggested_paths": [
       "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     },
     {
@@ -5348,6 +6170,16 @@
      "found_at": {}
     },
     {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "USE_RISK_ASSUMPTIONS",
      "label": "용도·위험의 가정",
      "required": "always",
@@ -5419,6 +6251,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
      ]
     },
     {
@@ -5616,6 +6456,16 @@
      "found_at": {}
     },
     {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "VERIFICATION_METHODOLOGY",
      "label": "검증 방법론",
      "required": "always",
@@ -5639,6 +6489,14 @@
      "kind": "missing",
      "suggested_paths": [
       "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     },
     {
@@ -5828,6 +6686,16 @@
      "found_at": {}
     },
     {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "TASKS_RESOURCE_REFERENCES",
      "label": "형성: 리소스 참조",
      "required": "always",
@@ -5853,6 +6721,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
      ]
     },
     {
@@ -5904,6 +6780,26 @@
       "component.modelCard.considerations.fairnessAssessments.benefits"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "GROUP_AT_RISK",
+     "label": "위험에 놓인 집단",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "HARMS",
+     "label": "집단에 대한 피해",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.fairnessAssessments.harms"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -5913,6 +6809,22 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.considerations.fairnessAssessments.benefits"
+     ]
+    },
+    {
+     "concept": "GROUP_AT_RISK",
+     "label": "위험에 놓인 집단",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
+     ]
+    },
+    {
+     "concept": "HARMS",
+     "label": "집단에 대한 피해",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.fairnessAssessments.harms"
      ]
     }
    ]
@@ -5962,12 +6874,32 @@
      "found_at": {}
     },
     {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
+    },
+    {
      "concept": "DECLARATIONS_CLAIMS",
      "label": "주장",
      "required": "always",
      "status": "missing",
      "paths": [
       "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
      ],
      "found_at": {}
     },
@@ -6000,11 +6932,27 @@
      ]
     },
     {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ]
+    },
+    {
      "concept": "DECLARATIONS_CLAIMS",
      "label": "주장",
      "kind": "missing",
      "suggested_paths": [
       "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     },
     {
@@ -6048,6 +6996,16 @@
       "declarations.claims"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -6065,6 +7023,14 @@
      "kind": "missing",
      "suggested_paths": [
       "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     }
    ]
@@ -6092,6 +7058,16 @@
      "status": "missing",
      "paths": [
       "declarations.claims"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
      ],
      "found_at": {}
     },
@@ -6127,6 +7103,14 @@
      "kind": "missing",
      "suggested_paths": [
       "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     },
     {
@@ -6248,6 +7232,16 @@
       "declarations.claims"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "declarations.evidence"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -6273,6 +7267,14 @@
      "kind": "missing",
      "suggested_paths": [
       "declarations.claims"
+     ]
+    },
+    {
+     "concept": "DECLARATIONS_EVIDENCE",
+     "label": "증거",
+     "kind": "missing",
+     "suggested_paths": [
+      "declarations.evidence"
      ]
     }
    ]

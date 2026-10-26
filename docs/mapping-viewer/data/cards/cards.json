@@ -232,6 +232,15 @@
     "highlight_en": "the training data sets used"
    },
    {
+    "concept": "MODEL_ARCHITECTURE",
+    "label": "구체적 아키텍처",
+    "clause": "(b)",
+    "highlight": "인공지능시스템 및 알고리즘의 일반적 논리",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "the general logic of the AI system and of the algorithms"
+   },
+   {
     "concept": "OUTPUTS",
     "label": "출력 형식",
     "clause": "(b)",
@@ -243,6 +252,15 @@
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
     "label": "성능 지표 유형",
+    "clause": "(b), (g)",
+    "highlight": "산출물 품질에 대한 설명 | 측정하기 위해 사용된 지표",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "output quality of the system | metrics used to measure accuracy, robustness and compliance"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "label": "성능 지표 값",
     "clause": "(b), (g)",
     "highlight": "산출물 품질에 대한 설명 | 측정하기 위해 사용된 지표",
     "required": "always",
@@ -426,6 +444,14 @@
     "highlight_en": "the degrees of accuracy for specific persons or groups of persons | the overall expected level of accuracy"
    },
    {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "label": "성능 지표 값",
+    "highlight": "특정 개인이나 집단에 대한 정확성의 정도 | 기대되는 전반적인 정확성 수준",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "the degrees of accuracy for specific persons or groups of persons | the overall expected level of accuracy"
+   },
+   {
     "concept": "HUMAN_OVERSIGHT_MEASURES",
     "label": "인적 감독 수단",
     "gap_highlight": "제14조에 따라 필요한 인적 감독조치",
@@ -480,11 +506,27 @@
     "highlight_en": "the appropriateness of the performance metrics"
    },
    {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "label": "성능 지표 값",
+    "highlight": "성능지표의 적절성",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "the appropriateness of the performance metrics"
+   },
+   {
     "concept": "DECLARATIONS_CLAIMS",
     "label": "주장",
     "highlight": "성능지표의 적절성에 대한 설명",
     "required": "always",
     "value_kind": "claim",
+    "highlight_en": "A description of the appropriateness of the performance metrics"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "highlight": "성능지표의 적절성에 대한 설명",
+    "required": "always",
+    "value_kind": "evidence",
     "highlight_en": "A description of the appropriateness of the performance metrics"
    }
   ],
@@ -574,6 +616,14 @@
    {
     "concept": "PEDIGREE_COMMITS",
     "label": "계보: 커밋",
+    "highlight": "관련 변경사항",
+    "required": "always",
+    "value_kind": "relationship",
+    "highlight_en": "relevant changes made by the provider to the system through its lifecycle"
+   },
+   {
+    "concept": "PEDIGREE_NOTES",
+    "label": "계보: 메모",
     "highlight": "관련 변경사항",
     "required": "always",
     "value_kind": "relationship",
@@ -740,6 +790,14 @@
     "required": "always",
     "value_kind": "value",
     "highlight_en": "its intended purpose"
+   },
+   {
+    "concept": "COMPONENT_PURL",
+    "label": "purl 식별자",
+    "highlight": "시스템의 식별에 필요한 그 밖의 정보",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "other information necessary for the identification of the system"
    }
   ],
   "conditions": [],
@@ -790,6 +848,22 @@
    {
     "concept": "COMPONENT_NAME",
     "label": "구성요소 이름",
+    "highlight": "명칭과 유형",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "AI system name and type"
+   },
+   {
+    "concept": "COMPONENT_PURL",
+    "label": "purl 식별자",
+    "highlight": "식별과 추적을 가능하게 하는 그 밖의 명확한 참조사항",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "any additional unambiguous reference allowing the identification and traceability of the AI system"
+   },
+   {
+    "concept": "COMPONENT_TYPE",
+    "label": "구성요소 유형",
     "highlight": "명칭과 유형",
     "required": "always",
     "value_kind": "value",
@@ -1362,6 +1436,14 @@
     "required": "always",
     "value_kind": "value",
     "highlight_en": "The AI system trade name"
+   },
+   {
+    "concept": "COMPONENT_PURL",
+    "label": "purl 식별자",
+    "highlight": "식별과 추적을 가능하게 하는 그 밖의 명확한 참조사항",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "any additional unambiguous reference allowing the identification and traceability of the AI system"
    }
   ],
   "conditions": [],
@@ -1416,6 +1498,14 @@
     "required": "always",
     "value_kind": "value",
     "highlight_en": "the intended purpose of the AI system"
+   },
+   {
+    "concept": "COMPONENTS",
+    "label": "구성요소 목록",
+    "highlight": "지원되는 구성요소와 기능에 대한 설명",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "the components and functions supported through this AI system"
    }
   ],
   "conditions": [],
@@ -1470,6 +1560,22 @@
     "required": "always",
     "value_kind": "relationship",
     "highlight_en": "the information used by the system (data, inputs)"
+   },
+   {
+    "concept": "INPUTS",
+    "label": "입력 형식",
+    "highlight": "시스템이 사용하는 정보",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "the information used by the system (data, inputs)"
+   },
+   {
+    "concept": "MODEL_ARCHITECTURE",
+    "label": "구체적 아키텍처",
+    "highlight": "그 작동 논리에 대한 기본적이고 간결한 설명",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "its operating logic"
    }
   ],
   "conditions": [],
@@ -1561,6 +1667,14 @@
     "highlight": "인증서의 유형·번호·만료일 | 그 인증기관의 명칭 또는 식별번호",
     "required": "always",
     "value_kind": "value",
+    "highlight_en": "The type, number and expiry date of the certificate issued by the notified body | the name or identification number of that notified body"
+   },
+   {
+    "concept": "CERTIFICATION_REPORT_REF",
+    "label": "외부참조: 인증 보고서",
+    "highlight": "인증서의 유형·번호·만료일 | 그 인증기관의 명칭 또는 식별번호",
+    "required": "always",
+    "value_kind": "reference",
     "highlight_en": "The type, number and expiry date of the certificate issued by the notified body | the name or identification number of that notified body"
    }
   ],
@@ -1800,6 +1914,14 @@
     "required": "always",
     "value_kind": "value",
     "highlight_en": "The AI system trade name"
+   },
+   {
+    "concept": "COMPONENT_PURL",
+    "label": "purl 식별자",
+    "highlight": "식별과 추적을 가능하게 하는 그 밖의 명확한 참조사항",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "any additional unambiguous reference allowing the identification and traceability of the AI system"
    }
   ],
   "conditions": [],
@@ -2336,6 +2458,24 @@
     "highlight_en": "the modality (e.g. text, image) and format of inputs and outputs"
    },
    {
+    "concept": "MODEL_ARCHITECTURE",
+    "label": "구체적 아키텍처",
+    "clause": "(d)",
+    "highlight": "구조",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "the architecture"
+   },
+   {
+    "concept": "OUTPUTS",
+    "label": "출력 형식",
+    "clause": "(e)",
+    "highlight": "입력·산출물의 양식",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "the modality (e.g. text, image) and format of inputs and outputs"
+   },
+   {
     "concept": "TASK",
     "label": "과업",
     "clause": "(a)",
@@ -2591,6 +2731,14 @@
     "highlight_en": "evaluation results"
    },
    {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "label": "성능 지표 값",
+    "highlight": "평가결과",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "evaluation results"
+   },
+   {
     "concept": "STANDARDS_REQUIREMENTS",
     "label": "표준 요구사항 정의",
     "highlight": "평가기준",
@@ -2789,6 +2937,24 @@
     "highlight_en": "the modality (e.g. text, image) and format of inputs and outputs"
    },
    {
+    "concept": "MODEL_ARCHITECTURE",
+    "label": "구체적 아키텍처",
+    "clause": "(f)",
+    "highlight": "구조",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "the architecture"
+   },
+   {
+    "concept": "OUTPUTS",
+    "label": "출력 형식",
+    "clause": "(g)",
+    "highlight": "입력·산출물의 양식",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "the modality (e.g. text, image) and format of inputs and outputs"
+   },
+   {
     "concept": "TASK",
     "label": "과업",
     "clause": "(a)",
@@ -2890,6 +3056,15 @@
     "highlight_en": "the type and provenance of data and curation methodologies"
    },
    {
+    "concept": "MODALITY",
+    "label": "데이터셋 유형",
+    "clause": "(c)",
+    "highlight": "데이터의 유형과 출처 및 정제방법론",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "the type and provenance of data and curation methodologies"
+   },
+   {
     "concept": "DOCUMENTATION_REF",
     "label": "외부참조: 문서",
     "clause": "(a)",
@@ -2901,6 +3076,15 @@
    {
     "concept": "INPUTS",
     "label": "입력 형식",
+    "clause": "(b)",
+    "highlight": "입력·산출물의 양식",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "the modality (e.g. text, image, etc.) and format of the inputs and outputs"
+   },
+   {
+    "concept": "OUTPUTS",
+    "label": "출력 형식",
     "clause": "(b)",
     "highlight": "입력·산출물의 양식",
     "required": "always",
@@ -3024,6 +3208,15 @@
     "highlight": "적합성",
     "required": "always",
     "value_kind": "claim",
+    "highlight_en": "suitability"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "clause": "(e)",
+    "highlight": "적합성",
+    "required": "always",
+    "value_kind": "evidence",
     "highlight_en": "suitability"
    },
    {
@@ -3158,6 +3351,14 @@
     "highlight_en": "relevant"
    },
    {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "highlight": "관련성이 있고",
+    "required": "always",
+    "value_kind": "evidence",
+    "highlight_en": "relevant"
+   },
+   {
     "concept": "KNOWN_GAPS",
     "label": "데이터 공백·결함",
     "highlight": "의도된 목적에 비추어 완전하여야",
@@ -3273,6 +3474,14 @@
     "required": "always",
     "value_kind": "value",
     "highlight_en": "state-of-the-art security and privacy-preserving measures, including pseudonymisation"
+   },
+   {
+    "concept": "SENSITIVE_DATA",
+    "label": "민감 데이터",
+    "highlight": "특별한 범주의 개인데이터를 예외적으로 처리할 수 있다",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "may exceptionally process special categories of personal data"
    }
   ],
   "conditions": [],
@@ -3708,6 +3917,33 @@
     "highlight_en": "the level of accuracy, including its metrics, robustness and cybersecurity"
    },
    {
+    "concept": "PERFORMANCE_METRICS_TYPE",
+    "label": "성능 지표 유형",
+    "clause": "(b)(v)",
+    "highlight": "특정 개인 또는 집단에 관한 성능",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "its performance regarding specific persons or groups of persons"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "label": "성능 지표 값",
+    "clause": "(b)(ii)",
+    "highlight": "정확성·견고성·사이버보안의 수준(그 지표를 포함)",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "the level of accuracy, including its metrics, robustness and cybersecurity"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "label": "성능 지표 값",
+    "clause": "(b)(v)",
+    "highlight": "특정 개인 또는 집단에 관한 성능",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "its performance regarding specific persons or groups of persons"
+   },
+   {
     "concept": "COMPONENT_SUPPLIER",
     "label": "공급자",
     "clause": "(a)",
@@ -3997,6 +4233,14 @@
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
     "label": "성능 지표 유형",
+    "highlight": "정확성 수준 및 관련 정확성 지표",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "The levels of accuracy and the relevant accuracy metrics"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "label": "성능 지표 값",
     "highlight": "정확성 수준 및 관련 정확성 지표",
     "required": "always",
     "value_kind": "value",
@@ -4320,6 +4564,14 @@
     "required": "always",
     "value_kind": "claim",
     "highlight_en": "input data is relevant"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "highlight": "관련성이 있고",
+    "required": "always",
+    "value_kind": "evidence",
+    "highlight_en": "input data is relevant"
    }
   ],
   "conditions": [],
@@ -4411,6 +4663,14 @@
     "highlight": "적어도 그와 동등한 수준으로 충족한다는 것을 정당하게 소명",
     "required": "always",
     "value_kind": "claim",
+    "highlight_en": "duly justify that they have adopted technical solutions that meet the requirements"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "highlight": "적어도 그와 동등한 수준으로 충족한다는 것을 정당하게 소명",
+    "required": "always",
+    "value_kind": "evidence",
     "highlight_en": "duly justify that they have adopted technical solutions that meet the requirements"
    },
    {
@@ -4724,6 +4984,15 @@
     "required": "always",
     "value_kind": "value",
     "highlight_en": "the results of its evaluation"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "label": "성능 지표 값",
+    "clause": "(a)",
+    "highlight": "평가 결과",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "the results of its evaluation"
    }
   ],
   "conditions": [],
@@ -4769,6 +5038,14 @@
     "highlight": "증명하여야 한다",
     "required": "always",
     "value_kind": "claim",
+    "highlight_en": "shall demonstrate alternative adequate means of compliance"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "highlight": "증명하여야 한다",
+    "required": "always",
+    "value_kind": "evidence",
     "highlight_en": "shall demonstrate alternative adequate means of compliance"
    },
    {
@@ -4862,6 +5139,15 @@
     "highlight_en": "perform model evaluation in accordance with standardised protocols and tools"
    },
    {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "label": "성능 지표 값",
+    "clause": "(a)",
+    "highlight": "모델 평가를 수행할 것",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "perform model evaluation in accordance with standardised protocols and tools"
+   },
+   {
     "concept": "APPLIED_CONTROLS",
     "label": "적용한 통제",
     "clause": "(d)",
@@ -4914,6 +5200,14 @@
     "highlight": "증명하여야 한다",
     "required": "always",
     "value_kind": "claim",
+    "highlight_en": "shall demonstrate alternative adequate means of compliance"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "highlight": "증명하여야 한다",
+    "required": "always",
+    "value_kind": "evidence",
     "highlight_en": "shall demonstrate alternative adequate means of compliance"
    },
    {
@@ -5151,6 +5445,14 @@
     "required": "always",
     "value_kind": "value",
     "highlight_en": "prior defined metrics"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "label": "성능 지표 값",
+    "highlight": "사전에 정의된 지표",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "prior defined metrics"
    }
   ],
   "conditions": [],
@@ -5247,6 +5549,12 @@
     "label": "구성요소 목록",
     "required": "always",
     "value_kind": "value"
+   },
+   {
+    "concept": "SERVICES",
+    "label": "서비스 목록",
+    "required": "always",
+    "value_kind": "value"
    }
   ],
   "conditions": [],
@@ -5331,6 +5639,12 @@
     "label": "형성: 일시적 구성요소",
     "required": "always",
     "value_kind": "relationship"
+   },
+   {
+    "concept": "FORMULATION_SERVICES",
+    "label": "형성: 일시적 서비스",
+    "required": "always",
+    "value_kind": "relationship"
    }
   ],
   "conditions": [],
@@ -5371,6 +5685,12 @@
    {
     "concept": "COMPONENTS",
     "label": "구성요소 목록",
+    "required": "always",
+    "value_kind": "value"
+   },
+   {
+    "concept": "SERVICES",
+    "label": "서비스 목록",
     "required": "always",
     "value_kind": "value"
    }
@@ -5455,6 +5775,18 @@
    {
     "concept": "BENEFITS",
     "label": "집단에 대한 이익",
+    "required": "always",
+    "value_kind": "value"
+   },
+   {
+    "concept": "GROUP_AT_RISK",
+    "label": "위험에 놓인 집단",
+    "required": "always",
+    "value_kind": "value"
+   },
+   {
+    "concept": "HARMS",
+    "label": "집단에 대한 피해",
     "required": "always",
     "value_kind": "value"
    }
@@ -5625,6 +5957,18 @@
     "label": "요구사항↔주장 연결",
     "required": "always",
     "value_kind": "claim"
+   },
+   {
+    "concept": "DECLARATIONS_CLAIMS",
+    "label": "주장",
+    "required": "always",
+    "value_kind": "claim"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "required": "always",
+    "value_kind": "evidence"
    },
    {
     "concept": "STANDARDS_REQUIREMENTS",
@@ -5799,6 +6143,18 @@
     "label": "요구사항↔주장 연결",
     "required": "always",
     "value_kind": "claim"
+   },
+   {
+    "concept": "DECLARATIONS_CLAIMS",
+    "label": "주장",
+    "required": "always",
+    "value_kind": "claim"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "required": "always",
+    "value_kind": "evidence"
    },
    {
     "concept": "STANDARDS_REQUIREMENTS",
@@ -6025,6 +6381,14 @@
     "highlight_en": "whether the AI system achieves its intended purposes and stated objectives"
    },
    {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "highlight": "의도된 목적과 명시된 목표를 달성하는지",
+    "required": "always",
+    "value_kind": "evidence",
+    "highlight_en": "whether the AI system achieves its intended purposes and stated objectives"
+   },
+   {
     "concept": "GO_NO_GO_DECISION",
     "label": "개발·배포 게이트 판정",
     "gap_highlight": "개발·배포를 진행해야 하는지",
@@ -6189,6 +6553,14 @@
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
     "label": "성능 지표 유형",
+    "highlight": "TEVV(시험·평가·검증·확인) 및 시스템 지표",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "related TEVV and system metrics"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "label": "성능 지표 값",
     "highlight": "TEVV(시험·평가·검증·확인) 및 시스템 지표",
     "required": "always",
     "value_kind": "value",
@@ -6486,6 +6858,14 @@
     "highlight": "시스템 신뢰성",
     "required": "always",
     "value_kind": "claim",
+    "highlight_en": "system trustworthiness"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "highlight": "시스템 신뢰성",
+    "required": "always",
+    "value_kind": "evidence",
     "highlight_en": "system trustworthiness"
    },
    {
@@ -6827,6 +7207,14 @@
     "highlight_en": "metrics"
    },
    {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "label": "성능 지표 값",
+    "highlight": "지표",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "metrics"
+   },
+   {
     "concept": "TASKS_RESOURCE_REFERENCES",
     "label": "형성: 리소스 참조",
     "highlight": "도구",
@@ -6925,6 +7313,22 @@
     "required": "always",
     "value_kind": "value",
     "highlight_en": "Fairness and bias"
+   },
+   {
+    "concept": "GROUP_AT_RISK",
+    "label": "위험에 놓인 집단",
+    "highlight": "공정성·편향",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "Fairness and bias"
+   },
+   {
+    "concept": "HARMS",
+    "label": "집단에 대한 피해",
+    "highlight": "공정성·편향",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "Fairness and bias"
    }
   ],
   "conditions": [],
@@ -7019,11 +7423,27 @@
     "highlight_en": "AI system performance | measured qualitatively or quantitatively"
    },
    {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "label": "성능 지표 값",
+    "highlight": "AI 시스템 성능 | 정성적·정량적으로 측정",
+    "required": "always",
+    "value_kind": "value",
+    "highlight_en": "AI system performance | measured qualitatively or quantitatively"
+   },
+   {
     "concept": "DECLARATIONS_CLAIMS",
     "label": "주장",
     "highlight": "AI 시스템 성능 | 보증 기준 | 입증된다",
     "required": "always",
     "value_kind": "claim",
+    "highlight_en": "AI system performance | assurance criteria | demonstrated"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "highlight": "AI 시스템 성능 | 보증 기준 | 입증된다",
+    "required": "always",
+    "value_kind": "evidence",
     "highlight_en": "AI system performance | assurance criteria | demonstrated"
    },
    {
@@ -7095,6 +7515,14 @@
     "required": "always",
     "value_kind": "claim",
     "highlight_en": "demonstrated to be valid and reliable"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "highlight": "타당하고 신뢰할 수 있음이 입증된다",
+    "required": "always",
+    "value_kind": "evidence",
+    "highlight_en": "demonstrated to be valid and reliable"
    }
   ],
   "conditions": [],
@@ -7148,6 +7576,14 @@
     "highlight": "안전함이 입증되고 | 안전하게 실패할 수 있음이 입증된다",
     "required": "always",
     "value_kind": "claim",
+    "highlight_en": "demonstrated to be safe | it can fail safely"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "highlight": "안전함이 입증되고 | 안전하게 실패할 수 있음이 입증된다",
+    "required": "always",
+    "value_kind": "evidence",
     "highlight_en": "demonstrated to be safe | it can fail safely"
    },
    {
@@ -7326,6 +7762,14 @@
     "highlight": "검증",
     "required": "always",
     "value_kind": "claim",
+    "highlight_en": "validated"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "label": "증거",
+    "highlight": "검증",
+    "required": "always",
+    "value_kind": "evidence",
     "highlight_en": "validated"
    }
   ],
