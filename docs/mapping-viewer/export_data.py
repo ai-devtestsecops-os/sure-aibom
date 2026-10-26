@@ -115,10 +115,10 @@ def cards():
     with open(os.path.join(out, "vocabulary.json"), "w", encoding="utf-8") as fh:
         json.dump(voc, fh, ensure_ascii=False, indent=1)
     shutil.copy(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"), os.path.join(out, "profile.json"))
-    # 추출기 비교: 카드마다 자기 용어를 뺀 용어집으로 영어 원문을 추출해 정답과 맞춘다
+    # 추출기 비교: 카드마다 자기 용어를 뺀 용어집으로 영어 원문을 추출해 보이는 카드(승인 카드, 없으면 정답 카드)와 맞춘다
     comparison = []
-    for c in gold:
-        lexicon = build_lexicon(approved, vocab, {c["card_id"]}, gold_phrases(c), corpus_extra=gold)
+    for c in shown:
+        lexicon = build_lexicon(approved, vocab, {c["card_id"]}, gold_phrases(c), corpus_extra=None if approved else gold)
         pred, explain = extract(ABBR_TO_NAME[c["card_id"].split("-")[1]], c["source"]["clause_id"], card_text(c), lexicon, vocab)
         gold_concepts = {f["concept"]: f for f in c["facts"]}
         pred_facts = [f for f in pred["facts"] if f["concept"] != "UNRESOLVED"]
@@ -156,7 +156,7 @@ def cards():
             index.append({"file": fname, "subject": record["bom"]["subject"], "summary": record["summary"]})
     with open(os.path.join(out, "judgments", "index.json"), "w", encoding="utf-8") as fh:
         json.dump(index, fh, ensure_ascii=False, indent=1)
-    return len(gold), len(index)
+    return len(shown), len(index)
 
 
 def main():

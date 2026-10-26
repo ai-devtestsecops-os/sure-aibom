@@ -37,7 +37,6 @@
    "aliases": [],
    "gap": false,
    "synonyms": [
-    "architecture",
     "model architecture",
     "operating logic",
     "general logic of the AI system",
@@ -217,8 +216,6 @@
    "gap": false,
    "synonyms": [
     "name and type",
-    "trade name",
-    "system name",
     "model name",
     "product name",
     "AI system name and type",
@@ -321,16 +318,13 @@
    "gap": false,
    "synonyms": [
     "compliance with the requirements",
-    "demonstrate",
     "demonstrated",
     "conformity",
     "claims",
     "A description of the appropriateness of the performance metrics",
-    "input data is relevant",
     "duly justify that they have adopted technical solutions that meet the requirements",
     "shall demonstrate alternative adequate means of compliance",
     "whether the AI system achieves its intended purposes and stated objectives",
-    "system trustworthiness",
     "AI system performance",
     "assurance criteria",
     "demonstrated to be valid and reliable",
@@ -435,7 +429,6 @@
    "gap": false,
    "synonyms": [
     "risk management measures",
-    "mitigation measures",
     "elimination or reduction of risks",
     "mitigation and control measures",
     "risk mitigation",
@@ -687,11 +680,9 @@
    "aliases": [],
    "gap": false,
    "synonyms": [
-    "person submitting information",
     "author",
     "authors",
-    "person who signed",
-    "The name, address and contact details of the person submitting information on behalf of the deployer"
+    "person who signed"
    ]
   },
   {
@@ -1292,12 +1283,7 @@
    "aliases": [],
    "gap": false,
    "synonyms": [
-    "expiry date",
-    "valid until",
-    "validity period",
-    "expiration",
-    "The type, number and expiry date of the certificate issued by the notified body",
-    "the name or identification number of that notified body"
+    "expiry date of the certificate"
    ]
   },
   {
@@ -1392,15 +1378,13 @@
   },
   {
    "id": "AUTHORISED_REPRESENTATIVE",
-   "label_ko": "수권대리인·등록 대행자",
+   "label_ko": "수권대리인",
    "aliases": [],
    "gap": true,
    "synonyms": [
     "authorised representative",
     "authorized representative",
     "representative",
-    "person on behalf of the provider",
-    "the name, address and contact details of that person",
     "The name, address and contact details of the authorised representative"
    ]
   },
