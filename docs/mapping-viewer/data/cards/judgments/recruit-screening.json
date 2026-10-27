@@ -1,6 +1,6 @@
 {
  "engine_version": "0.3.0",
- "run_at": "2026-10-27T00:20:44Z",
+ "run_at": "2026-10-27T04:18:06Z",
  "bom": {
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
@@ -204,7 +204,7 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-2",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex IV(2): 모델 구조·과업 · 데이터셋 수집·출처 · 데이터 전처리 · 성능측정",
    "conditions": {
     "C1": {
@@ -1104,7 +1104,7 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-V-1",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex V(1): 적합성 증서·선언서",
    "verdict": "부분 반영",
    "facts": [
@@ -1182,7 +1182,7 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-V-2",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex V(2): 적합성 증서·선언서",
    "conditions": {
     "C1": {
@@ -1473,7 +1473,7 @@
    "facts": [
     {
      "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인·등록 대행자",
+     "label": "수권대리인",
      "required": "conditional",
      "condition": "C1",
      "condition_evaluated": false,
@@ -1485,7 +1485,7 @@
    "gaps": [
     {
      "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인·등록 대행자",
+     "label": "수권대리인",
      "kind": "gap",
      "suggested_paths": []
     }
@@ -1555,7 +1555,7 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-5",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex VIII §A(5): 의도된 용도·사용자",
    "verdict": "부분 반영",
    "facts": [
@@ -1611,7 +1611,7 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-6",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex VIII §A(6): 모델 구조·과업 · 데이터셋 수집·출처",
    "verdict": "부분 반영",
    "facts": [
@@ -1709,7 +1709,7 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-8",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex VIII §A(8): 적합성 증서·선언서",
    "conditions": {
     "C1": {
@@ -1827,7 +1827,7 @@
    "facts": [
     {
      "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인·등록 대행자",
+     "label": "수권대리인",
      "required": "conditional",
      "condition": "C1",
      "condition_evaluated": false,
@@ -1839,7 +1839,7 @@
    "gaps": [
     {
      "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인·등록 대행자",
+     "label": "수권대리인",
      "kind": "gap",
      "suggested_paths": []
     }
@@ -1956,7 +1956,7 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-B-7",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex VIII §B(7): 위험·영향평가",
    "verdict": "미반영",
    "facts": [
@@ -2164,7 +2164,7 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-XI-1-1",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex XI §1(1): 모델 구조·과업",
    "verdict": "부분 반영",
    "facts": [
@@ -2338,7 +2338,7 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-XI-1-2",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex XI §1(2): 모델 구조·과업 · 데이터셋 수집·출처 · 데이터 전처리",
    "conditions": {
     "C1": {
@@ -2817,7 +2817,7 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-XII-1",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex XII(1): 모델 구조·과업",
    "conditions": {
     "C1": {
@@ -3044,7 +3044,7 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-XII-2",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex XII(2): 데이터셋 수집·출처 · 데이터 전처리 · 모델 구조·과업",
    "conditions": {
     "C1": {
@@ -3054,20 +3054,6 @@
    },
    "verdict": "부분 반영",
    "facts": [
-    {
-     "concept": "COLLECTION_PROCESS",
-     "label": "데이터 수집 절차",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "componentData.collectionProcess"
-     ],
-     "found_at": {
-      "componentData.collectionProcess": [
-       "dataset:ds-101"
-      ]
-     }
-    },
     {
      "concept": "PREPROCESSING",
      "label": "데이터 전처리",
@@ -3898,7 +3884,7 @@
   },
   {
    "card_id": "RC-EUAIA-Article-13-3",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Article 13(3): 운용·유지관리 · 설명가능성 · 모델 한계·가정 · 의도된 용도·사용자 · 데이터셋 수집·출처 · 성능측정 · 등록·배포 정보 · 로깅·추적성 · 인적 감독",
    "conditions": {
     "C1": {
@@ -4700,7 +4686,7 @@
   },
   {
    "card_id": "RC-EUAIA-Article-27-1",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Article 27(1): 위험·영향평가",
    "conditions": {
     "C1": {
@@ -4992,7 +4978,7 @@
   },
   {
    "card_id": "RC-EUAIA-Article-53-1",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Article 53(1): 모델 구조·과업 · 기술문서 · 성능측정",
    "verdict": "부분 반영",
    "facts": [
@@ -5190,7 +5176,7 @@
   },
   {
    "card_id": "RC-EUAIA-Article-55-1",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Article 55(1): 입증·검증 · 위험·영향평가 · 성능측정 · 보안평가",
    "conditions": {
     "C1": {
@@ -6418,7 +6404,7 @@
   },
   {
    "card_id": "RC-NISTRMF-MANAGE-1.4",
-   "card_version": 1,
+   "card_version": 2,
    "title": "MANAGE 1.4: 위험·영향평가",
    "verdict": "미반영",
    "facts": [

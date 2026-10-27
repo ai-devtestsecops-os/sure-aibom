@@ -6592,9 +6592,11 @@
    "component.modelCard.modelParameters.optimizationTarget"
   ],
   "origin": [
+   "EU AI Act",
    "EU AI Act"
   ],
   "reference": [
+   "Annex IV(2)",
    "Annex XI §1(2)"
   ]
  },
@@ -6622,9 +6624,11 @@
    "component.modelCard.modelParameters.trainingCompute"
   ],
   "origin": [
+   "EU AI Act",
    "EU AI Act"
   ],
   "reference": [
+   "Annex IV(2)",
    "Annex XI §1(2)"
   ]
  },
@@ -6718,6 +6722,7 @@
    "EU AI Act",
    "EU AI Act",
    "EU AI Act",
+   "EU AI Act",
    "NIST AI RMF",
    "NIST AI RMF"
   ],
@@ -6727,6 +6732,7 @@
    "Annex VIII §A(5)",
    "Annex VIII §B(5)",
    "Annex XI §1(1)",
+   "Annex XII(1)",
    "Article 13(3)",
    "MAP 1.1",
    "MAP 3.3"

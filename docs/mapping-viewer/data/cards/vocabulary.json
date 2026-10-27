@@ -562,6 +562,9 @@
     "format of inputs",
     "the modality (e.g. text, image) and format of inputs and outputs",
     "the modality (e.g. text, image, etc.) and format of the inputs and outputs"
+   ],
+   "not_terms": [
+    "inputs"
    ]
   },
   {
@@ -707,6 +710,9 @@
     "general description of these data sets",
     "a general description of these data sets",
     "the type and provenance of data"
+   ],
+   "not_terms": [
+    "the type"
    ]
   },
   {
@@ -769,6 +775,9 @@
     "format of outputs",
     "output quality",
     "the expected output"
+   ],
+   "not_terms": [
+    "outputs"
    ]
   },
   {

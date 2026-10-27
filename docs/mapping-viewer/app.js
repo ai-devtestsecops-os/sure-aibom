@@ -8,7 +8,8 @@ if (document.querySelector(".mapping-viewer")) (() => {
 //   aibom_v0.6_spdx.json      : SPDX 3.0.1 전체 + v0.6 추가 필드(added, path 는 대응하는 CycloneDX 경로)
 //   aibom_v0.6_spdx_mapping.json : 두 형식의 대응 (조인 테이블). 1.7 매핑에 v0.6 추가 필드를 넣은 표로, ai-bom 이 만든다
 //   aibom_v0.6_requirement_field_mapping.json : 규제 요구사항이 어느 v0.6 필드로 충족되는지 (엑셀 「요구사항 매핑」 시트와 같은 표).
-//                                cdx_ref(CDX 경로)·spdx_ref("Class.property") 가 조인 키, version 은 그 필드가 1.7 의 것인지 v0.6 의 것인지
+//                                cdx_ref(CDX 경로)·spdx_ref("Class.property") 가 조인 키, cdx_version·spdx_version 은 그 칸의 필드가
+//                                1.7·3.0.1 의 것인지 v0.6 이 더한 것인지
 //   aibom_v0.6_properties.json : 추가 필드를 --spec 1.7 · 3.0.1 로 낼 때의 확장 필드 (aibom: 키. ai-bom 의 정의서와 같은 출처)
 
 const BASE = document.querySelector(".mapping-viewer").dataset.base || "data/";   // 페이지 기준 상대 경로

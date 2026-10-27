@@ -17,17 +17,17 @@
     "result": "hit"
    },
    {
-    "concept": "COMPONENT_VERSION",
-    "clause": "(a)",
-    "span": "versions",
-    "gold_clause": "(a)",
-    "result": "hit"
-   },
-   {
     "concept": "TECHNICAL_REQUIREMENTS",
     "clause": "(b)",
     "span": "hardware",
     "gold_clause": "(e)",
+    "result": "hit"
+   },
+   {
+    "concept": "COMPONENT_VERSION",
+    "clause": "(c)",
+    "span": "the versions",
+    "gold_clause": "(a)",
     "result": "hit"
    },
    {
@@ -71,7 +71,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-IV-2",
-  "confidence": 0.57,
+  "confidence": 0.58,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -122,6 +122,13 @@
     "result": "extra"
    },
    {
+    "concept": "COMPONENT_NAME",
+    "clause": "(b)",
+    "span": "system, name",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
     "concept": "ARCHITECTURE_FAMILY",
     "clause": "(b)",
     "span": "general logic of the AI system",
@@ -148,6 +155,13 @@
     "span": "persons or groups of persons",
     "gold_clause": null,
     "result": "extra"
+   },
+   {
+    "concept": "OPTIMIZATION_TARGET",
+    "clause": "(b)",
+    "span": "designed to optimise for",
+    "gold_clause": "(b)",
+    "result": "hit"
    },
    {
     "concept": "HYPERPARAMETERS",
@@ -236,7 +250,7 @@
    {
     "concept": "EXPLAINABILITY_METHODS",
     "clause": "(e)",
-    "span": "interpretation of the output",
+    "span": "interpretation of the outputs",
     "gold_clause": "(e)",
     "result": "hit"
    },
@@ -291,8 +305,7 @@
    }
   ],
   "missed": [
-   "SIZE",
-   "OPTIMIZATION_TARGET"
+   "SIZE"
   ],
   "conditions": [
    "where relevant",
@@ -567,7 +580,7 @@
    {
     "concept": "COMPONENT_NAME",
     "clause": null,
-    "span": "name and type",
+    "span": "AI system name and type",
     "gold_clause": null,
     "result": "hit"
    },
@@ -876,7 +889,7 @@
    {
     "concept": "COMPONENT_DESCRIPTION",
     "clause": null,
-    "span": "components and functions supported",
+    "span": "the components and functions supported through this AI system",
     "gold_clause": null,
     "result": "hit"
    }
@@ -901,7 +914,7 @@
    {
     "concept": "DATASETS",
     "clause": null,
-    "span": "information used by the system",
+    "span": "the information used by the system (data, inputs)",
     "gold_clause": null,
     "result": "hit"
    },
@@ -1114,7 +1127,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-B-7",
-  "confidence": 0.5,
+  "confidence": 0.67,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -1125,7 +1138,7 @@
    {
     "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
     "clause": null,
-    "span": "grounds on which the AI system is considered",
+    "span": "considered to be not-high-risk",
     "gold_clause": null,
     "result": "hit"
    }
@@ -1279,7 +1292,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XI-1-1",
-  "confidence": 0.67,
+  "confidence": 0.65,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -1367,7 +1380,7 @@
    {
     "concept": "OUTPUTS",
     "clause": "(e)",
-    "span": "the modality (e.g. text, image) and format of inputs and outputs",
+    "span": "format of inputs and output",
     "gold_clause": "(e)",
     "result": "hit"
    }
@@ -1436,16 +1449,9 @@
     "result": "hit"
    },
    {
-    "concept": "COLLECTION_PROCESS",
-    "clause": "(c)",
-    "span": "the type and provenance of data and curation methodologies",
-    "gold_clause": "(c)",
-    "result": "hit"
-   },
-   {
     "concept": "MODALITY",
     "clause": "(c)",
-    "span": "the type and provenance of data and curation methodologies",
+    "span": "the type and provenance of data",
     "gold_clause": "(c)",
     "result": "hit"
    },
@@ -1467,6 +1473,13 @@
     "concept": "SIZE",
     "clause": "(c)",
     "span": "scope and main characteristics",
+    "gold_clause": "(c)",
+    "result": "hit"
+   },
+   {
+    "concept": "COLLECTION_PROCESS",
+    "clause": "(c)",
+    "span": "how the data was obtained and selected",
     "gold_clause": "(c)",
     "result": "hit"
    },
@@ -1625,7 +1638,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XII-1",
-  "confidence": 0.66,
+  "confidence": 0.65,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -1692,7 +1705,7 @@
    {
     "concept": "COMPONENT_VERSION",
     "clause": "(e)",
-    "span": "version",
+    "span": "versions",
     "gold_clause": "(e)",
     "result": "hit"
    },
@@ -1727,7 +1740,7 @@
    {
     "concept": "OUTPUTS",
     "clause": "(g)",
-    "span": "the modality (e.g. text, image) and format of inputs and outputs",
+    "span": "format of inputs and output",
     "gold_clause": "(g)",
     "result": "hit"
    }
@@ -1741,7 +1754,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XII-2",
-  "confidence": 0.61,
+  "confidence": 0.62,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -1773,14 +1786,14 @@
    {
     "concept": "INPUTS",
     "clause": "(b)",
-    "span": "modality (e.g. text, image, etc.) and format of the inputs and output",
+    "span": "the modality (e.g. text, image, etc.) and format of the inputs and outputs",
     "gold_clause": "(b)",
     "result": "hit"
    },
    {
     "concept": "OUTPUTS",
     "clause": "(b)",
-    "span": "modality (e.g. text, image, etc.) and format of the inputs and output",
+    "span": "format of the inputs and output",
     "gold_clause": "(b)",
     "result": "hit"
    },
@@ -1794,9 +1807,9 @@
    {
     "concept": "COLLECTION_PROCESS",
     "clause": "(c)",
-    "span": "the type and provenance of data",
-    "gold_clause": "(c)",
-    "result": "hit"
+    "span": "the type and provenance of data and curation methodologies",
+    "gold_clause": null,
+    "result": "extra"
    },
    {
     "concept": "MODALITY",
@@ -1806,16 +1819,16 @@
     "result": "hit"
    },
    {
-    "concept": "PROVENANCE",
+    "concept": "PREPROCESSING",
     "clause": "(c)",
-    "span": "provenance of data",
+    "span": "the type and provenance of data and curation methodologies",
     "gold_clause": "(c)",
     "result": "hit"
    },
    {
-    "concept": "PREPROCESSING",
+    "concept": "PROVENANCE",
     "clause": "(c)",
-    "span": "curation methodologies",
+    "span": "provenance of data",
     "gold_clause": "(c)",
     "result": "hit"
    }
@@ -2306,6 +2319,13 @@
     "result": "hit"
    },
    {
+    "concept": "DATASETS",
+    "clause": "(b)(vi)",
+    "span": "data sets used",
+    "gold_clause": "(b)(vi)",
+    "result": "hit"
+   },
+   {
     "concept": "EXPLAINABILITY_METHODS",
     "clause": "(b)(vii)",
     "span": "interpret the output",
@@ -2358,8 +2378,7 @@
   "missed": [
    "ETHICAL_CONSIDERATIONS_NAME",
    "USE_CASES",
-   "LOGGING_MECHANISM",
-   "DATASETS"
+   "LOGGING_MECHANISM"
   ],
   "conditions": [
    "where applicable",
@@ -2419,7 +2438,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-14-4",
-  "confidence": 0.64,
+  "confidence": 0.61,
   "status": "draft",
   "actor": "deployer",
   "action": "PROVIDE",
@@ -2433,6 +2452,13 @@
     "span": "human oversight",
     "gold_clause": "(d), (e)",
     "result": "hit"
+   },
+   {
+    "concept": "DATASETS",
+    "clause": "(b)",
+    "span": "system (automation bias), in particular for high-risk AI systems used to provide information",
+    "gold_clause": null,
+    "result": "extra"
    },
    {
     "concept": "EXPLAINABILITY_METHODS",
@@ -2747,7 +2773,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-27-1",
-  "confidence": 0.62,
+  "confidence": 0.63,
   "status": "pending_review",
   "actor": "deployer",
   "action": "PERFORM",
@@ -2779,7 +2805,7 @@
    {
     "concept": "HUMAN_OVERSIGHT_MEASURES",
     "clause": "(e)",
-    "span": "human oversight measures",
+    "span": "human oversight",
     "gold_clause": "(e)",
     "result": "hit"
    },
@@ -3001,7 +3027,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-53-1",
-  "confidence": 0.55,
+  "confidence": 0.58,
   "status": "draft",
   "actor": "provider",
   "action": "SPECIFY",
@@ -3045,6 +3071,13 @@
     "result": "hit"
    },
    {
+    "concept": "TECHNICAL_LIMITATIONS",
+    "clause": "(b)(i)",
+    "span": "capabilities and limitations",
+    "gold_clause": "(b)(i)",
+    "result": "hit"
+   },
+   {
     "concept": "DATASETS",
     "clause": "(d)",
     "span": "content used for training",
@@ -3052,9 +3085,7 @@
     "result": "hit"
    }
   ],
-  "missed": [
-   "TECHNICAL_LIMITATIONS"
-  ],
+  "missed": [],
   "conditions": [],
   "exceptions": []
  },
@@ -3105,7 +3136,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-55-1",
-  "confidence": 0.55,
+  "confidence": 0.58,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -3123,7 +3154,7 @@
    {
     "concept": "TASKS_RESOURCE_REFERENCES",
     "clause": "(a)",
-    "span": "evaluation in accordance with standardised protocols and tool",
+    "span": "protocols and tools",
     "gold_clause": "(a)",
     "result": "hit"
    },
@@ -3284,7 +3315,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-9-5",
-  "confidence": 0.62,
+  "confidence": 0.58,
   "status": "draft",
   "actor": "deployer",
   "action": "ASSESS",
@@ -3302,7 +3333,7 @@
    {
     "concept": "RESIDUAL_RISK_ACCEPTANCE",
     "clause": null,
-    "span": "residual risk",
+    "span": "judged to be acceptable",
     "gold_clause": null,
     "result": "hit"
    },
@@ -3728,7 +3759,7 @@
  },
  {
   "card_id": "RC-ISO42001-A.7.5",
-  "confidence": 0.78,
+  "confidence": 0.68,
   "status": "draft",
   "actor": "organisation",
   "action": "SPECIFY",

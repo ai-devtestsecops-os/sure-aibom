@@ -5099,9 +5099,11 @@
   "parent": "component.modelCard.modelParameters",
   "description_ko": "이 모델이 최적화하도록 설계된 대상.",
   "origin": [
+   "EU AI Act",
    "EU AI Act"
   ],
   "reference": [
+   "Annex IV(2)",
    "Annex XI §1(2)"
   ],
   "added": true
@@ -5117,9 +5119,11 @@
   "parent": "component.modelCard.modelParameters",
   "description_ko": "이 모델을 훈련하는 데 쓴 연산자원(예: 부동소수점 연산 횟수).",
   "origin": [
+   "EU AI Act",
    "EU AI Act"
   ],
   "reference": [
+   "Annex IV(2)",
    "Annex XI §1(2)"
   ],
   "added": true
@@ -5683,9 +5687,11 @@
    "EU AI Act",
    "EU AI Act",
    "EU AI Act",
+   "EU AI Act",
    "NIST AI RMF"
   ],
   "reference": [
+   "Annex IV(2)",
    "Annex IV(3)",
    "Article 13(1)",
    "Article 13(3)",
@@ -7429,14 +7435,12 @@
    "EU AI Act",
    "EU AI Act",
    "EU AI Act",
-   "EU AI Act",
    "ISO/IEC 42001",
    "NIST AI RMF"
   ],
   "reference": [
    "Annex IV(2)",
    "Annex XI §1(2)",
-   "Annex XII(2)",
    "Article 10(2)",
    "A.7.3",
    "MAP 2.3"
@@ -7841,9 +7845,13 @@
   "description_ko": "이 데이터셋의 출처.",
   "added": true,
   "origin": [
+   "EU AI Act",
+   "EU AI Act",
    "ISO/IEC 42001"
   ],
   "reference": [
+   "Annex XI §1(2)",
+   "Annex XII(2)",
    "A.7.5"
   ]
  },
