@@ -121,7 +121,6 @@
     "collection process",
     "collection processes",
     "origin of data",
-    "provenance",
     "acquisition of the data",
     "data acquisition",
     "how the data was obtained",
@@ -558,7 +557,6 @@
    "aliases": [],
    "gap": false,
    "synonyms": [
-    "input data",
     "specifications for the input data",
     "specifications on input data",
     "format of inputs",
@@ -703,7 +701,6 @@
    "aliases": [],
    "gap": false,
    "synonyms": [
-    "modality",
     "type of data",
     "type and provenance of data",
     "data type",
@@ -720,7 +717,6 @@
    "synonyms": [
     "algorithms",
     "logic of the AI system and of the algorithms",
-    "design specifications",
     "network architecture"
    ]
   },
@@ -769,7 +765,6 @@
    "gap": false,
    "synonyms": [
     "output",
-    "outputs",
     "expected output",
     "format of outputs",
     "output quality",
@@ -1014,7 +1009,6 @@
    "aliases": [],
    "gap": false,
    "synonyms": [
-    "personal data",
     "special categories of personal data",
     "sensitive data",
     "sensitive information"

@@ -276,7 +276,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-IV-3",
-  "confidence": 0.59,
+  "confidence": 0.6,
   "status": "draft",
   "actor": "deployer",
   "action": "DOCUMENT",
@@ -339,13 +339,6 @@
     "span": "interpretation of the outputs",
     "gold_clause": null,
     "result": "hit"
-   },
-   {
-    "concept": "OUTPUTS",
-    "clause": null,
-    "span": "outputs",
-    "gold_clause": null,
-    "result": "extra"
    },
    {
     "concept": "INPUTS",
@@ -1281,7 +1274,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XI-1-1",
-  "confidence": 0.63,
+  "confidence": 0.64,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -1325,13 +1318,6 @@
     "result": "hit"
    },
    {
-    "concept": "MODALITY",
-    "clause": "(e)",
-    "span": "modality",
-    "gold_clause": null,
-    "result": "extra"
-   },
-   {
     "concept": "INPUTS",
     "clause": "(e)",
     "span": "format of inputs",
@@ -1357,7 +1343,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XI-1-2",
-  "confidence": 0.61,
+  "confidence": 0.6,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -1371,13 +1357,6 @@
     "span": "instructions of use",
     "gold_clause": "(a)",
     "result": "hit"
-   },
-   {
-    "concept": "MODEL_ARCHITECTURE",
-    "clause": "(b)",
-    "span": "design specifications",
-    "gold_clause": null,
-    "result": "extra"
    },
    {
     "concept": "TRAINING_TECHNIQUES",
@@ -1566,7 +1545,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XII-1",
-  "confidence": 0.64,
+  "confidence": 0.65,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -1634,13 +1613,6 @@
     "concept": "COMPONENT_VERSION",
     "clause": "(e)",
     "span": "versions",
-    "gold_clause": null,
-    "result": "extra"
-   },
-   {
-    "concept": "MODALITY",
-    "clause": "(g)",
-    "span": "modality",
     "gold_clause": null,
     "result": "extra"
    },
@@ -1747,7 +1719,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-10-2",
-  "confidence": 0.56,
+  "confidence": 0.57,
   "status": "draft",
   "actor": "provider",
   "action": "DESIGN",
@@ -1768,13 +1740,6 @@
     "span": "data collection",
     "gold_clause": "(b)",
     "result": "hit"
-   },
-   {
-    "concept": "SENSITIVE_DATA",
-    "clause": "(b)",
-    "span": "personal data",
-    "gold_clause": null,
-    "result": "extra"
    },
    {
     "concept": "ORIGINAL_COLLECTION_PURPOSE",
@@ -1803,20 +1768,6 @@
     "span": "possible biases",
     "gold_clause": "(f)",
     "result": "hit"
-   },
-   {
-    "concept": "INPUTS",
-    "clause": "(f)",
-    "span": "data outputs influence input",
-    "gold_clause": null,
-    "result": "extra"
-   },
-   {
-    "concept": "OUTPUTS",
-    "clause": "(f)",
-    "span": "outputs",
-    "gold_clause": null,
-    "result": "extra"
    },
    {
     "concept": "KNOWN_BIAS_MITIGATION_STRATEGY",
@@ -2053,7 +2004,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-12-3",
-  "confidence": 0.58,
+  "confidence": 0.67,
   "status": "draft",
   "actor": "provider",
   "action": "PROVIDE",
@@ -2067,13 +2018,6 @@
     "span": "logging capabilities",
     "gold_clause": "(a)",
     "result": "hit"
-   },
-   {
-    "concept": "INPUTS",
-    "clause": "(b)",
-    "span": "input data",
-    "gold_clause": null,
-    "result": "extra"
    }
   ],
   "missed": [],
@@ -2126,7 +2070,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-13-3",
-  "confidence": 0.56,
+  "confidence": 0.57,
   "status": "draft",
   "actor": "deployer",
   "action": "SPECIFY",
@@ -2224,13 +2168,6 @@
     "span": "human oversight",
     "gold_clause": "(d)",
     "result": "hit"
-   },
-   {
-    "concept": "OUTPUTS",
-    "clause": "(d)",
-    "span": "outputs",
-    "gold_clause": null,
-    "result": "extra"
    },
    {
     "concept": "TRAINING_COMPUTE",
@@ -2411,7 +2348,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-15-4",
-  "confidence": 0.56,
+  "confidence": 0.67,
   "status": "draft",
   "actor": "organisation",
   "action": "ENSURE",
@@ -2425,13 +2362,6 @@
     "span": "resilient",
     "gold_clause": null,
     "result": "hit"
-   },
-   {
-    "concept": "OUTPUTS",
-    "clause": null,
-    "span": "outputs",
-    "gold_clause": null,
-    "result": "extra"
    }
   ],
   "missed": [],
@@ -2440,7 +2370,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-15-5",
-  "confidence": 0.53,
+  "confidence": 0.54,
   "status": "draft",
   "actor": "provider",
   "action": "DESIGN",
@@ -2454,13 +2384,6 @@
     "span": "resilient",
     "gold_clause": null,
     "result": "hit"
-   },
-   {
-    "concept": "OUTPUTS",
-    "clause": null,
-    "span": "outputs",
-    "gold_clause": null,
-    "result": "extra"
    },
    {
     "concept": "THREAT_MODEL_REF",
@@ -2607,22 +2530,14 @@
  },
  {
   "card_id": "RC-EUAIA-Article-26-4",
-  "confidence": 0.5,
+  "confidence": 0.0,
   "status": "pending_review",
   "actor": "deployer",
   "action": "ENSURE",
   "object": "DATASET",
   "object_scope": "procedure",
   "gold_actor": "deployer",
-  "facts": [
-   {
-    "concept": "INPUTS",
-    "clause": null,
-    "span": "input data",
-    "gold_clause": null,
-    "result": "extra"
-   }
-  ],
+  "facts": [],
   "missed": [
    "KNOWN_BIAS_NAME",
    "DECLARATIONS_CLAIMS",
@@ -2862,7 +2777,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-50-2",
-  "confidence": 0.48,
+  "confidence": 0.5,
   "status": "pending_review",
   "actor": "provider",
   "action": "ENSURE",
@@ -2871,25 +2786,11 @@
   "gold_actor": "provider",
   "facts": [
    {
-    "concept": "OUTPUTS",
-    "clause": null,
-    "span": "outputs",
-    "gold_clause": null,
-    "result": "extra"
-   },
-   {
     "concept": "CONTENT_INTERACTION_DISCLOSURE",
     "clause": null,
     "span": "artificially generated or manipulated",
     "gold_clause": null,
     "result": "hit"
-   },
-   {
-    "concept": "INPUTS",
-    "clause": null,
-    "span": "input data",
-    "gold_clause": null,
-    "result": "extra"
    }
   ],
   "missed": [],
@@ -3584,7 +3485,7 @@
  },
  {
   "card_id": "RC-ISO42001-A.7.5",
-  "confidence": 0.65,
+  "confidence": 0.5,
   "status": "draft",
   "actor": "organisation",
   "action": "SPECIFY",
@@ -3598,13 +3499,6 @@
     "span": null,
     "gold_clause": null,
     "result": "hit"
-   },
-   {
-    "concept": "COLLECTION_PROCESS",
-    "clause": null,
-    "span": null,
-    "gold_clause": null,
-    "result": "extra"
    }
   ],
   "missed": [],
