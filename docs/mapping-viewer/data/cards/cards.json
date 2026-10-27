@@ -148,7 +148,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-IV-2",
-  "card_version": 1,
+  "card_version": 2,
   "status": "approved",
   "confidence": 0.68,
   "regulation": {
@@ -201,8 +201,8 @@
     "concept": "COLLECTION_PROCESS",
     "label": "데이터 수집 절차",
     "clause": "(d)",
-    "highlight": "출처 | 데이터가 획득되고 선정된 방식",
-    "highlight_en": "provenance | how the data was obtained and selected",
+    "highlight": "데이터가 획득되고 선정된 방식",
+    "highlight_en": "how the data was obtained and selected",
     "required": "always",
     "value_kind": "value"
    },
@@ -403,6 +403,15 @@
     "highlight_en": "the technical measures needed to facilitate the interpretation of the outputs of AI systems by the deployers",
     "required": "always",
     "value_kind": "value"
+   },
+   {
+    "concept": "PROVENANCE",
+    "label": "패키지 출처 정보",
+    "clause": "(d)",
+    "highlight": "출처",
+    "highlight_en": "provenance",
+    "required": "always",
+    "value_kind": "value"
    }
   ],
   "conditions": [
@@ -434,7 +443,7 @@
     "label": "log"
    }
   ],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 23개)과 기준 카드(개념 21개)를 비교해 승인. 더함: OPTIMIZATION_TARGET (Q14. 부속서 XI 1(2) 에서는 표가 단 같은 말); TRAINING_COMPUTE (Q14. (c) 연산자원에 훈련이 명시됨); EXPLAINABILITY_METHODS (Q14. 부속서 IV(3) 에서는 표가 단 같은 말) 초안이 놓침: PERFORMANCE_METRICS_VALUE"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 23개)과 기준 카드(개념 21개)를 비교해 승인. 더함: OPTIMIZATION_TARGET (Q14. 부속서 XI 1(2) 에서는 표가 단 같은 말); TRAINING_COMPUTE (Q14. (c) 연산자원에 훈련이 명시됨); EXPLAINABILITY_METHODS (Q14. 부속서 IV(3) 에서는 표가 단 같은 말) 초안이 놓침: PERFORMANCE_METRICS_VALUE 고침 2026-10-27 (판 2): 더함: PROVENANCE ((d) 의 'provenance' 는 출처. 부속서 XI 1(2)·XII(2) 와 같은 처리) 구절 고침: COLLECTION_PROCESS (수집 절차는 획득·선정 방식만. 출처는 PROVENANCE 가 받음)"
  },
  {
   "card_id": "RC-EUAIA-Annex-IV-3",

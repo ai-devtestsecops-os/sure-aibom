@@ -305,7 +305,8 @@
    }
   ],
   "missed": [
-   "SIZE"
+   "SIZE",
+   "PROVENANCE"
   ],
   "conditions": [
    "where relevant",
@@ -341,7 +342,7 @@
    {
     "concept": "GROUP_AT_RISK",
     "clause": null,
-    "span": "specific persons or groups",
+    "span": "persons or groups of persons",
     "gold_clause": null,
     "result": "extra"
    },
@@ -1336,13 +1337,6 @@
     "result": "hit"
    },
    {
-    "concept": "COMPONENT_VERSION",
-    "clause": "(c)",
-    "span": "release",
-    "gold_clause": null,
-    "result": "extra"
-   },
-   {
     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
     "clause": "(c)",
     "span": "methods of distribution",
@@ -1391,7 +1385,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XI-1-2",
-  "confidence": 0.64,
+  "confidence": 0.63,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -1458,7 +1452,7 @@
    {
     "concept": "PROVENANCE",
     "clause": "(c)",
-    "span": "provenance of data",
+    "span": "provenance",
     "gold_clause": "(c)",
     "result": "hit"
    },
@@ -1487,20 +1481,6 @@
     "concept": "KNOWN_GAPS",
     "clause": "(c)",
     "span": "unsuitability of data",
-    "gold_clause": null,
-    "result": "extra"
-   },
-   {
-    "concept": "DECLARATIONS_CLAIMS",
-    "clause": "(c)",
-    "span": "suitability",
-    "gold_clause": null,
-    "result": "extra"
-   },
-   {
-    "concept": "DECLARATIONS_EVIDENCE",
-    "clause": "(c)",
-    "span": "suitability",
     "gold_clause": null,
     "result": "extra"
    },
@@ -1805,13 +1785,6 @@
     "result": "hit"
    },
    {
-    "concept": "COLLECTION_PROCESS",
-    "clause": "(c)",
-    "span": "the type and provenance of data and curation methodologies",
-    "gold_clause": null,
-    "result": "extra"
-   },
-   {
     "concept": "MODALITY",
     "clause": "(c)",
     "span": "the type and provenance of data",
@@ -1828,7 +1801,7 @@
    {
     "concept": "PROVENANCE",
     "clause": "(c)",
-    "span": "provenance of data",
+    "span": "provenance",
     "gold_clause": "(c)",
     "result": "hit"
    }
@@ -1956,13 +1929,6 @@
     "span": "sufficiently representative",
     "gold_clause": null,
     "result": "hit"
-   },
-   {
-    "concept": "AUTHORISED_REPRESENTATIVE",
-    "clause": null,
-    "span": "representative",
-    "gold_clause": null,
-    "result": "extra"
    },
    {
     "concept": "STATISTICS",
@@ -2226,7 +2192,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-13-3",
-  "confidence": 0.65,
+  "confidence": 0.63,
   "status": "draft",
   "actor": "deployer",
   "action": "SPECIFY",
@@ -2277,20 +2243,6 @@
     "result": "hit"
    },
    {
-    "concept": "DECLARATIONS_CLAIMS",
-    "clause": "(b)(ii)",
-    "span": "validated",
-    "gold_clause": null,
-    "result": "extra"
-   },
-   {
-    "concept": "DECLARATIONS_EVIDENCE",
-    "clause": "(b)(ii)",
-    "span": "validated",
-    "gold_clause": null,
-    "result": "extra"
-   },
-   {
     "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
     "clause": "(b)(iii)",
     "span": "conditions of reasonably foreseeable misuse, which may lead to risks to the health and safety or fundamental rights referred to in Article",
@@ -2307,7 +2259,7 @@
    {
     "concept": "GROUP_AT_RISK",
     "clause": "(b)(v)",
-    "span": "specific persons or groups",
+    "span": "persons or groups of persons",
     "gold_clause": null,
     "result": "extra"
    },
@@ -2317,6 +2269,20 @@
     "span": "specifications for the input data",
     "gold_clause": "(b)(vi)",
     "result": "hit"
+   },
+   {
+    "concept": "DECLARATIONS_CLAIMS",
+    "clause": "(b)(vi)",
+    "span": "input data, or any other relevant",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "clause": "(b)(vi)",
+    "span": "input data, or any other relevant",
+    "gold_clause": null,
+    "result": "extra"
    },
    {
     "concept": "DATASETS",
@@ -2345,13 +2311,6 @@
     "span": "human oversight",
     "gold_clause": "(d)",
     "result": "hit"
-   },
-   {
-    "concept": "TRAINING_COMPUTE",
-    "clause": "(e)",
-    "span": "computational and hardware resource",
-    "gold_clause": null,
-    "result": "extra"
    },
    {
     "concept": "TECHNICAL_REQUIREMENTS",
@@ -2438,7 +2397,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-14-4",
-  "confidence": 0.61,
+  "confidence": 0.64,
   "status": "draft",
   "actor": "deployer",
   "action": "PROVIDE",
@@ -2452,13 +2411,6 @@
     "span": "human oversight",
     "gold_clause": "(d), (e)",
     "result": "hit"
-   },
-   {
-    "concept": "DATASETS",
-    "clause": "(b)",
-    "span": "system (automation bias), in particular for high-risk AI systems used to provide information",
-    "gold_clause": null,
-    "result": "extra"
    },
    {
     "concept": "EXPLAINABILITY_METHODS",
@@ -2739,7 +2691,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-26-4",
-  "confidence": 0.61,
+  "confidence": 0.67,
   "status": "pending_review",
   "actor": "deployer",
   "action": "ENSURE",
@@ -2753,13 +2705,6 @@
     "span": "sufficiently representative",
     "gold_clause": null,
     "result": "hit"
-   },
-   {
-    "concept": "AUTHORISED_REPRESENTATIVE",
-    "clause": null,
-    "span": "representative",
-    "gold_clause": null,
-    "result": "extra"
    }
   ],
   "missed": [
@@ -3759,7 +3704,7 @@
  },
  {
   "card_id": "RC-ISO42001-A.7.5",
-  "confidence": 0.68,
+  "confidence": 0.8,
   "status": "draft",
   "actor": "organisation",
   "action": "SPECIFY",
@@ -3767,13 +3712,6 @@
   "object_scope": "bom",
   "gold_actor": "organisation",
   "facts": [
-   {
-    "concept": "COLLECTION_PROCESS",
-    "clause": null,
-    "span": null,
-    "gold_clause": null,
-    "result": "extra"
-   },
    {
     "concept": "PROVENANCE",
     "clause": null,
@@ -4132,7 +4070,7 @@
  },
  {
   "card_id": "RC-NISTRMF-MAP-2.3",
-  "confidence": 0.55,
+  "confidence": 0.58,
   "status": "draft",
   "actor": "organisation",
   "action": "DOCUMENT",
@@ -4160,30 +4098,11 @@
     "span": "availability",
     "gold_clause": null,
     "result": "extra"
-   },
-   {
-    "concept": "AUTHORISED_REPRESENTATIVE",
-    "clause": null,
-    "span": "representative",
-    "gold_clause": null,
-    "result": "extra"
-   },
-   {
-    "concept": "DECLARATIONS_CLAIMS",
-    "clause": null,
-    "span": "suitability",
-    "gold_clause": null,
-    "result": "hit"
-   },
-   {
-    "concept": "DECLARATIONS_EVIDENCE",
-    "clause": null,
-    "span": "suitability",
-    "gold_clause": null,
-    "result": "hit"
    }
   ],
   "missed": [
+   "DECLARATIONS_CLAIMS",
+   "DECLARATIONS_EVIDENCE",
    "VERIFICATION_METHODOLOGY"
   ],
   "conditions": [],

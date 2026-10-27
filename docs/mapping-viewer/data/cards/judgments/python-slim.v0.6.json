@@ -1,6 +1,6 @@
 {
  "engine_version": "0.3.0",
- "run_at": "2026-10-27T04:53:48Z",
+ "run_at": "2026-10-27T05:38:33Z",
  "bom": {
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
@@ -222,7 +222,7 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-2",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex IV(2): 모델 구조·과업 · 데이터셋 수집·출처 · 데이터 전처리 · 성능측정",
    "conditions": {
     "C1": {
@@ -485,6 +485,16 @@
       "component.modelCard.considerations.explainabilityMethods"
      ],
      "found_at": {}
+    },
+    {
+     "concept": "PROVENANCE",
+     "label": "패키지 출처 정보",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.provenance"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -670,6 +680,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.considerations.explainabilityMethods"
+     ]
+    },
+    {
+     "concept": "PROVENANCE",
+     "label": "패키지 출처 정보",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.provenance"
      ]
     }
    ]

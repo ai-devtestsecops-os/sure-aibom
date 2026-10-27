@@ -37,7 +37,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 6장이 씀)"
+      "note": "요구사항 표에서 (카드 5장이 씀)"
     },
     {
       "concept": "PREPROCESSING",
@@ -90,7 +90,7 @@
       "coverage": "관계",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 4장이 씀)"
+      "note": "요구사항 표에서 (카드 5장이 씀)"
     },
     {
       "concept": "MODEL_ARCHITECTURE",
@@ -176,7 +176,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)"
+      "note": "요구사항 표에서 (카드 3장이 씀)"
     },
     {
       "concept": "SYSTEM_DEV_TEST_COMPUTE",
@@ -188,7 +188,7 @@
       "concept": "HUMAN_OVERSIGHT_MEASURES",
       "status": "gap",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 9장이 씀)"
+      "note": "요구사항 표에서 (카드 10장이 씀)"
     },
     {
       "concept": "PREDETERMINED_CHANGES",
@@ -262,7 +262,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)"
+      "note": "요구사항 표에서 (카드 2장이 씀)"
     },
     {
       "concept": "TRAINING_TIME",
@@ -282,7 +282,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)"
+      "note": "요구사항 표에서 (카드 2장이 씀)"
     },
     {
       "concept": "TECHNICAL_REQUIREMENTS",
@@ -360,7 +360,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 8장이 씀)"
+      "note": "요구사항 표에서 (카드 9장이 씀)"
     },
     {
       "concept": "COMPONENT_SUPPLIER",
@@ -383,7 +383,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)"
+      "note": "요구사항 표에서 (카드 2장이 씀)"
     },
     {
       "concept": "EXPLAINABILITY_METHODS",
@@ -393,7 +393,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 5장이 씀)"
+      "note": "요구사항 표에서 (카드 6장이 씀)"
     },
     {
       "concept": "ETHICAL_CONSIDERATIONS_NAME",
@@ -413,7 +413,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 6장이 씀)"
+      "note": "요구사항 표에서 (카드 7장이 씀)"
     },
     {
       "concept": "PERFORMANCE_METRICS_SLICE",
@@ -529,7 +529,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)"
+      "note": "요구사항 표에서 (카드 2장이 씀)"
     },
     {
       "concept": "KNOWN_GAPS_MITIGATION_STRATEGY",
@@ -581,7 +581,7 @@
       "concept": "RESIDUAL_RISK_ACCEPTANCE",
       "status": "gap",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 2장이 씀)"
+      "note": "요구사항 표에서 (카드 3장이 씀)"
     },
     {
       "concept": "SENSITIVE_PERSONAL_INFORMATION",
@@ -670,7 +670,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)"
+      "note": "요구사항 표에서 (카드 4장이 씀)"
     },
     {
       "concept": "PRIVACY_ASSESSMENT_REF",
@@ -880,7 +880,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 3장이 씀)"
+      "note": "요구사항 표에서 (카드 4장이 씀)"
     },
     {
       "concept": "HARMS",
@@ -940,7 +940,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 2장이 씀)"
+      "note": "요구사항 표에서 (카드 3장이 씀)"
     },
     {
       "concept": "TASK_IMPLEMENTATION_FAMILY",
@@ -1082,7 +1082,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)"
+      "note": "요구사항 표에서 (지금 쓰는 카드 없음)"
     },
     {
       "concept": "METADATA_MANUFACTURER",
@@ -1128,7 +1128,7 @@
       "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
       "status": "gap",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)"
+      "note": "요구사항 표에서 (카드 2장이 씀)"
     },
     {
       "concept": "BUSINESS_USE_CONTEXT",

@@ -129,8 +129,6 @@
     "source of data",
     "collection and selection",
     "how the data was obtained and selected",
-    "the type and provenance of data",
-    "the type and provenance of data and curation methodologies",
     "data collection processes and the origin of data",
     "data collection and selection"
    ]
@@ -276,7 +274,6 @@
     "version",
     "version of the system",
     "versions",
-    "release",
     "the version of the system"
    ]
   },
@@ -296,6 +293,9 @@
     "the training data sets used",
     "the information used by the system (data, inputs)",
     "a sufficiently detailed summary about the content used for training of the general-purpose AI model"
+   ],
+   "not_terms": [
+    "the information used by the system"
    ]
   },
   {
@@ -329,6 +329,10 @@
     "demonstrated to be valid and reliable",
     "demonstrated to be safe",
     "it can fail safely"
+   ],
+   "not_terms": [
+    "suitability",
+    "validated"
    ]
   },
   {
@@ -340,6 +344,10 @@
     "evidence",
     "supporting evidence",
     "proof"
+   ],
+   "not_terms": [
+    "suitability",
+    "validated"
    ]
   },
   {
@@ -521,7 +529,6 @@
     "persons or groups of persons",
     "affected groups",
     "persons under the age of 18",
-    "specific persons or groups",
     "other vulnerable groups"
    ]
   },
@@ -1194,7 +1201,6 @@
    "gap": false,
    "synonyms": [
     "computational resources used to train",
-    "computational resources",
     "number of floating point operations",
     "compute",
     "computing resources used",
@@ -1387,7 +1393,6 @@
    "synonyms": [
     "authorised representative",
     "authorized representative",
-    "representative",
     "The name, address and contact details of the authorised representative"
    ]
   },
