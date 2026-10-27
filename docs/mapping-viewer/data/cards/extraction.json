@@ -1,7 +1,7 @@
 [
  {
   "card_id": "RC-EUAIA-Annex-IV-1",
-  "confidence": 0.58,
+  "confidence": 0.64,
   "status": "draft",
   "actor": "deployer",
   "action": "DOCUMENT",
@@ -19,7 +19,7 @@
    {
     "concept": "COMPONENT_VERSION",
     "clause": "(a)",
-    "span": "version of the system",
+    "span": "versions",
     "gold_clause": "(a)",
     "result": "hit"
    },
@@ -71,7 +71,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-IV-2",
-  "confidence": 0.58,
+  "confidence": 0.57,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -99,6 +99,13 @@
     "span": "pre-trained systems or tools",
     "gold_clause": "(a)",
     "result": "hit"
+   },
+   {
+    "concept": "TASKS_RESOURCE_REFERENCES",
+    "clause": "(a)",
+    "span": "tools",
+    "gold_clause": null,
+    "result": "extra"
    },
    {
     "concept": "COMPONENT_SUPPLIER",
@@ -136,16 +143,16 @@
     "result": "hit"
    },
    {
-    "concept": "OPTIMIZATION_TARGET",
+    "concept": "GROUP_AT_RISK",
     "clause": "(b)",
-    "span": "designed to optimise for",
+    "span": "persons or groups of persons",
     "gold_clause": null,
     "result": "extra"
    },
    {
     "concept": "HYPERPARAMETERS",
     "clause": "(b)",
-    "span": "relevance of the different parameters",
+    "span": "the relevance of the different parameters",
     "gold_clause": "(b)",
     "result": "hit"
    },
@@ -167,8 +174,8 @@
     "concept": "TRAINING_COMPUTE",
     "clause": "(c)",
     "span": "computational resources used to develop, train",
-    "gold_clause": null,
-    "result": "extra"
+    "gold_clause": "(c)",
+    "result": "hit"
    },
    {
     "concept": "SYSTEM_DEV_TEST_COMPUTE",
@@ -185,6 +192,13 @@
     "result": "hit"
    },
    {
+    "concept": "DATASETS",
+    "clause": "(d)",
+    "span": "data sets used",
+    "gold_clause": "(d)",
+    "result": "hit"
+   },
+   {
     "concept": "MODALITY",
     "clause": "(d)",
     "span": "general description of these data sets",
@@ -194,7 +208,7 @@
    {
     "concept": "COLLECTION_PROCESS",
     "clause": "(d)",
-    "span": "how the data was obtained",
+    "span": "how the data was obtained and selected",
     "gold_clause": "(d)",
     "result": "hit"
    },
@@ -215,16 +229,16 @@
    {
     "concept": "HUMAN_OVERSIGHT_MEASURES",
     "clause": "(e)",
-    "span": "the human oversight measures needed in accordance with Article 14",
+    "span": "human oversight",
     "gold_clause": "(e)",
     "result": "hit"
    },
    {
     "concept": "EXPLAINABILITY_METHODS",
     "clause": "(e)",
-    "span": "interpretation of the outputs",
-    "gold_clause": null,
-    "result": "extra"
+    "span": "interpretation of the output",
+    "gold_clause": "(e)",
+    "result": "hit"
    },
    {
     "concept": "PREDETERMINED_CHANGES",
@@ -232,6 +246,13 @@
     "span": "pre-determined changes",
     "gold_clause": "(f)",
     "result": "hit"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "clause": "(f)",
+    "span": "system and its performance",
+    "gold_clause": null,
+    "result": "extra"
    },
    {
     "concept": "DECLARATIONS_CLAIMS",
@@ -242,6 +263,13 @@
    },
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
+    "clause": "(g)",
+    "span": "metrics",
+    "gold_clause": "(b), (g)",
+    "result": "hit"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
     "clause": "(g)",
     "span": "metrics",
     "gold_clause": "(b), (g)",
@@ -264,8 +292,7 @@
   ],
   "missed": [
    "SIZE",
-   "DATASETS",
-   "PERFORMANCE_METRICS_VALUE"
+   "OPTIMIZATION_TARGET"
   ],
   "conditions": [
    "where relevant",
@@ -276,7 +303,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-IV-3",
-  "confidence": 0.6,
+  "confidence": 0.63,
   "status": "draft",
   "actor": "deployer",
   "action": "DOCUMENT",
@@ -287,7 +314,7 @@
    {
     "concept": "TECHNICAL_LIMITATIONS",
     "clause": null,
-    "span": "limitations in performance",
+    "span": "capabilities and limitations",
     "gold_clause": null,
     "result": "hit"
    },
@@ -297,6 +324,13 @@
     "span": "degrees of accuracy for specific persons",
     "gold_clause": null,
     "result": "hit"
+   },
+   {
+    "concept": "GROUP_AT_RISK",
+    "clause": null,
+    "span": "specific persons or groups",
+    "gold_clause": null,
+    "result": "extra"
    },
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
@@ -372,10 +406,16 @@
     "span": "metrics",
     "gold_clause": null,
     "result": "hit"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "clause": null,
+    "span": "metrics",
+    "gold_clause": null,
+    "result": "hit"
    }
   ],
   "missed": [
-   "PERFORMANCE_METRICS_VALUE",
    "DECLARATIONS_CLAIMS",
    "DECLARATIONS_EVIDENCE"
   ],
@@ -516,7 +556,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-V-1",
-  "confidence": 0.62,
+  "confidence": 0.67,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -534,13 +574,19 @@
    {
     "concept": "COMPONENT_CPE",
     "clause": null,
-    "span": "identification and traceability",
+    "span": "any additional unambiguous reference allowing the identification and traceability of the AI system",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
+    "concept": "COMPONENT_PURL",
+    "clause": null,
+    "span": "any additional unambiguous reference allowing the identification and traceability of the AI system",
     "gold_clause": null,
     "result": "hit"
    }
   ],
   "missed": [
-   "COMPONENT_PURL",
    "COMPONENT_TYPE"
   ],
   "conditions": [],
@@ -548,7 +594,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-V-2",
-  "confidence": 0.5,
+  "confidence": 0.71,
   "status": "draft",
   "actor": "authorised_representative",
   "action": "DOCUMENT",
@@ -568,7 +614,7 @@
     "clause": null,
     "span": "authorised representative",
     "gold_clause": null,
-    "result": "extra"
+    "result": "hit"
    }
   ],
   "missed": [],
@@ -649,7 +695,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-A-1",
-  "confidence": 0.5,
+  "confidence": 0.75,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -682,7 +728,7 @@
    {
     "concept": "MARKET_STATUS_REGIONS",
     "clause": null,
-    "span": "made available in the Union",
+    "span": "Any Member States in which the AI system has been placed on the market, put into service or made available in the Union",
     "gold_clause": null,
     "result": "hit"
    }
@@ -758,44 +804,24 @@
   "exceptions": []
  },
  {
-  "card_id": "RC-EUAIA-Annex-VIII-A-2",
-  "confidence": 0.57,
-  "status": "draft",
-  "actor": "provider",
-  "action": "PROVIDE",
-  "object": "INFORMATION",
-  "object_scope": "bom",
-  "gold_actor": "provider",
-  "facts": [
-   {
-    "concept": "COMPONENT_SUPPLIER",
-    "clause": null,
-    "span": "provider, the name",
-    "gold_clause": null,
-    "result": "extra"
-   }
-  ],
-  "missed": [
-   "AUTHORISED_REPRESENTATIVE"
-  ],
-  "conditions": [
-   "Where submission of information is carried out by another person on behalf of the provider"
-  ],
-  "exceptions": []
- },
- {
   "card_id": "RC-EUAIA-Annex-VIII-A-3",
-  "confidence": 0.0,
-  "status": "pending_review",
+  "confidence": 0.67,
+  "status": "draft",
   "actor": "authorised_representative",
   "action": "DOCUMENT",
   "object": "AI_SYSTEM",
   "object_scope": "unknown",
   "gold_actor": "provider",
-  "facts": [],
-  "missed": [
-   "AUTHORISED_REPRESENTATIVE"
+  "facts": [
+   {
+    "concept": "AUTHORISED_REPRESENTATIVE",
+    "clause": null,
+    "span": "The name, address and contact details of the authorised representative",
+    "gold_clause": null,
+    "result": "hit"
+   }
   ],
+  "missed": [],
   "conditions": [
    "where applicable"
   ],
@@ -803,7 +829,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-A-4",
-  "confidence": 0.75,
+  "confidence": 0.72,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -812,17 +838,28 @@
   "gold_actor": "provider",
   "facts": [
    {
+    "concept": "COMPONENT_NAME",
+    "clause": null,
+    "span": "The AI system trade name",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
     "concept": "COMPONENT_CPE",
     "clause": null,
-    "span": "identification and traceability",
+    "span": "any additional unambiguous reference allowing the identification and traceability of the AI system",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
+    "concept": "COMPONENT_PURL",
+    "clause": null,
+    "span": "any additional unambiguous reference allowing the identification and traceability of the AI system",
     "gold_clause": null,
     "result": "hit"
    }
   ],
-  "missed": [
-   "COMPONENT_NAME",
-   "COMPONENT_PURL"
-  ],
+  "missed": [],
   "conditions": [],
   "exceptions": []
  },
@@ -896,7 +933,7 @@
    {
     "concept": "MARKET_STATUS_REGIONS",
     "clause": null,
-    "span": "status of the AI system",
+    "span": "The status of the AI system",
     "gold_clause": null,
     "result": "hit"
    }
@@ -907,7 +944,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-A-8",
-  "confidence": 0.62,
+  "confidence": 0.75,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -916,13 +953,6 @@
   "gold_actor": "provider",
   "facts": [
    {
-    "concept": "VALID_UNTIL_TIME",
-    "clause": null,
-    "span": "expiry date of the certificate",
-    "gold_clause": null,
-    "result": "hit"
-   },
-   {
     "concept": "CERTIFICATION_REPORT_REF",
     "clause": null,
     "span": "notified body",
@@ -930,7 +960,9 @@
     "result": "hit"
    }
   ],
-  "missed": [],
+  "missed": [
+   "VALID_UNTIL_TIME"
+  ],
   "conditions": [
    "where applicable"
   ],
@@ -962,7 +994,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-B-1",
-  "confidence": 0.5,
+  "confidence": 0.75,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -983,44 +1015,24 @@
   "exceptions": []
  },
  {
-  "card_id": "RC-EUAIA-Annex-VIII-B-2",
-  "confidence": 0.57,
-  "status": "draft",
-  "actor": "provider",
-  "action": "PROVIDE",
-  "object": "INFORMATION",
-  "object_scope": "bom",
-  "gold_actor": "provider",
-  "facts": [
-   {
-    "concept": "COMPONENT_SUPPLIER",
-    "clause": null,
-    "span": "provider, the name",
-    "gold_clause": null,
-    "result": "extra"
-   }
-  ],
-  "missed": [
-   "AUTHORISED_REPRESENTATIVE"
-  ],
-  "conditions": [
-   "Where submission of information is carried out by another person on behalf of the provider"
-  ],
-  "exceptions": []
- },
- {
   "card_id": "RC-EUAIA-Annex-VIII-B-3",
-  "confidence": 0.0,
-  "status": "pending_review",
+  "confidence": 0.67,
+  "status": "draft",
   "actor": "authorised_representative",
   "action": "DOCUMENT",
   "object": "AI_SYSTEM",
   "object_scope": "unknown",
   "gold_actor": "provider",
-  "facts": [],
-  "missed": [
-   "AUTHORISED_REPRESENTATIVE"
+  "facts": [
+   {
+    "concept": "AUTHORISED_REPRESENTATIVE",
+    "clause": null,
+    "span": "The name, address and contact details of the authorised representative",
+    "gold_clause": null,
+    "result": "hit"
+   }
   ],
+  "missed": [],
   "conditions": [
    "where applicable"
   ],
@@ -1028,7 +1040,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-B-4",
-  "confidence": 0.75,
+  "confidence": 0.72,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -1037,17 +1049,28 @@
   "gold_actor": "provider",
   "facts": [
    {
+    "concept": "COMPONENT_NAME",
+    "clause": null,
+    "span": "The AI system trade name",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
     "concept": "COMPONENT_CPE",
     "clause": null,
-    "span": "identification and traceability",
+    "span": "any additional unambiguous reference allowing the identification and traceability of the AI system",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
+    "concept": "COMPONENT_PURL",
+    "clause": null,
+    "span": "any additional unambiguous reference allowing the identification and traceability of the AI system",
     "gold_clause": null,
     "result": "hit"
    }
   ],
-  "missed": [
-   "COMPONENT_NAME",
-   "COMPONENT_PURL"
-  ],
+  "missed": [],
   "conditions": [],
   "exceptions": []
  },
@@ -1069,28 +1092,6 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-B-6",
-  "confidence": 0.5,
-  "status": "draft",
-  "actor": "provider",
-  "action": "DOCUMENT",
-  "object": "AI_SYSTEM",
-  "object_scope": "bom",
-  "gold_actor": "provider",
-  "facts": [
-   {
-    "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
-    "clause": null,
-    "span": "conditions under Article 6(3)",
-    "gold_clause": null,
-    "result": "hit"
-   }
-  ],
-  "missed": [],
-  "conditions": [],
-  "exceptions": []
- },
- {
-  "card_id": "RC-EUAIA-Annex-VIII-B-7",
   "confidence": 0.67,
   "status": "draft",
   "actor": "provider",
@@ -1104,7 +1105,29 @@
     "clause": null,
     "span": "considered to be not-high-risk",
     "gold_clause": null,
-    "result": "extra"
+    "result": "hit"
+   }
+  ],
+  "missed": [],
+  "conditions": [],
+  "exceptions": []
+ },
+ {
+  "card_id": "RC-EUAIA-Annex-VIII-B-7",
+  "confidence": 0.5,
+  "status": "draft",
+  "actor": "provider",
+  "action": "DOCUMENT",
+  "object": "AI_SYSTEM",
+  "object_scope": "bom",
+  "gold_actor": "provider",
+  "facts": [
+   {
+    "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
+    "clause": null,
+    "span": "grounds on which the AI system is considered",
+    "gold_clause": null,
+    "result": "hit"
    }
   ],
   "missed": [
@@ -1126,7 +1149,7 @@
    {
     "concept": "MARKET_STATUS_REGIONS",
     "clause": null,
-    "span": "status of the AI system",
+    "span": "The status of the AI system",
     "gold_clause": null,
     "result": "hit"
    }
@@ -1148,7 +1171,7 @@
    {
     "concept": "MARKET_STATUS_REGIONS",
     "clause": null,
-    "span": "made available in the Union",
+    "span": "Any Member States in which the AI system has been placed on the market, put into service or made available in the Union",
     "gold_clause": null,
     "result": "hit"
    }
@@ -1159,41 +1182,23 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-C-1",
-  "confidence": 0.0,
-  "status": "pending_review",
+  "confidence": 0.5,
+  "status": "draft",
   "actor": "deployer",
   "action": "DOCUMENT",
   "object": "AI_SYSTEM",
   "object_scope": "unknown",
-  "gold_actor": "provider",
-  "facts": [],
-  "missed": [
-   "METADATA_MANUFACTURER"
-  ],
-  "conditions": [],
-  "exceptions": []
- },
- {
-  "card_id": "RC-EUAIA-Annex-VIII-C-2",
-  "confidence": 0.54,
-  "status": "draft",
-  "actor": "deployer",
-  "action": "DOCUMENT",
-  "object": "INFORMATION",
-  "object_scope": "bom",
-  "gold_actor": "provider",
+  "gold_actor": "deployer",
   "facts": [
    {
     "concept": "METADATA_MANUFACTURER",
     "clause": null,
-    "span": "name, address and contact details of the person submitting information on behalf of the deployer",
+    "span": "name, address and contact details of the deployer",
     "gold_clause": null,
-    "result": "extra"
+    "result": "hit"
    }
   ],
-  "missed": [
-   "METADATA_AUTHORS"
-  ],
+  "missed": [],
   "conditions": [],
   "exceptions": []
  },
@@ -1274,7 +1279,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XI-1-1",
-  "confidence": 0.64,
+  "confidence": 0.67,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -1297,53 +1302,83 @@
     "result": "extra"
    },
    {
+    "concept": "USE_CASES",
+    "clause": "(a)",
+    "span": "type and nature of AI systems in which it can be integrated",
+    "gold_clause": "(a)",
+    "result": "hit"
+   },
+   {
     "concept": "COMPONENT_LICENSES",
     "clause": "(b)",
-    "span": "acceptable use policies",
+    "span": "the acceptable use policies applicable",
     "gold_clause": "(b), (f)",
     "result": "hit"
    },
    {
     "concept": "RELEASE_NOTES_TIMESTAMP",
     "clause": "(c)",
-    "span": "date of release",
+    "span": "the date of release",
     "gold_clause": "(c)",
     "result": "hit"
    },
    {
+    "concept": "COMPONENT_VERSION",
+    "clause": "(c)",
+    "span": "release",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
     "clause": "(c)",
-    "span": "distribution",
+    "span": "methods of distribution",
     "gold_clause": "(c)",
+    "result": "hit"
+   },
+   {
+    "concept": "ARCHITECTURE_FAMILY",
+    "clause": "(d)",
+    "span": "the architecture",
+    "gold_clause": "(d)",
+    "result": "hit"
+   },
+   {
+    "concept": "MODEL_ARCHITECTURE",
+    "clause": "(d)",
+    "span": "the architecture",
+    "gold_clause": "(d)",
+    "result": "hit"
+   },
+   {
+    "concept": "PARAMETER_COUNT",
+    "clause": "(d)",
+    "span": "number of parameters",
+    "gold_clause": "(d)",
     "result": "hit"
    },
    {
     "concept": "INPUTS",
     "clause": "(e)",
-    "span": "format of inputs",
+    "span": "the modality (e.g. text, image) and format of inputs and outputs",
     "gold_clause": "(e)",
     "result": "hit"
    },
    {
     "concept": "OUTPUTS",
     "clause": "(e)",
-    "span": "format of inputs and output",
+    "span": "the modality (e.g. text, image) and format of inputs and outputs",
     "gold_clause": "(e)",
     "result": "hit"
    }
   ],
-  "missed": [
-   "USE_CASES",
-   "ARCHITECTURE_FAMILY",
-   "MODEL_ARCHITECTURE",
-   "PARAMETER_COUNT"
-  ],
+  "missed": [],
   "conditions": [],
   "exceptions": []
  },
  {
   "card_id": "RC-EUAIA-Annex-XI-1-2",
-  "confidence": 0.6,
+  "confidence": 0.64,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -1357,6 +1392,20 @@
     "span": "instructions of use",
     "gold_clause": "(a)",
     "result": "hit"
+   },
+   {
+    "concept": "COMPONENTS",
+    "clause": "(a)",
+    "span": "infrastructure, tools",
+    "gold_clause": "(a)",
+    "result": "hit"
+   },
+   {
+    "concept": "TASKS_RESOURCE_REFERENCES",
+    "clause": "(a)",
+    "span": "tools",
+    "gold_clause": null,
+    "result": "extra"
    },
    {
     "concept": "TRAINING_TECHNIQUES",
@@ -1373,9 +1422,16 @@
     "result": "hit"
    },
    {
+    "concept": "OPTIMIZATION_TARGET",
+    "clause": "(b)",
+    "span": "designed to optimise for",
+    "gold_clause": "(b)",
+    "result": "hit"
+   },
+   {
     "concept": "HYPERPARAMETERS",
     "clause": "(b)",
-    "span": "relevance of the different parameters",
+    "span": "the relevance of the different parameters",
     "gold_clause": "(b)",
     "result": "hit"
    },
@@ -1389,7 +1445,7 @@
    {
     "concept": "MODALITY",
     "clause": "(c)",
-    "span": "type and provenance of data",
+    "span": "the type and provenance of data and curation methodologies",
     "gold_clause": "(c)",
     "result": "hit"
    },
@@ -1397,8 +1453,8 @@
     "concept": "PROVENANCE",
     "clause": "(c)",
     "span": "provenance of data",
-    "gold_clause": null,
-    "result": "extra"
+    "gold_clause": "(c)",
+    "result": "hit"
    },
    {
     "concept": "PREPROCESSING",
@@ -1422,6 +1478,20 @@
     "result": "extra"
    },
    {
+    "concept": "DECLARATIONS_CLAIMS",
+    "clause": "(c)",
+    "span": "suitability",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "clause": "(c)",
+    "span": "suitability",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
     "concept": "KNOWN_BIAS_DETECTION_METHOD",
     "clause": "(c)",
     "span": "detect identifiable biases",
@@ -1431,7 +1501,7 @@
    {
     "concept": "TRAINING_COMPUTE",
     "clause": "(d)",
-    "span": "number of floating point operations",
+    "span": "computational resources used to train",
     "gold_clause": "(d)",
     "result": "hit"
    },
@@ -1444,9 +1514,7 @@
    }
   ],
   "missed": [
-   "COMPONENTS",
-   "TRAINING_TIME",
-   "OPTIMIZATION_TARGET"
+   "TRAINING_TIME"
   ],
   "conditions": [
    "where applicable",
@@ -1457,7 +1525,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XI-2-1",
-  "confidence": 0.61,
+  "confidence": 0.66,
   "status": "draft",
   "actor": "provider",
   "action": "SPECIFY",
@@ -1466,7 +1534,21 @@
   "gold_actor": "provider",
   "facts": [
    {
+    "concept": "TASKS_RESOURCE_REFERENCES",
+    "clause": null,
+    "span": "protocols and tools",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
     "concept": "PERFORMANCE_METRICS_TYPE",
+    "clause": null,
+    "span": "metrics",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
     "clause": null,
     "span": "metrics",
     "gold_clause": null,
@@ -1481,9 +1563,7 @@
    }
   ],
   "missed": [
-   "PERFORMANCE_METRICS_VALUE",
-   "STANDARDS_REQUIREMENTS",
-   "TASKS_RESOURCE_REFERENCES"
+   "STANDARDS_REQUIREMENTS"
   ],
   "conditions": [],
   "exceptions": []
@@ -1545,7 +1625,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XII-1",
-  "confidence": 0.65,
+  "confidence": 0.66,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -1571,27 +1651,27 @@
     "concept": "USE_CASES",
     "clause": "(a)",
     "span": "type and nature of AI systems into which it can be integrated",
-    "gold_clause": null,
-    "result": "extra"
+    "gold_clause": "(a)",
+    "result": "hit"
    },
    {
     "concept": "COMPONENT_LICENSES",
     "clause": "(b)",
-    "span": "acceptable use policies",
+    "span": "the acceptable use policies applicable",
     "gold_clause": "(b), (h)",
     "result": "hit"
    },
    {
     "concept": "RELEASE_NOTES_TIMESTAMP",
     "clause": "(c)",
-    "span": "date of release",
+    "span": "the date of release",
     "gold_clause": "(c)",
     "result": "hit"
    },
    {
     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
     "clause": "(c)",
-    "span": "distribution",
+    "span": "methods of distribution",
     "gold_clause": "(c)",
     "result": "hit"
    },
@@ -1612,30 +1692,47 @@
    {
     "concept": "COMPONENT_VERSION",
     "clause": "(e)",
-    "span": "versions",
-    "gold_clause": null,
-    "result": "extra"
+    "span": "version",
+    "gold_clause": "(e)",
+    "result": "hit"
+   },
+   {
+    "concept": "ARCHITECTURE_FAMILY",
+    "clause": "(f)",
+    "span": "the architecture",
+    "gold_clause": "(f)",
+    "result": "hit"
+   },
+   {
+    "concept": "MODEL_ARCHITECTURE",
+    "clause": "(f)",
+    "span": "the architecture",
+    "gold_clause": "(f)",
+    "result": "hit"
+   },
+   {
+    "concept": "PARAMETER_COUNT",
+    "clause": "(f)",
+    "span": "number of parameters",
+    "gold_clause": "(f)",
+    "result": "hit"
    },
    {
     "concept": "INPUTS",
     "clause": "(g)",
-    "span": "format of inputs",
+    "span": "the modality (e.g. text, image) and format of inputs and outputs",
     "gold_clause": "(g)",
     "result": "hit"
    },
    {
     "concept": "OUTPUTS",
     "clause": "(g)",
-    "span": "format of inputs and output",
+    "span": "the modality (e.g. text, image) and format of inputs and outputs",
     "gold_clause": "(g)",
     "result": "hit"
    }
   ],
-  "missed": [
-   "ARCHITECTURE_FAMILY",
-   "MODEL_ARCHITECTURE",
-   "PARAMETER_COUNT"
-  ],
+  "missed": [],
   "conditions": [
    "where applicable",
    "where applicable"
@@ -1644,7 +1741,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XII-2",
-  "confidence": 0.58,
+  "confidence": 0.61,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -1660,6 +1757,20 @@
     "result": "hit"
    },
    {
+    "concept": "COMPONENTS",
+    "clause": "(a)",
+    "span": "infrastructure, tools",
+    "gold_clause": "(a)",
+    "result": "hit"
+   },
+   {
+    "concept": "TASKS_RESOURCE_REFERENCES",
+    "clause": "(a)",
+    "span": "tools",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
     "concept": "INPUTS",
     "clause": "(b)",
     "span": "modality (e.g. text, image, etc.) and format of the inputs and output",
@@ -1669,7 +1780,7 @@
    {
     "concept": "OUTPUTS",
     "clause": "(b)",
-    "span": "format of the inputs and output",
+    "span": "modality (e.g. text, image, etc.) and format of the inputs and output",
     "gold_clause": "(b)",
     "result": "hit"
    },
@@ -1698,8 +1809,8 @@
     "concept": "PROVENANCE",
     "clause": "(c)",
     "span": "provenance of data",
-    "gold_clause": null,
-    "result": "extra"
+    "gold_clause": "(c)",
+    "result": "hit"
    },
    {
     "concept": "PREPROCESSING",
@@ -1709,9 +1820,7 @@
     "result": "hit"
    }
   ],
-  "missed": [
-   "COMPONENTS"
-  ],
+  "missed": [],
   "conditions": [
    "where applicable"
   ],
@@ -1727,6 +1836,13 @@
   "object_scope": "bom",
   "gold_actor": "provider",
   "facts": [
+   {
+    "concept": "DATASETS",
+    "clause": null,
+    "span": "Training, validation and testing data sets",
+    "gold_clause": null,
+    "result": "extra"
+   },
    {
     "concept": "DESIGN_CHOICES",
     "clause": "(a)",
@@ -1806,7 +1922,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-10-3",
-  "confidence": 0.5,
+  "confidence": 0.53,
   "status": "draft",
   "actor": "provider",
   "action": "DESIGN",
@@ -1815,16 +1931,43 @@
   "gold_actor": "provider",
   "facts": [
    {
+    "concept": "DATASETS",
+    "clause": null,
+    "span": "Training, validation and testing data sets",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
+    "concept": "KNOWN_BIAS_NAME",
+    "clause": null,
+    "span": "sufficiently representative",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
+    "concept": "AUTHORISED_REPRESENTATIVE",
+    "clause": null,
+    "span": "representative",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
     "concept": "STATISTICS",
     "clause": null,
     "span": "statistical properties",
     "gold_clause": null,
     "result": "hit"
+   },
+   {
+    "concept": "GROUP_AT_RISK",
+    "clause": null,
+    "span": "persons or groups of persons",
+    "gold_clause": null,
+    "result": "extra"
    }
   ],
   "missed": [
    "NOISE",
-   "KNOWN_BIAS_NAME",
    "DECLARATIONS_CLAIMS",
    "DECLARATIONS_EVIDENCE",
    "KNOWN_GAPS"
@@ -2026,7 +2169,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-13-1",
-  "confidence": 0.57,
+  "confidence": 0.69,
   "status": "draft",
   "actor": "deployer",
   "action": "DESIGN",
@@ -2048,8 +2191,8 @@
  },
  {
   "card_id": "RC-EUAIA-Article-13-2",
-  "confidence": 0.45,
-  "status": "pending_review",
+  "confidence": 0.56,
+  "status": "draft",
   "actor": "deployer",
   "action": "PROVIDE",
   "object": "AI_SYSTEM",
@@ -2070,7 +2213,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-13-3",
-  "confidence": 0.57,
+  "confidence": 0.65,
   "status": "draft",
   "actor": "deployer",
   "action": "SPECIFY",
@@ -2088,7 +2231,7 @@
    {
     "concept": "COMPONENT_SUPPLIER",
     "clause": "(a)",
-    "span": "identity and the contact details of the provider",
+    "span": "contact details of the provider",
     "gold_clause": "(a)",
     "result": "hit"
    },
@@ -2096,22 +2239,15 @@
     "concept": "AUTHORISED_REPRESENTATIVE",
     "clause": "(a)",
     "span": "authorised representative",
-    "gold_clause": null,
-    "result": "extra"
+    "gold_clause": "(a)",
+    "result": "hit"
    },
    {
     "concept": "TECHNICAL_LIMITATIONS",
     "clause": "(b)",
-    "span": "limitations of performance",
+    "span": "capabilities and limitations",
     "gold_clause": "(b), (b)(ii)",
     "result": "hit"
-   },
-   {
-    "concept": "DECLARATIONS_CLAIMS",
-    "clause": "(b)",
-    "span": "performance of the high-risk AI system",
-    "gold_clause": null,
-    "result": "extra"
    },
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
@@ -2119,6 +2255,27 @@
     "span": "level of accuracy",
     "gold_clause": "(b)(v)",
     "result": "hit"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "clause": "(b)(ii)",
+    "span": "metrics",
+    "gold_clause": "(b)(v)",
+    "result": "hit"
+   },
+   {
+    "concept": "DECLARATIONS_CLAIMS",
+    "clause": "(b)(ii)",
+    "span": "validated",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "clause": "(b)(ii)",
+    "span": "validated",
+    "gold_clause": null,
+    "result": "extra"
    },
    {
     "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
@@ -2135,18 +2292,18 @@
     "result": "hit"
    },
    {
+    "concept": "GROUP_AT_RISK",
+    "clause": "(b)(v)",
+    "span": "specific persons or groups",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
     "concept": "INPUTS",
     "clause": "(b)(vi)",
     "span": "specifications for the input data",
     "gold_clause": "(b)(vi)",
     "result": "hit"
-   },
-   {
-    "concept": "DATASETS",
-    "clause": "(b)(vi)",
-    "span": "data sets used",
-    "gold_clause": null,
-    "result": "extra"
    },
    {
     "concept": "EXPLAINABILITY_METHODS",
@@ -2201,8 +2358,8 @@
   "missed": [
    "ETHICAL_CONSIDERATIONS_NAME",
    "USE_CASES",
-   "PERFORMANCE_METRICS_VALUE",
-   "LOGGING_MECHANISM"
+   "LOGGING_MECHANISM",
+   "DATASETS"
   ],
   "conditions": [
    "where applicable",
@@ -2217,14 +2374,21 @@
  },
  {
   "card_id": "RC-EUAIA-Article-14-1",
-  "confidence": 0.5,
-  "status": "draft",
+  "confidence": 0.45,
+  "status": "pending_review",
   "actor": "provider",
   "action": "DESIGN",
   "object": "AI_SYSTEM",
   "object_scope": "bom",
   "gold_actor": "provider",
   "facts": [
+   {
+    "concept": "TASKS_RESOURCE_REFERENCES",
+    "clause": null,
+    "span": "tools",
+    "gold_clause": null,
+    "result": "extra"
+   },
    {
     "concept": "HUMAN_OVERSIGHT_MEASURES",
     "clause": null,
@@ -2255,7 +2419,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-14-4",
-  "confidence": 0.62,
+  "confidence": 0.64,
   "status": "draft",
   "actor": "deployer",
   "action": "PROVIDE",
@@ -2276,6 +2440,13 @@
     "span": "interpret the high-risk AI system’s output",
     "gold_clause": "(c)",
     "result": "hit"
+   },
+   {
+    "concept": "TASKS_RESOURCE_REFERENCES",
+    "clause": "(c)",
+    "span": "tools",
+    "gold_clause": null,
+    "result": "extra"
    }
   ],
   "missed": [
@@ -2317,7 +2488,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-15-3",
-  "confidence": 0.71,
+  "confidence": 0.72,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -2333,6 +2504,13 @@
     "result": "hit"
    },
    {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "clause": null,
+    "span": "metrics",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
     "concept": "DOCUMENTATION_REF",
     "clause": null,
     "span": "instructions of use",
@@ -2340,9 +2518,7 @@
     "result": "extra"
    }
   ],
-  "missed": [
-   "PERFORMANCE_METRICS_VALUE"
-  ],
+  "missed": [],
   "conditions": [],
   "exceptions": []
  },
@@ -2481,7 +2657,7 @@
   "action": "DECLARE",
   "object": "REGISTRATION",
   "object_scope": "bom",
-  "gold_actor": "organisation",
+  "gold_actor": "importer",
   "facts": [
    {
     "concept": "COMPONENT_SUPPLIER",
@@ -2499,14 +2675,21 @@
  },
  {
   "card_id": "RC-EUAIA-Article-25-4",
-  "confidence": 0.62,
+  "confidence": 0.55,
   "status": "pending_review",
   "actor": "provider",
   "action": "COMPLY",
   "object": "AI_SYSTEM",
   "object_scope": "procedure",
-  "gold_actor": "organisation",
+  "gold_actor": "provider",
   "facts": [
+   {
+    "concept": "TASKS_RESOURCE_REFERENCES",
+    "clause": null,
+    "span": "tools",
+    "gold_clause": null,
+    "result": "extra"
+   },
    {
     "concept": "THIRD_PARTY_SUPPORT_SCOPE",
     "clause": null,
@@ -2530,16 +2713,30 @@
  },
  {
   "card_id": "RC-EUAIA-Article-26-4",
-  "confidence": 0.0,
+  "confidence": 0.61,
   "status": "pending_review",
   "actor": "deployer",
   "action": "ENSURE",
   "object": "DATASET",
   "object_scope": "procedure",
   "gold_actor": "deployer",
-  "facts": [],
+  "facts": [
+   {
+    "concept": "KNOWN_BIAS_NAME",
+    "clause": null,
+    "span": "sufficiently representative",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
+    "concept": "AUTHORISED_REPRESENTATIVE",
+    "clause": null,
+    "span": "representative",
+    "gold_clause": null,
+    "result": "extra"
+   }
+  ],
   "missed": [
-   "KNOWN_BIAS_NAME",
    "DECLARATIONS_CLAIMS",
    "DECLARATIONS_EVIDENCE"
   ],
@@ -2550,7 +2747,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-27-1",
-  "confidence": 0.63,
+  "confidence": 0.62,
   "status": "pending_review",
   "actor": "deployer",
   "action": "PERFORM",
@@ -2576,15 +2773,15 @@
     "concept": "GROUP_AT_RISK",
     "clause": "(c)",
     "span": "groups likely to be affected",
-    "gold_clause": null,
-    "result": "extra"
+    "gold_clause": "(c)",
+    "result": "hit"
    },
    {
     "concept": "HUMAN_OVERSIGHT_MEASURES",
     "clause": "(e)",
-    "span": "human oversight",
-    "gold_clause": null,
-    "result": "extra"
+    "span": "human oversight measures",
+    "gold_clause": "(e)",
+    "result": "hit"
    },
    {
     "concept": "DOCUMENTATION_REF",
@@ -2610,7 +2807,7 @@
   "action": "DECLARE",
   "object": "AI_SYSTEM",
   "object_scope": "bom",
-  "gold_actor": "organisation",
+  "gold_actor": "provider",
   "facts": [
    {
     "concept": "STANDARDS_NAME",
@@ -2698,7 +2895,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-48-4",
-  "confidence": 0.6,
+  "confidence": 0.66,
   "status": "draft",
   "actor": "provider",
   "action": "PROVIDE",
@@ -2804,7 +3001,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-53-1",
-  "confidence": 0.59,
+  "confidence": 0.55,
   "status": "draft",
   "actor": "provider",
   "action": "SPECIFY",
@@ -2841,11 +3038,11 @@
     "result": "hit"
    },
    {
-    "concept": "TECHNICAL_LIMITATIONS",
-    "clause": "(b)(i)",
-    "span": "capabilities and limitations",
-    "gold_clause": null,
-    "result": "extra"
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "clause": "(a)",
+    "span": "results of its evaluation",
+    "gold_clause": "(a)",
+    "result": "hit"
    },
    {
     "concept": "DATASETS",
@@ -2856,14 +3053,14 @@
    }
   ],
   "missed": [
-   "PERFORMANCE_METRICS_VALUE"
+   "TECHNICAL_LIMITATIONS"
   ],
   "conditions": [],
   "exceptions": []
  },
  {
   "card_id": "RC-EUAIA-Article-53-4",
-  "confidence": 0.8,
+  "confidence": 0.7,
   "status": "draft",
   "actor": "provider",
   "action": "DECLARE",
@@ -2877,13 +3074,30 @@
     "span": "harmonised standards",
     "gold_clause": null,
     "result": "hit"
+   },
+   {
+    "concept": "DECLARATIONS_CLAIMS",
+    "clause": null,
+    "span": "shall demonstrate alternative adequate means of compliance",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "clause": null,
+    "span": "shall demonstrate alternative adequate means of compliance",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
+    "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
+    "clause": null,
+    "span": "alternative adequate means of compliance",
+    "gold_clause": null,
+    "result": "hit"
    }
   ],
-  "missed": [
-   "DECLARATIONS_CLAIMS",
-   "DECLARATIONS_EVIDENCE",
-   "ALTERNATIVE_COMPLIANCE_MEANS"
-  ],
+  "missed": [],
   "conditions": [
    "to the extent that those standards cover those obligations"
   ],
@@ -2891,7 +3105,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-55-1",
-  "confidence": 0.58,
+  "confidence": 0.55,
   "status": "draft",
   "actor": "provider",
   "action": "DOCUMENT",
@@ -2909,9 +3123,9 @@
    {
     "concept": "TASKS_RESOURCE_REFERENCES",
     "clause": "(a)",
-    "span": "protocols and tools",
-    "gold_clause": null,
-    "result": "extra"
+    "span": "evaluation in accordance with standardised protocols and tool",
+    "gold_clause": "(a)",
+    "result": "hit"
    },
    {
     "concept": "ADVERSARY_MODEL_REF",
@@ -2946,7 +3160,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-55-2",
-  "confidence": 0.74,
+  "confidence": 0.7,
   "status": "draft",
   "actor": "provider",
   "action": "DECLARE",
@@ -2967,13 +3181,30 @@
     "span": "systemic risks",
     "gold_clause": null,
     "result": "extra"
+   },
+   {
+    "concept": "DECLARATIONS_CLAIMS",
+    "clause": null,
+    "span": "shall demonstrate alternative adequate means of compliance",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "clause": null,
+    "span": "shall demonstrate alternative adequate means of compliance",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
+    "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
+    "clause": null,
+    "span": "alternative adequate means of compliance",
+    "gold_clause": null,
+    "result": "hit"
    }
   ],
-  "missed": [
-   "DECLARATIONS_CLAIMS",
-   "DECLARATIONS_EVIDENCE",
-   "ALTERNATIVE_COMPLIANCE_MEANS"
-  ],
+  "missed": [],
   "conditions": [
    "to the extent that those standards cover those obligations"
   ],
@@ -2987,7 +3218,7 @@
   "action": "DOCUMENT",
   "object": "AI_SYSTEM",
   "object_scope": "bom",
-  "gold_actor": "organisation",
+  "gold_actor": "provider",
   "facts": [
    {
     "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
@@ -3053,7 +3284,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-9-5",
-  "confidence": 0.59,
+  "confidence": 0.62,
   "status": "draft",
   "actor": "deployer",
   "action": "ASSESS",
@@ -3071,9 +3302,16 @@
    {
     "concept": "RESIDUAL_RISK_ACCEPTANCE",
     "clause": null,
-    "span": "judged to be acceptable",
+    "span": "residual risk",
     "gold_clause": null,
     "result": "hit"
+   },
+   {
+    "concept": "DOCUMENTATION_REF",
+    "clause": "(a)",
+    "span": "design and development of the high-risk AI system",
+    "gold_clause": null,
+    "result": "extra"
    },
    {
     "concept": "APPLIED_CONTROLS",
@@ -3092,7 +3330,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-9-8",
-  "confidence": 0.61,
+  "confidence": 0.65,
   "status": "draft",
   "actor": "provider",
   "action": "TEST",
@@ -3108,6 +3346,13 @@
     "result": "hit"
    },
    {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "clause": null,
+    "span": "metrics",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
     "concept": "DECISION_THRESHOLD",
     "clause": null,
     "span": "thresholds",
@@ -3115,9 +3360,7 @@
     "result": "hit"
    }
   ],
-  "missed": [
-   "PERFORMANCE_METRICS_VALUE"
-  ],
+  "missed": [],
   "conditions": [
    "as appropriate"
   ],
@@ -3485,7 +3728,7 @@
  },
  {
   "card_id": "RC-ISO42001-A.7.5",
-  "confidence": 0.5,
+  "confidence": 0.78,
   "status": "draft",
   "actor": "organisation",
   "action": "SPECIFY",
@@ -3493,6 +3736,13 @@
   "object_scope": "bom",
   "gold_actor": "organisation",
   "facts": [
+   {
+    "concept": "COLLECTION_PROCESS",
+    "clause": null,
+    "span": null,
+    "gold_clause": null,
+    "result": "extra"
+   },
    {
     "concept": "PROVENANCE",
     "clause": null,
@@ -3632,7 +3882,7 @@
     "clause": null,
     "span": "residual risk",
     "gold_clause": null,
-    "result": "extra"
+    "result": "hit"
    },
    {
     "concept": "USERS",
@@ -3677,7 +3927,7 @@
  },
  {
   "card_id": "RC-NISTRMF-MAP-1.1",
-  "confidence": 0.52,
+  "confidence": 0.54,
   "status": "draft",
   "actor": "organisation",
   "action": "DOCUMENT",
@@ -3740,12 +3990,18 @@
     "span": "metrics",
     "gold_clause": null,
     "result": "hit"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "clause": null,
+    "span": "metrics",
+    "gold_clause": null,
+    "result": "hit"
    }
   ],
   "missed": [
    "TECHNICAL_LIMITATIONS",
-   "USE_CASES",
-   "PERFORMANCE_METRICS_VALUE"
+   "USE_CASES"
   ],
   "conditions": [],
   "exceptions": []
@@ -3845,7 +4101,7 @@
  },
  {
   "card_id": "RC-NISTRMF-MAP-2.3",
-  "confidence": 0.58,
+  "confidence": 0.55,
   "status": "draft",
   "actor": "organisation",
   "action": "DOCUMENT",
@@ -3873,11 +4129,30 @@
     "span": "availability",
     "gold_clause": null,
     "result": "extra"
+   },
+   {
+    "concept": "AUTHORISED_REPRESENTATIVE",
+    "clause": null,
+    "span": "representative",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
+    "concept": "DECLARATIONS_CLAIMS",
+    "clause": null,
+    "span": "suitability",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "clause": null,
+    "span": "suitability",
+    "gold_clause": null,
+    "result": "hit"
    }
   ],
   "missed": [
-   "DECLARATIONS_CLAIMS",
-   "DECLARATIONS_EVIDENCE",
    "VERIFICATION_METHODOLOGY"
   ],
   "conditions": [],
@@ -3908,7 +4183,21 @@
     "result": "extra"
    },
    {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "clause": null,
+    "span": "system functionality and performance",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
     "concept": "PERFORMANCE_METRICS_TYPE",
+    "clause": null,
+    "span": "system functionality and performance",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
     "clause": null,
     "span": "system functionality and performance",
     "gold_clause": null,
@@ -3921,14 +4210,28 @@
  },
  {
   "card_id": "RC-NISTRMF-MAP-3.2",
-  "confidence": 0.67,
-  "status": "draft",
+  "confidence": 0.49,
+  "status": "pending_review",
   "actor": "organisation",
   "action": "DOCUMENT",
   "object": "TECHNICAL_DOCUMENTATION",
   "object_scope": "bom",
   "gold_actor": "organisation",
   "facts": [
+   {
+    "concept": "DECLARATIONS_CLAIMS",
+    "clause": null,
+    "span": "system functionality and trustworthiness",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "clause": null,
+    "span": "system functionality and trustworthiness",
+    "gold_clause": null,
+    "result": "extra"
+   },
    {
     "concept": "RESIDUAL_RISK_ACCEPTANCE",
     "clause": null,
@@ -4020,7 +4323,7 @@
  },
  {
   "card_id": "RC-NISTRMF-MEASURE-1.1",
-  "confidence": 0.66,
+  "confidence": 0.71,
   "status": "draft",
   "actor": "organisation",
   "action": "DOCUMENT",
@@ -4030,6 +4333,13 @@
   "facts": [
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
+    "clause": null,
+    "span": "metrics",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
+    "concept": "PERFORMANCE_METRICS_VALUE",
     "clause": null,
     "span": "metrics",
     "gold_clause": null,
@@ -4213,18 +4523,24 @@
     "span": "demonstrated",
     "gold_clause": null,
     "result": "hit"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "clause": null,
+    "span": "demonstrated",
+    "gold_clause": null,
+    "result": "hit"
    }
   ],
   "missed": [
-   "TECHNICAL_LIMITATIONS",
-   "DECLARATIONS_EVIDENCE"
+   "TECHNICAL_LIMITATIONS"
   ],
   "conditions": [],
   "exceptions": []
  },
  {
   "card_id": "RC-NISTRMF-MEASURE-2.6",
-  "confidence": 0.65,
+  "confidence": 0.69,
   "status": "draft",
   "actor": "organisation",
   "action": "DOCUMENT",
@@ -4236,6 +4552,20 @@
     "concept": "DECLARATIONS_CLAIMS",
     "clause": null,
     "span": "demonstrated",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "clause": null,
+    "span": "demonstrated",
+    "gold_clause": null,
+    "result": "hit"
+   },
+   {
+    "concept": "RESIDUAL_RISK_ACCEPTANCE",
+    "clause": null,
+    "span": "residual negative risk",
     "gold_clause": null,
     "result": "hit"
    },
@@ -4261,6 +4591,13 @@
     "result": "extra"
    },
    {
+    "concept": "PERFORMANCE_METRICS_VALUE",
+    "clause": null,
+    "span": "metrics",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
     "concept": "OPERATIONAL_KPI",
     "clause": null,
     "span": "real-time monitoring",
@@ -4269,9 +4606,7 @@
    }
   ],
   "missed": [
-   "SAFETY_RISK_ASSESSMENT",
-   "DECLARATIONS_EVIDENCE",
-   "RESIDUAL_RISK_ACCEPTANCE"
+   "SAFETY_RISK_ASSESSMENT"
   ],
   "conditions": [
    "if made to operate beyond its knowledge limits"
@@ -4313,7 +4648,7 @@
  },
  {
   "card_id": "RC-NISTRMF-MEASURE-2.9",
-  "confidence": 0.57,
+  "confidence": 0.69,
   "status": "draft",
   "actor": "organisation",
   "action": "DOCUMENT",
@@ -4339,14 +4674,29 @@
  },
  {
   "card_id": "RC-NISTRMF-MEASURE-4.2",
-  "confidence": 0.0,
-  "status": "pending_review",
+  "confidence": 0.5,
+  "status": "draft",
   "actor": "organisation",
   "action": "DOCUMENT",
   "object": "AI_SYSTEM",
   "object_scope": "bom",
   "gold_actor": "organisation",
-  "facts": [],
+  "facts": [
+   {
+    "concept": "DECLARATIONS_CLAIMS",
+    "clause": null,
+    "span": "system trustworthiness",
+    "gold_clause": null,
+    "result": "extra"
+   },
+   {
+    "concept": "DECLARATIONS_EVIDENCE",
+    "clause": null,
+    "span": "system trustworthiness",
+    "gold_clause": null,
+    "result": "extra"
+   }
+  ],
   "missed": [
    "TRUSTWORTHINESS_COMPOSITE_MEASURE"
   ],

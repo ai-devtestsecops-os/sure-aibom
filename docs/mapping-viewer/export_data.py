@@ -90,6 +90,8 @@ def public_card(card):
                 f.pop(k, None)
         card["obligation"]["text"] = ""
         card["notes"] = ""
+        for key in ("conditions", "exceptions"):          # 조건·예외 문구도 원문 조각이라 비운다
+            card[key] = [{**x, "text": ""} for x in card.get(key, [])]
     return card
 
 
