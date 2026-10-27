@@ -1102,16 +1102,6 @@
       "note": "요구사항 표에서 (카드 1장이 씀)"
     },
     {
-      "concept": "METADATA_AUTHORS",
-      "cdx_path": "metadata.authors",
-      "spdx_path": "Sbom.creationInfo.createdBy",
-      "spec": "1.7",
-      "coverage": "필드",
-      "status": "linked",
-      "confidence": 1,
-      "note": "요구사항 표에서 (지금 쓰는 카드 없음)"
-    },
-    {
       "concept": "METADATA_MANUFACTURER",
       "cdx_path": "metadata.manufacturer",
       "spdx_path": "Sbom.creationInfo.createdBy",

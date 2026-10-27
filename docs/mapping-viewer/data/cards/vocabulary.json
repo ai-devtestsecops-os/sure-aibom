@@ -683,17 +683,6 @@
    ]
   },
   {
-   "id": "METADATA_AUTHORS",
-   "label_ko": "문서 작성자",
-   "aliases": [],
-   "gap": false,
-   "synonyms": [
-    "author",
-    "authors",
-    "person who signed"
-   ]
-  },
-  {
    "id": "METADATA_MANUFACTURER",
    "label_ko": "문서 생성 조직",
    "aliases": [],
