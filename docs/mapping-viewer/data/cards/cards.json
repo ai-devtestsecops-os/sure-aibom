@@ -148,7 +148,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-IV-2",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.68,
   "regulation": {
@@ -434,7 +434,7 @@
     "label": "log"
    }
   ],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 23개)과 기준 카드(개념 21개)를 비교해 승인. 더함: OPTIMIZATION_TARGET (Q14. 부속서 XI 1(2) 에서는 표가 단 같은 말); TRAINING_COMPUTE (Q14. (c) 연산자원에 훈련이 명시됨); EXPLAINABILITY_METHODS (Q14. 부속서 IV(3) 에서는 표가 단 같은 말) 초안이 놓침: PERFORMANCE_METRICS_VALUE 고침 2026-10-27 (판 2): 구절 고침: DESIGN_CHOICES ('what the system is designed to optimise for' 는 OPTIMIZATION_TARGET 이 받아 뺌); OPTIMIZATION_TARGET (추출기 구절을 표의 구절로 맞춤); TRAINING_COMPUTE (표의 한국어 구절을 붙임. 원문이 한 구절이라 영어는 훈련까지만); EXPLAINABILITY_METHODS (추출기 구절을 표의 구절로 맞춤)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 23개)과 기준 카드(개념 21개)를 비교해 승인. 더함: OPTIMIZATION_TARGET (Q14. 부속서 XI 1(2) 에서는 표가 단 같은 말); TRAINING_COMPUTE (Q14. (c) 연산자원에 훈련이 명시됨); EXPLAINABILITY_METHODS (Q14. 부속서 IV(3) 에서는 표가 단 같은 말) 초안이 놓침: PERFORMANCE_METRICS_VALUE"
  },
  {
   "card_id": "RC-EUAIA-Annex-IV-3",
@@ -902,7 +902,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-V-1",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.74,
   "regulation": {
@@ -969,11 +969,11 @@
   "conditions": [],
   "exceptions": [],
   "evidence": [],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 4개)를 비교해 승인. 초안이 놓침: COMPONENT_PURL, COMPONENT_TYPE 고침 2026-10-27 (판 2): 구절 고침: COMPONENT_NAME (목록 하나를 개념마다 나눠 칠함); COMPONENT_TYPE (목록 하나를 개념마다 나눠 칠함)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 4개)를 비교해 승인. 초안이 놓침: COMPONENT_PURL, COMPONENT_TYPE"
  },
  {
   "card_id": "RC-EUAIA-Annex-V-2",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.5,
   "regulation": {
@@ -1030,7 +1030,7 @@
   ],
   "exceptions": [],
   "evidence": [],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 1개)를 비교해 승인. 더함: AUTHORISED_REPRESENTATIVE (Q1. 선언서에 '제공자 또는 수권대리인의 명칭·주소'. 대리인 신원은 남길 값 (해당하는 경우). 'where applicable' (C1) 일 때만) 주체 provider (Q19. 수권대리인은 적을 대상이지 주체 아님) 초안 범위 unknown 를 bom 으로 둠 (승인은 BOM 에 남길 값이 있다는 판단). 고침 2026-10-27 (판 2): 구절 고침: AUTHORISED_REPRESENTATIVE (추출기 구절을 표의 구절로 맞춤)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 1개)를 비교해 승인. 더함: AUTHORISED_REPRESENTATIVE (Q1. 선언서에 '제공자 또는 수권대리인의 명칭·주소'. 대리인 신원은 남길 값 (해당하는 경우). 'where applicable' (C1) 일 때만) 주체 provider (Q19. 수권대리인은 적을 대상이지 주체 아님) 초안 범위 unknown 를 bom 으로 둠 (승인은 BOM 에 남길 값이 있다는 판단)."
  },
  {
   "card_id": "RC-EUAIA-Annex-V-6",
@@ -1559,7 +1559,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-A-5",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.55,
   "regulation": {
@@ -1618,11 +1618,11 @@
   "conditions": [],
   "exceptions": [],
   "evidence": [],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 3개)를 비교해 승인. 초안이 놓침: COMPONENTS 고침 2026-10-27 (판 2): 구절 고침: COMPONENT_DESCRIPTION (목록 하나를 개념마다 나눠 칠함); COMPONENTS (목록 하나를 개념마다 나눠 칠함)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 3개)를 비교해 승인. 초안이 놓침: COMPONENTS"
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-A-6",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
   "regulation": {
@@ -1694,7 +1694,7 @@
     "label": "log"
    }
   ],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 4개)를 비교해 승인. 초안이 놓침: INPUTS, MODEL_ARCHITECTURE 고침 2026-10-27 (판 2): 구절 고침: DATASETS (목록 하나를 개념마다 나눠 칠함); INPUTS (목록 하나를 개념마다 나눠 칠함)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 4개)를 비교해 승인. 초안이 놓침: INPUTS, MODEL_ARCHITECTURE"
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-A-7",
@@ -1745,7 +1745,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-A-8",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.74,
   "regulation": {
@@ -1806,7 +1806,7 @@
     "label": "certificate"
    }
   ],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 2개)를 비교해 승인. 고침: VALID_UNTIL_TIME (Q16. 만료일 구절만 남김. 인증기관 이름 구절이 용어집에 들어가 부속서 V(7) 오탐을 만듦) 고침 2026-10-27 (판 2): 구절 고침: VALID_UNTIL_TIME (Q16 에서 영어 구절을 만료일로 좁힌 것에 맞춰 표와 한국어 구절도 '만료일' 만)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 2개)를 비교해 승인. 고침: VALID_UNTIL_TIME (Q16. 만료일 구절만 남김. 인증기관 이름 구절이 용어집에 들어가 부속서 V(7) 오탐을 만듦)"
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-A-9",
@@ -2124,7 +2124,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-B-7",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.58,
   "regulation": {
@@ -2175,7 +2175,7 @@
   "conditions": [],
   "exceptions": [],
   "evidence": [],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 1개)를 비교해 승인. 더함: HIGH_RISK_CLASSIFICATION_RATIONALE (Q8. '고위험이 아니라고 본 근거의 요약'. B(6) 과 같은 판정 근거 개념) 고침 2026-10-27 (판 2): 구절 고침: HIGH_RISK_CLASSIFICATION_RATIONALE (추출기 구절을 표의 구절로 맞춤)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 1개)를 비교해 승인. 더함: HIGH_RISK_CLASSIFICATION_RATIONALE (Q8. '고위험이 아니라고 본 근거의 요약'. B(6) 과 같은 판정 근거 개념)"
  },
  {
   "card_id": "RC-EUAIA-Annex-VIII-B-8",
@@ -2466,7 +2466,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XI-1-1",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.72,
   "regulation": {
@@ -2591,11 +2591,11 @@
   "conditions": [],
   "exceptions": [],
   "evidence": [],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 9개)과 기준 카드(개념 10개)를 비교해 승인. 초안이 놓침: MODEL_ARCHITECTURE 고침 2026-10-27 (판 2): 구절 고침: INPUTS (목록 하나를 개념마다 나눠 칠함); OUTPUTS (목록 하나를 개념마다 나눠 칠함)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 9개)과 기준 카드(개념 10개)를 비교해 승인. 초안이 놓침: MODEL_ARCHITECTURE"
  },
  {
   "card_id": "RC-EUAIA-Annex-XI-1-2",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.7,
   "regulation": {
@@ -2792,7 +2792,7 @@
     "label": "log"
    }
   ],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 15개)과 기준 카드(개념 14개)를 비교해 승인. 더함: PROVENANCE (Q9. 'provenance of data' 는 componentData.provenance 가 정확한 자리) 고침 2026-10-27 (판 2): 구절 고침: COLLECTION_PROCESS (Q9 대로 '데이터가 획득되고 선정된 방식' 만. 유형·출처는 MODALITY·PROVENANCE 가 받음); MODALITY (목록 하나를 개념마다 나눠 칠함); PROVENANCE (표의 한국어 구절을 붙임)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 15개)과 기준 카드(개념 14개)를 비교해 승인. 더함: PROVENANCE (Q9. 'provenance of data' 는 componentData.provenance 가 정확한 자리)"
  },
  {
   "card_id": "RC-EUAIA-Annex-XI-2-1",
@@ -2992,7 +2992,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XII-1",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.7,
   "regulation": {
@@ -3153,11 +3153,11 @@
   ],
   "exceptions": [],
   "evidence": [],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 12개)과 기준 카드(개념 11개)를 비교해 승인. 더함: USE_CASES (Q5. (a) '통합될 수 있는 AI 시스템의 유형과 성격'. 표는 같은 구절을 부속서 XI 1(1) 에서는 USE_CASES 로 달았는데 XII(1) 에서는 안 달았음. 표의 누락); COMPONENT_VERSION (Q16. '관련 소프트웨어의 버전' 은 component.version 칸) 초안이 놓침: MODEL_ARCHITECTURE 고침 2026-10-27 (판 2): 구절 고침: INPUTS (목록 하나를 개념마다 나눠 칠함); OUTPUTS (목록 하나를 개념마다 나눠 칠함); COMPONENTS (목록 하나를 개념마다 나눠 칠함); USE_CASES (추출기 구절을 표의 구절로 맞춤); COMPONENT_VERSION (목록 하나를 개념마다 나눠 칠함)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 12개)과 기준 카드(개념 11개)를 비교해 승인. 더함: USE_CASES (Q5. (a) '통합될 수 있는 AI 시스템의 유형과 성격'. 표는 같은 구절을 부속서 XI 1(1) 에서는 USE_CASES 로 달았는데 XII(1) 에서는 안 달았음. 표의 누락); COMPONENT_VERSION (Q16. '관련 소프트웨어의 버전' 은 component.version 칸) 초안이 놓침: MODEL_ARCHITECTURE"
  },
  {
   "card_id": "RC-EUAIA-Annex-XII-2",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.68,
   "regulation": {
@@ -3278,7 +3278,7 @@
     "label": "log"
    }
   ],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 9개)과 기준 카드(개념 8개)를 비교해 승인. 더함: PROVENANCE (Q9. 같음) 고침 2026-10-27 (판 2): 뺌: COLLECTION_PROCESS ((c) 는 유형·출처·정제방법론만 들고 수집 방식은 묻지 않음. 출처는 PROVENANCE 가 받음) 구절 고침: PREPROCESSING (목록 하나를 개념마다 나눠 칠함); MODALITY (목록 하나를 개념마다 나눠 칠함); INPUTS (목록 하나를 개념마다 나눠 칠함); OUTPUTS (목록 하나를 개념마다 나눠 칠함); PROVENANCE (표의 한국어 구절을 붙임)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 9개)과 기준 카드(개념 8개)를 비교해 승인. 더함: PROVENANCE (Q9. 같음)"
  },
  {
   "card_id": "RC-EUAIA-Article-10-2",
@@ -4062,7 +4062,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-13-3",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.66,
   "regulation": {
@@ -4298,7 +4298,7 @@
     "label": "log"
    }
   ],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 16개)과 기준 카드(개념 14개)를 비교해 승인. 더함: AUTHORISED_REPRESENTATIVE (Q1. (a) 제공자와 수권대리인의 신원·연락처. 같은 이유. 'where applicable' (C1) 일 때만); DATASETS (Q10. (b)(vi) '사용된 훈련·검증·시험 데이터 세트'. 표가 빠뜨림) 초안에서 거름: DOCUMENTATION_REF (Q3. 13조(3)은 사용설명서의 '내용' 목록. 사용설명서 자체는 13조(2) 카드가 받음); HIGH_RISK_CLASSIFICATION_RATIONALE (Q8. 오용 상황 구절에 걸린 오탐) 초안이 놓침: USE_CASES, PERFORMANCE_METRICS_VALUE 주체 provider (Q19. 같음) 고침 2026-10-27 (판 2): 구절 고침: AUTHORISED_REPRESENTATIVE (추출기 구절을 표의 구절로 맞춤); DATASETS (추출기 구절을 표의 구절로 맞춤)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 16개)과 기준 카드(개념 14개)를 비교해 승인. 더함: AUTHORISED_REPRESENTATIVE (Q1. (a) 제공자와 수권대리인의 신원·연락처. 같은 이유. 'where applicable' (C1) 일 때만); DATASETS (Q10. (b)(vi) '사용된 훈련·검증·시험 데이터 세트'. 표가 빠뜨림) 초안에서 거름: DOCUMENTATION_REF (Q3. 13조(3)은 사용설명서의 '내용' 목록. 사용설명서 자체는 13조(2) 카드가 받음); HIGH_RISK_CLASSIFICATION_RATIONALE (Q8. 오용 상황 구절에 걸린 오탐) 초안이 놓침: USE_CASES, PERFORMANCE_METRICS_VALUE 주체 provider (Q19. 같음)"
  },
  {
   "card_id": "RC-EUAIA-Article-14-1",
@@ -4958,7 +4958,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-27-1",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.61,
   "regulation": {
@@ -5033,7 +5033,7 @@
     "label": "instructions for use"
    }
   ],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 4개)과 기준 카드(개념 1개)를 비교해 승인. 더함: GROUP_AT_RISK (Q16. (c) 영향받을 사람·집단. 영향평가에 적을 내용물); HUMAN_OVERSIGHT_MEASURES (Q16. (e) 인적 감독 조치의 이행 설명. 영향평가에 적을 내용물) 초안에서 거름: PERFORMANCE_METRICS_SLICE (Q16. (c) 영향받을 사람·집단은 성능 구간이 아니라 위험에 놓인 집단); DOCUMENTATION_REF (Q3. '사용설명서에 따라' 수식어) 범위 bom (Q18. 영향평가를 수행하는 행위지만 남는 것이 영향평가 결과) 고침 2026-10-27 (판 2): 구절 고침: GROUP_AT_RISK (표의 한국어 구절을 붙임); HUMAN_OVERSIGHT_MEASURES (추출기 구절을 표의 구절로 맞춤)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 4개)과 기준 카드(개념 1개)를 비교해 승인. 더함: GROUP_AT_RISK (Q16. (c) 영향받을 사람·집단. 영향평가에 적을 내용물); HUMAN_OVERSIGHT_MEASURES (Q16. (e) 인적 감독 조치의 이행 설명. 영향평가에 적을 내용물) 초안에서 거름: PERFORMANCE_METRICS_SLICE (Q16. (c) 영향받을 사람·집단은 성능 구간이 아니라 위험에 놓인 집단); DOCUMENTATION_REF (Q3. '사용설명서에 따라' 수식어) 범위 bom (Q18. 영향평가를 수행하는 행위지만 남는 것이 영향평가 결과)"
  },
  {
   "card_id": "RC-EUAIA-Article-41-5",
@@ -5386,7 +5386,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-53-1",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.7,
   "regulation": {
@@ -5484,7 +5484,7 @@
     "label": "log"
    }
   ],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 5개)과 기준 카드(개념 5개)를 비교해 승인. 더함: TECHNICAL_LIMITATIONS (Q12. 하위 제공자가 한계를 이해하게 하는 문서. 한계가 남길 값) 초안이 놓침: PERFORMANCE_METRICS_VALUE 고침 2026-10-27 (판 2): 구절 고침: TECHNICAL_LIMITATIONS (추출기 구절을 표의 구절로 맞춤)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 5개)과 기준 카드(개념 5개)를 비교해 승인. 더함: TECHNICAL_LIMITATIONS (Q12. 하위 제공자가 한계를 이해하게 하는 문서. 한계가 남길 값) 초안이 놓침: PERFORMANCE_METRICS_VALUE"
  },
  {
   "card_id": "RC-EUAIA-Article-53-4",
@@ -5564,7 +5564,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-55-1",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.66,
   "regulation": {
@@ -5672,7 +5672,7 @@
     "label": "report"
    }
   ],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 6개)과 기준 카드(개념 6개)를 비교해 승인. 더함: TASKS_RESOURCE_REFERENCES (Q16. (a) 표준화된 프로토콜과 도구. 부속서 XI 2(1) 과 같은 개념) 초안이 놓침: PERFORMANCE_METRICS_VALUE 고침 2026-10-27 (판 2): 구절 고침: TASKS_RESOURCE_REFERENCES (추출기 구절을 표의 구절로 맞춤)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 6개)과 기준 카드(개념 6개)를 비교해 승인. 더함: TASKS_RESOURCE_REFERENCES (Q16. (a) 표준화된 프로토콜과 도구. 부속서 XI 2(1) 과 같은 개념) 초안이 놓침: PERFORMANCE_METRICS_VALUE"
  },
  {
   "card_id": "RC-EUAIA-Article-55-2",
@@ -6994,7 +6994,7 @@
  },
  {
   "card_id": "RC-NISTRMF-MANAGE-1.4",
-  "card_version": 2,
+  "card_version": 1,
   "status": "approved",
   "confidence": 0.58,
   "regulation": {
@@ -7045,7 +7045,7 @@
   "conditions": [],
   "exceptions": [],
   "evidence": [],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 1개)를 비교해 승인. 더함: RESIDUAL_RISK_ACCEPTANCE (Q13. 부정적 잔여 위험을 문서화. 9조(5)·MEASURE 2.6 과 같은 잔여위험 개념) 고침 2026-10-27 (판 2): 구절 고침: RESIDUAL_RISK_ACCEPTANCE (추출기 구절을 표의 구절로 맞춤)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 2개)과 기준 카드(개념 1개)를 비교해 승인. 더함: RESIDUAL_RISK_ACCEPTANCE (Q13. 부정적 잔여 위험을 문서화. 9조(5)·MEASURE 2.6 과 같은 잔여위험 개념)"
  },
  {
   "card_id": "RC-NISTRMF-MANAGE-3.1",
