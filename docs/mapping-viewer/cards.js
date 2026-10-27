@@ -1,35 +1,32 @@
-// 규제 카드 화면 (compliance/regulation-cards.md). 카드·추출 비교·판정 세 탭. 데이터는 export_data.py 가 data/cards/ 에 둔 JSON.
+// 규제 판정 화면 (compliance/regulation-cards.md). BOM 을 규제 조항마다 대 본 결과와, 조항을 누르면 원문과 요구 사실.
+// 데이터는 export_data.py 가 data/cards/ 에 둔 JSON. 카드 보기·추출기 비교·승인은 내부 화면의 몫이라 여기 두지 않는다.
 if (document.querySelector(".card-viewer")) (() => {
 const root = document.querySelector(".card-viewer");
 const BASE = root.dataset.base || "data/cards/";
-const EXPLORER = root.dataset.explorer || "../field-mapping/";
 const REG_NAME = {EUAIA: "EU AI Act", NISTRMF: "NIST AI RMF", ISO42001: "ISO/IEC 42001"};
 const VERDICTS = ["반영", "부분 반영", "미반영", "검토 필요", "비적용"];
+const STATUS_KO = {present: "있음", missing: "비어 있음", gap: "자리 없음", not_required: "요구 안 됨"};
+const MARK_CLS = {present: "", missing: "missing", gap: "muted", not_required: "muted"};      // 원문 구절의 색
 const $ = (sel) => root.querySelector(sel);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
 const regOf = (id) => REG_NAME[id.split("-")[1]] || id.split("-")[1];
 const vclass = (v) => "v-" + v.replace(/\s/g, "");
-let cards = [], vocab = {}, profile = {}, targets = {}, extraction = {}, judgIndex = [];
+let cards = [], cardById = {}, vocab = {}, profile = {}, targets = {}, judgIndex = [];
 const KIND_KO = {system: "시스템", model: "모델", dataset: "데이터셋", software: "소프트웨어"};
 
 async function load(name) { const r = await fetch(BASE + name); if (!r.ok) throw new Error(name); return r.json(); }
 
 async function init() {
-  const [c, v, p, e, j, src] = await Promise.all([load("cards.json"), load("vocabulary.json"), load("profile.json"), load("extraction.json"), load("judgments/index.json"), load("source.json").catch(() => ({}))]);
-  cards = c; vocab = Object.fromEntries(v.concepts.map((x) => [x.id, x])); judgIndex = j;
-  if (src.cards === "gold") { const n = document.createElement("p"); n.className = "cv-note"; n.textContent = "지금 보이는 카드는 요구사항 표에서 변환한 정답 카드(cards/gold)다. 추출기 초안을 승인한 카드가 생기면 그것으로 바뀐다."; root.querySelector(".cv-tabs").after(n); }
+  const [c, v, p, j, src] = await Promise.all([load("cards.json"), load("vocabulary.json"), load("profile.json"), load("judgments/index.json"), load("source.json").catch(() => ({}))]);
+  cards = c; cardById = Object.fromEntries(c.map((x) => [x.card_id, x])); vocab = Object.fromEntries(v.concepts.map((x) => [x.id, x])); judgIndex = j;
+  if (src.cards === "gold") { const n = document.createElement("p"); n.className = "cv-note"; n.textContent = "지금 판정에 쓰는 카드는 요구사항 표에서 변환한 정답 카드(cards/gold)다. 승인한 카드가 생기면 그것으로 바뀐다."; root.prepend(n); }
   targets = p.targets || {};                          // fact 의 target(대상 구성요소 종류)을 BOM 에서 찾는 법
   for (const line of p.lines) {                       // 개념별 줄: concept → {cdx: [...], spdx: [...]}
     const e = (profile[line.concept] ||= {cdx: [], spdx: []});
     for (const x of [line.cdx_path, ...(line.cdx_paths_more || [])]) if (x && !e.cdx.includes(x)) e.cdx.push(x);
     for (const x of [line.spdx_path, ...(line.spdx_paths_more || [])]) if (x && !e.spdx.includes(x)) e.spdx.push(x);
   }
-  extraction = Object.fromEntries(e.map((x) => [x.card_id, x]));
-  root.querySelectorAll(".cv-tab").forEach((b) => b.addEventListener("click", () => {
-    root.querySelectorAll(".cv-tab").forEach((t) => t.classList.toggle("active", t === b));
-    root.querySelectorAll(".cv-panel").forEach((s) => s.classList.toggle("active", s.dataset.panel === b.dataset.tab));
-  }));
-  initCards(); initExtraction(); initJudgment();
+  initJudgment();
 }
 
 // ---------- 공통 ----------
@@ -48,7 +45,6 @@ function groupedList(container, items, render, onPick) {
     container.appendChild(row);
   }
 }
-function clauseOf(card) { return card.source.clause_id; }
 function label(concept) { return vocab[concept]?.label_ko || concept; }
 
 // 원문에 구절을 칠한다. spans: [{text, cls, idx}] . 겹치면 긴 것부터 칠하고 나머지는 건너뛴다.
@@ -83,89 +79,6 @@ function focusFact(detail, idx) {
   detail.querySelectorAll("mark, tr[data-idx]").forEach((el) => el.classList.toggle("focus", el.dataset.idx === idx));
   const m = detail.querySelector(`mark[data-idx="${idx}"]`); if (m) m.scrollIntoView({block: "nearest"});
 }
-function pathCell(cardId, concept) {
-  const {cdx = [], spdx = []} = profile[concept] || {};
-  if (!cdx.length && !spdx.length) return `<span class="cv-chip gap">자리 없음</span>`;
-  return [...cdx.map((p) => `<span class="cv-path">${esc(p)}</span>`), ...spdx.map((p) => `<span class="cv-path cv-muted">${esc(p)}</span>`)].join(" ");
-}
-
-// ---------- 카드 ----------
-function initCards() {
-  regSelect($("#cv-reg"), renderCardList);
-  $("#cv-search").addEventListener("input", renderCardList);
-  renderCardList();
-}
-function renderCardList() {
-  const reg = $("#cv-reg").value, q = $("#cv-search").value.trim().toLowerCase();
-  const items = cards.filter((c) => (!reg || c.card_id.startsWith("RC-" + reg + "-")) &&
-    (!q || clauseOf(c).toLowerCase().includes(q) || (c.topic || "").toLowerCase().includes(q) || c.facts.some((f) => f.concept.toLowerCase().includes(q) || label(f.concept).includes(q))));
-  $("#cv-count").textContent = `${items.length}장`;
-  groupedList($("#cv-card-list"), items, (c) => `<span class="cv-id">${esc(clauseOf(c))}</span><span class="cv-sub">${esc(c.topic || "")} · fact ${c.facts.length}</span>`, renderCard);
-}
-function renderCard(c) {
-  const d = $("#cv-card-detail");
-  const text = c.source.excerpt_en, ko = c.source.excerpt;
-  const spans = c.facts.map((f, i) => ({text: f.highlight_en || f.gap_highlight_en, cls: f.gap_highlight_en ? "gap" : "", idx: i, title: `${f.concept} · ${label(f.concept)}`}));
-  const cond = (c.conditions || []).map((x) => `<li><code>${esc(x.id)}</code> ${esc(x.text)}</li>`).join("");
-  const exc = (c.exceptions || []).map((x) => `<li>${esc(x.text)}</li>`).join("");
-  const evd = (c.evidence || []).map((x) => `<span class="cv-chip">${esc(x.label || x.concept)}</span>`).join(" ");
-  d.innerHTML = `
-    <h3>${esc(c.title)}</h3>
-    <div class="cv-meta">
-      <span class="cv-chip">${esc(c.regulation.title)}</span>
-      <span class="cv-chip">${esc(c.applicability?.text || "")}</span>
-      <span class="cv-chip">${esc(c.obligation.actor)} · ${esc(c.obligation.action)} · ${esc(c.obligation.object)}</span>
-      <span class="cv-chip">${esc(c.status)} · 신뢰도 ${c.confidence}</span>
-    </div>
-    ${text ? `<div class="cv-text">${highlightText(text, spans)}${ko ? `<span class="cv-trans">${esc(ko)}</span>` : ""}</div>`
-           : `<p class="cv-note">이 규제의 원문과 구절은 저작권 때문에 싣지 않는다. 개념과 호만 보인다.</p>`}
-    <h4>Facts (${c.facts.length})</h4>
-    <table class="cv-facts"><thead><tr><th>개념</th><th>호</th><th>요구</th><th>BOM 자리 (CycloneDX · SPDX)</th></tr></thead><tbody>
-    ${c.facts.map((f, i) => `<tr data-idx="${i}"><td><code>${esc(f.concept)}</code><br>${esc(label(f.concept))}</td><td>${esc(f.clause || "")}</td>
-      <td>${esc(f.required)}${f.condition ? ` <code>${esc(f.condition)}</code>` : ""}${f.target ? `<br><span class="cv-muted">대상 ${esc(KIND_KO[f.target] || f.target)}</span>` : ""}</td><td>${pathCell(c.card_id, f.concept)}</td></tr>`).join("")}
-    </tbody></table>
-    ${cond ? `<h4>조건</h4><ul>${cond}</ul>` : ""}${exc ? `<h4>예외</h4><ul>${exc}</ul>` : ""}${evd ? `<h4>증빙</h4><div class="cv-meta">${evd}</div>` : ""}
-    ${c.notes ? `<p class="cv-note">${esc(c.notes)}</p>` : ""}
-    <p class="cv-note">BOM 자리의 필드 정의와 두 형식의 대응은 <a href="${EXPLORER}">필드 탐색기</a>에서 본다.</p>`;
-  wireMarks(d);
-}
-
-// ---------- 추출 비교 ----------
-function initExtraction() { regSelect($("#cv-ex-reg"), renderExList); renderExList(); }
-function renderExList() {
-  const reg = $("#cv-ex-reg").value;
-  const items = cards.filter((c) => !reg || c.card_id.startsWith("RC-" + reg + "-"));
-  let hit = 0, gold = 0, pred = 0;
-  for (const c of items) { const e = extraction[c.card_id]; if (!e) continue; gold += new Set(c.facts.map((f) => f.concept)).size; pred += e.facts.length; hit += e.facts.filter((f) => f.result === "hit").length; }
-  $("#cv-ex-summary").textContent = `${items.length}장 · 재현율 ${(hit / Math.max(gold, 1)).toFixed(2)} · 정밀도 ${(hit / Math.max(pred, 1)).toFixed(2)} (자기 카드의 구절은 용어집에서 뺀 조건)`;
-  groupedList($("#cv-ex-list"), items, (c) => { const e = extraction[c.card_id] || {facts: [], missed: []}; const h = e.facts.filter((f) => f.result === "hit").length;
-    return `<span class="cv-id">${esc(clauseOf(c))}</span><span class="cv-sub">맞춤 ${h}/${c.facts.length} · 더 냄 ${e.facts.length - h}</span>`; }, renderEx);
-}
-function renderEx(c) {
-  const d = $("#cv-ex-detail"), e = extraction[c.card_id];
-  if (!e) { d.innerHTML = `<p class="cv-muted">비교 데이터가 없다.</p>`; return; }
-  const text = c.source.excerpt_en;
-  const spans = e.facts.map((f, i) => ({text: f.span, cls: f.result === "hit" ? "" : "extra", idx: i, title: `${f.concept} (${f.result})`}));
-  const goldOf = Object.fromEntries(c.facts.map((f) => [f.concept, f]));
-  d.innerHTML = `
-    <h3>${esc(c.title)}</h3>
-    <div class="cv-meta">
-      <span class="cv-chip">추출 신뢰도 ${e.confidence} · ${esc(e.status)}</span>
-      <span class="cv-chip">주체 ${esc(e.actor)}${e.actor === e.gold_actor ? "" : ` (카드 ${esc(e.gold_actor)})`}</span>
-      <span class="cv-chip">행위 ${esc(e.action)} · 객체 ${esc(e.object)} · 범위 ${esc(e.object_scope)}</span>
-    </div>
-    ${text ? `<div class="cv-text">${highlightText(text, spans)}</div>` : `<p class="cv-note">원문은 싣지 않는다 (저작권).</p>`}
-    <h4>추출기가 낸 개념 (${e.facts.length}) · 놓친 개념 (${e.missed.length})</h4>
-    <table class="cv-facts"><thead><tr><th>결과</th><th>개념</th><th>호 (추출 / 카드)</th><th>구절</th></tr></thead><tbody>
-    ${e.facts.map((f, i) => `<tr data-idx="${i}"><td><span class="cv-chip ${f.result}">${f.result === "hit" ? "맞춤" : "더 냄"}</span></td>
-      <td><code>${esc(f.concept)}</code><br>${esc(label(f.concept))}</td><td>${esc(f.clause || "")} / ${esc(f.gold_clause || "")}</td><td>${esc(f.span || "")}</td></tr>`).join("")}
-    ${e.missed.map((k) => `<tr><td><span class="cv-chip miss">놓침</span></td><td><code>${esc(k)}</code><br>${esc(label(k))}</td><td> / ${esc(goldOf[k]?.clause || "")}</td><td>${esc(goldOf[k]?.highlight_en || goldOf[k]?.gap_highlight_en || "")}</td></tr>`).join("")}
-    </tbody></table>
-    ${e.conditions.length ? `<h4>추출한 조건</h4><ul>${e.conditions.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
-    ${e.exceptions.length ? `<h4>추출한 예외</h4><ul>${e.exceptions.map((t) => `<li>${esc(t)}</li>`).join("")}</ul>` : ""}
-    <p class="cv-note">"더 냄" 은 카드(정답 표)에 없는 개념이다. 원문에 그 말이 있으면 표 쪽을 봐야 할 수도 있다.</p>`;
-  wireMarks(d);
-}
 
 // ---------- 판정 ----------
 let currentRecord = null;
@@ -173,6 +86,7 @@ function initJudgment() {
   const sel = $("#cv-bom");
   sel.innerHTML = judgIndex.map((j, i) => `<option value="${i}">${esc(j.subject)} (${esc(j.file)})</option>`).join("") || `<option value="">예제 BOM 없음</option>`;
   sel.addEventListener("change", async () => { const j = judgIndex[+sel.value]; if (j) showRecord(await load("judgments/" + j.file)); });
+  regSelect($("#cv-reg"), () => { renderSummary(); renderJudgList(); });
   $("#cv-verdict-filter").addEventListener("change", renderJudgList);
   $("#cv-bom-file").addEventListener("change", async (ev) => {
     const file = ev.target.files[0]; if (!file) return;
@@ -181,35 +95,53 @@ function initJudgment() {
   });
   if (judgIndex.length) sel.dispatchEvent(new Event("change"));
 }
-function showRecord(rec) {
-  currentRecord = rec;
-  const s = rec.summary, total = rec.cards.length;
-  $("#cv-judg-summary").innerHTML = `<div class="cv-stat"><b>${esc(rec.bom.subject || rec.bom.serialNumber || "")}</b>카드 ${total}장 · ${esc(rec.bom.bomFormat)} ${esc(rec.bom.specVersion)}</div>`
-    + VERDICTS.map((v) => `<div class="cv-stat"><span class="cv-verdict ${vclass(v)}">${v}</span> <b>${s[v] || 0}</b></div>`).join("")
-    + `<div class="cv-bar" style="flex-basis:100%">${VERDICTS.map((v) => `<span class="${vclass(v)}" style="width:${100 * (s[v] || 0) / Math.max(total, 1)}%"></span>`).join("")}</div>`;
-  renderJudgList();
+function regCards() {                                 // 고른 규제의 카드 판정
+  const reg = $("#cv-reg").value;
+  return currentRecord.cards.filter((r) => !reg || r.card_id.startsWith("RC-" + reg + "-"));
+}
+function showRecord(rec) { currentRecord = rec; renderSummary(); renderJudgList(); }
+function renderSummary() {
+  if (!currentRecord) return;
+  const rec = currentRecord, rs = regCards(), total = rs.length;
+  const s = Object.fromEntries(VERDICTS.map((v) => [v, rs.filter((r) => r.verdict === v).length]));
+  $("#cv-judg-summary").innerHTML = `<div class="cv-stat"><b>${esc(rec.bom.subject || rec.bom.serialNumber || "")}</b>조항 ${total}개 · ${esc(rec.bom.bomFormat)} ${esc(rec.bom.specVersion)}</div>`
+    + VERDICTS.map((v) => `<div class="cv-stat"><span class="cv-verdict ${vclass(v)}">${v}</span> <b>${s[v]}</b></div>`).join("")
+    + `<div class="cv-bar" style="flex-basis:100%">${VERDICTS.map((v) => `<span class="${vclass(v)}" style="width:${100 * s[v] / Math.max(total, 1)}%"></span>`).join("")}</div>`;
 }
 function renderJudgList() {
   if (!currentRecord) return;
   const want = $("#cv-verdict-filter").value;
-  const items = currentRecord.cards.filter((r) => !want || r.verdict === want);
-  groupedList($("#cv-judg-list"), items, (r) => { const f = r.facts || []; const p = f.filter((x) => x.status === "present").length, g = f.filter((x) => x.status === "gap").length;
-    return `<span class="cv-id">${esc(r.card_id.replace(/^RC-[A-Z0-9]+-/, ""))}</span><span class="cv-sub"><span class="cv-verdict ${vclass(r.verdict)}">${r.verdict}</span> ${p}/${f.length - g}${g ? ` · 자리 없음 ${g}` : ""}</span>`; }, renderJudg);
+  const items = regCards().filter((r) => !want || r.verdict === want);
+  groupedList($("#cv-judg-list"), items, (r) => { const f = r.facts || []; const p = f.filter((x) => x.status === "present").length, g = f.filter((x) => x.status === "gap" || x.status === "not_required").length;
+    return `<span class="cv-id">${esc(cardById[r.card_id]?.source?.clause_id || r.card_id.replace(/^RC-[A-Z0-9]+-/, ""))}</span><span class="cv-sub"><span class="cv-verdict ${vclass(r.verdict)}">${r.verdict}</span> ${p}/${f.length - g}</span>`; }, renderJudg);
 }
 function renderJudg(r) {
-  const d = $("#cv-judg-detail"), card = cards.find((c) => c.card_id === r.card_id);
+  const d = $("#cv-judg-detail"), card = cardById[r.card_id], facts = r.facts || [];
+  const text = card?.source?.excerpt_en, ko = card?.source?.excerpt;
+  // 판정 기록의 fact 는 카드 fact 와 같은 차례라, 원문 구절을 그 fact 의 상태 색으로 칠한다
+  const spans = (card?.facts || []).map((f, i) => ({text: f.highlight_en || f.gap_highlight_en, cls: MARK_CLS[facts[i]?.status] ?? "", idx: i,
+    title: `${label(f.concept)} · ${STATUS_KO[facts[i]?.status] || ""}`}));
   d.innerHTML = `
-    <h3>${esc(card?.title || r.card_id)} <span class="cv-verdict ${vclass(r.verdict)}">${r.verdict}</span></h3>
+    <h3>${esc(card?.title || r.title || r.card_id)} <span class="cv-verdict ${vclass(r.verdict)}">${r.verdict}</span></h3>
+    <div class="cv-meta">
+      <span class="cv-chip">${esc(card?.regulation?.title || regOf(r.card_id))}</span>
+      ${card?.applicability?.text ? `<span class="cv-chip">적용 대상: ${esc(card.applicability.text)}</span>` : ""}
+    </div>
     ${r.reason ? `<p class="cv-note">${esc(r.reason)}</p>` : ""}
-    <table class="cv-facts"><thead><tr><th>상태</th><th>개념</th><th>BOM 경로</th><th>값이 있는 구성요소</th></tr></thead><tbody>
+    ${text ? `<div class="cv-text">${highlightText(text, spans)}${ko ? `<span class="cv-trans">${esc(ko)}</span>` : ""}</div>
+      <p class="cv-note">칠한 구절이 조항이 요구하는 사실이다. 초록은 BOM 에 있음, 빨강은 비어 있음, 회색은 BOM 형식에 자리가 없거나 이 BOM 에는 요구되지 않음.</p>`
+      : `<p class="cv-note">이 규제의 원문은 저작권 때문에 싣지 않는다. 요구 사실과 필드만 보인다.</p>`}
     ${r.conditions ? `<h4>조건</h4><ul>${Object.entries(r.conditions).map(([k, c]) => `<li><code>${esc(k)}</code> ${esc(c.text)} → <b>${c.result === null || c.result === undefined ? "평가 못 함 (조건식 없음)" : c.result ? "참" : "거짓"}</b></li>`).join("")}</ul>` : ""}
-    ${(r.facts || []).map((f) => `<tr><td><span class="cv-chip ${f.status}">${{present: "있음", missing: "비어 있음", gap: "자리 없음", not_required: "요구 안 됨"}[f.status] || f.status}</span>
+    <h4>조항이 요구하는 사실 (${facts.length})</h4>
+    <table class="cv-facts"><thead><tr><th>상태</th><th>사실</th><th>BOM 필드</th><th>값이 있는 구성요소</th></tr></thead><tbody>
+    ${facts.map((f, i) => `<tr data-idx="${i}"><td><span class="cv-chip ${f.status}">${STATUS_KO[f.status] || f.status}</span>
       ${f.condition_evaluated === false ? `<br><span class="cv-muted">조건 미평가</span>` : f.condition ? `<br><span class="cv-muted">조건 ${esc(f.condition)}</span>` : ""}</td>
-      <td><code>${esc(f.concept)}</code><br>${esc(f.label || label(f.concept))}${f.target ? `<br><span class="cv-muted">대상 ${esc(KIND_KO[f.target] || f.target)}</span>` : ""}</td>
+      <td>${esc(f.label || label(f.concept))}<br><code>${esc(f.concept)}</code>${f.target ? `<br><span class="cv-muted">대상 ${esc(KIND_KO[f.target] || f.target)}</span>` : ""}</td>
       <td>${(f.paths || []).map((p) => `<span class="cv-path">${esc(p)}</span>`).join(" ") || `<span class="cv-muted">${esc(f.reason || "")}</span>`}</td>
       <td>${[...new Set(Object.values(f.found_at || {}).flat())].map((x) => `<code>${esc(x)}</code>`).join(" ")}${targetDetail(f)}</td></tr>`).join("")}
     </tbody></table>
-    <p class="cv-note">"비어 있음" 의 경로가 보완 위치다. 조건식(JSON Logic)이 있는 카드는 조건이 거짓이면 그 사실을 "요구 안 됨" 으로 뺀다. 대상 구성요소가 정해진 사실은 그 종류의 구성요소마다 보고(조건도 구성요소마다), 값이 빠진 구성요소를 적는다. 증빙 검사는 아직 없다.</p>`;
+    <p class="cv-note">"비어 있음" 의 필드가 채울 자리다. 조건식(JSON Logic)이 있는 조항은 조건이 거짓이면 그 사실을 "요구 안 됨" 으로 뺀다. 대상 구성요소가 정해진 사실은 그 종류의 구성요소마다 보고(조건도 구성요소마다), 값이 빠진 구성요소를 적는다. 증빙 검사는 아직 없다.</p>`;
+  wireMarks(d);
 }
 // 대상 구성요소가 정해진 fact: 구성요소별 조건과 빠진 구성요소
 function targetDetail(f) {

@@ -11,10 +11,10 @@
                                     ISO/IEC 42001 행만 본문을 조항 제목으로 바꾼다 (public_requirements)
 만드는 것:
     aibom_v0.6_properties.json      추가 필드를 --spec 1.7 로 낼 때의 properties 키 (정의서 생성 코드와 같은 규칙)
-    cards/cards.json                ai-bom/cards 의 규제 카드 132장 (ISO/IEC 42001 은 원문·구절을 빼고 제목만)
+    cards/cards.json                ai-bom/cards 의 승인 카드 129장 (ISO/IEC 42001 은 원문·구절을 빼고 제목만). 규제 판정 화면이 조항의 원문과 사실을 보여 줄 때 쓴다
     cards/vocabulary.json, cards/profile.json   통제 어휘, 매핑 프로파일 (ai-bom/cards 그대로)
-    cards/extraction.json           추출기가 카드마다 낸 초안과 정답의 비교 (자기 카드 용어 제외)
-    cards/judgments/*.json          aibom-examples 의 BOM 에 판정 엔진을 돌린 기록 (옆 폴더가 있을 때만)
+    cards/judgments/*.json          예제 BOM 에 판정 엔진을 돌린 기록 (aibom-examples 는 옆 폴더가 있을 때만)
+추출기 초안과 승인 카드의 비교는 내부용이라 문서 사이트에 싣지 않는다.
 """
 import json
 import os
@@ -96,16 +96,16 @@ def public_card(card):
 
 
 def cards():
-    """ai-bom/cards 의 카드·어휘·프로파일을 복사하고, 추출기 비교와 예제 BOM 판정 기록을 만든다."""
-    sys.path.insert(0, CARDS); sys.path.insert(0, os.path.join(CARDS, "extract")); sys.path.insert(0, os.path.join(CARDS, "judge"))
-    from common import ABBR_TO_NAME, load_cards, load_gold, load_vocab
-    from lexicon import build_lexicon, card_text
-    from extract import extract, gold_phrases
+    """ai-bom/cards 의 카드·어휘·프로파일을 복사하고, 예제 BOM 판정 기록을 만든다."""
+    sys.path.insert(0, CARDS); sys.path.insert(0, os.path.join(CARDS, "judge"))
+    from common import load_cards, load_gold
     import judge as J
     out = os.path.join(OUT, "cards"); os.makedirs(os.path.join(out, "judgments"), exist_ok=True)
-    approved, gold, vocab = load_cards(), load_gold(), load_vocab()
+    for name in os.listdir(out):                         # 화면이 안 읽는 파일은 두지 않는다 (예전의 추출 비교 등)
+        if name.endswith(".json"):
+            os.remove(os.path.join(out, name))
+    approved, gold = load_cards(), load_gold()
     shown = approved or gold          # 승인된 카드가 생기면 그것을, 아직 없으면 정답 카드를 보여 준다
-    iso = {c["card_id"] for c in gold if c["regulation"]["title"].startswith("ISO/IEC")}
     with open(os.path.join(out, "cards.json"), "w", encoding="utf-8") as fh:
         json.dump([public_card(c) for c in shown], fh, ensure_ascii=False, indent=1)
     with open(os.path.join(out, "source.json"), "w", encoding="utf-8") as fh:
@@ -117,27 +117,6 @@ def cards():
     with open(os.path.join(out, "vocabulary.json"), "w", encoding="utf-8") as fh:
         json.dump(voc, fh, ensure_ascii=False, indent=1)
     shutil.copy(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"), os.path.join(out, "profile.json"))
-    # 추출기 비교: 카드마다 자기 용어를 뺀 용어집으로 영어 원문을 추출해 보이는 카드(승인 카드, 없으면 정답 카드)와 맞춘다
-    comparison = []
-    for c in shown:
-        lexicon = build_lexicon(approved, vocab, {c["card_id"]}, gold_phrases(c), corpus_extra=None if approved else gold)
-        pred, explain = extract(ABBR_TO_NAME[c["card_id"].split("-")[1]], c["source"]["clause_id"], card_text(c), lexicon, vocab)
-        gold_concepts = {f["concept"]: f for f in c["facts"]}
-        pred_facts = [f for f in pred["facts"] if f["concept"] != "UNRESOLVED"]
-        hidden = c["card_id"] in iso
-        comparison.append({
-            "card_id": c["card_id"], "confidence": pred["confidence"], "status": pred["status"],
-            "actor": pred["obligation"]["actor"], "action": pred["obligation"]["action"], "object": pred["obligation"]["object"],
-            "object_scope": pred["obligation"]["object_scope"], "gold_actor": c["obligation"]["actor"],
-            "facts": [{"concept": f["concept"], "clause": f.get("clause"), "span": None if hidden else (f.get("highlight_en") or f.get("gap_highlight_en")),
-                       "gold_clause": gold_concepts.get(f["concept"], {}).get("clause"),
-                       "result": "hit" if f["concept"] in gold_concepts else "extra"} for f in pred_facts],
-            "missed": [k for k in gold_concepts if k not in {f["concept"] for f in pred_facts}],
-            "conditions": [] if hidden else [x["text"] for x in pred["conditions"]],
-            "exceptions": [] if hidden else [x["text"] for x in pred["exceptions"]],
-        })
-    with open(os.path.join(out, "extraction.json"), "w", encoding="utf-8") as fh:
-        json.dump(comparison, fh, ensure_ascii=False, indent=1)
     # 예제 BOM 판정
     index = []
     profile = J.load_profile(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"))
