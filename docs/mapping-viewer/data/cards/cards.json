@@ -1,7 +1,7 @@
 [
  {
   "card_id": "RC-EUAIA-Annex-IV-1",
-  "card_version": 1,
+  "card_version": 2,
   "status": "approved",
   "confidence": 0.69,
   "regulation": {
@@ -93,6 +93,7 @@
     "highlight": "관련 소프트웨어나 펌웨어의 버전",
     "highlight_en": "the versions of relevant software or firmware",
     "required": "always",
+    "target": "software",
     "value_kind": "value"
    },
    {
@@ -144,7 +145,7 @@
     "label": "instructions for use"
    }
   ],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 7개)과 기준 카드(개념 8개)를 비교해 승인. 초안이 놓침: USE_CASES 주체 provider (Q19. 기술문서는 제공자 의무. 배포자는 받는 사람으로 언급)"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 7개)과 기준 카드(개념 8개)를 비교해 승인. 초안이 놓침: USE_CASES 주체 provider (Q19. 기술문서는 제공자 의무. 배포자는 받는 사람으로 언급) 고침 2026-10-27 (판 2): 대상 구성요소: COMPONENTS → software ((c) 관련 소프트웨어·펌웨어가 구성요소로 실려야 함. 모델·데이터셋만 있으면 안 됨)"
  },
  {
   "card_id": "RC-EUAIA-Annex-IV-2",
@@ -3001,7 +3002,7 @@
  },
  {
   "card_id": "RC-EUAIA-Annex-XII-1",
-  "card_version": 1,
+  "card_version": 2,
   "status": "approved",
   "confidence": 0.7,
   "regulation": {
@@ -3102,6 +3103,7 @@
     "highlight": "사용과 관련된 소프트웨어",
     "highlight_en": "relevant software related to the use of the general-purpose AI model",
     "required": "always",
+    "target": "software",
     "value_kind": "value"
    },
    {
@@ -3147,6 +3149,7 @@
     "highlight": "버전",
     "highlight_en": "the versions",
     "required": "always",
+    "target": "software",
     "value_kind": "value"
    }
   ],
@@ -3162,7 +3165,7 @@
   ],
   "exceptions": [],
   "evidence": [],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 12개)과 기준 카드(개념 11개)를 비교해 승인. 더함: USE_CASES (Q5. (a) '통합될 수 있는 AI 시스템의 유형과 성격'. 표는 같은 구절을 부속서 XI 1(1) 에서는 USE_CASES 로 달았는데 XII(1) 에서는 안 달았음. 표의 누락); COMPONENT_VERSION (Q16. '관련 소프트웨어의 버전' 은 component.version 칸) 초안이 놓침: MODEL_ARCHITECTURE"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 12개)과 기준 카드(개념 11개)를 비교해 승인. 더함: USE_CASES (Q5. (a) '통합될 수 있는 AI 시스템의 유형과 성격'. 표는 같은 구절을 부속서 XI 1(1) 에서는 USE_CASES 로 달았는데 XII(1) 에서는 안 달았음. 표의 누락); COMPONENT_VERSION (Q16. '관련 소프트웨어의 버전' 은 component.version 칸) 초안이 놓침: MODEL_ARCHITECTURE 고침 2026-10-27 (판 2): 대상 구성요소: COMPONENTS → software ((e) 모델과 함께 쓰는 소프트웨어가 구성요소로 실려야 함); COMPONENT_VERSION → software ((e) 함께 쓰는 소프트웨어마다 버전. 모델 자신의 버전이 아님)"
  },
  {
   "card_id": "RC-EUAIA-Annex-XII-2",
@@ -3291,7 +3294,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-10-2",
-  "card_version": 1,
+  "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
   "regulation": {
@@ -3438,6 +3441,7 @@
     "highlight_en": "the original purpose of the data collection",
     "required": "conditional",
     "condition": "C1",
+    "target": "dataset",
     "value_kind": "value"
    },
    {
@@ -3467,7 +3471,7 @@
   "exceptions": [],
   "evidence": [],
   "decision_rule": "always 사실이 모두 있고, C1 이 참일 때 ORIGINAL_COLLECTION_PURPOSE 가 있으면 반영. C1 이 참인데 없으면 부분 반영이고 보완 위치는 componentData.originalCollectionPurpose.",
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 12개)과 기준 카드(개념 14개)를 비교해 승인. 초안이 놓침: DECLARATIONS_CLAIMS, DECLARATIONS_EVIDENCE"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 12개)과 기준 카드(개념 14개)를 비교해 승인. 초안이 놓침: DECLARATIONS_CLAIMS, DECLARATIONS_EVIDENCE 고침 2026-10-27 (판 2): 대상 구성요소: ORIGINAL_COLLECTION_PURPOSE → dataset (개인데이터인 데이터셋마다 원래 수집 목적. 조건 C1 도 데이터셋마다 따짐)"
  },
  {
   "card_id": "RC-EUAIA-Article-10-3",

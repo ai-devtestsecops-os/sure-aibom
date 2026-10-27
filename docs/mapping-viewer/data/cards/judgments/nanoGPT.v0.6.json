@@ -1,6 +1,6 @@
 {
- "engine_version": "0.3.0",
- "run_at": "2026-10-27T05:38:33Z",
+ "engine_version": "0.4.0",
+ "run_at": "2026-10-27T05:57:55Z",
  "bom": {
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
@@ -16,12 +16,40 @@
    "name": "aibom-cyclonedx",
    "version": "1.7+v0.6",
    "description": "aibom-cli 가 내는 CycloneDX 1.7 / AI-BOM v0.6 (CycloneDX). spdx_path 는 SPDX 로 바꿀 때 가는 자리"
+  },
+  "targets": {
+   "system": {
+    "root": "metadata.component"
+   },
+   "model": {
+    "component_types": [
+     "machine-learning-model"
+    ]
+   },
+   "dataset": {
+    "component_types": [
+     "data"
+    ]
+   },
+   "software": {
+    "component_types": [
+     "application",
+     "framework",
+     "library",
+     "container",
+     "platform",
+     "operating-system",
+     "device-driver",
+     "firmware"
+    ]
+   }
   }
  },
  "system_profile": {},
  "checks": {
   "path_existence": true,
   "conditions": "카드에 조건식(expr)이 있는 것만",
+  "targets": "fact 에 target 이 있으면 그 종류의 구성요소마다 (조건도 구성요소마다)",
   "evidence": false
  },
  "summary": {
@@ -34,7 +62,7 @@
  "cards": [
   {
    "card_id": "RC-EUAIA-Annex-IV-1",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex IV(1): 모델 구조·과업 · 기술문서",
    "conditions": {
     "C1": {
@@ -124,15 +152,14 @@
      "concept": "COMPONENTS",
      "label": "구성요소 목록",
      "required": "always",
-     "status": "present",
+     "target": "software",
+     "checked": 0,
+     "status": "missing",
      "paths": [
       "components"
      ],
-     "found_at": {
-      "components": [
-       "$"
-      ]
-     }
+     "found_at": {},
+     "reason": "BOM 에 소프트웨어 구성요소가 없음"
     },
     {
      "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
@@ -190,6 +217,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.considerations.useCases"
+     ]
+    },
+    {
+     "concept": "COMPONENTS",
+     "label": "구성요소 목록",
+     "kind": "missing",
+     "suggested_paths": [
+      "components"
      ]
     },
     {
@@ -2841,7 +2876,7 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-XII-1",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex XII(1): 모델 구조·과업",
    "conditions": {
     "C1": {
@@ -2933,15 +2968,14 @@
      "concept": "COMPONENTS",
      "label": "구성요소 목록",
      "required": "always",
-     "status": "present",
+     "target": "software",
+     "checked": 0,
+     "status": "missing",
      "paths": [
       "components"
      ],
-     "found_at": {
-      "components": [
-       "$"
-      ]
-     }
+     "found_at": {},
+     "reason": "BOM 에 소프트웨어 구성요소가 없음"
     },
     {
      "concept": "RELEASE_NOTES_TIMESTAMP",
@@ -2985,15 +3019,14 @@
      "concept": "COMPONENT_VERSION",
      "label": "버전",
      "required": "always",
-     "status": "present",
+     "target": "software",
+     "checked": 0,
+     "status": "missing",
      "paths": [
       "component.version"
      ],
-     "found_at": {
-      "component.version": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
+     "found_at": {},
+     "reason": "BOM 에 소프트웨어 구성요소가 없음"
     }
    ],
    "gaps": [
@@ -3046,6 +3079,14 @@
      ]
     },
     {
+     "concept": "COMPONENTS",
+     "label": "구성요소 목록",
+     "kind": "missing",
+     "suggested_paths": [
+      "components"
+     ]
+    },
+    {
      "concept": "RELEASE_NOTES_TIMESTAMP",
      "label": "출시일",
      "kind": "missing",
@@ -3073,6 +3114,14 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.considerations.useCases"
+     ]
+    },
+    {
+     "concept": "COMPONENT_VERSION",
+     "label": "버전",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.version"
      ]
     }
    ]
@@ -3227,7 +3276,7 @@
   },
   {
    "card_id": "RC-EUAIA-Article-10-2",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Article 10(2): 데이터셋 수집·출처",
    "conditions": {
     "C1": {
@@ -3375,13 +3424,17 @@
      "concept": "ORIGINAL_COLLECTION_PURPOSE",
      "label": "데이터 수집의 원래 목적",
      "required": "conditional",
+     "target": "dataset",
      "condition": "C1",
      "condition_evaluated": true,
+     "condition_on": {
+      "pkg:huggingface/datasets/Skylion007/openwebtext": false
+     },
      "status": "not_required",
      "paths": [
       "componentData.originalCollectionPurpose"
      ],
-     "reason": "조건 C1 이 거짓이라 요구되지 않음: in the case of personal data"
+     "reason": "조건 C1 이 참인 데이터셋 구성요소가 없음: in the case of personal data"
     },
     {
      "concept": "REPRESENTATION_ASSUMPTIONS",

@@ -7,7 +7,34 @@
     "version": "1.7+v0.6",
     "description": "aibom-cli 가 내는 CycloneDX 1.7 / AI-BOM v0.6 (CycloneDX). spdx_path 는 SPDX 로 바꿀 때 가는 자리"
   },
-  "_comment": "승인된 매핑 프로파일. 개념(통제 어휘) → 스키마 경로. 사람이 만든 요구사항 표에서 왔으므로 승인된 것으로 본다. 개념 하나에 경로가 여럿이면 첫 것이 cdx_path, 나머지는 cdx_paths_more. 카드별 줄은 gold/profile.json 에 있다.",
+  "targets": {
+    "system": {
+      "root": "metadata.component"
+    },
+    "model": {
+      "component_types": [
+        "machine-learning-model"
+      ]
+    },
+    "dataset": {
+      "component_types": [
+        "data"
+      ]
+    },
+    "software": {
+      "component_types": [
+        "application",
+        "framework",
+        "library",
+        "container",
+        "platform",
+        "operating-system",
+        "device-driver",
+        "firmware"
+      ]
+    }
+  },
+  "_comment": "승인된 매핑 프로파일. 개념(통제 어휘) → 스키마 경로. 사람이 만든 요구사항 표에서 왔으므로 승인된 것으로 본다. 개념 하나에 경로가 여럿이면 첫 것이 cdx_path, 나머지는 cdx_paths_more. 카드별 줄은 gold/profile.json 에 있다. targets 는 카드 fact 의 target(시스템·모델·데이터셋·소프트웨어)을 이 스키마에서 찾는 법이다. 소프트웨어는 시스템 자신(metadata.component)을 빼고 구성요소 목록에서 type 이 소프트웨어인 것이다 (device·file 은 뺌).",
   "lines": [
     {
       "concept": "HYPERPARAMETERS",
