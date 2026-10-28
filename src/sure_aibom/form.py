@@ -34,7 +34,7 @@ properties 는 aibom:* 뿐이다.
 비어 있을 때만 쓰며, 소비해서 비어 버린 목록·modelCard 만 없앤다. 원본이 하나도 없는 컴포넌트는 바이트 단위로 같다.
 
 완성도: report 를 주면 컴포넌트마다 "채울 수 있는 규제 필드" 가운데 채운 수를 센다. 모델은 위 네 필드, 허브 데이터셋은
-위 일곱 필드, 로컬 데이터는 파일만 보고 알 수 있는 size·modality·statistics 셋이 분모다. v0.6 의 나머지 필드(aibom-cli 가
+위 일곱 필드, 로컬 데이터는 파일만 보고 알 수 있는 size·modality·statistics 셋이 분모다. v0.6 의 나머지 필드(sure-aibom 이
 아직 읽지 않는 것)는 세지 않는다.
 """
 from __future__ import annotations
@@ -103,7 +103,7 @@ def drop_tool_properties(doc: dict) -> dict:
     """문서 어디에 있든 properties 목록에서 aibom:* 가 아닌 항목을 지운다. 비어 버린 목록과, 그래서 비어 버린 객체(properties 만
     있던 environmentalConsiderations 등)는 없앤다. 원래 비어 있던 것은 그대로 둔다.
     도구가 낸 properties 가운데 믿을 만한 것은 앞 단계에서 정규 필드나 규제 필드로 옮겼다 (runners/syft.py · runners/cdxgen.py
-    · merge.py · form). 나머지는 값과 뜻을 aibom-cli 가 관리하지 않으므로 내보내지 않는다."""
+    · merge.py · form). 나머지는 값과 뜻을 sure-aibom 이 관리하지 않으므로 내보내지 않는다."""
     def walk(node) -> bool:
         """node 가 이번에 지워서 빈 객체가 되었으면 True."""
         if isinstance(node, list):

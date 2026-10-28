@@ -5,7 +5,7 @@
        - cdxgen 이 로컬 모델 README 의 datasets: 로 만든 type=data 컴포넌트 (purl, data[].name "datasets/<id>", group "datasets",
          data[].contents.url 의 허브 데이터셋 주소에서 id 를 얻는다)
        - 로컬 모델 README 의 YAML 헤더에서 model-index[].results[].dataset.type(평가). cdxgen 은 평가 데이터셋을 표시 이름만
-         적어 두므로 aibom-cli 가 README 를 직접 읽는다. 읽을 README 는 cdxgen 이 모델 컴포넌트의 evidence 에 남긴 것이다.
+         적어 두므로 sure-aibom 이 README 를 직접 읽는다. 읽을 README 는 cdxgen 이 모델 컴포넌트의 evidence 에 남긴 것이다.
        - 스캔 대상 디렉터리의 파이썬 소스에서 load_dataset("owner/name") — 첫 위치 인자가 허브 id 모양일 때만.
          load_dataset("csv", data_files=…) 같은 로컬 빌더와 파일 경로는 허브 id 가 아니라 넘긴다.
        - 코드가 부르는 허브 모델(pkg:huggingface 모델 컴포넌트)의 모델 카드. 모델마다 GET {HF_ENDPOINT}/api/models/<id> 를
@@ -1117,7 +1117,7 @@ def datasets_server() -> str:
 
 
 def _get_json(url: str, hf_id: str, what: str, log) -> dict | None:
-    req = Request(url, headers={"User-Agent": "aibom-cli", "Accept": "application/json"})
+    req = Request(url, headers={"User-Agent": "sure-aibom", "Accept": "application/json"})
     if os.environ.get("HF_TOKEN"):
         req.add_header("Authorization", f"Bearer {os.environ['HF_TOKEN']}")
     try:

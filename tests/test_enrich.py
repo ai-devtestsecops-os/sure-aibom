@@ -8,12 +8,12 @@ from pathlib import Path
 
 import pytest
 
-import aibom_cli.dataset as ds
-import aibom_cli.enrich as en
-from aibom_cli.enrich import OWASP_SOURCES, apply_model_info, enrich, hf_id_of, hub_model_id, performance_metrics, skip_reason
-from aibom_cli.facts import Facts
-from aibom_cli.form import apply
-from aibom_cli.runners._proc import RunnerError
+import sure_aibom.dataset as ds
+import sure_aibom.enrich as en
+from sure_aibom.enrich import OWASP_SOURCES, apply_model_info, enrich, hf_id_of, hub_model_id, performance_metrics, skip_reason
+from sure_aibom.facts import Facts
+from sure_aibom.form import apply
+from sure_aibom.runners._proc import RunnerError
 
 OWASP = Path(__file__).parent / "data" / "owasp" / "bert-base-uncased.cdx.json"
 HUB = Path(__file__).parent / "data" / "hf_api" / "hf_model_google-bert_bert-base-uncased.json"
@@ -156,7 +156,7 @@ def test_report_carries_the_first_line_of_each_failure(monkeypatch, owasp):
 
 
 def test_a_missing_working_directory_is_not_reported_as_a_missing_program():
-    from aibom_cli.runners._proc import run
+    from sure_aibom.runners._proc import run
     with pytest.raises(RunnerError, match="working directory not found: /nonexistent"):
         run(["python", "-c", "0"], cwd="/nonexistent")
 
@@ -365,7 +365,7 @@ def test_enriched_values_become_v06_fields(monkeypatch, owasp, hub, form):
 # -- 실제 실행 (AIBOM_GENERATOR_DIR 과 네트워크가 있을 때만) ----------------------------------
 @pytest.mark.skipif(skip_reason() is not None, reason=skip_reason() or "")
 def test_live_generator_returns_the_same_property_names():
-    from aibom_cli.runners.aibom_generator import run_aibom_generator
+    from sure_aibom.runners.aibom_generator import run_aibom_generator
     import tempfile
     doc = run_aibom_generator(HF_ID, Path(tempfile.mkdtemp()))
     src = next(c for c in doc["components"] if c["type"] == "machine-learning-model")

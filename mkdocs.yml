@@ -1,4 +1,4 @@
-site_name: aibom-cli
+site_name: SURE AI-BOM Generator
 site_description: AI-BOM 생성 CLI 문서
 docs_dir: docs
 theme:
@@ -30,7 +30,7 @@ theme:
     code: JetBrains Mono
   features:
     - navigation.indexes      # 섹션 제목이 곧 그 섹션의 첫 페이지
-    - navigation.path         # 제목 위 경로 (aibom-cli / 가이드 / 스캔 대상)
+    - navigation.path         # 제목 위 경로 (sure-aibom / 가이드 / 스캔 대상)
     - navigation.footer
     - search.highlight
     - content.code.copy

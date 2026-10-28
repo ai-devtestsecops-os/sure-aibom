@@ -243,7 +243,7 @@ def merge(docs: list[dict], root: tuple[str, str] | None = None, facts: Facts | 
         r = remap(ref)
         merged_deps.setdefault(r, set()).update(remap(t) for t in targets)
 
-    tools["aibom-cli"] = {"type": "application", "name": "aibom-cli", "version": _version()}
+    tools["sure-aibom"] = {"type": "application", "name": "sure-aibom", "version": _version()}
 
     if root_key:
         # 루트는 (해석되는 행에서) 아무도 의존하지 않는 컴포넌트에 의존한다 — 그래프를 루트에서 닿게 한다

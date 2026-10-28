@@ -4,8 +4,8 @@ CycloneDX 1.7 과 SPDX 3.0.1 의 필드 전체를 펼쳐 보여 주는 화면이
 어느 규제 조항에 근거하는지를 한 화면에서 본다. 트리는 표준 그대로이고, AI-BOM v0.6 이 더한 필드는 <span class="new-badge">v0.6</span> 로 표시한다.
 필드를 누르면 다른 표준의 대응 필드가 켜지고, 오른쪽 상세에 설명, 대응 필드, 확장 필드, 근거 조항이 나온다.
 
-두 트리의 <span class="tool-badge">syft</span> <span class="tool-badge">cdxgen</span> <span class="tool-badge">OWASP</span> <span class="tool-badge">aibom-cli</span>
-배지는 aibom-cli 가 내는 BOM 에서 그 필드의 값을 채우는 도구다. 배지가 없는 필드는 aibom-cli 가 내지 않는다.
+두 트리의 <span class="tool-badge">syft</span> <span class="tool-badge">cdxgen</span> <span class="tool-badge">OWASP</span> <span class="tool-badge">sure-aibom</span>
+배지는 sure-aibom 이 내는 BOM 에서 그 필드의 값을 채우는 도구다. 배지가 없는 필드는 sure-aibom 이 내지 않는다.
 
 <div class="mapping-viewer" data-base="../../mapping-viewer/data/">
 <div id="topbar">
@@ -15,7 +15,7 @@ CycloneDX 1.7 과 SPDX 3.0.1 의 필드 전체를 펼쳐 보여 주는 화면이
     <div id="suggest" class="hidden"></div>
   </div>
   <label id="added-only-box" title="AI-BOM v0.6 이 더한 필드와 그 조상만 남긴다"><input id="added-only" type="checkbox"> v0.6 추가 필드만</label>
-  <label id="generated-only-box" title="aibom-cli 출력에 값이 나오는 필드와 그 조상만 남긴다"><input id="generated-only" type="checkbox"> aibom-cli 가 채우는 필드만</label>
+  <label id="generated-only-box" title="sure-aibom 출력에 값이 나오는 필드와 그 조상만 남긴다"><input id="generated-only" type="checkbox"> sure-aibom 이 채우는 필드만</label>
   <button id="detail-toggle" class="mapping-only" title="상세 패널 열기/닫기">
     <svg viewBox="0 0 16 16" width="15" height="15">
       <rect x="1.5" y="2.5" width="13" height="11" rx="1.5" fill="none" stroke="currentColor" stroke-width="1.3"/>

@@ -18,12 +18,12 @@ const SPDX_URL = BASE + "aibom_v0.6_spdx.json";
 const MAPPING_URL = BASE + "aibom_v0.6_spdx_mapping.json";
 const REQ_URL = BASE + "aibom_v0.6_requirement_field_mapping.json";
 const PROPS_URL = BASE + "aibom_v0.6_properties.json";
-// aibom-cli 출력에서 자리마다 값을 채우는 도구. 허구의 픽스처를 실제로 스캔해 값 하나하나의 출처를 따라간 결과다
+// sure-aibom 출력에서 자리마다 값을 채우는 도구. 허구의 픽스처를 실제로 스캔해 값 하나하나의 출처를 따라간 결과다
 // (tests/test_fields.py 가 만들고 검사한다). 자리 경로는 아래 renderCdxNode 의 sitePath 와 같은 모양이다.
 const SOURCES_URL = BASE + "aibom_cli_sources.json";
 const SPDX_SOURCES_URL = BASE + "aibom_cli_spdx_sources.json";
-const TOOL_ORDER = ["syft", "cdxgen", "OWASP aibom-generator", "aibom-cli"];
-const TOOL_LABEL = { "syft": "syft", "cdxgen": "cdxgen", "OWASP aibom-generator": "OWASP", "aibom-cli": "aibom-cli" };
+const TOOL_ORDER = ["syft", "cdxgen", "OWASP aibom-generator", "sure-aibom"];
+const TOOL_LABEL = { "syft": "syft", "cdxgen": "cdxgen", "OWASP aibom-generator": "OWASP", "sure-aibom": "sure-aibom" };
 
 const PROFILE_ORDER = ["Core", "Software", "AI", "Dataset", "Security",
   "Expanded Licensing", "Simple Licensing", "Build", "Extension"];
@@ -65,7 +65,7 @@ let currentHighlighted = [];
 let propsByPath = new Map();            // CycloneDX 경로 -> [확장 필드 행, ...] (v0.6 추가 필드만)
 let siteAlias = new Map();              // 접붙인 자리의 경로(…inputs.maxSize) -> 공용 타입 행(inputOutputMLParameters.maxSize)
 let representativeLis = new Set();      // 경로마다 가장 얕은 자리의 <li> 하나 ("추가 필드만" 필터가 남기는 자리)
-let sourcesBySite = new Map();          // 자리 경로 -> [{tool, kinds}] (aibom-cli 출력에서 그 자리의 값을 채우는 도구)
+let sourcesBySite = new Map();          // 자리 경로 -> [{tool, kinds}] (sure-aibom 출력에서 그 자리의 값을 채우는 도구)
 let spdxSourcesBySite = new Map();      // "클래스.속성" -> [{tool, kinds}] (SPDX 출력에서 그 자리의 값을 채우는 도구)
 const addedOnlyEl = document.getElementById("added-only");
 const generatedOnlyEl = document.getElementById("generated-only");
@@ -610,13 +610,13 @@ function renderCdxNode(node, depth, ancestors, parentPath) {
   li.className = "collapsed";
   li.dataset.path = row.path;
 
-  // aibom-cli 출력에서 이 자리의 값을 채우는 도구. 갈래 행은 부모와 자리가 같으므로 배지를 달지 않는다
+  // sure-aibom 출력에서 이 자리의 값을 채우는 도구. 갈래 행은 부모와 자리가 같으므로 배지를 달지 않는다
   const sources = !isBranch ? sourcesBySite.get(sitePath) : null;
   const div = document.createElement("div");
   div.className = "node-row" + (isBranch ? " branch" : "") +
     (!isBranch && !hasMapping ? " no-map" : "") +
     (row.added ? " is-new" : "") +    // v0.6 이 더한 필드. 필터를 켜지 않아도 늘 눈에 띄게
-    (sources ? " is-gen" : "") +      // aibom-cli 가 값을 채우는 자리 ("생성하는 필드만" 필터가 남긴다)
+    (sources ? " is-gen" : "") +      // sure-aibom 이 값을 채우는 자리 ("생성하는 필드만" 필터가 남긴다)
     (!isBranch ? " clickable" : "");
   div.dataset.searchText = [row.name, row.title, row.path, row.type, row.description, row.description_ko,
     ...(sources || []).map(s => s.tool)]
@@ -763,7 +763,7 @@ function renderSpdxPropertyNode(node) {
   const row = node.row;
   const li = document.createElement("li");
   const div = document.createElement("div");
-  // aibom-cli 의 SPDX 출력에서 이 속성의 값을 채우는 도구 (CycloneDX 트리와 같은 배지)
+  // sure-aibom 의 SPDX 출력에서 이 속성의 값을 채우는 도구 (CycloneDX 트리와 같은 배지)
   const sources = spdxSourcesBySite.get(`${row.class}.${row.property}`);
   div.className = "node-row clickable" + (row.added ? " is-new" : "") + (sources ? " is-gen" : "");
   div.dataset.searchText = [row.class, row.property, row.summary, row.summary_ko, row.type, ...(sources || []).map(s => s.tool)]
@@ -1481,7 +1481,7 @@ function applyFilter() {
 }
 
 /** "추가 필드만" 이면 v0.6 추가 필드(대표 자리)와 그 조상만, "생성하는 필드만" 이면
-    aibom-cli 가 값을 채우는 자리와 그 조상만. 필터가 없으면 전부 접어 둔다. */
+    sure-aibom 이 값을 채우는 자리와 그 조상만. 필터가 없으면 전부 접어 둔다. */
 function filterNodes(nodes, query, addedOnly, generatedOnly, active) {
   let any = false;
   for (const n of nodes) {

@@ -29,7 +29,7 @@
         },
         {
           "type": "application",
-          "name": "aibom-cli",
+          "name": "sure-aibom",
           "version": "0.1.0"
         }
       ]
@@ -697,7 +697,7 @@
                 },
                 {
                   "name": "CONDA_DEFAULT_ENV",
-                  "value": "aibom-cli"
+                  "value": "sure-aibom"
                 }
               ]
             }

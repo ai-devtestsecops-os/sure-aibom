@@ -1,6 +1,6 @@
 # 출력 포맷
 
-aibom-cli 는 `--format` 으로 문서 형식(CycloneDX, SPDX)을, `--spec` 으로 스펙(공식 스키마 1.7·3.0.1 또는 AI-BOM v0.6)을 고른다.
+sure-aibom 은 `--format` 으로 문서 형식(CycloneDX, SPDX)을, `--spec` 으로 스펙(공식 스키마 1.7·3.0.1 또는 AI-BOM v0.6)을 고른다.
 
 ## 문서 형식 (`--format`)
 
@@ -22,10 +22,10 @@ CycloneDX 1.7 과 SPDX 3.0.1 에 자리가 없는 값을 위해 필드를 더한
 SPDX 3.0.1 에 자리가 있는 값(하이퍼파라미터, 데이터셋 크기·모달리티 등)은 SPDX 두 스펙 모두 그 속성에 적고, 표의 자리는 나머지 값에 쓴다.
 
 ```bash
-aibom-cli scan ./project -o bom.cdx.json                              # CycloneDX 1.7
-aibom-cli scan ./project -o bom.cdx.json --spec v0.6                  # AI-BOM v0.6 (CycloneDX)
-aibom-cli scan ./project -o bom.spdx.json --format spdx               # SPDX 3.0.1
-aibom-cli scan ./project -o bom.spdx.json --format spdx --spec v0.6   # AI-BOM v0.6 (SPDX)
+sure-aibom scan ./project -o bom.cdx.json                              # CycloneDX 1.7
+sure-aibom scan ./project -o bom.cdx.json --spec v0.6                  # AI-BOM v0.6 (CycloneDX)
+sure-aibom scan ./project -o bom.spdx.json --format spdx               # SPDX 3.0.1
+sure-aibom scan ./project -o bom.spdx.json --format spdx --spec v0.6   # AI-BOM v0.6 (SPDX)
 ```
 
 `1.7` 과 `3.0.1` 은 그 표준을 지원하는 SBOM 도구와 호환되고, `v0.6` 은 규제 필드의 타입과 허용값까지 스키마로 검증한다.

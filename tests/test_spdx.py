@@ -5,9 +5,9 @@ import json
 
 import pytest
 
-from aibom_cli.facts import Facts
-from aibom_cli.spdx import convert
-from aibom_cli.validate import detect_format, schema_for, validate_doc, validate_spdx
+from sure_aibom.facts import Facts
+from sure_aibom.spdx import convert
+from sure_aibom.validate import detect_format, schema_for, validate_doc, validate_spdx
 
 NS = "urn:uuid:3b1f6c2e-8a4d-4c1e-9f7a-0d2b5e6a7c91"
 ROOT, BERT, REVIEWS, LOCAL, LIB, FILE, OS_REF = ("container:/acme-app:1.4.0@", "pkg:huggingface/acme/acme-bert", "pkg:huggingface/datasets/acme/reviews",
@@ -16,14 +16,14 @@ SERVICE, APT = "urn:service:ai:openai:OpenAI-API", "pkg:generic/os-repository/de
 
 
 def doc_of() -> dict:
-    """aibom-cli 가 --spec v0.6 으로 내는 모양을 본뜬 문서. 변환기가 다루는 자리를 모두 한 번씩 담는다."""
+    """sure-aibom 이 --spec v0.6 으로 내는 모양을 본뜬 문서. 변환기가 다루는 자리를 모두 한 번씩 담는다."""
     return {
         "bomFormat": "CycloneDX", "specVersion": "1.7", "serialNumber": NS, "version": 1,
         "metadata": {
             "timestamp": "2026-10-20T00:00:00Z", "lifecycles": [{"phase": "post-build"}],
             "tools": {"components": [{"type": "application", "author": "anchore", "name": "syft", "version": "1.52.0"},
                                      {"type": "application", "name": "cdxgen", "version": "12.8.4", "purl": "pkg:npm/%40cyclonedx/cdxgen@12.8.4"},
-                                     {"type": "application", "name": "aibom-cli", "version": "0.2.0"}]},
+                                     {"type": "application", "name": "sure-aibom", "version": "0.2.0"}]},
             "component": {"type": "container", "name": "acme-app:1.4.0", "bom-ref": ROOT, "version": "1.4.0", "description": "Acme review assistant",
                           "supplier": {"name": "Acme Corp"}, "authors": [{"name": "Acme ML Team"}], "licenses": [{"expression": "Apache-2.0 OR MIT"}],
                           "externalReferences": [{"type": "vcs", "url": "https://github.com/acme/acme-app", "comment": "revision: 0123abcd"},
@@ -257,9 +257,9 @@ def test_relationships_cover_dependencies_lineage_and_licenses():
     assert ("metadata.lifecycles.phase", "post-build") in ext_of(document)
     creation = next(e for e in out["@graph"] if e["type"] == "CreationInfo")
     assert creation["created"] == "2026-10-20T00:00:00Z" and g[creation["createdBy"][0]] == {
-        "type": "SoftwareAgent", "spdxId": sid("agent/aibom-cli"), "creationInfo": sid("creationinfo"), "name": "aibom-cli"}
+        "type": "SoftwareAgent", "spdxId": sid("agent/sure-aibom"), "creationInfo": sid("creationinfo"), "name": "sure-aibom"}
     tools = [g[t] for t in creation["createdUsing"]]
-    assert [(t["name"], t.get("comment")) for t in tools] == [("syft", "version 1.52.0"), ("cdxgen", "version 12.8.4"), ("aibom-cli", "version 0.2.0")]
+    assert [(t["name"], t.get("comment")) for t in tools] == [("syft", "version 1.52.0"), ("cdxgen", "version 12.8.4"), ("sure-aibom", "version 0.2.0")]
     assert tools[1]["externalIdentifier"][0]["identifier"] == "pkg:npm/%40cyclonedx/cdxgen@12.8.4"
 
 

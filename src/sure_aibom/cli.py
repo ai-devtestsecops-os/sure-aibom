@@ -1,4 +1,4 @@
-"""aibom-cli 진입점 (scan(생성) · validate(검증). 사용법은 README 또는 `aibom-cli --help`."""
+"""sure-aibom 진입점 (scan(생성) · validate(검증). 사용법은 README 또는 `sure-aibom --help`."""
 from __future__ import annotations
 
 import argparse
@@ -9,7 +9,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-from . import __version__
+from . import NAME, __version__
 from .dataset import discover as discover_datasets, is_dataset
 from .enrich import enrich
 from .facts import Facts
@@ -50,7 +50,7 @@ def _quiet(msg: str) -> None:
 
 def _stage(label: str, result: str = "") -> None:
     dots = "." * max(3, STAGE_WIDTH - len(label))
-    _log(f"[aibom-cli] {label} {dots} {result}".rstrip())
+    _log(f"[sure-aibom] {label} {dots} {result}".rstrip())
 
 
 def _count(n: int, one: str, many: str | None = None) -> str:
@@ -103,7 +103,7 @@ def _read(path: str) -> dict | None:
         with open(path, encoding="utf-8") as f:
             return json.load(f)
     except (OSError, json.JSONDecodeError) as e:
-        _log(f"[aibom-cli] error: cannot read {path} ({e})")
+        _log(f"[sure-aibom] error: cannot read {path} ({e})")
         return None
 
 
@@ -114,22 +114,22 @@ def cmd_scan(args: argparse.Namespace) -> int:
     syft·cdxgen 중 하나라도 실패하면 만든 만큼은 쓰되 종료 코드 2 로 끝낸다 (CI 가 모자란 BOM 을 성공으로 넘기지 않게)."""
     args.spec = args.spec or SPEC_BY_FORMAT[args.format][0]
     if args.spec not in SPEC_BY_FORMAT[args.format]:
-        _log(f"[aibom-cli] error: --spec {args.spec} is not a {args.format} spec (use {' or '.join(SPEC_BY_FORMAT[args.format])})")
+        _log(f"[sure-aibom] error: --spec {args.spec} is not a {args.format} spec (use {' or '.join(SPEC_BY_FORMAT[args.format])})")
         return EXIT_TOOL
     if args.target.startswith("~"):
         args.target = str(Path(args.target).expanduser())
     if _looks_like_path(args.target) and not Path(args.target).exists():
-        _log(f"[aibom-cli] error: target not found: {args.target}")
+        _log(f"[sure-aibom] error: target not found: {args.target}")
         return EXIT_TOOL
     missing = [d for d in args.data if not Path(d).expanduser().exists()]
     if missing:
-        _log(f"[aibom-cli] error: data path not found: {', '.join(missing)}")
+        _log(f"[sure-aibom] error: data path not found: {', '.join(missing)}")
         return EXIT_TOOL
 
     data = f", data from {', '.join(args.data)}" if args.data else ""
-    _log(f"[aibom-cli] Generating {FORMAT_NAME[(args.format, args.spec)]} for {args.target}{data}")
+    _log(f"[sure-aibom] Generating {FORMAT_NAME[(args.format, args.spec)]} for {args.target}{data}")
 
-    workdir = Path(tempfile.mkdtemp(prefix="aibom-cli-"))
+    workdir = Path(tempfile.mkdtemp(prefix="sure-aibom-"))
     try:
         return _scan(args, workdir)
     finally:
@@ -140,7 +140,7 @@ def _failed(label: str, what: str, error: Exception, failed: list[str]) -> None:
     first, *rest = str(error).splitlines() or [""]
     _stage(label, f"failed: {first}")
     for line in [r for r in rest if r.strip()][-10:]:
-        _log(f"[aibom-cli]   {line}")
+        _log(f"[sure-aibom]   {line}")
     failed.append(what)
 
 
@@ -183,7 +183,7 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
             _failed("Generating M-BOM (cdxgen)", "cdxgen", e, failed)
 
     if not docs:
-        _log("[aibom-cli] error: neither syft nor cdxgen produced a BOM")
+        _log("[sure-aibom] error: neither syft nor cdxgen produced a BOM")
         return EXIT_TOOL
 
     facts = Facts()                                           # CycloneDX 에 자리가 없어 메모리로만 들고 가는 값 (SPDX 출력만 쓴다)
@@ -210,7 +210,7 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
         result = _count(enriched["enriched"], "hub model")
     _stage("Enriching M-BOM (aibom-generator)", result)
     for hf_id, reason in enriched["errors"].items():             # 보강은 선택 단계라 종료 코드는 그대로 두고 이유만 알린다
-        _log(f"[aibom-cli]   {hf_id}: {reason}")
+        _log(f"[sure-aibom]   {hf_id}: {reason}")
 
     # 허브 모델 카드의 데이터셋은 M-BOM 보강이 받아 둔 Hub API 응답에서 읽는다 (같은 응답을 다시 받지 않는다)
     datasets: dict = {}
@@ -219,7 +219,7 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
     total = _count(sum(1 for c in merged["components"] if is_dataset(c)), "dataset")
     _stage("Generating D-BOM", total + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
     for path in datasets.get("empty_data_paths") or []:
-        _log(f"[aibom-cli] warning: no data files in {path}")
+        _log(f"[sure-aibom] warning: no data files in {path}")
 
     regulation: dict = {}
     merged = regulate(merged, form=FORM_BY_SPEC[args.spec], log=detail, report=regulation)
@@ -236,10 +236,10 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
 
     _emit(out_doc, args.output)
     # 위 줄들을 더하지 않고 다 만든 BOM 을 다시 센다 (병합·별칭 합치기로 줄어든 만큼이 여기 반영된다)
-    _log(f"[aibom-cli] Wrote {args.output or 'stdout'} ({_count(len(merged['components']), 'component')}: "
+    _log(f"[sure-aibom] Wrote {args.output or 'stdout'} ({_count(len(merged['components']), 'component')}: "
          f"{_groups(merged['components'])}; {_count(len(merged['dependencies']), 'dependency', 'dependencies')})")
     if failed:
-        _log(f"[aibom-cli] error: {' and '.join(failed)} failed, so the BOM is incomplete")
+        _log(f"[sure-aibom] error: {' and '.join(failed)} failed, so the BOM is incomplete")
         return EXIT_TOOL
     return 0
 
@@ -269,37 +269,41 @@ def cmd_validate(args: argparse.Namespace) -> int:
         return EXIT_TOOL
     fmt = detect_format(doc)
     if fmt is None:
-        _log(f"[aibom-cli] error: not a CycloneDX or SPDX document (no bomFormat or @context): {args.bom}")
+        _log(f"[sure-aibom] error: not a CycloneDX or SPDX document (no bomFormat or @context): {args.bom}")
         return EXIT_TOOL
     args.spec = args.spec or SPEC_BY_FORMAT[fmt][0]                 # 안 주면 CycloneDX 문서는 1.7, SPDX 문서는 3.0.1
     if schema_for(fmt, args.spec) is None:
-        _log(f"[aibom-cli] error: --spec {args.spec} is not a {fmt} spec, and {args.bom} is a {fmt} document "
+        _log(f"[sure-aibom] error: --spec {args.spec} is not a {fmt} spec, and {args.bom} is a {fmt} document "
              f"(use {' or '.join(SPEC_BY_FORMAT[fmt])})")
         return EXIT_TOOL
     name = f"{FORMAT_NAME[(fmt, args.spec)]} schema"
     if not validate_doc(doc, fmt, args.spec, log=_log):
-        _log(f"[aibom-cli] Invalid against the {name} (--spec {args.spec}): {args.bom}")
+        _log(f"[sure-aibom] Invalid against the {name} (--spec {args.spec}): {args.bom}")
         return EXIT_INVALID
-    _log(f"[aibom-cli] Valid against the {name}: {args.bom}")
+    _log(f"[sure-aibom] Valid against the {name}: {args.bom}")
     return 0
 
 
 # ── parser ──────────────────────────────────────────────────────────────────
-# 도움말은 한 장이다. aibom-cli --help, scan --help, validate --help, 인자 없이 실행이 모두 이것을 찍고,
+# 도움말은 한 장이다. sure-aibom --help, scan --help, validate --help, 인자 없이 실행이 모두 이것을 찍고,
 # README 의 사용 절도 이 글자 그대로다 (tests/test_cli.py 가 둘이 같은지 본다).
 
 BANNER = r"""
-    ___    ________  ____  __  ___   ________    ____
-   /   |  /  _/ __ )/ __ \/  |/  /  / ____/ /   /  _/
-  / /| |  / // __  / / / / /|_/ /  / /   / /    / /
- / ___ |_/ // /_/ / /_/ / /  / /  / /___/ /____/ /
-/_/  |_/___/_____/\____/_/  /_/   \____/_____/___/
+   _____ __  ______  ______   ___    ________  ____  __  ___
+  / ___// / / / __ \/ ____/  /   |  /  _/ __ )/ __ \/  |/  /
+  \__ \/ / / / /_/ / __/    / /| |  / // __  / / / / /|_/ /
+ ___/ / /_/ / _, _/ /___   / ___ |_/ // /_/ / /_/ / /  / /
+/____/\____/_/ |_/_____/  /_/  |_/___/_____/\____/_/  /_/
 """[1:]
 
-HELP = BANNER + """
+HELP = BANNER + f"""
+{NAME} {__version__}
+AI 규제·표준 요구사항을 반영한 AI-BOM 자동 생성 프로그램
+(Compliance-Aware AI-BOM Generation Tool)
+
 Usage:
-  aibom-cli scan <target> [options]
-  aibom-cli validate <bom> [--spec <1.7|v0.6|3.0.1>]
+  sure-aibom scan <target> [options]
+  sure-aibom validate <bom> [--spec <1.7|v0.6|3.0.1>]
 
 Commands:
   scan <target>               디렉터리 또는 컨테이너 이미지를 스캔해 AI-BOM 을 만든다
@@ -319,19 +323,19 @@ Options:
   -h, --help                  도움말을 보여 준다
 
 Examples:
-  aibom-cli scan ./project -o bom.cdx.json                               디렉터리를 스캔하여 규제 필드를 CycloneDX 1.7 properties 로 넣음
-  aibom-cli scan ./project -o bom.cdx.json --spec v0.6                   디렉터리를 스캔하여 규제 필드를 AI-BOM v0.6 (CycloneDX) 필드로 넣음
-  aibom-cli scan ./project -o bom.spdx.json --format spdx                SPDX 3.0.1 로 냄
-  aibom-cli scan ./project -o bom.spdx.json --format spdx --spec v0.6    AI-BOM v0.6 (SPDX) 로 냄
-  aibom-cli scan ./project -o bom.cdx.json --data ./dataset              로컬 데이터 경로를 함께 지정
+  sure-aibom scan ./project -o bom.cdx.json                               디렉터리를 스캔하여 규제 필드를 CycloneDX 1.7 properties 로 넣음
+  sure-aibom scan ./project -o bom.cdx.json --spec v0.6                   디렉터리를 스캔하여 규제 필드를 AI-BOM v0.6 (CycloneDX) 필드로 넣음
+  sure-aibom scan ./project -o bom.spdx.json --format spdx                SPDX 3.0.1 로 냄
+  sure-aibom scan ./project -o bom.spdx.json --format spdx --spec v0.6    AI-BOM v0.6 (SPDX) 로 냄
+  sure-aibom scan ./project -o bom.cdx.json --data ./dataset              로컬 데이터 경로를 함께 지정
 
-  aibom-cli scan alpine:3.20 -o alpine.cdx.json                          컨테이너 이미지를 스캔
-  aibom-cli scan image.tar -o image.cdx.json                             이미지 .tar 를 스캔
+  sure-aibom scan alpine:3.20 -o alpine.cdx.json                          컨테이너 이미지를 스캔
+  sure-aibom scan image.tar -o image.cdx.json                             이미지 .tar 를 스캔
 
-  aibom-cli validate bom.cdx.json                                        CycloneDX 1.7 스키마로 검증
-  aibom-cli validate bom.cdx.json --spec v0.6                            AI-BOM v0.6 (CycloneDX) 스키마로 검증
-  aibom-cli validate bom.spdx.json                                       SPDX 3.0.1 스키마로 검증
-  aibom-cli validate bom.spdx.json --spec v0.6                           AI-BOM v0.6 (SPDX) 스키마로 검증
+  sure-aibom validate bom.cdx.json                                        CycloneDX 1.7 스키마로 검증
+  sure-aibom validate bom.cdx.json --spec v0.6                            AI-BOM v0.6 (CycloneDX) 스키마로 검증
+  sure-aibom validate bom.spdx.json                                       SPDX 3.0.1 스키마로 검증
+  sure-aibom validate bom.spdx.json --spec v0.6                           AI-BOM v0.6 (SPDX) 스키마로 검증
 
 Exit codes:
   0  성공        2  실행 오류        3  스키마 불일치
@@ -350,12 +354,12 @@ class _Help(argparse.Action):
 
 
 def build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="aibom-cli", usage="aibom-cli <command> [options]", add_help=False, allow_abbrev=False)
+    p = argparse.ArgumentParser(prog="sure-aibom", usage="sure-aibom <command> [options]", add_help=False, allow_abbrev=False)
     p.add_argument("-h", "--help", action=_Help)
-    p.add_argument("--version", action="version", version=f"aibom-cli {__version__}")
+    p.add_argument("--version", action="version", version=f"{NAME} {__version__}")
     sub = p.add_subparsers(dest="command", metavar="<command>")
 
-    s = sub.add_parser("scan", prog="aibom-cli scan", usage="aibom-cli scan <target> [options]", add_help=False, allow_abbrev=False)
+    s = sub.add_parser("scan", prog="sure-aibom scan", usage="sure-aibom scan <target> [options]", add_help=False, allow_abbrev=False)
     s.add_argument("-h", "--help", action=_Help)
     s.add_argument("target", metavar="<target>")
     s.add_argument("-o", "--output", metavar="<path>")
@@ -365,7 +369,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("-v", "--verbose", action="store_true")
     s.set_defaults(func=cmd_scan)
 
-    v = sub.add_parser("validate", prog="aibom-cli validate", usage="aibom-cli validate <bom> [--spec <1.7|v0.6|3.0.1>]",
+    v = sub.add_parser("validate", prog="sure-aibom validate", usage="sure-aibom validate <bom> [--spec <1.7|v0.6|3.0.1>]",
                        add_help=False, allow_abbrev=False)
     v.add_argument("-h", "--help", action=_Help)
     v.add_argument("bom", metavar="<bom>")

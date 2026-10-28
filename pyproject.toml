@@ -3,9 +3,9 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "aibom-cli"
+name = "sure-aibom"
 version = "0.2.0"
-description = "Generate an AI-BOM (CycloneDX 1.7) by orchestrating syft, cdxgen and the OWASP aibom-generator"
+description = "SURE AI-BOM Generator: Compliance-Aware AI-BOM Generation Tool"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = ["jsonschema>=4.20", "referencing>=0.30", "pyyaml>=6"]
@@ -14,13 +14,13 @@ dependencies = ["jsonschema>=4.20", "referencing>=0.30", "pyyaml>=6"]
 dev = ["pytest>=7"]
 
 [project.scripts]
-aibom-cli = "aibom_cli.cli:main"
+sure-aibom = "sure_aibom.cli:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
 
 [tool.setuptools.package-data]
-aibom_cli = ["schemas/*.json"]
+sure_aibom = ["schemas/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -1,21 +1,21 @@
-"""aibom-cli scan 을 단계마다 가로채, 최종 BOM 의 값 하나하나가 어느 도구에서 왔는지 따라간다 (tests/test_fields.py 가 쓴다).
+"""sure-aibom scan 을 단계마다 가로채, 최종 BOM 의 값 하나하나가 어느 도구에서 왔는지 따라간다 (tests/test_fields.py 가 쓴다).
 
 단계와 출처:
     run_syft · run_cdxgen    도구 출력 (runners/*.py 의 정리까지 끝난 것)을 원본으로 둔다
-    merge                    값마다, 병합 키가 같은 원본 컴포넌트의 같은 자리에 같은 값이 있으면 그 도구, 없으면 aibom-cli.
-                             컴포넌트 bom-ref 는 병합 키라 aibom-cli. 문서 머리·metadata.component 는 aibom-cli 가 쓰고, 그 가운데
+    merge                    값마다, 병합 키가 같은 원본 컴포넌트의 같은 자리에 같은 값이 있으면 그 도구, 없으면 sure-aibom.
+                             컴포넌트 bom-ref 는 병합 키라 sure-aibom. 문서 머리·metadata.component 는 sure-aibom 이 쓰고, 그 가운데
                              이미지 OCI 라벨에서 옮긴 자리는 syft. metadata.tools · services 는 같은 자리에 같은 값을 낸 도구,
                              dependencies 는 그 관계를 낸 도구 (병합 키로 바꿔 비교)
-    discover_services · discover_datasets · discover_models    새 값은 aibom-cli
-    enrich                   modelCard.properties 에 새로 든 값은 OWASP aibom-generator, 나머지(Hub API 로 채운 필드) 는 aibom-cli
-    regulate (form)          새 값은 그 자리를 채우는 원본 키 가운데 같은 값을 가진, 소비된 프로퍼티의 도구 (같으면 OWASP > cdxgen > aibom-cli)
+    discover_services · discover_datasets · discover_models    새 값은 sure-aibom
+    enrich                   modelCard.properties 에 새로 든 값은 OWASP aibom-generator, 나머지(Hub API 로 채운 필드) 는 sure-aibom
+    regulate (form)          새 값은 그 자리를 채우는 원본 키 가운데 같은 값을 가진, 소비된 프로퍼티의 도구 (같으면 OWASP > cdxgen > sure-aibom)
 값 단위 규칙: 단계 뒤의 값이 단계 앞에도 있던 값이면 앞의 출처를 잇고, 새 값이면 그 단계의 도구가 출처다.
 컴포넌트는 단계 사이에서 같은 dict 가 제자리에서 바뀌므로 숨은 표지(MARK)로 단계 전후를 맞춘다. 표지는 출력 직전에 뗀다.
 
 자리 경로는 인스턴스 JSON 경로에서 배열 번호를 뺀 것이다 (components.modelCard.modelParameters.task). 필드 탐색기의
 CycloneDX 트리 경로(docs/mapping-viewer/app.js 의 sitePath)와 같은 모양이다.
 SPDX 쪽(spdx_site_sources)은 최종 문서를 --format spdx --spec v0.6 과 같게 바꾼 뒤, 요소의 값마다 그 요소가 된 컴포넌트의 CycloneDX 값
-(같은 값, 열거값 대응, 이어 붙인 문자열은 풀어서)을 찾아 그 도구를 잇고, 못 찾으면 변환기(aibom-cli)다. 자리는 "클래스.속성" 이다.
+(같은 값, 열거값 대응, 이어 붙인 문자열은 풀어서)을 찾아 그 도구를 잇고, 못 찾으면 변환기(sure-aibom)다. 자리는 "클래스.속성" 이다.
 """
 from __future__ import annotations
 
@@ -24,13 +24,13 @@ import json
 from collections import defaultdict
 from pathlib import PurePosixPath
 
-import aibom_cli.cli as cli
-from aibom_cli.enrich import LOCAL_MODEL_FILES, LOCAL_MODEL_SUFFIXES
-from aibom_cli.form import HYPERPARAMETER_BY_PROPERTY, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX
-from aibom_cli.merge import _walk_components, identity
+import sure_aibom.cli as cli
+from sure_aibom.enrich import LOCAL_MODEL_FILES, LOCAL_MODEL_SUFFIXES
+from sure_aibom.form import HYPERPARAMETER_BY_PROPERTY, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX
+from sure_aibom.merge import _walk_components, identity
 
 MARK = "\x00mark"
-SYFT, CDXGEN, OWASP, CLI = "syft", "cdxgen", "OWASP aibom-generator", "aibom-cli"
+SYFT, CDXGEN, OWASP, CLI = "syft", "cdxgen", "OWASP aibom-generator", "sure-aibom"
 TOOL_ORDER = (SYFT, CDXGEN, OWASP, CLI)
 PRIORITY = (OWASP, CDXGEN, CLI)
 ROOT_FROM_CLI = ("metadata.component.type", "metadata.component.name", "metadata.component.bom-ref")
@@ -105,7 +105,7 @@ class Tracker:
                 path: {v: ({CLI} if path == "bom-ref" else ({t for t, g in sources if v in g.get(path, ())} or {CLI})) for v in values}
                 for path, values in grouped(leaves(comp)).items()}
         raw_docs = {t: grouped(leaves(doc_part(r))) for t, r in self.raw.items()}
-        tool_entries: dict[tuple[str, str], set[str]] = defaultdict(set)      # 도구 목록은 항목 단위로 (aibom-cli 항목의 type 이 도구 항목과 값이 같다)
+        tool_entries: dict[tuple[str, str], set[str]] = defaultdict(set)      # 도구 목록은 항목 단위로 (sure-aibom 항목의 type 이 도구 항목과 값이 같다)
         for entry in ((merged.get("metadata") or {}).get("tools") or {}).get("components") or []:
             owners = {t for t, r in self.raw.items() if entry in (((r.get("metadata") or {}).get("tools") or {}).get("components") or [])} or {CLI}
             for pair in leaves(entry, "metadata.tools.components"):
@@ -321,10 +321,10 @@ def spdx_site_sources(doc: dict, tracker: Tracker) -> dict[str, set[tuple[str, s
     """SPDX 출력(--format spdx --spec v0.6)의 자리마다 {(도구, 대상 종류)}. 자리는 "클래스.속성" 이고 안에 든 객체(DictionaryEntry,
     Hash, ExternalRef, CdxPropertyEntry …)는 그 클래스의 자리로도 센다. 값마다 그 요소가 된 컴포넌트(확장의 bom-ref)의 CycloneDX
     값과 맞춰 도구를 잇는다: 같은 값, 열거값 대응(direct-download → directDownload 등), 이어 붙인 문자열은 풀어서. 못 찾으면
-    변환기(aibom-cli)다. 공급자·작성자·라이선스 요소는 그것을 가리키는 컴포넌트로, 관계는 종류마다 CycloneDX 의 관계·계보·라이선스
+    변환기(sure-aibom)다. 공급자·작성자·라이선스 요소는 그것을 가리키는 컴포넌트로, 관계는 종류마다 CycloneDX 의 관계·계보·라이선스
     값으로, 루트의 builtTime 은 syft 가 읽은 이미지 라벨로 잇는다."""
-    from aibom_cli.facts import normalize_time
-    from aibom_cli.spdx import AVAILABILITY, EXTERNAL_REF_TYPE, HASH_ALGORITHM, PRESENCE, PURPOSE_BY_TYPE, convert
+    from sure_aibom.facts import normalize_time
+    from sure_aibom.spdx import AVAILABILITY, EXTERNAL_REF_TYPE, HASH_ALGORITHM, PRESENCE, PURPOSE_BY_TYPE, convert
 
     clean = copy.deepcopy(doc)
     for c in clean.get("components") or []:

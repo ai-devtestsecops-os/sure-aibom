@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-import aibom_cli.service as sv
+import sure_aibom.service as sv
 
 HUB_BERT = {"bom-ref": "pkg:huggingface/acme/acme-bert", "type": "machine-learning-model", "group": "acme", "name": "acme-bert",
             "purl": "pkg:huggingface/acme/acme-bert", "evidence": {"occurrences": [{"location": "app.py#L4"}]}}

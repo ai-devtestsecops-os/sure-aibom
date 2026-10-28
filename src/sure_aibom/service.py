@@ -5,7 +5,7 @@ llama → meta …), 코드가 부르는 허브 모델의 조직(<조직>-servic
 API 라서 근거는 SDK import 하나로 본다. 나머지는 짐작이라 틀린다: vLLM 으로 로컬에서 돌리는 Mistral 모델에도 Mistral API 가
 생기고, from_pretrained 로 내려받아 돌리는 모델에도 그 조직의 서비스가 생긴다.
 
-import 는 aibom-cli 가 직접 읽는다. cdxgen 은 파이썬의 `import X` 줄을 다음 줄까지 이어 읽어 이름을 놓치고(`from X import` 는
+import 는 sure-aibom 이 직접 읽는다. cdxgen 은 파이썬의 `import X` 줄을 다음 줄까지 이어 읽어 이름을 놓치고(`from X import` 는
 읽는다), `from X.sub import` 처럼 하위 모듈에서 가져오면 알아보지 못하며, 로컬에서 도는 JS 의 @huggingface/transformers 에도
 Hugging Face Inference API 를 붙인다. 읽는 곳은 대상 디렉터리의 파이썬(.py, .pyw)·노트북(.ipynb) import 문(문법 트리)과
 JS·TS(.js, .jsx, .cjs, .mjs, .ts, .tsx, .mts, .cts, .vue, .svelte)의 import·export·require 다. 데이터셋 찾기와 같은 폴더

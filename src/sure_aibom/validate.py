@@ -15,7 +15,7 @@ import jsonschema
 from jsonschema.exceptions import best_match
 from referencing import Registry, Resource
 
-SCHEMA_DIR = Path(str(files("aibom_cli") / "schemas"))   # 패키지 안. 편집 설치·wheel 설치 어디서든 같은 위치
+SCHEMA_DIR = Path(str(files("sure_aibom") / "schemas"))   # 패키지 안. 편집 설치·wheel 설치 어디서든 같은 위치
 CDX_SCHEMA = SCHEMA_DIR / "aibom-v0.6-cyclonedx.schema.json"
 CDX_OFFICIAL = SCHEMA_DIR / "bom-1.7.schema.json"
 SPDX_SCHEMA = SCHEMA_DIR / "aibom-v0.6-spdx.schema.json"
@@ -123,6 +123,6 @@ def validate_doc(doc: dict, fmt: str, spec: str, log=print) -> bool:
 
 def _report(messages: list[str], log) -> None:
     for m in messages[:20]:
-        log(f"[aibom-cli]   {m}")
+        log(f"[sure-aibom]   {m}")
     if len(messages) > 20:
-        log(f"[aibom-cli]   ... and {len(messages) - 20} more")
+        log(f"[sure-aibom]   ... and {len(messages) - 20} more")

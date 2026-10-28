@@ -15,9 +15,9 @@ from pathlib import Path
 
 import pytest
 
-import aibom_cli.dataset as ds
-from aibom_cli.runners._proc import RunnerError
-from aibom_cli.cli import main
+import sure_aibom.dataset as ds
+from sure_aibom.runners._proc import RunnerError
+from sure_aibom.cli import main
 
 FIXTURE = Path(__file__).parent / "data" / "project"
 HF_API = Path(__file__).parent / "data" / "hf_api"
@@ -62,9 +62,9 @@ def recorded_owasp(hf_id: str, workdir) -> dict:
 
 @pytest.fixture(autouse=True)
 def offline(monkeypatch):
-    monkeypatch.setattr("aibom_cli.enrich.skip_reason", lambda: None)                                     # 보강은 녹화본으로 돌린다
-    monkeypatch.setattr("aibom_cli.enrich.run_aibom_generator", recorded_owasp)
-    monkeypatch.setattr("aibom_cli.enrich.hf_reachable", lambda: True)                                   # 허브 모델 응답은 M-BOM 보강이 받는다
+    monkeypatch.setattr("sure_aibom.enrich.skip_reason", lambda: None)                                     # 보강은 녹화본으로 돌린다
+    monkeypatch.setattr("sure_aibom.enrich.run_aibom_generator", recorded_owasp)
+    monkeypatch.setattr("sure_aibom.enrich.hf_reachable", lambda: True)                                   # 허브 모델 응답은 M-BOM 보강이 받는다
     monkeypatch.setattr(ds, "hf_reachable", lambda: True)
     monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: recorded("model", hf_id))
     monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))
@@ -188,7 +188,7 @@ def test_project_fixture_yields_all_three_domains(tmp_path, monkeypatch):
 
     refs = {c["bom-ref"] for c in doc["components"]}
     assert len(refs) == len(doc["components"])                              # bom-ref 중복 없음
-    assert {t["name"] for t in doc["metadata"]["tools"]["components"]} >= {"syft", "cdxgen", "aibom-cli"}
+    assert {t["name"] for t in doc["metadata"]["tools"]["components"]} >= {"syft", "cdxgen", "sure-aibom"}
 
     assert doc["metadata"]["component"] == {"type": "application", "name": "project", "bom-ref": "application:/project@"}
     assert doc["metadata"]["lifecycles"] == [{"phase": "pre-build"}]                # 디렉터리는 빌드 전 소스
@@ -199,15 +199,15 @@ def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
     doc = scan(FIXTURE, cdx, "--spec", "v0.6", "--data", str(FIXTURE / "data"))
     # 첫 줄에 형식과 입력, 그 뒤 단계마다 한 줄. 모듈의 항목별 로그([dataset] 등)와 도구 명령은 찍지 않는다
     lines = capsys.readouterr().err.splitlines()
-    assert lines[0] == f"[aibom-cli] Generating AI-BOM v0.6 (CycloneDX) for {FIXTURE}, data from {FIXTURE / 'data'}"
+    assert lines[0] == f"[sure-aibom] Generating AI-BOM v0.6 (CycloneDX) for {FIXTURE}, data from {FIXTURE / 'data'}"
     assert [line.split(" .")[0] for line in lines[1:-1]] == [
-        "[aibom-cli] Generating S-BOM (syft)", "[aibom-cli] Generating M-BOM (cdxgen)", "[aibom-cli] Enriching M-BOM (Hub API)",
-        "[aibom-cli] Enriching M-BOM (aibom-generator)", "[aibom-cli] Generating D-BOM", "[aibom-cli] Adding regulation fields"]
+        "[sure-aibom] Generating S-BOM (syft)", "[sure-aibom] Generating M-BOM (cdxgen)", "[sure-aibom] Enriching M-BOM (Hub API)",
+        "[sure-aibom] Enriching M-BOM (aibom-generator)", "[sure-aibom] Generating D-BOM", "[sure-aibom] Adding regulation fields"]
     assert lines[1].endswith(" 4 packages, 1 file") and lines[2].endswith(" 5 models, 2 files")   # cdxgen 의 데이터셋 참조는 D-BOM 에서 센다
     assert lines[3].endswith(" 1 hub model") and lines[4].endswith(" 1 hub model") and lines[5].endswith(" 4 datasets")
     assert lines[6].endswith(" 34 of 44 filled (models 12/20, datasets 22/24)")      # 모델 5개 × 4, 허브 데이터셋 3개 × 7 + 로컬 1개 × 3
     # 마지막 줄은 다 만든 BOM 을 다시 센 것 — 묶음을 더하면 전체와 같다
-    total, groups, deps = re.fullmatch(rf"\[aibom-cli\] Wrote {re.escape(str(cdx))} \((\d+) components: (.+); (\d+) dependencies\)", lines[-1]).groups()
+    total, groups, deps = re.fullmatch(rf"\[sure-aibom\] Wrote {re.escape(str(cdx))} \((\d+) components: (.+); (\d+) dependencies\)", lines[-1]).groups()
     assert groups == "4 packages, 5 models, 4 datasets, 3 files"
     assert int(total) == len(doc["components"]) == sum(int(g.split()[0]) for g in groups.split(", "))
     assert int(deps) == len(doc["dependencies"])
@@ -239,8 +239,8 @@ def test_spdx_output_validates_and_keeps_the_models_and_datasets(tmp_path, capsy
     plain = out_file("project.spdx.json")
     doc = scan(FIXTURE, plain, "--format", "spdx", "--data", str(FIXTURE / "data"))
     lines = capsys.readouterr().err.splitlines()
-    assert lines[0].startswith("[aibom-cli] Generating SPDX 3.0.1 for ")
-    assert any(line.startswith("[aibom-cli] Converting to SPDX 3.0.1 ") and "elements" in line and "relationships" in line for line in lines)
+    assert lines[0].startswith("[sure-aibom] Generating SPDX 3.0.1 for ")
+    assert any(line.startswith("[sure-aibom] Converting to SPDX 3.0.1 ") and "elements" in line and "relationships" in line for line in lines)
     assert main(["validate", str(plain), "--spec", "3.0.1"]) == 0
     assert main(["validate", str(plain)]) == 0                       # 안 주면 SPDX 문서는 3.0.1
     assert main(["validate", str(plain), "--spec", "1.7"]) == 2
@@ -302,7 +302,7 @@ def test_directory_without_datasets_gets_no_data_components(tmp_path, monkeypatc
 
 def test_an_image_target_is_unpacked_and_the_unpacked_directory_is_scanned(tmp_path, monkeypatch, capsys):
     """이미지는 syft 만 그대로 읽고, cdxgen 은 이미지를 푼 디렉터리를 본다. 이름이면 먼저 받는다. 임시 디렉터리는 끝나면 지운다."""
-    import aibom_cli.cli as cli
+    import sure_aibom.cli as cli
     seen: dict = {}
     def mkdtemp(prefix):
         (tmp_path / "work").mkdir(exist_ok=True)
@@ -326,7 +326,7 @@ def test_an_image_target_is_unpacked_and_the_unpacked_directory_is_scanned(tmp_p
     assert seen["syft"] == "some-image:latest" and seen["pull"] == "some-image:latest"
     assert seen["extract"] == tmp_path / "work" / "image.tar" and seen["cdxgen"] == (str(tmp_path / "work" / "rootfs"), True)
     lines = capsys.readouterr().err.splitlines()
-    assert [line.split(" .")[0] for line in lines[1:4]] == ["[aibom-cli] Generating S-BOM (syft)", "[aibom-cli] Pulling image (crane)", "[aibom-cli] Unpacking image"]
+    assert [line.split(" .")[0] for line in lines[1:4]] == ["[sure-aibom] Generating S-BOM (syft)", "[sure-aibom] Pulling image (crane)", "[sure-aibom] Unpacking image"]
     assert lines[2].endswith(" done") and lines[3].endswith(" 2 layers")
     doc = json.loads(out.read_text())
     assert (doc["metadata"]["component"]["type"], doc["metadata"]["component"]["name"]) == ("container", "some:tag")
@@ -345,8 +345,8 @@ def test_an_image_target_is_unpacked_and_the_unpacked_directory_is_scanned(tmp_p
 
 
 def test_an_image_that_cannot_be_unpacked_skips_the_m_bom_and_exits_2(tmp_path, monkeypatch, capsys):
-    import aibom_cli.cli as cli
-    from aibom_cli.runners._proc import RunnerError
+    import sure_aibom.cli as cli
+    from sure_aibom.runners._proc import RunnerError
     monkeypatch.setattr(cli, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7",
         "components": [{"bom-ref": "a", "type": "library", "name": "a", "version": "1", "purl": "pkg:pypi/a@1"}]})
     monkeypatch.setattr(cli, "run_cdxgen", lambda target, workdir: pytest.fail("이미지를 못 풀었는데 cdxgen 을 돌렸다"))
@@ -355,10 +355,10 @@ def test_an_image_that_cannot_be_unpacked_skips_the_m_bom_and_exits_2(tmp_path, 
     assert cli.main(["scan", "some-image:latest", "-o", str(out)]) == 2
     lines = capsys.readouterr().err.splitlines()
     stages = {line.split(" .")[0]: line.rsplit(". ", 1)[-1] for line in lines if " ..." in line}
-    assert stages["[aibom-cli] Pulling image"] == "failed: could not fetch some-image:latest"
-    assert "[aibom-cli]   docker: daemon down" in lines
-    assert stages["[aibom-cli] Generating M-BOM (cdxgen)"] == "skipped: image not unpacked"
-    assert lines[-1] == "[aibom-cli] error: pulling image failed, so the BOM is incomplete"
+    assert stages["[sure-aibom] Pulling image"] == "failed: could not fetch some-image:latest"
+    assert "[sure-aibom]   docker: daemon down" in lines
+    assert stages["[sure-aibom] Generating M-BOM (cdxgen)"] == "skipped: image not unpacked"
+    assert lines[-1] == "[sure-aibom] error: pulling image failed, so the BOM is incomplete"
     assert json.loads(out.read_text())["components"][0]["name"] == "a"      # S-BOM 은 그래도 쓴다
 
 
@@ -396,8 +396,8 @@ def test_a_missing_path_target_is_an_error_not_an_image(tmp_path, capsys):
 
 def test_one_failing_tool_still_writes_the_bom_but_exits_2(tmp_path, monkeypatch, capsys):
     """syft·cdxgen 중 하나가 실패하면 만든 만큼은 쓰고, CI 가 모자란 BOM 을 성공으로 넘기지 않도록 2 로 끝낸다."""
-    import aibom_cli.cli as cli
-    from aibom_cli.runners._proc import RunnerError
+    import sure_aibom.cli as cli
+    from sure_aibom.runners._proc import RunnerError
 
     def broken(target, workdir):
         raise RunnerError("syft exited with 1\nfirst detail\nlast detail")
@@ -407,8 +407,8 @@ def test_one_failing_tool_still_writes_the_bom_but_exits_2(tmp_path, monkeypatch
     out = tmp_path / "bom.json"
     assert cli.main(["scan", str(FIXTURE), "-o", str(out)]) == 2
     err = capsys.readouterr().err.splitlines()[1:]                                 # 첫 줄은 형식·입력 안내
-    assert err[0].endswith("failed: syft exited with 1") and err[1:3] == ["[aibom-cli]   first detail", "[aibom-cli]   last detail"]
-    assert err[-1] == "[aibom-cli] error: syft failed, so the BOM is incomplete"
+    assert err[0].endswith("failed: syft exited with 1") and err[1:3] == ["[sure-aibom]   first detail", "[sure-aibom]   last detail"]
+    assert err[-1] == "[sure-aibom] error: syft failed, so the BOM is incomplete"
     assert any(c["name"] == "m" for c in json.loads(out.read_text())["components"])             # 부분 BOM 은 남는다
 
 
@@ -420,11 +420,11 @@ def test_without_data_paths_the_project_has_no_local_dataset(tmp_path):
 
 
 def test_a_data_path_without_data_files_is_a_warning(tmp_path, monkeypatch, capsys):
-    import aibom_cli.cli as cli
+    import sure_aibom.cli as cli
     monkeypatch.setattr(cli, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
     monkeypatch.setattr(cli, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
     (tmp_path / "docs").mkdir()
     (tmp_path / "docs" / "notes.md").write_text("x", encoding="utf-8")
     assert cli.main(["scan", str(FIXTURE), "-o", str(tmp_path / "b.json"), "--data", str(tmp_path / "docs")]) == 0
-    assert f"[aibom-cli] warning: no data files in {tmp_path / 'docs'}" in capsys.readouterr().err
+    assert f"[sure-aibom] warning: no data files in {tmp_path / 'docs'}" in capsys.readouterr().err
 

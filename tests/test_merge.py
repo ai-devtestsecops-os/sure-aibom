@@ -1,7 +1,7 @@
 import pytest
 
-from aibom_cli.facts import Facts
-from aibom_cli.merge import identity, merge
+from sure_aibom.facts import Facts
+from sure_aibom.merge import identity, merge
 
 
 def _doc(components, dependencies=()):

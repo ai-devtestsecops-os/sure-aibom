@@ -1,4 +1,4 @@
-"""aibom-cli 가 만든 CycloneDX 문서(AI-BOM v0.6 형)를 SPDX 3.0.1 JSON-LD 로 바꾼다. 파이프라인 맨 끝, 출력 직전에 돈다.
+"""sure-aibom 이 만든 CycloneDX 문서(AI-BOM v0.6 형)를 SPDX 3.0.1 JSON-LD 로 바꾼다. 파이프라인 맨 끝, 출력 직전에 돈다.
 
 값은 CycloneDX 로 다 만들고(병합, 보강, 규제 필드) 마지막에 모양만 바꾼다. 그래서 두 형식의 값이 어긋나지 않는다.
 입력은 규제 필드를 v0.6 정규 필드로 넣은 문서(form "typed")다. 구조가 있는 쪽에서 옮기는 것이 쉽기 때문이다.
@@ -29,7 +29,7 @@ spec
                    - v0.6 이 정의한 필드(3.0.1 에서 aibom_* 로 못 가는 값): 문서의 properties 키 그대로 (aibom:model:parameterCount,
                      aibom:dataset:statistics:<i>:type …). CycloneDX 1.7 출력의 properties 와 같은 이름이라 두 형식을 같은 키로 읽는다
                    - 그 밖의 값(bom-ref, group, tags, evidence, 로컬 데이터의 data[].name, 신뢰구간 …): CycloneDX 의 JSON 경로(배열 번호 없이)
-작성 주체          CreationInfo.createdBy 가 필수라 aibom-cli 자신을 SoftwareAgent 로 적는다. metadata.tools 는 Tool 요소로 createdUsing 에.
+작성 주체          CreationInfo.createdBy 가 필수라 sure-aibom 자신을 SoftwareAgent 로 적는다. metadata.tools 는 Tool 요소로 createdUsing 에.
 부가 기록(facts)   CycloneDX 에 자리가 없어 수집 단계가 메모리로만 들고 온 값 (facts.py). 위의 학습·평가 관계와 요소의
                    builtTime(이미지 created 라벨)·releaseTime(허브 lastModified). CycloneDX 출력에는 없다. 주지 않으면 그냥 뺀다
 식별자             문서 네임스페이스는 serialNumber(urn:uuid:…), 요소 id 는 "<네임스페이스>#<bom-ref>" (IRI 에 못 쓰는 글자만 퍼센트 인코딩).
@@ -113,7 +113,7 @@ class _Converter:
     def run(self) -> dict:
         meta = self.doc.get("metadata") or {}
         tools = ((meta.get("tools") or {}).get("components") if isinstance(meta.get("tools"), dict) else meta.get("tools")) or []
-        agent = self._element({"type": "SoftwareAgent", "spdxId": f"{self.ns}#agent/aibom-cli", "creationInfo": self.ci, "name": "aibom-cli"})
+        agent = self._element({"type": "SoftwareAgent", "spdxId": f"{self.ns}#agent/sure-aibom", "creationInfo": self.ci, "name": "sure-aibom"})
         tool_ids = [self._tool(t) for t in tools if isinstance(t, dict) and t.get("name")]
         creation = {"type": "CreationInfo", "@id": self.ci, "specVersion": SPEC_VERSION,
                     "created": meta.get("timestamp") or "1970-01-01T00:00:00Z", "createdBy": [agent]}

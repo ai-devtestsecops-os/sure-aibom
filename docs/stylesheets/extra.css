@@ -102,7 +102,7 @@ html { scrollbar-gutter: stable; }
    .md-typeset__table 로 감싸므로 형제는 그 래퍼이고, 스크립트 전에는 표 자신이다 */
 #s-bom ~ table th:first-child, #s-bom ~ .md-typeset__scrollwrap th:first-child { width: 10rem; white-space: nowrap; }
 #s-bom ~ table th:nth-child(2), #s-bom ~ .md-typeset__scrollwrap th:nth-child(2) { width: 9rem; }
-/* 칸 안의 글은 세로 가운데에 둔다. 합친 칸(syft, cdxgen, aibom-cli)이 위에 붙어 보이지 않게. Material 기본은 위 정렬 */
+/* 칸 안의 글은 세로 가운데에 둔다. 합친 칸(syft, cdxgen, sure-aibom)이 위에 붙어 보이지 않게. Material 기본은 위 정렬 */
 #s-bom ~ table td, #s-bom ~ .md-typeset__scrollwrap td { vertical-align: middle; }
 /* 칸 안의 예외 설명(※ …)은 옅은 색으로 */
 .md-typeset .note { color: var(--md-default-fg-color--light); }

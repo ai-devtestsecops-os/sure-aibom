@@ -12,13 +12,13 @@ from pathlib import Path
 
 import pytest
 
-import aibom_cli.dataset as ds
-from aibom_cli.enrich import skip_reason
-from aibom_cli.facts import Facts
-from aibom_cli.merge import merge
-from aibom_cli.form import INTERNAL_PREFIX, apply
-from aibom_cli.licenses import card_licenses, license_entry
-from aibom_cli.validate import validate_cdx
+import sure_aibom.dataset as ds
+from sure_aibom.enrich import skip_reason
+from sure_aibom.facts import Facts
+from sure_aibom.merge import merge
+from sure_aibom.form import INTERNAL_PREFIX, apply
+from sure_aibom.licenses import card_licenses, license_entry
+from sure_aibom.validate import validate_cdx
 
 IMDB_FIXTURE = Path(__file__).parent / "data" / "hf_api" / "hf_dataset_stanfordnlp_imdb.json"
 IMDB = "stanfordnlp/imdb"

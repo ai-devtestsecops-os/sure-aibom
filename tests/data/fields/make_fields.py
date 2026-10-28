@@ -1,4 +1,4 @@
-"""fields 픽스처를 만든다: syft·cdxgen·OWASP aibom-generator·aibom-cli 가 낼 수 있는 필드를 모두 끌어내도록 꾸민 허구의 프로젝트.
+"""fields 픽스처를 만든다: syft·cdxgen·OWASP aibom-generator·sure-aibom 이 낼 수 있는 필드를 모두 끌어내도록 꾸민 허구의 프로젝트.
 
     python tests/data/fields/make_fields.py      # 이 폴더의 project/ · rootfs/ · hf_api/ · owasp/ 를 다시 쓴다
 
@@ -818,7 +818,7 @@ def owasp_outputs() -> dict[str, dict]:
         {"comment": "Training dataset: acme/reviews", "type": "distribution", "url": "https://huggingface.co/datasets/acme/reviews"}]
     # GGUF 저장소: OWASP 가 첫 GGUF 파일의 헤더를 못 읽은 경우다. 헤더에서 오는 값(하이퍼파라미터 묶음, vocabSize, tokenizerClass,
     # contextLength, 양자화, model_type)이 모두 없고 modelArchitecture 는 기본값이다. 파일 목록에서 오는 runtimeRequirement·modelFileSize
-    # 는 남는다. 그래서 inputs maxSize 는 aibom-cli 가 Hub API 의 gguf.context_length 로 채운다 (parameterCount 는 gguf.total).
+    # 는 남는다. 그래서 inputs maxSize 는 sure-aibom 이 Hub API 의 gguf.context_length 로 채운다 (parameterCount 는 gguf.total).
     gguf_card = {
         "modelParameters": {"task": "text-generation", "modelArchitecture": "transformer", "inputs": [{"format": "string"}], "outputs": [{"format": "string"}]},
         "properties": [

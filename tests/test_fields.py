@@ -17,12 +17,12 @@ from pathlib import Path
 
 import pytest
 
-import aibom_cli.dataset as ds
-import aibom_cli.enrich as en
+import sure_aibom.dataset as ds
+import sure_aibom.enrich as en
 import fieldtrace
-from aibom_cli.runners._proc import RunnerError
-from aibom_cli.spdx import convert
-from aibom_cli.validate import validate_cdx, validate_spdx
+from sure_aibom.runners._proc import RunnerError
+from sure_aibom.spdx import convert
+from sure_aibom.validate import validate_cdx, validate_spdx
 from test_image import docker_tar
 
 FIELDS = Path(__file__).parent / "data" / "fields"
@@ -198,7 +198,7 @@ def test_directory_scan_models(scans):
     assert local["modelCard"]["modelParameters"]["datasets"] == [{"ref": f"pkg:huggingface/datasets/acme/{n}"} for n in ("acmecorpus", "reviews", "sentiment-eval")]
     assert "environmentalConsiderations" not in local["modelCard"]["considerations"]                                 # co2 는 properties 뿐이라 지워진다
     stages = [line.split(" .")[0] for line in log if " ..." in line]
-    assert "[aibom-cli] Enriching M-BOM (Hub API)" in stages and "[aibom-cli]   acme/acme-private: no regulation values in the aibom-generator output" in log
+    assert "[sure-aibom] Enriching M-BOM (Hub API)" in stages and "[sure-aibom]   acme/acme-private: no regulation values in the aibom-generator output" in log
 
 
 def test_directory_scan_datasets(scans):

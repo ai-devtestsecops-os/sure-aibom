@@ -4,8 +4,8 @@ from pathlib import Path
 
 import pytest
 
-from aibom_cli import __version__
-from aibom_cli.cli import HELP, _groups, build_parser, main
+from sure_aibom import NAME, __version__
+from sure_aibom.cli import HELP, _groups, build_parser, main
 
 README = Path(__file__).parents[1] / "README.md"
 
@@ -43,14 +43,14 @@ def test_help_mentions_every_option_the_parser_accepts():
 def test_version(capsys):
     with pytest.raises(SystemExit) as e:
         main(["--version"])
-    assert e.value.code == 0 and capsys.readouterr().out.strip() == f"aibom-cli {__version__}"
+    assert e.value.code == 0 and capsys.readouterr().out.strip() == f"{NAME} {__version__}"
 
 
 @pytest.mark.parametrize("argv, message", [
-    (["scan"], "aibom-cli scan: error: the following arguments are required: <target>"),
-    (["scan", "x", "--spec", "2.0"], "aibom-cli scan: error: argument --spec: invalid choice: '2.0'"),
-    (["scan", "x", "--form", "typed"], "aibom-cli: error: unrecognized arguments: --form typed"),
-    (["validate"], "aibom-cli validate: error: the following arguments are required: <bom>"),
+    (["scan"], "sure-aibom scan: error: the following arguments are required: <target>"),
+    (["scan", "x", "--spec", "2.0"], "sure-aibom scan: error: argument --spec: invalid choice: '2.0'"),
+    (["scan", "x", "--form", "typed"], "sure-aibom: error: unrecognized arguments: --form typed"),
+    (["validate"], "sure-aibom validate: error: the following arguments are required: <bom>"),
 ])
 def test_usage_errors_exit_2_and_name_the_command(argv, message, capsys):
     with pytest.raises(SystemExit) as e:
@@ -59,11 +59,11 @@ def test_usage_errors_exit_2_and_name_the_command(argv, message, capsys):
 
 
 def test_a_missing_data_path_is_an_error_before_any_tool_runs(tmp_path, monkeypatch, capsys):
-    import aibom_cli.cli as cli
+    import sure_aibom.cli as cli
     monkeypatch.setattr(cli, "run_syft", lambda *a: pytest.fail("데이터 경로가 틀렸는데 도구를 돌렸다"))
     out = tmp_path / "bom.json"
     assert main(["scan", str(tmp_path), "-o", str(out), "--data", str(tmp_path / "nope"), "--data", str(tmp_path)]) == 2
-    assert f"[aibom-cli] error: data path not found: {tmp_path / 'nope'}" in capsys.readouterr().err
+    assert f"[sure-aibom] error: data path not found: {tmp_path / 'nope'}" in capsys.readouterr().err
     assert not out.exists()
 
 
@@ -93,7 +93,7 @@ def test_groups_count_only_real_datasets_as_datasets():
 def test_a_spec_of_the_other_format_is_a_usage_error_before_anything_runs(argv, message, capsys):
     """형식과 spec 이 맞지 않으면 대상을 보기도 전에 2 로 끝낸다 (없는 대상을 줘도 그 오류가 아니라 이 오류다)."""
     assert main(argv) == 2
-    assert capsys.readouterr().err.strip() == f"[aibom-cli] error: {message}"
+    assert capsys.readouterr().err.strip() == f"[sure-aibom] error: {message}"
 
 
 def test_validate_refuses_a_spec_of_the_other_format(tmp_path, capsys):

@@ -1,4 +1,4 @@
-# aibom-cli
+# SURE AI-BOM Generator
 
 AI 시스템의 소프트웨어 패키지(S-BOM), 모델(M-BOM), 데이터셋(D-BOM)을 찾아 하나의 AI-BOM 으로 내는 CLI 도구다.
 기존 CycloneDX 와 SPDX 가 다루지 않지만 EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 값을 추가하여, 규제에 맞는 AI-BOM 을 만든다.

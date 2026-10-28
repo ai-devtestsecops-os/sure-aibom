@@ -10,8 +10,8 @@ from pathlib import Path
 
 import pytest
 
-import aibom_cli.image as im
-from aibom_cli.runners._proc import RunnerError
+import sure_aibom.image as im
+from sure_aibom.runners._proc import RunnerError
 
 
 # ── tar 만들기 ────────────────────────────────────────────────────────────────

@@ -7,10 +7,10 @@ from pathlib import Path
 
 import pytest
 
-import aibom_cli.model as md
-from aibom_cli.merge import merge
-from aibom_cli.form import INTERNAL_MODEL_PREFIX, apply
-from aibom_cli.validate import validate_cdx
+import sure_aibom.model as md
+from sure_aibom.merge import merge
+from sure_aibom.form import INTERNAL_MODEL_PREFIX, apply
+from sure_aibom.validate import validate_cdx
 
 MODEL_REF = "pkg:huggingface/acme/tiny"
 

@@ -659,7 +659,7 @@
 /* --tree-h 는 app.js 의 fitTrees 가 화면에 맞춰 다시 쓴다. 위 값은 스크립트가 돌기 전의 기본값 */
 .mapping-viewer .section-none { transform: translateY(-.5px); }   /* 글자 중심보다 0.5px 낮게 앉는다 */
 
-/* aibom-cli 출력의 출처 도구. 트리 행의 작은 배지. 한 색 계열로 두고 이름으로 구분한다 */
+/* sure-aibom 출력의 출처 도구. 트리 행의 작은 배지. 한 색 계열로 두고 이름으로 구분한다 */
 .mapping-viewer, .md-typeset { --tool-bg: #e7f0fb; --tool-fg: #1f5fa8; }
 [data-md-color-scheme="slate"] .mapping-viewer, [data-md-color-scheme="slate"] .md-typeset { --tool-bg: rgba(56, 139, 253, .2); --tool-fg: #a5c8ff; }
 .mapping-viewer .tool-badge, .md-typeset .tool-badge { margin-left: 4px; padding: 0 4px; border-radius: 3px; font-size: 10.5px; font-weight: 600;

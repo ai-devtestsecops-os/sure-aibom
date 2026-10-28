@@ -3,7 +3,7 @@
   "site": "bomFormat",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "문서"
     ]
@@ -25,7 +25,7 @@
   "site": "components.bom-ref",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "Space",
      "데이터셋(로컬)",
@@ -55,7 +55,7 @@
   "site": "components.data.collectionProcess",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)"
     ]
@@ -66,7 +66,7 @@
   "site": "components.data.contents.availability",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)"
     ]
@@ -83,7 +83,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)"
     ]
@@ -94,7 +94,7 @@
   "site": "components.data.intendedUse",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)"
     ]
@@ -105,7 +105,7 @@
   "site": "components.data.modality",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(로컬)",
      "데이터셋(허브)"
@@ -123,7 +123,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(로컬)",
      "데이터셋(허브)"
@@ -135,7 +135,7 @@
   "site": "components.data.provenance",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)"
     ]
@@ -146,7 +146,7 @@
   "site": "components.data.size",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(로컬)",
      "데이터셋(허브)"
@@ -158,7 +158,7 @@
   "site": "components.data.statistics.type",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(로컬)",
      "데이터셋(허브)"
@@ -170,7 +170,7 @@
   "site": "components.data.statistics.value",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(로컬)",
      "데이터셋(허브)"
@@ -188,7 +188,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(로컬)",
      "데이터셋(허브)"
@@ -213,7 +213,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)",
      "모델(코드 참조)"
@@ -241,7 +241,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)"
     ]
@@ -286,7 +286,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)",
      "모델(코드 참조)"
@@ -314,7 +314,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)",
      "모델(코드 참조)"
@@ -341,7 +341,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)"
     ]
@@ -399,7 +399,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)",
      "모델(코드 참조)"
@@ -423,7 +423,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)"
     ]
@@ -446,7 +446,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)"
     ]
@@ -492,7 +492,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -503,7 +503,7 @@
   "site": "components.modelCard.modelParameters.datasets.ref",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(로컬 파일)",
      "모델(코드 참조)"
@@ -521,7 +521,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(로컬 파일)"
     ]
@@ -538,7 +538,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(로컬 파일)"
     ]
@@ -555,7 +555,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -578,7 +578,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -595,7 +595,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -612,7 +612,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -635,7 +635,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(로컬 파일)",
      "모델(코드 참조)"
@@ -653,7 +653,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -664,7 +664,7 @@
   "site": "components.modelCard.properties.name",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(로컬 파일) · --spec 1.7",
      "모델(코드 참조) · --spec 1.7"
@@ -689,7 +689,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(로컬 파일) · --spec 1.7",
      "모델(코드 참조) · --spec 1.7"
@@ -707,7 +707,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -724,7 +724,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -741,7 +741,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -770,7 +770,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(로컬)",
      "데이터셋(허브)"
@@ -810,7 +810,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -827,7 +827,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -844,7 +844,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -861,7 +861,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -878,7 +878,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "모델(코드 참조)"
     ]
@@ -889,7 +889,7 @@
   "site": "components.properties.name",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(로컬) · --spec 1.7",
      "데이터셋(허브) · --spec 1.7"
@@ -901,7 +901,7 @@
   "site": "components.properties.value",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(로컬) · --spec 1.7",
      "데이터셋(허브) · --spec 1.7"
@@ -938,7 +938,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)"
     ]
@@ -949,7 +949,7 @@
   "site": "components.supplier.name",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)",
      "모델(코드 참조)"
@@ -1027,7 +1027,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(로컬)",
      "데이터셋(허브)"
@@ -1052,7 +1052,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "데이터셋(허브)",
      "모델(코드 참조)"
@@ -1076,7 +1076,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "관계"
     ]
@@ -1099,7 +1099,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "관계"
     ]
@@ -1121,7 +1121,7 @@
   "site": "metadata.component.bom-ref",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "스캔 대상"
     ]
@@ -1187,7 +1187,7 @@
   "site": "metadata.component.name",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "스캔 대상"
     ]
@@ -1253,7 +1253,7 @@
   "site": "metadata.component.type",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "스캔 대상"
     ]
@@ -1275,7 +1275,7 @@
   "site": "metadata.lifecycles.phase",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "문서"
     ]
@@ -1286,7 +1286,7 @@
   "site": "metadata.timestamp",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "문서"
     ]
@@ -1370,7 +1370,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "도구 목록"
     ]
@@ -1421,7 +1421,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "도구 목록"
     ]
@@ -1450,7 +1450,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "도구 목록"
     ]
@@ -1461,7 +1461,7 @@
   "site": "serialNumber",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "문서"
     ]
@@ -1478,7 +1478,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "서비스"
     ]
@@ -1495,7 +1495,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "서비스"
     ]
@@ -1512,7 +1512,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "서비스"
     ]
@@ -1529,7 +1529,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "서비스"
     ]
@@ -1546,7 +1546,7 @@
     ]
    },
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "서비스"
     ]
@@ -1557,7 +1557,7 @@
   "site": "specVersion",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "문서"
     ]
@@ -1568,7 +1568,7 @@
   "site": "version",
   "sources": [
    {
-    "tool": "aibom-cli",
+    "tool": "sure-aibom",
     "kinds": [
      "문서"
     ]

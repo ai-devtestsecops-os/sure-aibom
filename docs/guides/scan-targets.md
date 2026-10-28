@@ -4,10 +4,10 @@
 
 | 입력 | 인자 | 판별 | 예 |
 |---|---|---|---|
-| 디렉터리 | `<target>` | 존재하는 디렉터리 경로 | `aibom-cli scan ./project` |
-| 컨테이너 이미지 | `<target>` | 디렉터리도 아카이브도 아닌 모든 값 | `aibom-cli scan python:3.12-slim`, `aibom-cli scan ghcr.io/org/app:1.0` |
-| 이미지 아카이브 | `<target>` | `.tar`, `.tar.gz`, `.tgz` 로 끝나는 파일 | `aibom-cli scan image.tar` |
-| 로컬 데이터 | `--data <path>` | 데이터 파일이 든 폴더나 데이터 파일 하나. 여러 번 줄 수 있다 | `aibom-cli scan ./project --data ./dataset` |
+| 디렉터리 | `<target>` | 존재하는 디렉터리 경로 | `sure-aibom scan ./project` |
+| 컨테이너 이미지 | `<target>` | 디렉터리도 아카이브도 아닌 모든 값 | `sure-aibom scan python:3.12-slim`, `sure-aibom scan ghcr.io/org/app:1.0` |
+| 이미지 아카이브 | `<target>` | `.tar`, `.tar.gz`, `.tgz` 로 끝나는 파일 | `sure-aibom scan image.tar` |
+| 로컬 데이터 | `--data <path>` | 데이터 파일이 든 폴더나 데이터 파일 하나. 여러 번 줄 수 있다 | `sure-aibom scan ./project --data ./dataset` |
 
 컨테이너 이미지와 이미지 아카이브의 경우 S-BOM 은 syft 가 직접 읽고, 모델과 데이터셋은 디렉터리로 푼 뒤 디렉터리와 같은 규칙으로 찾는다.
 그 안에서 무엇을 찾는지는 [수집 항목](collected-items.md)에 있다.
@@ -22,7 +22,7 @@
 들어 있어 Docker 가 없어도 된다.
 
 S-BOM 은 syft 가 이미지를 직접 읽어 만든다. M-BOM 과 D-BOM 은 이미지를 그대로 주면 cdxgen 이 AI 수집을 건너뛰어 제대로 만들어지지 않으므로,
-aibom-cli 가 이미지를 임시 디렉터리에 풀어 디렉터리 스캔과 같은 방식으로 돌린다.
+sure-aibom 이 이미지를 임시 디렉터리에 풀어 디렉터리 스캔과 같은 방식으로 돌린다.
 
 ## 이미지 아카이브
 
@@ -53,5 +53,5 @@ data/
 ```
 
 ```bash
-aibom-cli scan ./project --data ./data/images --data ./data/audio   # 데이터셋 여러 개 지정
+sure-aibom scan ./project --data ./data/images --data ./data/audio   # 데이터셋 여러 개 지정
 ```

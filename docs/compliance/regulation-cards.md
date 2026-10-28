@@ -1,7 +1,7 @@
 # 규제 판정
 
 BOM 을 EU AI Act, NIST AI RMF, ISO/IEC 42001 의 조항마다 대 보고, 조항마다 반영 여부와 채울 자리를 보여 준다.
-예제 BOM 을 고르거나 aibom-cli 로 만든 BOM 을 올린다. 조항을 누르면 그 조항의 원문과, 조항이 요구하는 사실마다 BOM 의 어느 필드에 값이 있었는지가 나온다.
+예제 BOM 을 고르거나 sure-aibom 으로 만든 BOM 을 올린다. 조항을 누르면 그 조항의 원문과, 조항이 요구하는 사실마다 BOM 의 어느 필드에 값이 있었는지가 나온다.
 ISO/IEC 42001 은 저작권 때문에 원문을 싣지 않는다.
 
 <div class="card-viewer" data-base="../../mapping-viewer/data/cards/">
