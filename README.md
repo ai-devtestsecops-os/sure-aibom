@@ -28,7 +28,7 @@ aibom-cli 는 디렉터리와 컨테이너 이미지를 스캔해 AI-BOM(D/M/S-B
 # 환경 세팅 및 aibom-cli 설치 (conda 예시)
 conda env create -f environment.yml
 conda activate aibom-cli
-pip install aibom_cli-0.1.0-py3-none-any.whl
+pip install aibom_cli-0.2.0-py3-none-any.whl
 
 # OWASP aibom-generator (커밋 9b8056a)
 git clone https://github.com/GenAI-Security-Project/aibom-generator

@@ -15,7 +15,7 @@ conda env create -f environment.yml
 conda activate aibom-cli
 
 # 2. aibom-cli 설치
-pip install aibom_cli-0.1.0-py3-none-any.whl
+pip install aibom_cli-0.2.0-py3-none-any.whl
 
 # 3. OWASP aibom-generator 설치 (커밋 9b8056a 고정)
 git clone https://github.com/GenAI-Security-Project/aibom-generator
