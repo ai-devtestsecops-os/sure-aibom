@@ -2,22 +2,20 @@
 
 AI 규제·표준 요구사항을 반영한 AI-BOM 자동 생성 프로그램 (Compliance-Aware AI-BOM Generation Tool)
 
-명령어와 패키지 이름은 `sure-aibom` 이다.
-
 sure-aibom 은 디렉터리와 컨테이너 이미지를 스캔해 AI-BOM(D/M/S-BOM) 을 CycloneDX 또는 SPDX 문서 하나로 내는 CLI 도구다.
 
 ## 파이프라인
 
-| 단계    | 작업                        | 도구                  | 커맨드                                                      |
-| ------- | --------------------------- | --------------------- | ----------------------------------------------------------- |
-| 1. 스캔 | S-BOM 생성                  | syft                  | `SYFT_COMPLIANCE_MISSING_VERSION=keep syft <target> --select-catalogers -ai -o cyclonedx-json@1.7` |
-|         | M-BOM · D-BOM 생성         | cdxgen                | `cdxgen <target> -t ai --spec-version 1.7 --no-install-deps`                 |
-| 2. 병합 | 하나의 json 파일로 병합     | **sure-aibom**   |                                                             |
-| 3. 보강 | M-BOM 보강                  | **sure-aibom**, OWASP aibom-generator | `python -m src.cli <owner/model>`                         |
-|         | D-BOM 보강                  | **sure-aibom**   | `sure-aibom scan --data <path>`                            |
-|         | 규제 필드 추가              | **sure-aibom**   | `sure-aibom scan --spec 1.7 \| v0.6 \| 3.0.1`               |
-| 4. 출력 | SPDX 변환 (선택)            | **sure-aibom**   | `sure-aibom scan --format spdx`                             |
-| 5. 검증 | CycloneDX 1.7 / SPDX 3.0.1 / AI-BOM v0.6 | **sure-aibom**   | `sure-aibom validate --spec 1.7 \| v0.6 \| 3.0.1`           |
+| 단계    | 작업                                     | 도구                                        | 커맨드                                                                                               |
+| ------- | ---------------------------------------- | ------------------------------------------- | ---------------------------------------------------------------------------------------------------- |
+| 1. 스캔 | S-BOM 생성                               | syft                                        | `SYFT_COMPLIANCE_MISSING_VERSION=keep syft <target> --select-catalogers -ai -o cyclonedx-json@1.7` |
+|         | M-BOM · D-BOM 생성                      | cdxgen                                      | `cdxgen <target> -t ai --spec-version 1.7 --no-install-deps`                                       |
+| 2. 병합 | 하나의 json 파일로 병합                  | **sure-aibom**                        |                                                                                                      |
+| 3. 보강 | M-BOM 보강                               | **sure-aibom**, OWASP aibom-generator | `python -m src.cli <owner/model>`                                                                  |
+|         | D-BOM 보강                               | **sure-aibom**                        | `sure-aibom scan --data <path>`                                                                    |
+|         | 규제 필드 추가                           | **sure-aibom**                        | `sure-aibom scan --spec 1.7 \| v0.6 \| 3.0.1`                                                        |
+| 4. 출력 | SPDX 변환 (선택)                         | **sure-aibom**                        | `sure-aibom scan --format spdx`                                                                    |
+| 5. 검증 | CycloneDX 1.7 / SPDX 3.0.1 / AI-BOM v0.6 | **sure-aibom**                        | `sure-aibom validate --spec 1.7 \| v0.6 \| 3.0.1`                                                    |
 
 ## 주요 기능
 
