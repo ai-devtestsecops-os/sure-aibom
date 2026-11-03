@@ -68,6 +68,7 @@ def offline(monkeypatch):
     monkeypatch.setattr(ds, "hf_reachable", lambda: True)
     monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: recorded("model", hf_id))
     monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))
+    monkeypatch.setattr(ds, "fetch_revision_error", lambda hf_id, revision: None)                          # --data 리비전은 있는 것으로 친다
     monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: recorded("size", hf_id))
     monkeypatch.setattr(ds, "fetch_dataset_statistics",
                         lambda hf_id, config, split, log=print: recorded("statistics", hf_id, config, split))

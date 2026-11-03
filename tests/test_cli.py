@@ -78,6 +78,19 @@ def test_hub_datasets_in_data_are_not_paths_and_a_malformed_one_stops_the_scan(t
     assert not out.exists()
 
 
+def test_a_revision_the_hub_says_does_not_exist_stops_the_scan_before_any_tool_runs(tmp_path, monkeypatch, capsys):
+    import sure_aibom.cli as cli
+    import sure_aibom.dataset as ds
+    monkeypatch.setattr(cli, "run_syft", lambda *a: pytest.fail("리비전이 틀렸는데 도구를 돌렸다"))
+    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(ds, "fetch_revision_error", lambda hf_id, revision: (404, f"Invalid rev id: {revision}"))
+    out = tmp_path / "bom.json"
+    assert main(["scan", str(tmp_path), "-o", str(out), "--data", "hf://datasets/stanfordnlp/imdb@nope-branch"]) == 2
+    assert ("[sure-aibom] error: --data hf://datasets/stanfordnlp/imdb@nope-branch: revision not found on huggingface.co "
+            "(Invalid rev id: nope-branch)") in capsys.readouterr().err
+    assert not out.exists()
+
+
 def test_data_can_be_given_more_than_once():
     args = build_parser().parse_args(["scan", "x", "--data", "a", "--data", "b"])
     assert args.data == ["a", "b"] and build_parser().parse_args(["scan", "x"]).data == []

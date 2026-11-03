@@ -84,7 +84,7 @@ Examples:
   sure-aibom scan ./project -o bom.spdx.json --format spdx --spec v0.6    AI-BOM v0.6 (SPDX) 로 냄
   sure-aibom scan ./project -o bom.cdx.json --data ./dataset              로컬 데이터 경로를 함께 지정
   sure-aibom scan ./project -o bom.cdx.json --data hf://datasets/stanfordnlp/imdb
-                                                                          HuggingFace 데이터셋을 함께 지정 (@<revision> 으로 리비전 고정)
+                                                                          HuggingFace 데이터셋을 함께 지정 (@<revision> 으로 고정, 없으면 최신 커밋)
 
   sure-aibom scan alpine:3.20 -o alpine.cdx.json                          컨테이너 이미지를 스캔
   sure-aibom scan image.tar -o image.cdx.json                             이미지 .tar 를 스캔

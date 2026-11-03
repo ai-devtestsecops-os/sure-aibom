@@ -197,7 +197,16 @@ h = load_dataset(name)
 df = pd.read_csv("data/train.csv")
 fh = open("labels.txt")
 ''')
-    assert ds._parse_python(src, log=print) == ["stanfordnlp/imdb", "imdb"]    # 빌더 이름 · 경로 · 다른 호출은 허브 id 가 아니다
+    assert ds._parse_python(src, log=print) == [("stanfordnlp/imdb", None), ("imdb", None)]   # 빌더 이름 · 경로 · 다른 호출은 허브 id 가 아니다
+
+
+def test_python_source_yields_the_revision_argument_when_it_is_a_string(tmp_path):
+    src = write(tmp_path, "a.py", '''
+a = load_dataset("stanfordnlp/imdb", revision="94a9845c", split="train")
+b = load_dataset("stanfordnlp/imdb", revision="94a9845c")
+c = load_dataset("acme/eval-set", "cfg", revision=REV)
+''')
+    assert ds._parse_python(src, log=print) == [("stanfordnlp/imdb", "94a9845c"), ("acme/eval-set", None)]   # 변수인 리비전은 읽지 않는다
 
 
 def test_notebook_code_cells_yield_hub_ids_like_python_source(tmp_path):
@@ -208,12 +217,12 @@ def test_notebook_code_cells_yield_hub_ids_like_python_source(tmp_path):
         {"cell_type": "code", "source": "ds = load_dataset(\"stanfordnlp/imdb\", split=\"train\")\nother = load_dataset(\"csv\", data_files=\"x.csv\")"},
     ], "metadata": {}, "nbformat": 4, "nbformat_minor": 5}
     path = write(tmp_path, "explore.ipynb", json.dumps(nb))
-    assert ds._parse_python(path, log=print) == ["stanfordnlp/imdb"]
+    assert ds._parse_python(path, log=print) == [("stanfordnlp/imdb", None)]
     logs: list[str] = []
     assert ds._parse_python(write(tmp_path, "bad.ipynb", "{not json"), log=logs.append) == []
     assert any("bad.ipynb" in m and "cannot parse" in m for m in logs)
     found = ds._scan_sources(tmp_path, log=print)
-    assert found == {"stanfordnlp/imdb": ["explore.ipynb"]}
+    assert found == {"stanfordnlp/imdb": [("explore.ipynb", None)]}
 
 
 def test_unparsable_python_is_skipped_with_a_log(tmp_path):
@@ -1076,6 +1085,61 @@ def test_a_given_dataset_the_hub_cannot_look_up_is_kept_and_reported(tmp_path, m
     assert set(found) == {"pkg:huggingface/datasets/acme/eval-set", "pkg:huggingface/datasets/acme/other", "pkg:huggingface/datasets/nobody/nothing"}
     assert found["pkg:huggingface/datasets/acme/eval-set"]["version"] == "v2"                     # 조회가 안 돼도 준 리비전은 남는다
     assert report["unresolved_hub_data"] == ["hf://datasets/acme/eval-set@v2", "hf://datasets/acme/other"]   # 코드에서 찾은 것은 알리지 않는다
+
+
+def test_a_revision_in_code_is_looked_up_at_that_revision(tmp_path, monkeypatch, imdb):
+    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    old = {**copy.deepcopy(imdb), "sha": OLD_IMDB_SHA}
+    calls: list[tuple[str, str | None]] = []
+
+    def fetch(hf_id, log=print, revision=None):
+        calls.append((hf_id, revision))
+        return copy.deepcopy(old if revision else imdb)
+    monkeypatch.setattr(ds, "fetch_dataset_info", fetch)
+    monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: pytest.fail("최신이 아닌 리비전인데 /size 를 물었다"))
+    write(tmp_path, "src/train.py", 'load_dataset("stanfordnlp/imdb", revision="94a9845c")\n')
+    report: dict = {}
+    comp = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, report=report))[IMDB_REF]
+    assert comp["version"] == OLD_IMDB_SHA and calls == [(IMDB, "94a9845c"), (IMDB, None)]
+    assert report["unresolved_hub_data"] == []                                                    # 코드에서 찾은 것은 경고하지 않는다
+
+
+def test_one_dataset_loaded_at_several_revisions_in_code_is_looked_up_at_the_latest(tmp_path, online):
+    write(tmp_path, "src/train.py", 'load_dataset("stanfordnlp/imdb", revision="94a9845c")\n')
+    write(tmp_path, "src/eval.py", 'load_dataset("stanfordnlp/imdb")\n')
+    logs: list[str] = []
+    comp = datasets(ds.discover(doc_of(), str(tmp_path), log=logs.append))[IMDB_REF]
+    assert comp["version"] == "e6281661ce1c48d982bc483cf8a173c1bbeb5d31" and online == [IMDB]
+    assert comp["evidence"]["occurrences"] == [{"location": "src/eval.py"}, {"location": "src/train.py"}]
+    assert any("several revisions in code (94a9845c, no revision)" in m for m in logs)
+
+
+def test_the_data_revision_wins_over_the_revision_in_code_and_offline_both_keep_one(tmp_path, monkeypatch, imdb):
+    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    calls: list[str | None] = []
+    monkeypatch.setattr(ds, "fetch_dataset_info",
+                        lambda hf_id, log=print, revision=None: calls.append(revision) or (copy.deepcopy(imdb) if hf_id == IMDB else None))
+    write(tmp_path, "src/train.py", 'load_dataset("stanfordnlp/imdb", revision="aaaa")\nload_dataset("acme/eval-set", revision="v1")\n')
+    logs: list[str] = []
+    ds.discover(doc_of(), str(tmp_path), log=logs.append, data_paths=["hf://datasets/stanfordnlp/imdb@main"])
+    assert "main" in calls and "aaaa" not in calls and any("--data revision main used over aaaa in code" in m for m in logs)
+    monkeypatch.setattr(ds, "hf_reachable", lambda: False)
+    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb@main"]))
+    assert found[IMDB_REF]["version"] == "main" and found["pkg:huggingface/datasets/acme/eval-set"]["version"] == "v1"   # 못 물으면 리비전 그대로
+
+
+def test_missing_revisions_reports_only_what_the_hub_says_does_not_exist(monkeypatch):
+    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    answers = {"stanfordnlp/imdb": (404, "Invalid rev id: nope"), "nobody/private": (401, "Invalid username or password.")}
+    asked: list[str] = []
+    monkeypatch.setattr(ds, "fetch_revision_error", lambda hf_id, revision: asked.append(hf_id) or answers.get(hf_id))
+    given = {"stanfordnlp/imdb": "nope", "nobody/private": "v1", "acme/ok": "main", "acme/latest": None}
+    assert ds.missing_revisions(given) == [("hf://datasets/stanfordnlp/imdb@nope", "Invalid rev id: nope")]   # 401 은 없는 것인지 비공개인지 모른다
+    assert sorted(asked) == ["acme/ok", "nobody/private", "stanfordnlp/imdb"]                              # 리비전을 안 준 것은 묻지 않는다
+    monkeypatch.setattr(ds, "hf_reachable", lambda: False)
+    assert ds.missing_revisions(given) == []                                                              # 허브에 닿지 않으면 판단하지 않는다
+    monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("리비전이 없는데 네트워크를 봤다"))
+    assert ds.missing_revisions({"acme/latest": None}) == []
 
 
 def test_a_dataset_both_given_and_found_in_code_is_one_component_at_the_given_revision(tmp_path, monkeypatch, imdb):

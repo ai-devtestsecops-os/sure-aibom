@@ -42,7 +42,7 @@
 <tr markdown><td rowspan="7">sure-aibom</td><td rowspan="6">허브 데이터셋</td><td markdown>M-BOM 에서 찾은 로컬 모델의 모델 카드 YAML 헤더의 `datasets:` 와 `model-index:`(평가 결과)에 적힌 데이터셋<br><span class="note">※ cdxgen 은 `datasets:` 의 데이터셋을 모델의 데이터셋 목록에 하나만 남기고, `model-index:` 의 평가 데이터셋은 허브 데이터셋으로 적지 않아 sure-aibom 이 보완한다</span></td></tr>
 <tr markdown><td markdown>M-BOM 에서 찾은 gguf 모델 헤더의 `general.datasets` 에 적힌 `owner/name` 데이터셋</td></tr>
 <tr markdown><td markdown>M-BOM 에서 찾은 허브 모델의 모델 카드 YAML 헤더의 `datasets:` 와 `model-index:`(평가 결과)에 적힌 데이터셋</td></tr>
-<tr markdown><td markdown>파이썬 소스와 노트북의 `load_dataset("owner/name")` 호출</td></tr>
+<tr markdown><td markdown>파이썬 소스와 노트북의 `load_dataset("owner/name")` 호출 (`revision=` 인자가 있으면 그 리비전)</td></tr>
 <tr markdown><td markdown>`--data hf://datasets/<id>[@<revision>]` 로 지정한 데이터셋</td></tr>
 <tr markdown><td markdown>cdxgen 과 sure-aibom 이 찾거나 지정한 데이터셋마다 [Hub API](https://huggingface.co/docs/hub/api)와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 응답<br><span class="note">※ 데이터셋 파일은 내려받지 않는다</span></td></tr>
 <tr markdown><td>로컬 데이터</td><td markdown>`--data` 로 지정한 경로</td></tr>

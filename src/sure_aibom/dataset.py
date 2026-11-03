@@ -8,11 +8,14 @@
          적어 두므로 sure-aibom 이 README 를 직접 읽는다. 읽을 README 는 cdxgen 이 모델 컴포넌트의 evidence 에 남긴 것이다.
        - 스캔 대상 디렉터리의 파이썬 소스에서 load_dataset("owner/name") — 첫 위치 인자가 허브 id 모양일 때만.
          load_dataset("csv", data_files=…) 같은 로컬 빌더와 파일 경로는 허브 id 가 아니라 넘긴다.
+         revision="…" 인자가 문자열이면 그 리비전으로 묻는다. 같은 id 를 리비전을 달리해(또는 없이) 부르면 정하지 않고 최신으로 묻는다.
        - 코드가 부르는 허브 모델(pkg:huggingface 모델 컴포넌트)의 모델 카드. 모델마다 GET {HF_ENDPOINT}/api/models/<id> 를
          한 번 불러 응답 cardData 의 datasets(학습)와 model-index[].results[].dataset.type(평가)을 모은다. 허브 id 꼴인 것만.
        - scan --data hf://datasets/<id>[@<리비전>] 으로 직접 준 것 (huggingface_hub 의 HfFileSystem 표기). 코드에서 찾은 것과 같은 모양으로
-         만든다. 리비전을 주면 GET {HF_ENDPOINT}/api/datasets/<id>/revision/<리비전> 으로 묻고 version 은 응답의 전체 커밋 해시이며,
-         조회가 안 되면 준 리비전을 그대로 둔다. datasets-server 는 최신 리비전만 보므로 준 리비전이 최신이 아니면 /size·/statistics 를 묻지 않는다.
+         만든다. 리비전은 코드의 revision= 보다 우선한다. 저장소는 있는데 그 리비전이 없다고 허브가 답하면(404) scan 이 도구를 돌리기
+         전에 오류로 끝낸다 (missing_revisions). 저장소가 없는 것과 비공개인 것은 허브가 둘 다 401 로 답해 구분하지 않는다.
+       리비전(--data 나 코드의 revision=)이 있으면 GET {HF_ENDPOINT}/api/datasets/<id>/revision/<리비전> 으로 묻고 version 은 응답의 전체
+       커밋 해시이며, 조회가 안 되면 리비전을 그대로 둔다. datasets-server 는 최신 리비전만 보므로 최신이 아니면 /size·/statistics 를 묻지 않는다.
        네트워크가 닿으면 GET {HF_ENDPOINT}/api/datasets/<id> 로 채우고, 닿지 않으면 이름·purl 만 두고 한 번 알린다.
        규제 필드는 size·modality·availability·provenance·statistics 에 더해 intendedUse(task_categories·task_ids),
        collectionProcess(annotations_creators·language_creators)를 카드 머리말에서 읽고, provenance 에는 source_datasets 의 상위 데이터셋도 넣는다.
@@ -169,11 +172,17 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
             by_hf_id[hf_id] = comp
 
     root = Path(target)
-    code_hf_ids = _scan_sources(root, log) if root.is_dir() else {}     # id → 그것을 부른 소스 파일 (상대 경로)
+    code_calls = _scan_sources(root, log) if root.is_dir() else {}      # id → [(그것을 부른 소스 파일, revision= 값)]
+    revisions = _code_revisions(code_calls, log)                         # 물을 리비전. --data 로 준 것이 코드의 것보다 우선한다
+    for hf_id, revision in given.items():
+        if revision:
+            if revisions.get(hf_id, revision) != revision:
+                log(f"[dataset] {hf_id}: --data revision {revision} used over {revisions[hf_id]} in code")
+            revisions[hf_id] = revision
 
     # --data 로 준 것도 코드에서 찾은 것과 같은 모양으로 만들고 루트가 dependsOn 한다. evidence 에는 코드에서 찾은 위치만 적는다
     new_refs: list[str] = []
-    for hf_id in sorted(set(code_hf_ids) | set(given)):
+    for hf_id in sorted(set(code_calls) | set(given)):
         comp = by_hf_id.get(hf_id)
         if comp is None:
             comp = _new_hf_component(hf_id)
@@ -182,10 +191,10 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
             new_refs.append(comp["bom-ref"])
         if hf_id in given:
             log(f"[dataset] {hf_id}: given with --data" + (f" at revision {given[hf_id]}" if given[hf_id] else ""))
-        if hf_id in code_hf_ids:
+        if hf_id in code_calls:
             occurrences = comp.setdefault("evidence", {}).setdefault("occurrences", [])
             known = {o.get("location") for o in occurrences}
-            occurrences.extend({"location": loc} for loc in code_hf_ids[hf_id] if loc not in known)
+            occurrences.extend({"location": loc} for loc in dict.fromkeys(loc for loc, _ in code_calls[hf_id]) if loc not in known)
 
     # 로컬 모델 카드는 파일이라 네트워크 없이 읽는다. 여기서 생긴 데이터셋도 아래 허브 확인과 조회에 들어간다.
     if root.is_dir():
@@ -214,10 +223,10 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
         _link_from_root(merged, new_refs)
     unresolved: list[str] = []
     if reachable and by_hf_id:
-        unresolved = _fill_from_hub(merged, by_hf_id, log, facts, given)
+        unresolved = _fill_from_hub(merged, by_hf_id, log, facts, revisions, given)
     elif not reachable:
-        for hf_id, revision in given.items():                    # 허브에 못 물어도 준 리비전은 남긴다
-            if revision and not by_hf_id[hf_id].get("version"):
+        for hf_id, revision in revisions.items():                # 허브에 못 물어도 리비전은 남긴다
+            if not by_hf_id[hf_id].get("version"):
                 by_hf_id[hf_id]["version"] = revision
     if report is not None:
         report["hub_unreachable"] = not reachable
@@ -249,6 +258,21 @@ def split_data_args(values: Iterable[str]) -> tuple[list[str], dict[str, str | N
 def hub_data_arg(hf_id: str, revision: str | None = None) -> str:
     """허브 데이터셋 id 와 리비전을 --data 표기로."""
     return HF_DATA_ARG + hf_id + (f"@{revision}" if revision else "")
+
+
+def missing_revisions(given: dict[str, str | None]) -> list[tuple[str, str]]:
+    """--data 로 리비전을 준 허브 데이터셋 가운데, 저장소는 있는데 그 리비전이 없다고 허브가 답한(404) 것의 (--data 표기, 허브의 오류 문구).
+    scan 이 도구를 돌리기 전에 불러 입력 실수로 멈춘다. 저장소가 없거나 비공개라 401 이거나 허브에 닿지 않으면 판단하지 않는다
+    (스캔은 이름과 리비전을 남기고 경고한다)."""
+    pinned = sorted((hf_id, revision) for hf_id, revision in given.items() if revision)
+    if not pinned or not hf_reachable():
+        return []
+    out: list[tuple[str, str]] = []
+    for hf_id, revision in pinned:
+        error = fetch_revision_error(hf_id, revision)
+        if error and error[0] == 404:
+            out.append((hub_data_arg(hf_id, revision), error[1]))
+    return out
 
 
 # ── 데이터셋 판정 ─────────────────────────────────────────────────────────────
@@ -303,9 +327,10 @@ def _hub_url(hf_id: str) -> str:
 
 # ── 소스 코드 훑기 ────────────────────────────────────────────────────────────
 
-def _scan_sources(root: Path, log) -> dict[str, list[str]]:
-    """대상 디렉터리의 파이썬 소스와 노트북에서 load_dataset 으로 부른 HF id 를 찾는다. id → 그것을 부른 소스 파일(상대 경로)."""
-    hf_ids: dict[str, list[str]] = {}
+def _scan_sources(root: Path, log) -> dict[str, list[tuple[str, str | None]]]:
+    """대상 디렉터리의 파이썬 소스와 노트북에서 load_dataset 으로 부른 HF id 를 찾는다.
+    id → [(그것을 부른 소스 파일의 상대 경로, revision= 문자열 또는 None)]."""
+    hf_ids: dict[str, list[tuple[str, str | None]]] = {}
     root_resolved = root.resolve()
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = sorted(d for d in dirnames if d not in SKIP_DIRS and not d.startswith("."))
@@ -318,9 +343,23 @@ def _scan_sources(root: Path, log) -> dict[str, list[str]]:
                 log(f"[dataset] {_relative(path, root)}: skipped, symlink points outside the target")
                 continue
             loc = _relative(path, root)
-            for hf_id in _parse_python(path, log):
-                hf_ids.setdefault(hf_id, []).append(loc)
+            for hf_id, revision in _parse_python(path, log):
+                hf_ids.setdefault(hf_id, []).append((loc, revision))
     return hf_ids
+
+
+def _code_revisions(code_calls: dict[str, list[tuple[str, str | None]]], log) -> dict[str, str]:
+    """코드가 load_dataset(..., revision="…") 로 리비전 하나만 정해 부른 id → 그 리비전. 같은 id 를 리비전을 달리하거나 리비전 없이도
+    부르면 어느 것인지 정하지 않고(최신으로 묻는다) 알린다."""
+    out: dict[str, str] = {}
+    for hf_id, calls in code_calls.items():
+        revisions = {revision for _, revision in calls}
+        if len(revisions) > 1:
+            shown = ", ".join(sorted(r or "no revision" for r in revisions))
+            log(f"[dataset] {hf_id}: loaded at several revisions in code ({shown}), looked up at the latest")
+        elif (revision := next(iter(revisions))):
+            out[hf_id] = revision
+    return out
 
 
 def _inside(path: Path, root_resolved: Path) -> bool:
@@ -331,23 +370,25 @@ def _inside(path: Path, root_resolved: Path) -> bool:
         return False
 
 
-def _parse_python(path: Path, log) -> list[str]:
-    """소스 하나(.py 또는 .ipynb)에서 load_dataset 으로 부른 HF 데이터셋 id 들. 파싱이 안 되면 건너뛰고 알린다.
-    첫 인자가 로컬 빌더(csv, json …)이거나 경로·파일 이름이면 허브 id 가 아니라 넘긴다."""
+def _parse_python(path: Path, log) -> list[tuple[str, str | None]]:
+    """소스 하나(.py 또는 .ipynb)에서 load_dataset 으로 부른 (HF 데이터셋 id, revision= 문자열 또는 None) 들. 파싱이 안 되면 건너뛰고 알린다.
+    첫 인자가 로컬 빌더(csv, json …)이거나 경로·파일 이름이면 허브 id 가 아니라 넘긴다. revision 이 변수면 None 이다."""
     try:
         text = path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(_notebook_code(text) if path.suffix == ".ipynb" else text)
     except (SyntaxError, ValueError, OSError, KeyError, TypeError) as e:
         log(f"[dataset] {path.name}: skipped, cannot parse ({e.__class__.__name__})")
         return []
-    ids: list[str] = []
+    calls: list[tuple[str, str | None]] = []
     for node in ast.walk(tree):
         if not isinstance(node, ast.Call) or _callee(node.func) != "load_dataset":
             continue
         first = _string(node.args[0]) if node.args else None
-        if first and first.lower() not in LOCAL_BUILDERS and _looks_like_hub_id(first) and first not in ids:
-            ids.append(first)
-    return ids
+        if first and first.lower() not in LOCAL_BUILDERS and _looks_like_hub_id(first):
+            revision = next((_string(k.value) for k in node.keywords if k.arg == "revision"), None)
+            if (first, revision) not in calls:
+                calls.append((first, revision))
+    return calls
 
 
 def _notebook_code(text: str) -> str:
@@ -1158,12 +1199,16 @@ def datasets_server() -> str:
     return (os.environ.get("HF_DATASETS_SERVER") or DATASETS_SERVER).rstrip("/")
 
 
-def _get_json(url: str, hf_id: str, what: str, log) -> dict | None:
+def _hub_request(url: str) -> Request:
     req = Request(url, headers={"User-Agent": "sure-aibom", "Accept": "application/json"})
     if os.environ.get("HF_TOKEN"):
         req.add_header("Authorization", f"Bearer {os.environ['HF_TOKEN']}")
+    return req
+
+
+def _get_json(url: str, hf_id: str, what: str, log) -> dict | None:
     try:
-        with urlopen(req, timeout=FETCH_TIMEOUT) as resp:
+        with urlopen(_hub_request(url), timeout=FETCH_TIMEOUT) as resp:
             info = json.load(resp)
     except HTTPError as e:
         log(f"[dataset] {hf_id}: {what} returned {e.code}")
@@ -1183,6 +1228,23 @@ def fetch_dataset_info(hf_id: str, log=print, revision: str | None = None) -> di
     return _get_json(url, hf_id, "Hub API", log)
 
 
+def fetch_revision_error(hf_id: str, revision: str) -> tuple[int, str] | None:
+    """GET {HF_ENDPOINT}/api/datasets/<id>/revision/<리비전> 이 HTTP 오류로 끝나면 (상태 번호, 허브의 오류 문구).
+    성공했거나 허브에 닿지 않았으면 None. 테스트는 이 함수를 바꿔 끼운다."""
+    url = f"{hf_endpoint()}/api/datasets/{quote(hf_id, safe='/')}/revision/{quote(revision, safe='')}"
+    try:
+        with urlopen(_hub_request(url), timeout=FETCH_TIMEOUT):
+            return None
+    except HTTPError as e:
+        try:
+            message = json.loads(e.read() or b"{}").get("error")
+        except (ValueError, AttributeError, OSError):
+            message = None
+        return e.code, message if isinstance(message, str) and message else f"HTTP {e.code}"
+    except (URLError, OSError, ValueError):
+        return None
+
+
 def fetch_model_info(hf_id: str, log=print) -> dict | None:
     """GET {HF_ENDPOINT}/api/models/<id>. 모델 카드(cardData)의 데이터셋을 읽으려고 부른다. 실패하면 None. 테스트는 이 함수를 바꿔 끼운다."""
     return _get_json(f"{hf_endpoint()}/api/models/{quote(hf_id, safe='/')}", hf_id, "Hub API (model)", log)
@@ -1200,19 +1262,20 @@ def fetch_dataset_statistics(hf_id: str, config: str, split: str, log=print) -> 
 
 
 def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | None = None,
-                   given: dict[str, str | None] | None = None) -> list[str]:
+                   revisions: dict[str, str] | None = None, given: Iterable[str] = ()) -> list[str]:
     """허브 응답으로 채우고, 같은 데이터셋을 다른 id 로 부른 컴포넌트는 정식 id 의 컴포넌트 하나로 모은다.
-    given 은 --data 로 준 허브 데이터셋 id → 리비전이다. 리비전을 준 것은 그 리비전으로 묻고, 그 응답이 앞선 조회보다 우선해
-    정식 id 의 응답이 된다 (version 은 응답의 전체 커밋 해시). 조회가 안 되면 준 리비전을 version 으로 남긴다.
-    datasets-server 는 최신 리비전만 보므로 준 리비전이 최신이 아니면 /size·/statistics 는 묻지 않는다.
-    돌려주는 것은 given 가운데 조회가 안 된 id 들. 허브에 닿는지는 부르는 쪽(discover)이 먼저 본다."""
-    given = given or {}
+    revisions 는 id → 물을 리비전(--data 나 코드의 revision=)이다. 리비전이 있는 것은 그 리비전으로 묻고, 그 응답이 앞선 조회보다
+    우선해 정식 id 의 응답이 된다 (version 은 응답의 전체 커밋 해시). 조회가 안 되면 리비전을 version 으로 남긴다.
+    datasets-server 는 최신 리비전만 보므로 리비전이 최신이 아니면 /size·/statistics 는 묻지 않는다.
+    given 은 --data 로 준 id 들이고, 돌려주는 것은 그 가운데 조회가 안 된 id 들. 허브에 닿는지는 부르는 쪽(discover)이 먼저 본다."""
+    revisions = revisions or {}
+    given = set(given)
     info_by_canonical: dict[str, dict] = {}
-    pinned: dict[str, str] = {}                    # 정식 id → 응답을 받은 리비전 (--data 로 준 것)
+    pinned: dict[str, str] = {}                    # 정식 id → 응답을 받은 리비전
     members: dict[str, list[str]] = {}             # 정식 id → 그것을 부른 id 들 (정렬 순서)
     unresolved: list[str] = []
     for hf_id in sorted(by_hf_id):
-        revision = given.get(hf_id)
+        revision = revisions.get(hf_id)
         if revision:
             info = fetch_dataset_info(hf_id, log, revision=revision)
         else:
@@ -1220,15 +1283,16 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | 
         canonical = canonical_id(hf_id, info)
         if info and revision:
             if pinned.get(canonical, revision) != revision:
-                log(f"[dataset] {canonical}: given with two revisions ({pinned[canonical]}, {revision}), {revision} used")
+                log(f"[dataset] {canonical}: asked at two revisions ({pinned[canonical]}, {revision}), {revision} used")
             info_by_canonical[canonical] = info
             pinned[canonical] = revision
         elif info:
             info_by_canonical.setdefault(canonical, info)
-        elif hf_id in given:
-            unresolved.append(hf_id)
+        else:
             if revision and not by_hf_id[hf_id].get("version"):
                 by_hf_id[hf_id]["version"] = revision
+            if hf_id in given:
+                unresolved.append(hf_id)
         members.setdefault(canonical, []).append(hf_id)
 
     for canonical, ids in members.items():

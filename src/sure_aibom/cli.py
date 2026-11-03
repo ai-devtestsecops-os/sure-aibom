@@ -10,7 +10,7 @@ import tempfile
 from pathlib import Path
 
 from . import NAME, __version__
-from .dataset import discover as discover_datasets, is_dataset, split_data_args
+from .dataset import discover as discover_datasets, is_dataset, missing_revisions, split_data_args
 from .enrich import enrich
 from .facts import Facts
 from .merge import merge
@@ -122,13 +122,18 @@ def cmd_scan(args: argparse.Namespace) -> int:
         _log(f"[sure-aibom] error: target not found: {args.target}")
         return EXIT_TOOL
     try:
-        local_data, _ = split_data_args(args.data)               # hf://datasets/<id> 는 경로가 아니라 허브 데이터셋이다
+        local_data, hub_data = split_data_args(args.data)        # hf://datasets/<id> 는 경로가 아니라 허브 데이터셋이다
     except ValueError as e:
         _log(f"[sure-aibom] error: {e}")
         return EXIT_TOOL
     missing = [d for d in local_data if not Path(d).expanduser().exists()]
     if missing:
         _log(f"[sure-aibom] error: data path not found: {', '.join(missing)}")
+        return EXIT_TOOL
+    unknown = missing_revisions(hub_data)                         # 저장소는 있는데 그 리비전이 없다고 허브가 답한 것
+    for ref, reason in unknown:
+        _log(f"[sure-aibom] error: --data {ref}: revision not found on huggingface.co ({reason})")
+    if unknown:
         return EXIT_TOOL
 
     data = f", data from {', '.join(args.data)}" if args.data else ""
@@ -336,7 +341,7 @@ Examples:
   sure-aibom scan ./project -o bom.spdx.json --format spdx --spec v0.6    AI-BOM v0.6 (SPDX) 로 냄
   sure-aibom scan ./project -o bom.cdx.json --data ./dataset              로컬 데이터 경로를 함께 지정
   sure-aibom scan ./project -o bom.cdx.json --data hf://datasets/stanfordnlp/imdb
-                                                                          HuggingFace 데이터셋을 함께 지정 (@<revision> 으로 리비전 고정)
+                                                                          HuggingFace 데이터셋을 함께 지정 (@<revision> 으로 고정, 없으면 최신 커밋)
 
   sure-aibom scan alpine:3.20 -o alpine.cdx.json                          컨테이너 이미지를 스캔
   sure-aibom scan image.tar -o image.cdx.json                             이미지 .tar 를 스캔
