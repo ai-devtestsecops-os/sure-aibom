@@ -428,3 +428,15 @@ def test_a_data_path_without_data_files_is_a_warning(tmp_path, monkeypatch, caps
     assert cli.main(["scan", str(FIXTURE), "-o", str(tmp_path / "b.json"), "--data", str(tmp_path / "docs")]) == 0
     assert f"[sure-aibom] warning: no data files in {tmp_path / 'docs'}" in capsys.readouterr().err
 
+
+def test_hub_datasets_in_data_join_the_ones_in_code_and_a_failed_lookup_is_a_warning(tmp_path, monkeypatch, capsys):
+    import sure_aibom.cli as cli
+    monkeypatch.setattr(cli, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
+    monkeypatch.setattr(cli, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
+    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print, revision=None: recorded("dataset", hf_id))
+    doc = scan(FIXTURE, tmp_path / "b.json", "--data", "hf://datasets/stanfordnlp/imdb@e6281661", "--data", "hf://datasets/acme/missing")
+    imdb = next(c for c in doc["components"] if c["bom-ref"] == IMDB_REF)              # src/train.py 의 load_dataset 과 합쳐져 하나
+    assert imdb["version"] == "e6281661ce1c48d982bc483cf8a173c1bbeb5d31" and imdb["evidence"]["occurrences"] == [{"location": "src/train.py"}]
+    assert {c["name"] for c in doc["components"] if c["type"] == "data"} == {"imdb", "missing"}
+    assert "[sure-aibom] warning: huggingface.co lookup failed for hf://datasets/acme/missing, kept as given" in capsys.readouterr().err
+

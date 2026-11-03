@@ -10,6 +10,9 @@
          load_dataset("csv", data_files=…) 같은 로컬 빌더와 파일 경로는 허브 id 가 아니라 넘긴다.
        - 코드가 부르는 허브 모델(pkg:huggingface 모델 컴포넌트)의 모델 카드. 모델마다 GET {HF_ENDPOINT}/api/models/<id> 를
          한 번 불러 응답 cardData 의 datasets(학습)와 model-index[].results[].dataset.type(평가)을 모은다. 허브 id 꼴인 것만.
+       - scan --data hf://datasets/<id>[@<리비전>] 으로 직접 준 것 (huggingface_hub 의 HfFileSystem 표기). 코드에서 찾은 것과 같은 모양으로
+         만든다. 리비전을 주면 GET {HF_ENDPOINT}/api/datasets/<id>/revision/<리비전> 으로 묻고 version 은 응답의 전체 커밋 해시이며,
+         조회가 안 되면 준 리비전을 그대로 둔다. datasets-server 는 최신 리비전만 보므로 준 리비전이 최신이 아니면 /size·/statistics 를 묻지 않는다.
        네트워크가 닿으면 GET {HF_ENDPOINT}/api/datasets/<id> 로 채우고, 닿지 않으면 이름·purl 만 두고 한 번 알린다.
        규제 필드는 size·modality·availability·provenance·statistics 에 더해 intendedUse(task_categories·task_ids),
        collectionProcess(annotations_creators·language_creators)를 카드 머리말에서 읽고, provenance 에는 source_datasets 의 상위 데이터셋도 넣는다.
@@ -18,7 +21,7 @@
        허브가 돌려준 id 가 정식 id 다: 옛 이름(imdb → stanfordnlp/imdb)이나 두 이름(bookcorpus, bookcorpus/bookcorpus)으로 부른
        같은 데이터셋은 정식 id 의 컴포넌트 하나로 모으고 (purl·bom-ref 를 바꾸고, 가리키던 관계·modelCard ref 도 따라간다) 한 번만 조회한다.
        조회한 컴포넌트의 purl·bom-ref 는 pkg:huggingface/datasets/<정식 id> 다 (cdxgen 이 purl 없이 만든 것도 맞춘다).
-    2) 로컬 데이터 파일 — scan --data 로 지목한 경로에서만 읽는다. 스캔 대상은 데이터 파일을 찾으려고 걷지 않는다
+    2) 로컬 데이터 파일: scan --data 로 지목한 경로(hf:// 로 시작하지 않는 값)에서만 읽는다. 스캔 대상은 데이터 파일을 찾으려고 걷지 않는다
        (확장자만으로 추측하면 웹앱의 아이콘 같은 것도 데이터셋이 된다).
        경로 하나가 컴포넌트 하나 (bom-ref "data:local/<폴더 이름>@", 이름이 겹치면 -2, -3 을 붙인다). 파일 하나를 지목하면
        그 파일만으로 만든다. 같은 경로를 두 번 주면 한 번만 읽는다.
@@ -39,7 +42,7 @@
 데이터셋 사실(size, modality, availability, provenance, statistics)은 aibom-internal:dataset:* 프로퍼티로 컴포넌트에 두고,
 form 이 고른 형태의 자리로 옮기며 지운다 — 출력에는 남지 않는다.
 
-관계: 로컬 데이터셋과 코드에서 찾은 HF 데이터셋은 metadata.component(루트)가 dependsOn 한다. 허브·로컬 모델 카드의
+관계: 로컬 데이터셋, 코드에서 찾은 HF 데이터셋, --data 로 준 HF 데이터셋은 metadata.component(루트)가 dependsOn 한다. 허브·로컬 모델 카드의
 datasets 와 model-index, GGUF 헤더의 general.datasets 에서 온 것은 그 모델이 dependsOn 하고 모델카드
 modelParameters.datasets 에 ref 로 적는다 (루트는 잇지 않는다). 모델 카드 조회가 실패한 허브 모델은 그대로 둔다.
 학습(datasets, general.datasets)·평가(model-index) 역할과 허브 응답의 lastModified 는 CycloneDX 에 자리가 없어 facts(메모리 부가
@@ -80,6 +83,8 @@ HF_DATASETS_PURL = "pkg:huggingface/datasets/"
 _HF_DATASET_PURL = re.compile(r"^pkg:huggingface/datasets/(?P<id>[^@?#]+)")
 _HF_DATASET_URL = re.compile(r"^https?://huggingface\.co/datasets/(?P<id>[^?#]+?)/?$")
 _HF_ID = re.compile(r"^[A-Za-z0-9][\w.-]*(?:/[A-Za-z0-9][\w.-]*)?$")
+HF_DATA_ARG = "hf://datasets/"                   # scan --data 로 허브 데이터셋을 주는 표기. huggingface_hub 의 HfFileSystem 경로와 같다
+_HF_REVISION = re.compile(r"^[^\s@]+$")          # 브랜치·태그·커밋 해시. 짧은 해시도 허브가 전체 해시로 풀어 준다
 
 CARD_NAME = "readme.md"                          # 로컬 모델 폴더의 모델 카드 (대소문자 무시)
 CARD_MAX_BYTES = 8 * 1024 ** 2                   # 모델 카드를 통째로 읽는 상한
@@ -149,11 +154,13 @@ STATISTICS_FILE_LIMIT = JSON_PARSE_LIMIT                      # 로컬 파일 �
 def discover(merged: dict, target: str, log=print, report: dict | None = None, data_paths: Iterable[str] = (),
              model_infos: dict | None = None, hub_reachable: bool | None = None, facts: Facts | None = None) -> dict:
     """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다.
-    data_paths 는 로컬 데이터 경로들 (scan --data). model_infos 는 M-BOM 보강이 받아 둔 허브 모델 id → Hub API 응답이고,
+    data_paths 는 scan --data 값들로, 로컬 데이터 경로이거나 hf://datasets/<id>[@<리비전>] 꼴의 허브 데이터셋이다 (split_data_args).
+    model_infos 는 M-BOM 보강이 받아 둔 허브 모델 id → Hub API 응답이고,
     주면 허브 모델 카드를 다시 받지 않는다 (주지 않으면 여기서 받는다). hub_reachable 은 M-BOM 보강이 허브에 닿는지 본
     결과이고, None 이면 물을 것이 있을 때 여기서 본다. report 를 주면 hub_unreachable(허브에 물을 것이 있는데 허브에 닿지
-    않았는지), empty_data_paths(데이터 파일이 하나도 없던 경로)를 적는다. facts 를 주면 모델 카드 데이터셋의 역할(학습·평가)과
-    허브 응답의 lastModified 를 거기 적는다 (문서에는 자리가 없다)."""
+    않았는지), empty_data_paths(데이터 파일이 하나도 없던 경로), unresolved_hub_data(허브에 닿는데 조회가 안 된 --data 허브 데이터셋)를
+    적는다. facts 를 주면 모델 카드 데이터셋의 역할(학습·평가)과 허브 응답의 lastModified 를 거기 적는다 (문서에는 자리가 없다)."""
+    local_paths, given = split_data_args(data_paths)              # given: --data 로 준 허브 데이터셋 id → 리비전 (안 주면 None)
     components: list[dict] = merged.setdefault("components", [])
     by_hf_id: dict[str, dict] = {}
     for comp in components:
@@ -164,17 +171,21 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
     root = Path(target)
     code_hf_ids = _scan_sources(root, log) if root.is_dir() else {}     # id → 그것을 부른 소스 파일 (상대 경로)
 
+    # --data 로 준 것도 코드에서 찾은 것과 같은 모양으로 만들고 루트가 dependsOn 한다. evidence 에는 코드에서 찾은 위치만 적는다
     new_refs: list[str] = []
-    for hf_id in sorted(code_hf_ids):
+    for hf_id in sorted(set(code_hf_ids) | set(given)):
         comp = by_hf_id.get(hf_id)
         if comp is None:
             comp = _new_hf_component(hf_id)
             components.append(comp)
             by_hf_id[hf_id] = comp
             new_refs.append(comp["bom-ref"])
-        occurrences = comp.setdefault("evidence", {}).setdefault("occurrences", [])
-        known = {o.get("location") for o in occurrences}
-        occurrences.extend({"location": loc} for loc in code_hf_ids[hf_id] if loc not in known)
+        if hf_id in given:
+            log(f"[dataset] {hf_id}: given with --data" + (f" at revision {given[hf_id]}" if given[hf_id] else ""))
+        if hf_id in code_hf_ids:
+            occurrences = comp.setdefault("evidence", {}).setdefault("occurrences", [])
+            known = {o.get("location") for o in occurrences}
+            occurrences.extend({"location": loc} for loc in code_hf_ids[hf_id] if loc not in known)
 
     # 로컬 모델 카드는 파일이라 네트워크 없이 읽는다. 여기서 생긴 데이터셋도 아래 허브 확인과 조회에 들어간다.
     if root.is_dir():
@@ -195,18 +206,49 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
         _datasets_from_model_cards(merged, hub_models, by_hf_id, log, model_infos, facts)
 
     empty: list[str] = []
-    for comp in _data_components(data_paths, log, empty):
+    for comp in _data_components(local_paths, log, empty):
         components.append(comp)
         new_refs.append(comp["bom-ref"])
 
     if new_refs:
         _link_from_root(merged, new_refs)
+    unresolved: list[str] = []
     if reachable and by_hf_id:
-        _fill_from_hub(merged, by_hf_id, log, facts)
+        unresolved = _fill_from_hub(merged, by_hf_id, log, facts, given)
+    elif not reachable:
+        for hf_id, revision in given.items():                    # 허브에 못 물어도 준 리비전은 남긴다
+            if revision and not by_hf_id[hf_id].get("version"):
+                by_hf_id[hf_id]["version"] = revision
     if report is not None:
         report["hub_unreachable"] = not reachable
         report["empty_data_paths"] = empty
+        report["unresolved_hub_data"] = [hub_data_arg(hf_id, given[hf_id]) for hf_id in unresolved]
     return merged
+
+
+def split_data_args(values: Iterable[str]) -> tuple[list[str], dict[str, str | None]]:
+    """scan --data 값들을 로컬 데이터 경로와 허브 데이터셋으로 가른다. 허브 데이터셋은 hf://datasets/<id>[@<리비전>] 이고
+    id → 리비전(안 주면 None)으로 돌려준다. 같은 id 를 같은 리비전으로 두 번 주면 한 번으로 친다.
+    hf:// 로 시작하는데 데이터셋 저장소 하나를 가리키지 않거나, 같은 id 를 다른 리비전으로 주면 ValueError."""
+    local: list[str] = []
+    given: dict[str, str | None] = {}
+    for value in values:
+        if not value.startswith("hf://"):
+            local.append(value)
+            continue
+        hf_id, at, revision = value.removeprefix(HF_DATA_ARG).partition("@")
+        hf_id = hf_id.rstrip("/")
+        if not value.startswith(HF_DATA_ARG) or not _HF_ID.match(hf_id) or (at and not _HF_REVISION.match(revision)):
+            raise ValueError(f"--data {value}: not a Hugging Face dataset, use hf://datasets/<owner>/<name>[@<revision>]")
+        if hf_id in given and given[hf_id] != (revision or None):
+            raise ValueError(f"--data {hf_id}: given with two revisions ({given[hf_id] or 'latest'}, {revision or 'latest'})")
+        given[hf_id] = revision or None
+    return local, given
+
+
+def hub_data_arg(hf_id: str, revision: str | None = None) -> str:
+    """허브 데이터셋 id 와 리비전을 --data 표기로."""
+    return HF_DATA_ARG + hf_id + (f"@{revision}" if revision else "")
 
 
 # ── 데이터셋 판정 ─────────────────────────────────────────────────────────────
@@ -1132,9 +1174,13 @@ def _get_json(url: str, hf_id: str, what: str, log) -> dict | None:
     return info if isinstance(info, dict) else None
 
 
-def fetch_dataset_info(hf_id: str, log=print) -> dict | None:
-    """GET {HF_ENDPOINT}/api/datasets/<id>. 실패하면 None 을 돌려주고 알린다. 테스트는 이 함수를 바꿔 끼운다."""
-    return _get_json(f"{hf_endpoint()}/api/datasets/{quote(hf_id, safe='/')}", hf_id, "Hub API", log)
+def fetch_dataset_info(hf_id: str, log=print, revision: str | None = None) -> dict | None:
+    """GET {HF_ENDPOINT}/api/datasets/<id>, 리비전을 주면 /api/datasets/<id>/revision/<리비전> (응답의 sha 는 그 리비전의 전체 커밋 해시).
+    실패하면 None 을 돌려주고 알린다. 테스트는 이 함수를 바꿔 끼운다."""
+    url = f"{hf_endpoint()}/api/datasets/{quote(hf_id, safe='/')}"
+    if revision:
+        return _get_json(f"{url}/revision/{quote(revision, safe='')}", hf_id, f"Hub API at revision {revision}", log)
+    return _get_json(url, hf_id, "Hub API", log)
 
 
 def fetch_model_info(hf_id: str, log=print) -> dict | None:
@@ -1153,16 +1199,36 @@ def fetch_dataset_statistics(hf_id: str, config: str, split: str, log=print) -> 
     return _get_json(url, hf_id, f"datasets-server /statistics {config}/{split}", log)
 
 
-def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | None = None) -> None:
+def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | None = None,
+                   given: dict[str, str | None] | None = None) -> list[str]:
     """허브 응답으로 채우고, 같은 데이터셋을 다른 id 로 부른 컴포넌트는 정식 id 의 컴포넌트 하나로 모은다.
-    허브에 닿는지는 부르는 쪽(discover)이 먼저 본다."""
+    given 은 --data 로 준 허브 데이터셋 id → 리비전이다. 리비전을 준 것은 그 리비전으로 묻고, 그 응답이 앞선 조회보다 우선해
+    정식 id 의 응답이 된다 (version 은 응답의 전체 커밋 해시). 조회가 안 되면 준 리비전을 version 으로 남긴다.
+    datasets-server 는 최신 리비전만 보므로 준 리비전이 최신이 아니면 /size·/statistics 는 묻지 않는다.
+    돌려주는 것은 given 가운데 조회가 안 된 id 들. 허브에 닿는지는 부르는 쪽(discover)이 먼저 본다."""
+    given = given or {}
     info_by_canonical: dict[str, dict] = {}
+    pinned: dict[str, str] = {}                    # 정식 id → 응답을 받은 리비전 (--data 로 준 것)
     members: dict[str, list[str]] = {}             # 정식 id → 그것을 부른 id 들 (정렬 순서)
+    unresolved: list[str] = []
     for hf_id in sorted(by_hf_id):
-        info = info_by_canonical.get(hf_id) or fetch_dataset_info(hf_id, log)   # 앞선 조회가 정식 id 로 알려 준 것은 다시 묻지 않는다
+        revision = given.get(hf_id)
+        if revision:
+            info = fetch_dataset_info(hf_id, log, revision=revision)
+        else:
+            info = info_by_canonical.get(hf_id) or fetch_dataset_info(hf_id, log)   # 앞선 조회가 정식 id 로 알려 준 것은 다시 묻지 않는다
         canonical = canonical_id(hf_id, info)
-        if info:
+        if info and revision:
+            if pinned.get(canonical, revision) != revision:
+                log(f"[dataset] {canonical}: given with two revisions ({pinned[canonical]}, {revision}), {revision} used")
+            info_by_canonical[canonical] = info
+            pinned[canonical] = revision
+        elif info:
             info_by_canonical.setdefault(canonical, info)
+        elif hf_id in given:
+            unresolved.append(hf_id)
+            if revision and not by_hf_id[hf_id].get("version"):
+                by_hf_id[hf_id]["version"] = revision
         members.setdefault(canonical, []).append(hf_id)
 
     for canonical, ids in members.items():
@@ -1179,12 +1245,23 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | 
             _rename(merged, comp, survivor_id, canonical, facts)   # cdxgen 이 purl 없이 만든 것도 purl·bom-ref 를 정식 id 로 맞춘다
         info = info_by_canonical.get(canonical)
         if info:
-            size = fetch_dataset_size(canonical, log)
-            statistics = _fetch_statistics(canonical, info, size, log)
+            revision = pinned.get(canonical)
+            if revision and not _is_latest(canonical, info, log):
+                log(f"[dataset] {canonical}: revision {revision} is not the latest, datasets-server size and statistics skipped")
+                size, statistics = None, []
+            else:
+                size = fetch_dataset_size(canonical, log)
+                statistics = _fetch_statistics(canonical, info, size, log)
             apply_hub_info(comp, canonical, info, size, statistics)
             if facts is not None:
                 facts.set_time(comp["bom-ref"], "releaseTime", info.get("lastModified"))
-    return True
+    return unresolved
+
+
+def _is_latest(hf_id: str, info: dict, log) -> bool:
+    """리비전을 지정해 받은 응답이 지금 기본 브랜치의 최신 커밋과 같은가. 최신을 받지 못하면 아니라고 본다."""
+    latest = fetch_dataset_info(hf_id, log)
+    return bool(latest) and isinstance(info.get("sha"), str) and latest.get("sha") == info["sha"]
 
 
 def _fetch_statistics(hf_id: str, info: dict, size: dict | None, log) -> list[tuple[str, str, dict]]:

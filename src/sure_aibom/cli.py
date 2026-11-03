@@ -10,7 +10,7 @@ import tempfile
 from pathlib import Path
 
 from . import NAME, __version__
-from .dataset import discover as discover_datasets, is_dataset
+from .dataset import discover as discover_datasets, is_dataset, split_data_args
 from .enrich import enrich
 from .facts import Facts
 from .merge import merge
@@ -121,7 +121,12 @@ def cmd_scan(args: argparse.Namespace) -> int:
     if _looks_like_path(args.target) and not Path(args.target).exists():
         _log(f"[sure-aibom] error: target not found: {args.target}")
         return EXIT_TOOL
-    missing = [d for d in args.data if not Path(d).expanduser().exists()]
+    try:
+        local_data, _ = split_data_args(args.data)               # hf://datasets/<id> 는 경로가 아니라 허브 데이터셋이다
+    except ValueError as e:
+        _log(f"[sure-aibom] error: {e}")
+        return EXIT_TOOL
+    missing = [d for d in local_data if not Path(d).expanduser().exists()]
     if missing:
         _log(f"[sure-aibom] error: data path not found: {', '.join(missing)}")
         return EXIT_TOOL
@@ -220,6 +225,8 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
     _stage("Generating D-BOM", total + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
     for path in datasets.get("empty_data_paths") or []:
         _log(f"[sure-aibom] warning: no data files in {path}")
+    for ref in datasets.get("unresolved_hub_data") or []:
+        _log(f"[sure-aibom] warning: huggingface.co lookup failed for {ref}, kept as given")
 
     regulation: dict = {}
     merged = regulate(merged, form=FORM_BY_SPEC[args.spec], log=detail, report=regulation)
@@ -311,7 +318,7 @@ Commands:
 
 Options:
   -o, --output <path>         [scan] 출력 경로 (default: 표준출력)
-  --data <path>               [scan] 로컬 데이터 경로. 여러 번 줄 수 있음 (optional)
+  --data <path|hf://...>      [scan] 데이터셋. 로컬 경로 또는 hf://datasets/<id>[@<revision>]. 여러 번 줄 수 있음 (optional)
   --format <cyclonedx|spdx>   [scan] 출력 형식 (default: cyclonedx)
   --spec <1.7|v0.6|3.0.1>     [scan] 출력 스펙 (default: cyclonedx 는 1.7, spdx 는 3.0.1)
                                 1.7    CycloneDX 1.7 의 properties 로 넣음
@@ -328,6 +335,8 @@ Examples:
   sure-aibom scan ./project -o bom.spdx.json --format spdx                SPDX 3.0.1 로 냄
   sure-aibom scan ./project -o bom.spdx.json --format spdx --spec v0.6    AI-BOM v0.6 (SPDX) 로 냄
   sure-aibom scan ./project -o bom.cdx.json --data ./dataset              로컬 데이터 경로를 함께 지정
+  sure-aibom scan ./project -o bom.cdx.json --data hf://datasets/stanfordnlp/imdb
+                                                                          HuggingFace 데이터셋을 함께 지정 (@<revision> 으로 리비전 고정)
 
   sure-aibom scan alpine:3.20 -o alpine.cdx.json                          컨테이너 이미지를 스캔
   sure-aibom scan image.tar -o image.cdx.json                             이미지 .tar 를 스캔
@@ -363,7 +372,7 @@ def build_parser() -> argparse.ArgumentParser:
     s.add_argument("-h", "--help", action=_Help)
     s.add_argument("target", metavar="<target>")
     s.add_argument("-o", "--output", metavar="<path>")
-    s.add_argument("--data", action="append", default=[], metavar="<path>")
+    s.add_argument("--data", action="append", default=[], metavar="<path|hf://...>")
     s.add_argument("--format", choices=FORMATS, default="cyclonedx", metavar="<cyclonedx|spdx>")
     s.add_argument("--spec", choices=SPECS, default=None, metavar="<1.7|v0.6|3.0.1>")
     s.add_argument("-v", "--verbose", action="store_true")

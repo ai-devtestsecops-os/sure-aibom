@@ -67,6 +67,17 @@ def test_a_missing_data_path_is_an_error_before_any_tool_runs(tmp_path, monkeypa
     assert not out.exists()
 
 
+def test_hub_datasets_in_data_are_not_paths_and_a_malformed_one_stops_the_scan(tmp_path, monkeypatch, capsys):
+    import sure_aibom.cli as cli
+    monkeypatch.setattr(cli, "run_syft", lambda *a: pytest.fail("--data 가 틀렸는데 도구를 돌렸다"))
+    out = tmp_path / "bom.json"
+    assert main(["scan", str(tmp_path), "-o", str(out), "--data", "hf://datasets/a/b/train.csv"]) == 2
+    assert "[sure-aibom] error: --data hf://datasets/a/b/train.csv: not a Hugging Face dataset" in capsys.readouterr().err
+    assert main(["scan", str(tmp_path), "-o", str(out), "--data", "hf://datasets/stanfordnlp/imdb", "--data", str(tmp_path / "nope")]) == 2
+    assert f"[sure-aibom] error: data path not found: {tmp_path / 'nope'}\n" in capsys.readouterr().err   # 허브 데이터셋은 경로로 보지 않는다
+    assert not out.exists()
+
+
 def test_data_can_be_given_more_than_once():
     args = build_parser().parse_args(["scan", "x", "--data", "a", "--data", "b"])
     assert args.data == ["a", "b"] and build_parser().parse_args(["scan", "x"]).data == []

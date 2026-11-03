@@ -1,6 +1,6 @@
 # 스캔 대상
 
-`scan` 은 스캔 대상 `<target>` 하나와 로컬 데이터 옵션 `--data` 를 받는다. `<target>` 의 종류는 값의 형태로 판별하며 따로 지정하는 옵션은 없다.
+`scan` 은 스캔 대상 `<target>` 하나와 데이터셋 옵션 `--data` 를 받는다. `<target>` 과 `--data` 의 종류는 값의 형태로 판별하며 따로 지정하는 옵션은 없다.
 
 | 입력 | 인자 | 판별 | 예 |
 |---|---|---|---|
@@ -8,6 +8,7 @@
 | 컨테이너 이미지 | `<target>` | 디렉터리도 아카이브도 아닌 모든 값 | `sure-aibom scan python:3.12-slim`, `sure-aibom scan ghcr.io/org/app:1.0` |
 | 이미지 아카이브 | `<target>` | `.tar`, `.tar.gz`, `.tgz` 로 끝나는 파일 | `sure-aibom scan image.tar` |
 | 로컬 데이터 | `--data <path>` | 데이터 파일이 든 폴더나 데이터 파일 하나. 여러 번 줄 수 있다 | `sure-aibom scan ./project --data ./dataset` |
+| 허브 데이터셋 | `--data hf://datasets/<id>[@<revision>]` | `hf://datasets/` 로 시작하는 값. 여러 번 줄 수 있다 | `sure-aibom scan ./project --data hf://datasets/stanfordnlp/imdb` |
 
 컨테이너 이미지와 이미지 아카이브의 경우 S-BOM 은 syft 가 직접 읽고, 모델과 데이터셋은 디렉터리로 푼 뒤 디렉터리와 같은 규칙으로 찾는다.
 그 안에서 무엇을 찾는지는 [수집 항목](collected-items.md)에 있다.
@@ -54,4 +55,20 @@ data/
 
 ```bash
 sure-aibom scan ./project --data ./data/images --data ./data/audio   # 데이터셋 여러 개 지정
+```
+
+## 허브 데이터셋
+
+Hugging Face 데이터셋은 코드의 `load_dataset("owner/name")` 호출과 모델 카드에서 자동으로 찾는다. 여기에 나오지 않는 데이터셋은
+`--data hf://datasets/<id>` 로 지정한다. 학습을 다른 파이프라인에서 해서 스캔 대상에 학습 코드가 없거나, 코드가 데이터셋 이름을 변수로
+넘겨 찾지 못하는 경우다. 표기는 [huggingface_hub 의 `hf://` 경로](https://huggingface.co/docs/huggingface_hub/guides/hf_file_system)와 같다.
+
+지정한 데이터셋은 자동으로 찾은 것과 같은 모양의 컴포넌트가 되고, 같은 방식으로 Hub API 와 datasets-server 를 읽어 채운다.
+코드에서도 찾았으면 컴포넌트 하나로 합친다. 허브에서 조회되지 않으면 경고를 내고 지정한 이름과 리비전만 남긴다.
+
+`@<revision>` 을 붙이면 그 리비전(브랜치, 태그, 커밋 해시)으로 조회하고 버전에는 허브가 돌려준 전체 커밋 해시를 적는다. 붙이지 않으면 최신 커밋이다.
+datasets-server 는 최신 리비전만 제공하므로, 최신이 아닌 리비전을 지정하면 datasets-server 에서 오는 크기와 열 통계는 채우지 않는다.
+
+```bash
+sure-aibom scan ./app --data ./data/train --data hf://datasets/stanfordnlp/imdb@e6281661   # 로컬과 허브를 함께 지정
 ```

@@ -992,6 +992,104 @@ def test_image_target_only_enriches_existing_components(online):
     assert set(datasets(out)) == {BOOK_HUB} and online == ["bookcorpus"]
 
 
+# -- discover: --data 로 준 허브 데이터셋 --------------------------------------------------
+OLD_IMDB_SHA = "94a9845cc862de210d27b3556c1cb6fe94d7a0f2"            # stanfordnlp/imdb 의 예전 커밋 (실제 허브: 2022-11-18)
+
+
+@pytest.mark.parametrize("values, local, given", [
+    (["data", "hf://datasets/stanfordnlp/imdb"], ["data"], {IMDB: None}),
+    (["hf://datasets/stanfordnlp/imdb@e6281661", "hf://datasets/stanfordnlp/imdb@e6281661"], [], {IMDB: "e6281661"}),   # 같은 것 두 번은 한 번
+    (["hf://datasets/imdb@refs/pr/1", "hf://datasets/acme/eval-set/"], [], {"imdb": "refs/pr/1", "acme/eval-set": None}),  # 이름만 있는 id, 끝 슬래시
+])
+def test_split_data_args_separates_local_paths_and_hub_datasets(values, local, given):
+    assert ds.split_data_args(values) == (local, given)
+
+
+@pytest.mark.parametrize("value", ["hf://datasets/", "hf://datasets/a/b/train.csv", "hf://datasets/a/b@", "hf://datasets/a/b@v 1",
+                                   "hf://stanfordnlp/imdb", "hf://models/a/b"])
+def test_split_data_args_rejects_anything_but_one_dataset_repository(value):
+    with pytest.raises(ValueError, match="not a Hugging Face dataset"):
+        ds.split_data_args([value])
+
+
+def test_split_data_args_rejects_one_dataset_with_two_revisions():
+    with pytest.raises(ValueError, match=r"two revisions \(main, latest\)"):
+        ds.split_data_args(["hf://datasets/stanfordnlp/imdb@main", "hf://datasets/stanfordnlp/imdb"])
+
+
+def test_hub_dataset_given_with_data_is_built_like_one_found_in_code(tmp_path, online):
+    write(tmp_path, "code/src/train.py", 'load_dataset("stanfordnlp/imdb")\n')
+    (tmp_path / "empty").mkdir()
+    from_code = datasets(ds.discover(doc_of(), str(tmp_path / "code"), log=lambda m: None))[IMDB_REF]
+    out = ds.discover(doc_of(), str(tmp_path / "empty"), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb"])
+    given = datasets(out)[IMDB_REF]
+    assert {k: v for k, v in given.items() if k != "evidence"} == {k: v for k, v in from_code.items() if k != "evidence"}
+    assert given["version"] == from_code["version"] == "e6281661ce1c48d982bc483cf8a173c1bbeb5d31"     # 리비전을 안 주면 최신 커밋
+    assert "evidence" not in given and from_code["evidence"]["occurrences"] == [{"location": "src/train.py"}]   # 출처는 코드에서 찾은 것만
+    assert next(d for d in out["dependencies"] if d["ref"] == "application:/proj@")["dependsOn"] == [IMDB_REF]
+    image = ds.discover(doc_of(root=("img:latest", "image")), "img:latest", log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb"])
+    assert set(datasets(image)) == {IMDB_REF}                                                      # 이미지를 스캔할 때도 같다
+
+
+def test_a_given_revision_is_looked_up_at_that_revision_and_becomes_the_version(tmp_path, monkeypatch, imdb):
+    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    old = {**copy.deepcopy(imdb), "sha": OLD_IMDB_SHA, "lastModified": "2022-11-18T20:09:16.000Z"}
+    calls: list[tuple[str, str | None]] = []
+
+    def fetch(hf_id, log=print, revision=None):
+        calls.append((hf_id, revision))
+        return copy.deepcopy(old if revision else imdb)
+    monkeypatch.setattr(ds, "fetch_dataset_info", fetch)
+    monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: pytest.fail("최신이 아닌 리비전인데 /size 를 물었다"))
+    monkeypatch.setattr(ds, "fetch_dataset_statistics", lambda *a, **k: pytest.fail("최신이 아닌 리비전인데 /statistics 를 물었다"))
+    logs: list[str] = []
+    facts = Facts()
+    out = ds.discover(doc_of(), str(tmp_path), log=logs.append, data_paths=["hf://datasets/stanfordnlp/imdb@94a9845c"], facts=facts)
+    comp = datasets(out)[IMDB_REF]
+    assert comp["version"] == OLD_IMDB_SHA                                       # 짧은 해시를 줘도 허브가 돌려준 전체 해시
+    assert calls == [(IMDB, "94a9845c"), (IMDB, None)]                          # 그 리비전으로 한 번, 최신인지 보려고 한 번
+    assert facts.times[IMDB_REF]["releaseTime"].startswith("2022-11-18")
+    assert any("revision 94a9845c is not the latest" in m for m in logs)
+
+
+def test_a_given_revision_that_is_the_latest_still_gets_datasets_server_statistics(tmp_path, monkeypatch, imdb, online):
+    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print, revision=None: copy.deepcopy(imdb) if hf_id == IMDB else None)
+    comp = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb@main"]))[IMDB_REF]
+    assert comp["version"] == imdb["sha"] and any(k.startswith("statistics:") for k in internal(comp))
+
+
+def test_offline_keeps_the_given_revision_as_the_version(tmp_path, monkeypatch):
+    monkeypatch.setattr(ds, "hf_reachable", lambda: False)
+    monkeypatch.setattr(ds, "fetch_dataset_info", lambda *a, **k: pytest.fail("offline 인데 조회했다"))
+    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None,
+                                 data_paths=["hf://datasets/stanfordnlp/imdb@e6281661", "hf://datasets/acme/eval-set"]))
+    assert found[IMDB_REF]["version"] == "e6281661" and "version" not in found["pkg:huggingface/datasets/acme/eval-set"]
+
+
+def test_a_given_dataset_the_hub_cannot_look_up_is_kept_and_reported(tmp_path, monkeypatch):
+    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print, revision=None: None)
+    write(tmp_path, "train.py", 'load_dataset("nobody/nothing")\n')
+    report: dict = {}
+    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, report=report,
+                                 data_paths=["hf://datasets/acme/eval-set@v2", "hf://datasets/acme/other"]))
+    assert set(found) == {"pkg:huggingface/datasets/acme/eval-set", "pkg:huggingface/datasets/acme/other", "pkg:huggingface/datasets/nobody/nothing"}
+    assert found["pkg:huggingface/datasets/acme/eval-set"]["version"] == "v2"                     # 조회가 안 돼도 준 리비전은 남는다
+    assert report["unresolved_hub_data"] == ["hf://datasets/acme/eval-set@v2", "hf://datasets/acme/other"]   # 코드에서 찾은 것은 알리지 않는다
+
+
+def test_a_dataset_both_given_and_found_in_code_is_one_component_at_the_given_revision(tmp_path, monkeypatch, imdb):
+    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    old = {**copy.deepcopy(imdb), "sha": OLD_IMDB_SHA}
+    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print, revision=None: copy.deepcopy(old if revision else imdb))
+    write(tmp_path, "src/train.py", 'load_dataset("imdb")\n')                                      # 코드는 옛 이름으로 부른다
+    out = ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb@94a9845c"])
+    comp = datasets(out)[IMDB_REF]
+    assert set(datasets(out)) == {IMDB_REF} and comp["version"] == OLD_IMDB_SHA                    # 겹치면 하나로, 리비전은 준 것
+    assert comp["evidence"]["occurrences"] == [{"location": "src/train.py"}]
+    assert next(d for d in out["dependencies"] if d["ref"] == "application:/proj@")["dependsOn"] == [IMDB_REF]
+
+
 # -- 회귀 보호: 데이터셋이 없으면 문서는 그대로다 ----------------------------------------------
 def test_directory_without_datasets_leaves_the_document_byte_identical(tmp_path, monkeypatch):
     monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("조회할 것이 없는데 네트워크를 봤다"))

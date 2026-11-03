@@ -12,7 +12,7 @@ sure-aibom 은 디렉터리와 컨테이너 이미지를 스캔해 AI-BOM(D/M/S-
 |         | M-BOM · D-BOM 생성                      | cdxgen                                      | `cdxgen <target> -t ai --spec-version 1.7 --no-install-deps`                                       |
 | 2. 병합 | 하나의 json 파일로 병합                  | **sure-aibom**                        |                                                                                                      |
 | 3. 보강 | M-BOM 보강                               | **sure-aibom**, OWASP aibom-generator | `python -m src.cli <owner/model>`                                                                  |
-|         | D-BOM 보강                               | **sure-aibom**                        | `sure-aibom scan --data <path>`                                                                    |
+|         | D-BOM 보강                               | **sure-aibom**                        | `sure-aibom scan --data <path> \| hf://datasets/<id>`                                              |
 |         | 규제 필드 추가                           | **sure-aibom**                        | `sure-aibom scan --spec 1.7 \| v0.6 \| 3.0.1`                                                        |
 | 4. 출력 | SPDX 변환 (선택)                         | **sure-aibom**                        | `sure-aibom scan --format spdx`                                                                    |
 | 5. 검증 | CycloneDX 1.7 / SPDX 3.0.1 / AI-BOM v0.6 | **sure-aibom**                        | `sure-aibom validate --spec 1.7 \| v0.6 \| 3.0.1`                                                    |
@@ -20,7 +20,7 @@ sure-aibom 은 디렉터리와 컨테이너 이미지를 스캔해 AI-BOM(D/M/S-
 ## 주요 기능
 
 - 오픈소스 도구 활용: S-BOM 은 syft, M-BOM 은 cdxgen 으로 생성하고 sure-aibom 이 정리해 하나로 병합. 허브 모델은 Hub API 와 OWASP aibom-generator 로 보강
-- D-BOM 생성: 코드와 모델 카드에서 찾은 HuggingFace 데이터셋은 허브 API 로, `--data` 로 지정한 로컬 데이터는 파일을 직접 읽어 데이터셋 컴포넌트 구성
+- D-BOM 생성: 코드와 모델 카드에서 찾거나 `--data hf://datasets/<id>` 로 지정한 HuggingFace 데이터셋은 허브 API 로, `--data` 로 지정한 로컬 데이터는 파일을 직접 읽어 데이터셋 컴포넌트 구성
 - 규제 필드 추가: EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 필드를 모델과 데이터셋에 기재
 - 출력과 검증: CycloneDX 1.7, SPDX 3.0.1 또는 AI-BOM v0.6 (CycloneDX·SPDX) 으로 출력하고 같은 스키마로 검증
 
@@ -66,7 +66,7 @@ Commands:
 
 Options:
   -o, --output <path>         [scan] 출력 경로 (default: 표준출력)
-  --data <path>               [scan] 로컬 데이터 경로. 여러 번 줄 수 있음 (optional)
+  --data <path|hf://...>      [scan] 데이터셋. 로컬 경로 또는 hf://datasets/<id>[@<revision>]. 여러 번 줄 수 있음 (optional)
   --format <cyclonedx|spdx>   [scan] 출력 형식 (default: cyclonedx)
   --spec <1.7|v0.6|3.0.1>     [scan] 출력 스펙 (default: cyclonedx 는 1.7, spdx 는 3.0.1)
                                 1.7    CycloneDX 1.7 의 properties 로 넣음
@@ -83,6 +83,8 @@ Examples:
   sure-aibom scan ./project -o bom.spdx.json --format spdx                SPDX 3.0.1 로 냄
   sure-aibom scan ./project -o bom.spdx.json --format spdx --spec v0.6    AI-BOM v0.6 (SPDX) 로 냄
   sure-aibom scan ./project -o bom.cdx.json --data ./dataset              로컬 데이터 경로를 함께 지정
+  sure-aibom scan ./project -o bom.cdx.json --data hf://datasets/stanfordnlp/imdb
+                                                                          HuggingFace 데이터셋을 함께 지정 (@<revision> 으로 리비전 고정)
 
   sure-aibom scan alpine:3.20 -o alpine.cdx.json                          컨테이너 이미지를 스캔
   sure-aibom scan image.tar -o image.cdx.json                             이미지 .tar 를 스캔
