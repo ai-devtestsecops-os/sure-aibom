@@ -48,6 +48,12 @@ sure-aibom scan ./project -o bom.cdx.json
 sure-aibom scan python:3.12-slim -o python.cdx.json
 ```
 
+데이터셋을 직접 지정하려면 `--data` 를 준다. 로컬 경로와 `hf://datasets/<id>` 를 섞어 여러 번 줄 수 있다.
+
+```bash
+sure-aibom scan ./project -o bom.cdx.json --data ./data/train --data hf://datasets/stanfordnlp/imdb
+```
+
 SPDX 로 내려면 `--format spdx` 를 준다.
 
 ```bash

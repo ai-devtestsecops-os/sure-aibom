@@ -33,7 +33,7 @@ sure-aibom 은 검증된 오픈소스 도구가 찾은 패키지와 모델을 �
 - **M-BOM 보강 (sure-aibom, OWASP aibom-generator)**: cdxgen 이 담지 못한 필드를 보강한다. 로컬 모델은 sure-aibom 이 모델 파일에서, 코드에서 참조하는 허브 모델은 sure-aibom 과 OWASP aibom-generator 가 Hub API 응답에서 값을 가져온다.  
   `python -m src.cli <owner/model>`
     - `<owner/model>`: cdxgen 이 찾은 허브 모델 id
-- **D-BOM 생성 · 보강 (sure-aibom)**: 모델과 코드에서 찾은 허브 데이터셋의 컴포넌트를 만들고 [Hub API](https://huggingface.co/docs/hub/api) 와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 응답으로 보강한다. 지정한 로컬 데이터는 파일을 직접 읽어 컴포넌트를 만든다.
+- **D-BOM 생성 · 보강 (sure-aibom)**: 모델과 코드에서 찾거나 `--data` 로 지정한 허브 데이터셋의 컴포넌트를 만들고 [Hub API](https://huggingface.co/docs/hub/api) 와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 응답으로 보강한다. `--data` 로 지정한 로컬 데이터는 파일을 직접 읽어 컴포넌트를 만든다.
 - **규제 필드 추가 (sure-aibom)**: EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하는 필드를 앞 단계에서 모은 값으로 채운다. 어느 필드를 어떤 키로 적는지는 [확장 필드](compliance/regulation-fields.md)에 있다.
 ### 4. 출력
 
