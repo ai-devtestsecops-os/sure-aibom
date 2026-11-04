@@ -110,6 +110,12 @@ SPDX 문서는 모든 것이 `@graph` 배열의 요소라, 종류(`type`)로 골
 jq -r '.["@graph"][] | select(.type == "ai_AIPackage") | .name' bom.spdx.json
 ```
 
+```
+llama
+bert-base-uncased
+...
+```
+
 컴포넌트 종류와 각 정보가 문서의 어디에 들어가는지는 [출력 포맷](output-format.md)에 있다.
 
 ## 검증

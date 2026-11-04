@@ -1,7 +1,9 @@
 # 수집 항목
 
-각 도구가 스캔 대상 안에서 무엇을 읽는지 BOM 별로 적는다. 컨테이너 이미지와 이미지 아카이브는 디렉터리로 풀어서 보므로 M-BOM 과 D-BOM 은
-스캔 대상이 무엇이든 같은 곳을 읽는다. S-BOM 만 syft 가 이미지를 직접 읽어 디렉터리와 다르다.
+각 도구가 무엇을 읽는지 BOM 별로 적는다. 읽는 곳이 갈리는 기준은 BOM 마다 다르다.
+
+- S-BOM: 스캔 대상의 종류에 따라 다르다. 디렉터리는 패키지 매니페스트와 설치된 패키지를 읽고, 컨테이너 이미지와 이미지 아카이브는 설치된 패키지만 읽는다.
+- M-BOM, D-BOM: 로컬에 있는지 허브에 있는지에 따라 다르다. 이미지는 디렉터리로 풀어서 같은 방식으로 읽으므로 스캔 대상의 종류와는 상관없다.
 
 ## S-BOM
 
@@ -22,7 +24,7 @@
 <thead><tr><th>도구</th><th>대상</th><th>읽는 곳</th></tr></thead>
 <tbody markdown>
 <tr markdown><td rowspan="2">cdxgen</td><td>허브 모델</td><td markdown>파이썬·자바스크립트 소스와 노트북의 `from_pretrained("owner/name")`, `pipeline("task", "owner/name")`, `model = "owner/name"` 같은 모델 이름 지정과 huggingface.co 링크</td></tr>
-<tr markdown><td>로컬 모델</td><td markdown>`config.json`, `adapter_config.json`, 모델 카드 README.md 중 하나라도 있는 폴더, `*.gguf` 헤더, Ollama `Modelfile`<br><span class="note">※ 가중치 파일은 gguf 의 헤더만 읽고, `.safetensors`·`.bin`·`.pt`·`.pth`·`.ckpt` 같은 나머지는 보지 않는다</span></td></tr>
+<tr markdown><td>로컬 모델</td><td markdown>`config.json`, `adapter_config.json`, 모델 카드 README.md 가운데 모델 파일이 하나라도 있는 폴더, `*.gguf` 헤더, Ollama `Modelfile`<br><span class="note">※ 이름이 같아도 모델 항목이 있어야 모델 파일로 본다</span><br><span class="note">※ 가중치 파일은 gguf 의 헤더만 읽고, `.safetensors`·`.bin`·`.pt`·`.pth`·`.ckpt` 같은 나머지는 보지 않는다</span></td></tr>
 <tr markdown><td rowspan="2">sure-aibom</td><td>로컬 모델</td><td markdown>cdxgen 이 찾은 `config.json`, `*.gguf` 헤더, `Modelfile` 의 `FROM`·`LICENSE`, 그리고 `config.json` 과 같은 폴더의 `*.safetensors` 헤더<br><span class="note">※ 가중치 파일은 `.safetensors`·gguf 의 헤더만 읽는다. pickle 형식(`.bin`, `.pt`, `.pth`, `.ckpt`)은 열면 안에 든 코드가 실행될 수 있어 열지 않는다</span></td></tr>
 <tr markdown><td>허브 모델</td><td markdown>cdxgen 이 찾은 모델의 [Hub API](https://huggingface.co/docs/hub/api) 응답</td></tr>
 <tr markdown><td>OWASP aibom-generator</td><td>허브 모델</td><td markdown>cdxgen 이 찾은 모델의 [Hub API](https://huggingface.co/docs/hub/api) 응답과 모델 카드 README.md, `config.json`, `tokenizer_config.json`, LICENSE 파일, `*.safetensors`·`*.gguf` 헤더</td></tr>
@@ -42,7 +44,7 @@
 <tr markdown><td rowspan="7">sure-aibom</td><td rowspan="6">허브 데이터셋</td><td markdown>M-BOM 에서 찾은 로컬 모델의 모델 카드 YAML 헤더의 `datasets:` 와 `model-index:`(평가 결과)에 적힌 데이터셋<br><span class="note">※ cdxgen 은 `datasets:` 의 데이터셋을 모델의 데이터셋 목록에 하나만 남기고, `model-index:` 의 평가 데이터셋은 허브 데이터셋으로 적지 않아 sure-aibom 이 보완한다</span></td></tr>
 <tr markdown><td markdown>M-BOM 에서 찾은 gguf 모델 헤더의 `general.datasets` 에 적힌 `owner/name` 데이터셋</td></tr>
 <tr markdown><td markdown>M-BOM 에서 찾은 허브 모델의 모델 카드 YAML 헤더의 `datasets:` 와 `model-index:`(평가 결과)에 적힌 데이터셋</td></tr>
-<tr markdown><td markdown>파이썬 소스와 노트북의 `load_dataset("owner/name")` 호출 (`revision=` 인자가 있으면 그 리비전)</td></tr>
+<tr markdown><td markdown>파이썬 소스와 노트북의 `load_dataset("owner/name")` 호출</td></tr>
 <tr markdown><td markdown>`--data hf://datasets/<id>[@<revision>]` 로 지정한 데이터셋</td></tr>
 <tr markdown><td markdown>cdxgen 과 sure-aibom 이 찾거나 지정한 데이터셋마다 [Hub API](https://huggingface.co/docs/hub/api)와 [datasets-server](https://huggingface.co/docs/dataset-viewer) 응답<br><span class="note">※ 데이터셋 파일은 내려받지 않는다</span></td></tr>
 <tr markdown><td>로컬 데이터</td><td markdown>`--data` 로 지정한 경로</td></tr>
