@@ -1,7 +1,8 @@
 [
  {
-  "file": "recruit-screening.json",
+  "file": "recruit-screening.cdx.json",
   "subject": "recruit-screening",
+  "size": 2351,
   "system_profile": {
    "risk_class": [
     "high_risk"
@@ -10,7 +11,7 @@
     "provider"
    ]
   },
-  "summary": {
+  "engine_summary": {
    "반영": 7,
    "부분 반영": 25,
    "미반영": 114,
@@ -19,8 +20,9 @@
   }
  },
  {
-  "file": "aiapp-demo.v0.6.json",
+  "file": "aiapp-demo.v0.6.cdx.json",
   "subject": "aiapp:demo",
+  "size": 1506139,
   "system_profile": {
    "risk_class": [
     "high_risk"
@@ -29,7 +31,7 @@
     "provider"
    ]
   },
-  "summary": {
+  "engine_summary": {
    "반영": 19,
    "부분 반영": 28,
    "미반영": 98,
@@ -38,8 +40,9 @@
   }
  },
  {
-  "file": "nanoGPT.v0.6.json",
+  "file": "nanoGPT.v0.6.cdx.json",
   "subject": "nanoGPT",
+  "size": 4668,
   "system_profile": {
    "risk_class": [
     "gpai"
@@ -48,7 +51,7 @@
     "provider"
    ]
   },
-  "summary": {
+  "engine_summary": {
    "반영": 8,
    "부분 반영": 7,
    "미반영": 66,
@@ -57,8 +60,9 @@
   }
  },
  {
-  "file": "python-slim.v0.6.json",
+  "file": "python-slim.v0.6.cdx.json",
   "subject": "python:3.12-slim",
+  "size": 1487085,
   "system_profile": {
    "risk_class": [
     "minimal_risk"
@@ -67,7 +71,7 @@
     "provider"
    ]
   },
-  "summary": {
+  "engine_summary": {
    "반영": 0,
    "부분 반영": 2,
    "미반영": 46,

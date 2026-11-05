@@ -13,7 +13,8 @@
     aibom_v0.6_properties.json      추가 필드를 --spec 1.7 로 낼 때의 properties 키 (정의서 생성 코드와 같은 규칙)
     cards/cards.json                ai-bom/cards 의 승인 카드 (호 단위, 190장. ISO/IEC 42001 은 원문·구절을 빼고 제목만). 규제 판정 화면이 조항의 원문과 사실을 보여 줄 때 쓴다
     cards/vocabulary.json, cards/profile.json   통제 어휘, 매핑 프로파일 (ai-bom/cards 그대로)
-    cards/judgments/*.json          예제 BOM 에 판정 엔진을 돌린 기록 (aibom-examples 는 옆 폴더가 있을 때만). 예제마다 시스템 프로파일(위험등급·역할)을 정해 두고 돌린다
+    cards/boms/*.cdx.json, boms/index.json   예제 BOM 과 목록 (aibom-examples 는 옆 폴더가 있을 때만). 화면이 브라우저 안에서 판정하므로 BOM 자체를 두고,
+                                    목록에 기본 시스템 프로파일(위험등급·역할)과 파이썬 엔진의 판정 요약을 적어 둔다
 추출기 초안과 승인 카드의 비교는 내부용이라 문서 사이트에 싣지 않는다.
 """
 import json
@@ -104,7 +105,7 @@ def cards():
     sys.path.insert(0, CARDS); sys.path.insert(0, os.path.join(CARDS, "judge"))
     from common import load_cards, load_gold
     import judge as J
-    out = os.path.join(OUT, "cards"); os.makedirs(os.path.join(out, "judgments"), exist_ok=True)
+    out = os.path.join(OUT, "cards"); os.makedirs(out, exist_ok=True)
     for name in os.listdir(out):                         # 화면이 안 읽는 파일은 두지 않는다 (예전의 추출 비교 등)
         if name.endswith(".json"):
             os.remove(os.path.join(out, name))
@@ -121,25 +122,29 @@ def cards():
     with open(os.path.join(out, "vocabulary.json"), "w", encoding="utf-8") as fh:
         json.dump(voc, fh, ensure_ascii=False, indent=1)
     shutil.copy(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"), os.path.join(out, "profile.json"))
-    # 예제 BOM 판정
+    # 예제 BOM. 화면이 브라우저 안에서 판정하므로(cards.js 의 judgeBom) 판정 기록이 아니라 BOM 자체를 둔다. 시스템 프로파일은 화면의 기본값
     index = []
-    profile = J.load_profile(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"))
+    boms = os.path.join(out, "boms"); os.makedirs(boms, exist_ok=True)
+    for name in os.listdir(boms):
+        os.remove(os.path.join(boms, name))
+    old = os.path.join(out, "judgments")                 # 예전의 미리 낸 판정 기록. 더는 안 쓴다
+    if os.path.isdir(old):
+        shutil.rmtree(old)
     bom_paths = [(os.path.join(CARDS, "judge", "examples", "recruit-screening.cdx.json"), HIGH_RISK_PROVIDER)]   # 특허 실시예를 흉내 낸 작은 BOM (고위험 제공자)
     if os.path.isdir(EXAMPLES):
         bom_paths += [(os.path.join(EXAMPLES, n), system) for n, system in EXAMPLE_BOMS]
-    if True:
-        for path, system in bom_paths:
-            name = os.path.basename(path)
-            if not os.path.exists(path):
-                continue
-            with open(path, encoding="utf-8") as fh:
-                bom = json.load(fh)
-            record = J.judge(bom, shown, profile, system)
-            fname = name.replace(".cdx.json", ".json")
-            with open(os.path.join(out, "judgments", fname), "w", encoding="utf-8") as fh:
-                json.dump(record, fh, ensure_ascii=False, indent=1)
-            index.append({"file": fname, "subject": record["bom"]["subject"], "system_profile": system, "summary": record["summary"]})
-    with open(os.path.join(out, "judgments", "index.json"), "w", encoding="utf-8") as fh:
+    profile = J.load_profile(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"))
+    for path, system in bom_paths:
+        name = os.path.basename(path)
+        if not os.path.exists(path):
+            continue
+        with open(path, encoding="utf-8") as fh:
+            bom = json.load(fh)
+        shutil.copy(path, os.path.join(boms, name))
+        record = J.judge(bom, shown, profile, system)      # 파이썬 엔진의 결과를 같이 적어 둔다 (화면과 맞는지 보는 기준)
+        index.append({"file": name, "subject": record["bom"]["subject"], "size": os.path.getsize(path), "system_profile": system,
+                      "engine_summary": record["summary"]})
+    with open(os.path.join(boms, "index.json"), "w", encoding="utf-8") as fh:
         json.dump(index, fh, ensure_ascii=False, indent=1)
     return len(shown), len(index)
 

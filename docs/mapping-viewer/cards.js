@@ -11,18 +11,18 @@ const $ = (sel) => root.querySelector(sel);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
 const regOf = (id) => REG_NAME[id.split("-")[1]] || id.split("-")[1];
 const vclass = (v) => "v-" + v.replace(/\s/g, "");
-let cards = [], cardById = {}, vocab = {}, profile = {}, targets = {}, judgIndex = [];
+let cards = [], cardById = {}, vocab = {}, profile = {}, targets = {}, examples = [];
 let pending = new Set(), partial = {}, profileApproved = true;      // 승인 안 된 줄, 부분 대응 줄(개념 → 이유), 프로파일 승인 여부
 const KIND_KO = {system: "시스템", model: "모델", dataset: "데이터셋", software: "소프트웨어"};
 const RISK_KO = {high_risk: "고위험 AI 시스템", limited_risk: "제한 위험", minimal_risk: "최소 위험", gpai: "범용 AI 모델", gpai_systemic: "범용 AI 모델 (체계적 위험)", any: "모든 AI 시스템"};
 const ROLE_KO = {provider: "제공자", deployer: "배포자", importer: "수입자", distributor: "유통자", authorised_representative: "수권대리인", operator: "운영자", organisation: "조직"};
-let currentBom = null, currentName = "";          // 올린 BOM (시스템 프로파일을 바꾸면 다시 판정한다). 예제는 미리 판정한 기록이라 null
+let currentBom = null, currentName = "", currentSize = 0;      // 지금 판정하는 BOM. 올린 것이든 예제든 브라우저 안에서 판정한다 (프로파일을 바꾸면 다시)
 
 async function load(name) { const r = await fetch(BASE + name); if (!r.ok) throw new Error(name); return r.json(); }
 
 async function init() {
-  const [c, v, p, j, src] = await Promise.all([load("cards.json"), load("vocabulary.json"), load("profile.json"), load("judgments/index.json"), load("source.json").catch(() => ({}))]);
-  cards = c; cardById = Object.fromEntries(c.map((x) => [x.card_id, x])); vocab = Object.fromEntries(v.concepts.map((x) => [x.id, x])); judgIndex = j;
+  const [c, v, p, ex, src] = await Promise.all([load("cards.json"), load("vocabulary.json"), load("profile.json"), load("boms/index.json").catch(() => []), load("source.json").catch(() => ({}))]);
+  cards = c; cardById = Object.fromEntries(c.map((x) => [x.card_id, x])); vocab = Object.fromEntries(v.concepts.map((x) => [x.id, x])); examples = ex;
   if (src.cards === "gold") { const n = document.createElement("p"); n.className = "cv-note"; n.textContent = "지금 판정에 쓰는 카드는 요구사항 표에서 변환한 정답 카드(cards/gold)다. 승인한 카드가 생기면 그것으로 바뀐다."; root.prepend(n); }
   targets = p.targets || {};                          // fact 의 target(대상 구성요소 종류)을 BOM 에서 찾는 법
   profileApproved = p.status === "approved";
@@ -88,32 +88,70 @@ function focusFact(detail, idx) {
 }
 
 // ---------- 판정 ----------
+// 처음엔 BOM 을 올리는 자리(드롭존)만 보인다. 파일을 끌어다 놓거나 골라 올리거나 예제를 누르면 브라우저 안에서 판정해 화면을 연다.
 let currentRecord = null;
 function initJudgment() {
-  const sel = $("#cv-bom");
-  sel.innerHTML = judgIndex.map((j, i) => `<option value="${i}">${esc(j.subject)} (${esc(j.file)})</option>`).join("") || `<option value="">예제 BOM 없음</option>`;
-  sel.addEventListener("change", async () => { const j = judgIndex[+sel.value]; if (j) { currentBom = null; showRecord(await load("judgments/" + j.file)); } });
+  const drop = $("#cv-drop"), input = $("#cv-bom-file");
+  $("#cv-examples").innerHTML = examples.map((e, i) => `<button type="button" data-i="${i}" title="${esc(e.file)} · ${fmtSize(e.size || 0)}">${esc(e.subject)}</button>`).join("") || `<span class="cv-muted">없음</span>`;
+  $("#cv-examples").querySelectorAll("button").forEach((b) => b.addEventListener("click", async (ev) => {
+    ev.stopPropagation();
+    const e = examples[+b.dataset.i];
+    try { const r = await fetch(BASE + "boms/" + e.file); if (!r.ok) throw new Error(e.file); useBom(await r.json(), e.file, e.size, e.system_profile); }
+    catch (err) { dropError(`예제를 읽지 못했다: ${esc(err.message)}`); }
+  }));
+  drop.addEventListener("click", () => input.click());
+  drop.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); input.click(); } });
+  for (const t of ["dragenter", "dragover"]) drop.addEventListener(t, (ev) => { ev.preventDefault(); drop.classList.add("over"); });
+  for (const t of ["dragleave", "drop"]) drop.addEventListener(t, (ev) => { ev.preventDefault(); drop.classList.remove("over"); });
+  drop.addEventListener("drop", (ev) => { const f = ev.dataTransfer?.files?.[0]; if (f) readFile(f); else dropError("파일이 아니다"); });
+  input.addEventListener("change", (ev) => { const f = ev.target.files[0]; if (f) readFile(f); input.value = ""; });
+  $("#cv-another").addEventListener("click", () => { $("#cv-main").hidden = true; showBomView(false); $("#cv-drop-error").hidden = true; drop.hidden = false; drop.focus(); });
+  $("#cv-show-bom").addEventListener("click", () => showBomView($("#cv-bom-view").hidden));
+  $("#cv-hide-bom").addEventListener("click", () => showBomView(false));
   regSelect($("#cv-reg"), () => { renderSummary(); renderJudgList(); });
   $("#cv-verdict-filter").addEventListener("change", renderJudgList);
-  $("#cv-bom-file").addEventListener("change", async (ev) => {
-    const file = ev.target.files[0]; if (!file) return;
-    try { currentBom = JSON.parse(await file.text()); currentName = file.name; setProfileInputs(null); showRecord(judgeBom(currentBom, currentName, systemProfile())); sel.value = ""; }
-    catch (err) { $("#cv-judg-summary").innerHTML = `<span class="cv-chip gap">읽을 수 없는 파일: ${esc(err.message)}</span>`; }
-  });
   for (const el of [$("#cv-risk"), ...roleBoxes()]) el.addEventListener("change", () => { if (currentBom) showRecord(judgeBom(currentBom, currentName, systemProfile())); });
-  if (judgIndex.length) sel.dispatchEvent(new Event("change"));
 }
-// 시스템 프로파일 (특허 2층): 위험등급과 역할. 올린 BOM 은 선택 칸에서 읽고, 예제는 기록에 적힌 것을 보여 주기만 한다
+async function readFile(file) {
+  try {
+    const bom = JSON.parse(await file.text());
+    if (!bom || typeof bom !== "object" || Array.isArray(bom)) throw new Error("JSON 객체가 아니다");
+    if (bom.bomFormat !== "CycloneDX") throw new Error("CycloneDX 문서가 아니다 (bomFormat 이 " + (bom.bomFormat ? `'${bom.bomFormat}'` : "없음") + ")");
+    useBom(bom, file.name, file.size, null);
+  } catch (err) { dropError(`읽을 수 없는 파일 (${esc(file.name)}): ${esc(err.message)}`); }
+}
+function dropError(html) { const e = $("#cv-drop-error"); e.innerHTML = html; e.hidden = false; }
+// BOM 하나를 화면에 올린다. system 이 있으면(예제) 프로파일 칸을 그 값으로 채우고, 없으면(올린 파일) 비운다. 어느 쪽이든 바꿀 수 있다
+function useBom(bom, name, size, system) {
+  currentBom = bom; currentName = name; currentSize = size || 0;
+  $("#cv-drop-error").hidden = true;
+  applyProfileInputs(system || {});
+  $("#cv-file").innerHTML = `<span title="${esc(name)}">${esc(name)}</span><span class="cv-size">${fmtSize(currentSize)}</span>`;
+  showBomView(false);
+  $("#cv-drop").hidden = true; $("#cv-main").hidden = false;
+  $("#cv-judg-detail").innerHTML = `<p class="cv-muted">조항을 고르면 원문과 요구 사실, 사실마다 BOM 에 값이 있었는지가 나온다.</p>`;
+  showRecord(judgeBom(bom, name, systemProfile()));
+}
+const BOM_VIEW_MAX = 400000;                          // 글자 수. 큰 BOM(1.5 MB)은 앞부분만 보인다
+function showBomView(on) {
+  const view = $("#cv-bom-view"); view.hidden = !on; $("#cv-show-bom").textContent = on ? "BOM 닫기" : "BOM 보기";
+  if (!on || !currentBom) return;
+  const text = JSON.stringify(currentBom, null, 2), cut = text.length > BOM_VIEW_MAX;
+  $("#cv-bom-pre").textContent = cut ? text.slice(0, BOM_VIEW_MAX) + `\n… (앞 ${fmtSize(BOM_VIEW_MAX)} 만 보인다. 전체 ${fmtSize(text.length)})` : text;
+  let n = 0; (function walk(items) { for (const c of items || []) { n += 1; walk(c.components); } })(currentBom.components);
+  $("#cv-bom-info").textContent = `${currentName} · ${currentBom.bomFormat} ${currentBom.specVersion || ""} · 구성요소 ${n}개 · ${fmtSize(currentSize || text.length)}`;
+}
+const fmtSize = (n) => n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : n >= 1024 ? `${Math.round(n / 1024)} KB` : `${n} B`;
+// 시스템 프로파일 (특허 2층): 위험등급과 역할. 선택 칸에서 읽는다
 const roleBoxes = () => [...root.querySelectorAll("input[name=cv-role]")];
 function systemProfile() {
   const risk = $("#cv-risk").value, roles = roleBoxes().filter((b) => b.checked).map((b) => b.value);
   return {...(risk ? {risk_class: [risk]} : {}), ...(roles.length ? {role: roles} : {})};
 }
-function setProfileInputs(system) {                   // system 이 있으면(예제) 그 값으로 고정, 없으면(올린 BOM) 고르게 둔다
-  const fixed = !!system, roles = fixed ? (Array.isArray(system.role) ? system.role : system.role ? [system.role] : []) : null;
-  if (fixed) $("#cv-risk").value = (system.risk_class || [])[0] || "";
-  $("#cv-risk").disabled = fixed;
-  for (const b of roleBoxes()) { if (fixed) b.checked = roles.includes(b.value); b.disabled = fixed; }
+function applyProfileInputs(system) {
+  const roles = Array.isArray(system.role) ? system.role : system.role ? [system.role] : [];
+  $("#cv-risk").value = (system.risk_class || [])[0] || "";
+  for (const b of roleBoxes()) b.checked = roles.includes(b.value);
 }
 const profileText = (system) => {
   const r = (system?.risk_class || []).map((x) => RISK_KO[x] || x).join("+");
@@ -140,7 +178,7 @@ function clauseGroups(rs) {                           // 판정 목록 → [{cla
   for (const r of rs) { const key = regOf(r.card_id) + "|" + clauseOf(r.card_id); if (!groups.has(key)) groups.set(key, {clause: clauseOf(r.card_id), reg: regOf(r.card_id), cards: []}); groups.get(key).cards.push(r); }
   return [...groups.values()].map((g) => ({...g, verdict: aggregate(g.cards.map((r) => r.verdict))}));
 }
-function showRecord(rec) { currentRecord = rec; if (!currentBom) setProfileInputs(rec.system_profile || {}); renderSummary(); renderJudgList(); }
+function showRecord(rec) { currentRecord = rec; renderSummary(); renderJudgList(); }
 function renderSummary() {
   if (!currentRecord) return;
   const rec = currentRecord, rs = regCards(), total = rs.length, groups = clauseGroups(rs);
