@@ -1,6 +1,6 @@
 {
  "engine_version": "0.7.0",
- "run_at": "2026-11-05T07:36:19Z",
+ "run_at": "2026-11-05T07:41:41Z",
  "bom": {
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
@@ -463,26 +463,26 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-C-3",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex VIII §C(3): 등록·배포 정보",
    "verdict": "비적용",
-   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음; 카드의 주체 deployer 가 시스템의 역할 ['provider'] 에 없음",
    "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-C-4",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex VIII §C(4): 위험·영향평가",
    "verdict": "비적용",
-   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음; 카드의 주체 deployer 가 시스템의 역할 ['provider'] 에 없음",
    "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-C-5",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex VIII §C(5): 위험·영향평가",
    "verdict": "비적용",
-   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음; 카드의 주체 deployer 가 시스템의 역할 ['provider'] 에 없음",
    "facts": []
   },
   {

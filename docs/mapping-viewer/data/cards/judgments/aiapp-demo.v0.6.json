@@ -1,6 +1,6 @@
 {
  "engine_version": "0.7.0",
- "run_at": "2026-11-05T07:36:19Z",
+ "run_at": "2026-11-05T07:41:41Z",
  "bom": {
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
@@ -63,17 +63,17 @@
   "evidence": false
  },
  "summary": {
-  "반영": 20,
+  "반영": 19,
   "부분 반영": 28,
-  "미반영": 100,
-  "비적용": 41,
+  "미반영": 98,
+  "비적용": 44,
   "검토 필요": 1
  },
  "clause_summary": {
-  "반영": 16,
+  "반영": 15,
   "부분 반영": 23,
-  "미반영": 73,
-  "비적용": 17,
+  "미반영": 71,
+  "비적용": 20,
   "검토 필요": 0
  },
  "cards": [
@@ -2380,90 +2380,27 @@
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-C-3",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex VIII §C(3): 등록·배포 정보",
-   "verdict": "반영",
-   "facts": [
-    {
-     "concept": "WEBSITE_REF",
-     "label": "외부참조: 웹사이트",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.externalReferences.url (type:website)"
-     ],
-     "found_at": {
-      "component.externalReferences.url (type:website)": [
-       "pkg:huggingface/datasets/bookcorpus/bookcorpus",
-       "pkg:huggingface/datasets/stanfordnlp/imdb"
-      ]
-     }
-    }
-   ],
-   "gaps": []
+   "verdict": "비적용",
+   "reason": "카드의 주체 deployer 가 시스템의 역할 ['provider'] 에 없음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-C-4",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex VIII §C(4): 위험·영향평가",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 주체 deployer 가 시스템의 역할 ['provider'] 에 없음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-C-5",
-   "card_version": 1,
+   "card_version": 2,
    "title": "Annex VIII §C(5): 위험·영향평가",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "evaluated": false,
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 주체 deployer 가 시스템의 역할 ['provider'] 에 없음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-XI-1-1-a",
@@ -7335,7 +7272,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §C(3)",
-   "verdict": "반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-C-3"
    ]
@@ -7343,7 +7280,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §C(4)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-C-4"
    ]
@@ -7351,7 +7288,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §C(5)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-C-5"
    ]
