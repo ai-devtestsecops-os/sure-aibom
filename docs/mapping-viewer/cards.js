@@ -92,7 +92,7 @@ function focusFact(detail, idx) {
 let currentRecord = null;
 function initJudgment() {
   const drop = $("#cv-drop"), input = $("#cv-bom-file");
-  $("#cv-examples").innerHTML = examples.map((e, i) => `<button type="button" data-i="${i}" title="${esc(e.file)} · ${fmtSize(e.size || 0)}">${esc(e.subject)}</button>`).join("") || `<span class="cv-muted">없음</span>`;
+  $("#cv-examples").innerHTML = examples.map((e, i) => `<button type="button" data-i="${i}" title="${esc(e.note || "")} (${esc(e.file)}, ${fmtSize(e.size || 0)})">${esc(e.label || e.subject)}</button>`).join("") || `<span class="cv-muted">없음</span>`;
   $("#cv-examples").querySelectorAll("button").forEach((b) => b.addEventListener("click", async (ev) => {
     ev.stopPropagation();
     const e = examples[+b.dataset.i];
@@ -142,7 +142,7 @@ function showBomView(on) {
   $("#cv-bom-info").textContent = `${currentName} · ${currentBom.bomFormat} ${currentBom.specVersion || ""} · 구성요소 ${n}개 · ${fmtSize(currentSize || text.length)}`;
 }
 const fmtSize = (n) => n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : n >= 1024 ? `${Math.round(n / 1024)} KB` : `${n} B`;
-// 시스템 프로파일 (특허 2층): 위험등급과 역할. 선택 칸에서 읽는다
+// 시스템 프로파일 (2층): 위험등급과 역할. 선택 칸에서 읽는다
 const roleBoxes = () => [...root.querySelectorAll("input[name=cv-role]")];
 function systemProfile() {
   const risk = $("#cv-risk").value, roles = roleBoxes().filter((b) => b.checked).map((b) => b.value);

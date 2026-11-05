@@ -1,0 +1,222 @@
+{
+ "bomFormat": "CycloneDX",
+ "specVersion": "1.7",
+ "serialNumber": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002",
+ "version": 1,
+ "metadata": {
+  "timestamp": "2026-11-05T00:00:00Z",
+  "component": {
+   "type": "machine-learning-model",
+   "bom-ref": "model:sure-llm-7b:1.2",
+   "name": "sure-llm-7b",
+   "version": "1.2",
+   "supplier": {
+    "name": "Example Labs"
+   },
+   "licenses": [
+    {
+     "license": {
+      "id": "Apache-2.0"
+     }
+    }
+   ],
+   "externalReferences": [
+    {
+     "type": "documentation",
+     "url": "https://example.org/sure-llm-7b/model-card"
+    }
+   ],
+   "releaseNotes": {
+    "type": "major",
+    "timestamp": "2026-10-01T00:00:00Z",
+    "notes": [
+     {
+      "text": "1.2: context length 8192"
+     }
+    ]
+   },
+   "modelCard": {
+    "modelParameters": {
+     "task": "text-generation",
+     "architectureFamily": "transformer",
+     "modelArchitecture": "decoder-only, 32 layers",
+     "parameterCount": 7000000000,
+     "inputs": [
+      {
+       "format": "text"
+      }
+     ],
+     "outputs": [
+      {
+       "format": "text"
+      }
+     ],
+     "trainingTechniques": [
+      "pretraining (causal language modeling)",
+      "supervised fine-tuning"
+     ],
+     "trainingCompute": "1.2e23 FLOP",
+     "trainingTime": "21 days on 256 H100",
+     "hyperparameters": [
+      {
+       "name": "learning_rate",
+       "value": "3e-4"
+      },
+      {
+       "name": "context_length",
+       "value": "8192"
+      }
+     ],
+     "optimizationTarget": "next-token cross-entropy",
+     "designChoices": [
+      "RoPE positional encoding",
+      "SwiGLU activation"
+     ],
+     "datasets": [
+      {
+       "ref": "dataset:web-corpus-2026"
+      }
+     ]
+    },
+    "quantitativeAnalysis": {
+     "performanceMetrics": [
+      {
+       "type": "MMLU",
+       "value": "0.63"
+      },
+      {
+       "type": "HellaSwag",
+       "value": "0.79"
+      }
+     ]
+    },
+    "considerations": {
+     "useCases": [
+      "general text generation",
+      "chat assistants"
+     ],
+     "technicalLimitations": [
+      "context limited to 8192 tokens",
+      "may state false facts with confidence"
+     ],
+     "technicalRequirements": [
+      "16 GB GPU memory (int8)"
+     ],
+     "limitationIdentificationMethods": [
+      "held-out benchmark evaluation",
+      "internal red teaming"
+     ],
+     "ethicalConsiderations": [
+      {
+       "name": "toxic or biased generations",
+       "mitigationStrategy": "safety fine-tuning and output filtering"
+      }
+     ]
+    }
+   }
+  },
+  "properties": [
+   {
+    "name": "aibom:example",
+    "value": "범용 AI 모델(기반 LLM)을 가정해 손으로 만든 작은 BOM. 모델 카드에 구조·학습·평가 정보가 있고 학습 데이터셋이 하나다. 에너지 사용량, 적대적 평가 참조, 표준 준수 선언은 비워 두어 부분 반영이 보이게 했다."
+   }
+  ]
+ },
+ "components": [
+  {
+   "type": "data",
+   "bom-ref": "dataset:web-corpus-2026",
+   "name": "web-corpus-2026",
+   "version": "2026-03",
+   "data": [
+    {
+     "type": "dataset",
+     "name": "web-corpus-2026",
+     "contents": {
+      "url": "https://example.org/web-corpus-2026"
+     },
+     "size": 2400000000000,
+     "modality": [
+      "text"
+     ],
+     "collectionProcess": "web crawl (Common Crawl snapshots 2025-2026) with URL filtering",
+     "provenance": [
+      "https://commoncrawl.org"
+     ],
+     "preprocessing": [
+      "deduplication",
+      "language filtering",
+      "toxicity filtering"
+     ],
+     "sensitiveData": [],
+     "knownBias": [
+      {
+       "name": "English-centric",
+       "detectionMethod": "language distribution analysis"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "library",
+   "bom-ref": "pkg:pypi/tokenizers@0.20.0",
+   "name": "tokenizers",
+   "version": "0.20.0",
+   "purl": "pkg:pypi/tokenizers@0.20.0"
+  }
+ ],
+ "dependencies": [
+  {
+   "ref": "model:sure-llm-7b:1.2",
+   "dependsOn": [
+    "dataset:web-corpus-2026",
+    "pkg:pypi/tokenizers@0.20.0"
+   ]
+  }
+ ],
+ "formulation": [
+  {
+   "bom-ref": "formulation:train",
+   "workflows": [
+    {
+     "bom-ref": "wf:pretraining",
+     "name": "pretraining",
+     "taskTypes": [
+      "build"
+     ],
+     "tasks": [
+      {
+       "bom-ref": "task:train",
+       "name": "train",
+       "taskTypes": [
+        "build"
+       ],
+       "resourceReferences": [
+        {
+         "ref": "dataset:web-corpus-2026"
+        }
+       ]
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "definitions": {
+  "standards": [
+   {
+    "bom-ref": "std:iso42001",
+    "name": "ISO/IEC 42001:2023",
+    "version": "2023",
+    "requirements": [
+     {
+      "bom-ref": "req:a.6.2.4",
+      "identifier": "A.6.2.4",
+      "title": "AI system verification and validation"
+     }
+    ]
+   }
+  ]
+ }
+}

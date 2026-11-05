@@ -2,7 +2,9 @@
  {
   "file": "recruit-screening.cdx.json",
   "subject": "recruit-screening",
-  "size": 2351,
+  "label": "고위험 AI 시스템 · 채용 심사",
+  "note": "채용 지원자를 평가하는 고위험 AI 시스템. 개인데이터 데이터셋에 원래 수집 목적이 빠져 있어 10조(2)(b) 가 부분 반영이다",
+  "size": 2575,
   "system_profile": {
    "risk_class": [
     "high_risk"
@@ -20,29 +22,33 @@
   }
  },
  {
-  "file": "aiapp-demo.v0.6.cdx.json",
-  "subject": "aiapp:demo",
-  "size": 1506139,
+  "file": "support-chatbot.cdx.json",
+  "subject": "support-chatbot",
+  "label": "제한 위험 · 고객 상담 챗봇",
+  "note": "사람과 대화하는 챗봇. 고위험 조항은 비적용이고 투명성 의무(50조)가 걸린다",
+  "size": 1892,
   "system_profile": {
    "risk_class": [
-    "high_risk"
+    "limited_risk"
    ],
    "role": [
     "provider"
    ]
   },
   "engine_summary": {
-   "반영": 19,
-   "부분 반영": 28,
-   "미반영": 98,
-   "비적용": 44,
-   "검토 필요": 1
+   "반영": 3,
+   "부분 반영": 8,
+   "미반영": 39,
+   "비적용": 140,
+   "검토 필요": 0
   }
  },
  {
-  "file": "nanoGPT.v0.6.cdx.json",
-  "subject": "nanoGPT",
-  "size": 4668,
+  "file": "foundation-llm.cdx.json",
+  "subject": "sure-llm-7b",
+  "label": "범용 AI 모델 · 기반 LLM",
+  "note": "범용 AI 모델 제공자. 53조와 부속서 XI·XII 의 모델 문서 항목을 본다",
+  "size": 4752,
   "system_profile": {
    "risk_class": [
     "gpai"
@@ -52,30 +58,10 @@
    ]
   },
   "engine_summary": {
-   "반영": 8,
-   "부분 반영": 7,
-   "미반영": 66,
+   "반영": 32,
+   "부분 반영": 21,
+   "미반영": 28,
    "비적용": 109,
-   "검토 필요": 0
-  }
- },
- {
-  "file": "python-slim.v0.6.cdx.json",
-  "subject": "python:3.12-slim",
-  "size": 1487085,
-  "system_profile": {
-   "risk_class": [
-    "minimal_risk"
-   ],
-   "role": [
-    "provider"
-   ]
-  },
-  "engine_summary": {
-   "반영": 0,
-   "부분 반영": 2,
-   "미반영": 46,
-   "비적용": 142,
    "검토 필요": 0
   }
  }

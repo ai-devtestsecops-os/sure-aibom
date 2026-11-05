@@ -13,7 +13,7 @@
     aibom_v0.6_properties.json      추가 필드를 --spec 1.7 로 낼 때의 properties 키 (정의서 생성 코드와 같은 규칙)
     cards/cards.json                ai-bom/cards 의 승인 카드 (호 단위, 190장. ISO/IEC 42001 은 원문·구절을 빼고 제목만). 규제 판정 화면이 조항의 원문과 사실을 보여 줄 때 쓴다
     cards/vocabulary.json, cards/profile.json   통제 어휘, 매핑 프로파일 (ai-bom/cards 그대로)
-    cards/boms/*.cdx.json, boms/index.json   예제 BOM 과 목록 (aibom-examples 는 옆 폴더가 있을 때만). 화면이 브라우저 안에서 판정하므로 BOM 자체를 두고,
+    cards/boms/*.cdx.json, boms/index.json   예제 BOM 과 목록 (위험등급마다 하나씩 손으로 만든 것, ai-bom/cards/judge/examples). 화면이 브라우저 안에서 판정하므로 BOM 자체를 두고,
                                     목록에 기본 시스템 프로파일(위험등급·역할)과 파이썬 엔진의 판정 요약을 적어 둔다
 추출기 초안과 승인 카드의 비교는 내부용이라 문서 사이트에 싣지 않는다.
 """
@@ -32,13 +32,15 @@ COPY = ("aibom_v0.6_cyclonedx.json", "aibom_v0.6_spdx.json", "aibom_v0.6_spdx_ma
 # 여기서 만들지 않지만 뷰어가 읽는 파일 — tests/test_fields.py 가 만든다. 지우지 않는다.
 KEEP = ("aibom_cli_sources.json", "aibom_cli_spdx_sources.json")
 CARDS = os.path.join(AIBOM, "cards")
-# aibom-examples 는 저장소 밖(/mnt/yhchoe/aibom-examples). AIBOM_EXAMPLES 로 바꿀 수 있다
-EXAMPLES = os.environ.get("AIBOM_EXAMPLES") or os.path.join(os.path.dirname(os.path.dirname(CLI)), "aibom-examples", "results", "0.2.0")
-# 예제 BOM 과 그 시스템 프로파일 (위험등급·역할). 판정 엔진은 이것이 없으면 EU AI Act 카드를 검토 필요로 낸다
-HIGH_RISK_PROVIDER = {"risk_class": ["high_risk"], "role": ["provider"]}
-EXAMPLE_BOMS = (("aiapp-demo.v0.6.cdx.json", HIGH_RISK_PROVIDER),
-                ("nanoGPT.v0.6.cdx.json", {"risk_class": ["gpai"], "role": ["provider"]}),
-                ("python-slim.v0.6.cdx.json", {"risk_class": ["minimal_risk"], "role": ["provider"]}))
+# 규제 판정 화면의 예제 BOM: 위험등급마다 하나씩 손으로 만든 작은 BOM (ai-bom/cards/judge/examples). (파일, 기본 시스템 프로파일, 버튼 이름, 설명)
+# 공개 사이트에 올리는 복사본에서는 설명 속성(aibom:example)의 내부용 문구를 바꾼다
+EXAMPLE_BOMS = (("recruit-screening.cdx.json", {"risk_class": ["high_risk"], "role": ["provider"]}, "고위험 AI 시스템 · 채용 심사",
+                 "채용 지원자를 평가하는 고위험 AI 시스템. 개인데이터 데이터셋에 원래 수집 목적이 빠져 있어 10조(2)(b) 가 부분 반영이다"),
+                ("support-chatbot.cdx.json", {"risk_class": ["limited_risk"], "role": ["provider"]}, "제한 위험 · 고객 상담 챗봇",
+                 "사람과 대화하는 챗봇. 고위험 조항은 비적용이고 투명성 의무(50조)가 걸린다"),
+                ("foundation-llm.cdx.json", {"risk_class": ["gpai"], "role": ["provider"]}, "범용 AI 모델 · 기반 LLM",
+                 "범용 AI 모델 제공자. 53조와 부속서 XI·XII 의 모델 문서 항목을 본다"))
+HAND_MADE = "채용 심사 AI 를 가정해 손으로 만든 작은 BOM"
 
 
 def save(name, obj):
@@ -130,20 +132,22 @@ def cards():
     old = os.path.join(out, "judgments")                 # 예전의 미리 낸 판정 기록. 더는 안 쓴다
     if os.path.isdir(old):
         shutil.rmtree(old)
-    bom_paths = [(os.path.join(CARDS, "judge", "examples", "recruit-screening.cdx.json"), HIGH_RISK_PROVIDER)]   # 특허 실시예를 흉내 낸 작은 BOM (고위험 제공자)
-    if os.path.isdir(EXAMPLES):
-        bom_paths += [(os.path.join(EXAMPLES, n), system) for n, system in EXAMPLE_BOMS]
+    bom_paths = [(os.path.join(CARDS, "judge", "examples", n), system, label, note) for n, system, label, note in EXAMPLE_BOMS]
     profile = J.load_profile(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"))
-    for path, system in bom_paths:
+    for path, system, label, note in bom_paths:
         name = os.path.basename(path)
         if not os.path.exists(path):
             continue
         with open(path, encoding="utf-8") as fh:
             bom = json.load(fh)
-        shutil.copy(path, os.path.join(boms, name))
+        for prop in (bom.get("metadata") or {}).get("properties") or []:
+            if prop.get("name") == "aibom:example":
+                prop["value"] = prop["value"].replace("특허 실시예를 흉내 낸 작은 BOM", HAND_MADE)
+        with open(os.path.join(boms, name), "w", encoding="utf-8") as fh:
+            json.dump(bom, fh, ensure_ascii=False, indent=1)
         record = J.judge(bom, shown, profile, system)      # 파이썬 엔진의 결과를 같이 적어 둔다 (화면과 맞는지 보는 기준)
-        index.append({"file": name, "subject": record["bom"]["subject"], "size": os.path.getsize(path), "system_profile": system,
-                      "engine_summary": record["summary"]})
+        index.append({"file": name, "subject": record["bom"]["subject"], **({"label": label} if label else {}), "note": note,
+                      "size": os.path.getsize(os.path.join(boms, name)), "system_profile": system, "engine_summary": record["summary"]})
     with open(os.path.join(boms, "index.json"), "w", encoding="utf-8") as fh:
         json.dump(index, fh, ensure_ascii=False, indent=1)
     return len(shown), len(index)

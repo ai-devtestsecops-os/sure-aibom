@@ -6,4 +6,5 @@ dist/
 out/
 *.cdx.json
 !tests/data/**/*.cdx.json
+!docs/mapping-viewer/data/cards/boms/*.cdx.json
 site/
