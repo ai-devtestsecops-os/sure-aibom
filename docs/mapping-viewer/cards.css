@@ -33,9 +33,12 @@
 .card-viewer .cv-chip.gap, .card-viewer .cv-chip.missing {background: var(--gap-bg); color: var(--gap-fg); border-color: transparent;}
 .card-viewer .cv-chip.present {background: var(--hit-bg); color: var(--hit-fg); border-color: transparent;}
 .card-viewer .cv-chip.not_required {background: var(--miss-bg); color: var(--miss-fg); border-color: transparent;}
+.card-viewer .cv-chip.unknown {background: var(--miss-bg); color: var(--miss-fg); border-color: transparent;}
+.card-viewer .cv-chip.partial {background: var(--extra-bg); color: var(--extra-fg); border-color: transparent;}
 .card-viewer .cv-text {line-height: 1.6; padding: .6rem .8rem; background: var(--bg-subtle); border-radius: 6px; font-size: .78rem;}
 .card-viewer .cv-text mark {background: var(--hit-bg); color: inherit; border-radius: 3px; padding: 0 .1em; cursor: pointer; border-bottom: 2px solid var(--hit-fg);}
 .card-viewer .cv-text mark.missing {background: var(--gap-bg); border-bottom-color: var(--gap-fg);}
+.card-viewer .cv-text mark.partial {background: var(--extra-bg); border-bottom-color: var(--extra-fg);}
 .card-viewer .cv-text mark.muted {background: var(--miss-bg); border-bottom-color: var(--miss-fg);}
 .card-viewer .cv-text mark.focus {outline: 2px solid var(--accent);}
 .card-viewer .cv-text .cv-trans {display: block; margin-top: .5rem; color: var(--text-muted); font-size: .74rem;}

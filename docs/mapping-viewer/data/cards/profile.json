@@ -386,6 +386,8 @@
       "spec": "v0.6",
       "coverage": "필드",
       "status": "linked",
+      "fit": "partial",
+      "fit_note": "대상 범위 불일치: 규제(13조(3), 부속서 IV·VIII·IX)는 AI 시스템의 의도된 목적을 묻는데 useCases 는 모델 카드(모델 수준)의 필드다. 값이 있어도 부분 반영까지만 (2026-11-05, 특허 초안의 판정 사례 그림)",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 9장이 씀)"
     },

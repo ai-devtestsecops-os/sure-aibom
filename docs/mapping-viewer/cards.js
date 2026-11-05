@@ -5,14 +5,18 @@ const root = document.querySelector(".card-viewer");
 const BASE = root.dataset.base || "data/cards/";
 const REG_NAME = {EUAIA: "EU AI Act", NISTRMF: "NIST AI RMF", ISO42001: "ISO/IEC 42001"};
 const VERDICTS = ["반영", "부분 반영", "미반영", "검토 필요", "비적용"];
-const STATUS_KO = {present: "있음", missing: "비어 있음", gap: "자리 없음", not_required: "요구 안 됨"};
-const MARK_CLS = {present: "", missing: "missing", gap: "muted", not_required: "muted"};      // 원문 구절의 색
+const STATUS_KO = {present: "있음", partial: "부분 대응", missing: "비어 있음", gap: "자리 없음", not_required: "요구 안 됨", unknown: "판단 못 함"};
+const MARK_CLS = {present: "", partial: "partial", missing: "missing", gap: "missing", not_required: "muted", unknown: "muted"};      // 원문 구절의 색
 const $ = (sel) => root.querySelector(sel);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
 const regOf = (id) => REG_NAME[id.split("-")[1]] || id.split("-")[1];
 const vclass = (v) => "v-" + v.replace(/\s/g, "");
 let cards = [], cardById = {}, vocab = {}, profile = {}, targets = {}, judgIndex = [];
+let pending = new Set(), partial = {}, profileApproved = true;      // 승인 안 된 줄, 부분 대응 줄(개념 → 이유), 프로파일 승인 여부
 const KIND_KO = {system: "시스템", model: "모델", dataset: "데이터셋", software: "소프트웨어"};
+const RISK_KO = {high_risk: "고위험 AI 시스템", limited_risk: "제한 위험", minimal_risk: "최소 위험", gpai: "범용 AI 모델", gpai_systemic: "범용 AI 모델 (체계적 위험)", any: "모든 AI 시스템"};
+const ROLE_KO = {provider: "제공자", deployer: "배포자", importer: "수입자", distributor: "유통자", authorised_representative: "수권대리인", operator: "운영자", organisation: "조직"};
+let currentBom = null, currentName = "";          // 올린 BOM (시스템 프로파일을 바꾸면 다시 판정한다). 예제는 미리 판정한 기록이라 null
 
 async function load(name) { const r = await fetch(BASE + name); if (!r.ok) throw new Error(name); return r.json(); }
 
@@ -21,10 +25,13 @@ async function init() {
   cards = c; cardById = Object.fromEntries(c.map((x) => [x.card_id, x])); vocab = Object.fromEntries(v.concepts.map((x) => [x.id, x])); judgIndex = j;
   if (src.cards === "gold") { const n = document.createElement("p"); n.className = "cv-note"; n.textContent = "지금 판정에 쓰는 카드는 요구사항 표에서 변환한 정답 카드(cards/gold)다. 승인한 카드가 생기면 그것으로 바뀐다."; root.prepend(n); }
   targets = p.targets || {};                          // fact 의 target(대상 구성요소 종류)을 BOM 에서 찾는 법
+  profileApproved = p.status === "approved";
   for (const line of p.lines) {                       // 개념별 줄: concept → {cdx: [...], spdx: [...]}
     const e = (profile[line.concept] ||= {cdx: [], spdx: []});
     for (const x of [line.cdx_path, ...(line.cdx_paths_more || [])]) if (x && !e.cdx.includes(x)) e.cdx.push(x);
     for (const x of [line.spdx_path, ...(line.spdx_paths_more || [])]) if (x && !e.spdx.includes(x)) e.spdx.push(x);
+    if (line.status === "pending_review") pending.add(line.concept);
+    if (line.fit === "partial") partial[line.concept] = line.fit_note || "부분 대응 (경로의 대상 범위 또는 표현 형태가 요구와 다름)";
   }
   initJudgment();
 }
@@ -85,16 +92,29 @@ let currentRecord = null;
 function initJudgment() {
   const sel = $("#cv-bom");
   sel.innerHTML = judgIndex.map((j, i) => `<option value="${i}">${esc(j.subject)} (${esc(j.file)})</option>`).join("") || `<option value="">예제 BOM 없음</option>`;
-  sel.addEventListener("change", async () => { const j = judgIndex[+sel.value]; if (j) showRecord(await load("judgments/" + j.file)); });
+  sel.addEventListener("change", async () => { const j = judgIndex[+sel.value]; if (j) { currentBom = null; showRecord(await load("judgments/" + j.file)); } });
   regSelect($("#cv-reg"), () => { renderSummary(); renderJudgList(); });
   $("#cv-verdict-filter").addEventListener("change", renderJudgList);
   $("#cv-bom-file").addEventListener("change", async (ev) => {
     const file = ev.target.files[0]; if (!file) return;
-    try { const bom = JSON.parse(await file.text()); showRecord(judgeBom(bom, file.name)); sel.value = ""; }
+    try { currentBom = JSON.parse(await file.text()); currentName = file.name; setProfileInputs(null); showRecord(judgeBom(currentBom, currentName, systemProfile())); sel.value = ""; }
     catch (err) { $("#cv-judg-summary").innerHTML = `<span class="cv-chip gap">읽을 수 없는 파일: ${esc(err.message)}</span>`; }
   });
+  for (const id of ["#cv-risk", "#cv-role"]) $(id).addEventListener("change", () => { if (currentBom) showRecord(judgeBom(currentBom, currentName, systemProfile())); });
   if (judgIndex.length) sel.dispatchEvent(new Event("change"));
 }
+// 시스템 프로파일 (특허 2층): 위험등급과 역할. 올린 BOM 은 선택 칸에서 읽고, 예제는 기록에 적힌 것을 보여 주기만 한다
+function systemProfile() {
+  const risk = $("#cv-risk").value, role = $("#cv-role").value;
+  return {...(risk ? {risk_class: [risk]} : {}), ...(role ? {role} : {})};
+}
+function setProfileInputs(system) {                   // system 이 있으면(예제) 그 값으로 고정, 없으면(올린 BOM) 고르게 둔다
+  const fixed = !!system;
+  $("#cv-risk").value = fixed ? ((system.risk_class || [])[0] || "") : $("#cv-risk").value;
+  $("#cv-role").value = fixed ? (system.role || "") : $("#cv-role").value;
+  $("#cv-risk").disabled = fixed; $("#cv-role").disabled = fixed;
+}
+const profileText = (system) => { const r = (system?.risk_class || []).map((x) => RISK_KO[x] || x).join("+"), o = system?.role ? (ROLE_KO[system.role] || system.role) : ""; return r || o ? [r, o].filter(Boolean).join(" · ") : "없음"; }
 function regCards() {                                 // 고른 규제의 카드 판정
   const reg = $("#cv-reg").value;
   return currentRecord.cards.filter((r) => !reg || r.card_id.startsWith("RC-" + reg + "-"));
@@ -114,13 +134,13 @@ function clauseGroups(rs) {                           // 판정 목록 → [{cla
   for (const r of rs) { const key = regOf(r.card_id) + "|" + clauseOf(r.card_id); if (!groups.has(key)) groups.set(key, {clause: clauseOf(r.card_id), reg: regOf(r.card_id), cards: []}); groups.get(key).cards.push(r); }
   return [...groups.values()].map((g) => ({...g, verdict: aggregate(g.cards.map((r) => r.verdict))}));
 }
-function showRecord(rec) { currentRecord = rec; renderSummary(); renderJudgList(); }
+function showRecord(rec) { currentRecord = rec; if (!currentBom) setProfileInputs(rec.system_profile || {}); renderSummary(); renderJudgList(); }
 function renderSummary() {
   if (!currentRecord) return;
   const rec = currentRecord, rs = regCards(), total = rs.length, groups = clauseGroups(rs);
   const s = Object.fromEntries(VERDICTS.map((v) => [v, rs.filter((r) => r.verdict === v).length]));
   const cs = Object.fromEntries(VERDICTS.map((v) => [v, groups.filter((g) => g.verdict === v).length]));
-  $("#cv-judg-summary").innerHTML = `<div class="cv-stat"><b>${esc(rec.bom.subject || rec.bom.serialNumber || "")}</b>카드 ${total}장 (조항 ${groups.length}개) · ${esc(rec.bom.bomFormat)} ${esc(rec.bom.specVersion)}</div>`
+  $("#cv-judg-summary").innerHTML = `<div class="cv-stat"><b>${esc(rec.bom.subject || rec.bom.serialNumber || "")}</b>카드 ${total}장 (조항 ${groups.length}개) · ${esc(rec.bom.bomFormat)} ${esc(rec.bom.specVersion)} · 시스템 프로파일 ${esc(profileText(rec.system_profile))}${!rec.system_profile || (!rec.system_profile.risk_class && !rec.system_profile.role) ? ' <span class="cv-muted">(위험등급·역할을 보는 조항은 검토 필요)</span>' : ""}</div>`
     + VERDICTS.map((v) => `<div class="cv-stat"><span class="cv-verdict ${vclass(v)}">${v}</span> <b>${s[v]}</b><span class="cv-muted"> · 조항 ${cs[v]}</span></div>`).join("")
     + `<div class="cv-bar" style="flex-basis:100%">${VERDICTS.map((v) => `<span class="${vclass(v)}" style="width:${100 * s[v] / Math.max(total, 1)}%"></span>`).join("")}</div>`;
 }
@@ -137,7 +157,7 @@ function renderJudgList() {
       const h = document.createElement("div"); h.className = "cv-clause"; h.innerHTML = `<span class="cv-id">${esc(g.clause)}</span><span class="cv-sub"><span class="cv-verdict ${vclass(g.verdict)}">${g.verdict}</span> 종합</span>`; container.appendChild(h);
     }
     for (const r of g.cards) {
-      const f = r.facts || []; const p = f.filter((x) => x.status === "present").length, n = f.filter((x) => x.status === "gap" || x.status === "not_required").length;
+      const f = r.facts || []; const p = f.filter((x) => x.status === "present").length, n = f.filter((x) => x.status === "not_required").length;
       const row = document.createElement("div"); row.className = "cv-item" + (g.cards.length > 1 ? " cv-point" : ""); row.dataset.id = r.card_id;
       row.innerHTML = `<span class="cv-id">${esc(cardById[r.card_id]?.source?.clause_id || r.card_id.replace(/^RC-[A-Z0-9]+-/, ""))}</span><span class="cv-sub"><span class="cv-verdict ${vclass(r.verdict)}">${r.verdict}</span> ${p}/${f.length - n}</span>`;
       row.addEventListener("click", () => { container.querySelectorAll(".cv-item").forEach((x) => x.classList.toggle("active", x === row)); renderJudg(r); });
@@ -159,9 +179,9 @@ function renderJudg(r) {
     </div>
     ${r.reason ? `<p class="cv-note">${esc(r.reason)}</p>` : ""}
     ${text ? `<div class="cv-text">${highlightText(text, spans)}${ko ? `<span class="cv-trans">${esc(ko)}</span>` : ""}</div>
-      <p class="cv-note">칠한 구절이 조항이 요구하는 사실이다. 초록은 BOM 에 있음, 빨강은 비어 있음, 회색은 BOM 형식에 자리가 없거나 이 BOM 에는 요구되지 않음.</p>`
+      <p class="cv-note">칠한 구절이 조항이 요구하는 사실이다. 초록은 BOM 에 있음, 노랑은 부분 대응, 빨강은 비어 있거나 BOM 형식에 자리가 없음, 회색은 이 BOM 에는 요구되지 않거나 판단할 정보가 없음.</p>`
       : `<p class="cv-note">이 규제의 원문은 저작권 때문에 싣지 않는다. 요구 사실과 필드만 보인다.</p>`}
-    ${r.conditions ? `<h4>조건</h4><ul>${Object.entries(r.conditions).map(([k, c]) => `<li><code>${esc(k)}</code> ${esc(c.text)} → <b>${c.result === null || c.result === undefined ? "평가 못 함 (조건식 없음)" : c.result ? "참" : "거짓"}</b></li>`).join("")}</ul>` : ""}
+    ${r.conditions ? `<h4>조건</h4><ul>${Object.entries(r.conditions).map(([k, c]) => `<li><code>${esc(k)}</code> ${esc(c.text)} → <b>${!c.evaluated ? "평가 못 함 (조건식 없음)" : c.result === null || c.result === undefined ? "모름 (판단할 정보 없음)" : c.result ? "참" : "거짓"}</b></li>`).join("")}</ul>` : ""}
     <h4>조항이 요구하는 사실 (${facts.length})</h4>
     <table class="cv-facts"><thead><tr><th>상태</th><th>사실</th><th>BOM 필드</th><th>값이 있는 구성요소</th></tr></thead><tbody>
     ${facts.map((f, i) => `<tr data-idx="${i}"><td><span class="cv-chip ${f.status}">${STATUS_KO[f.status] || f.status}</span>
@@ -170,7 +190,7 @@ function renderJudg(r) {
       <td>${(f.paths || []).map((p) => `<span class="cv-path">${esc(p)}</span>`).join(" ") || `<span class="cv-muted">${esc(f.reason || "")}</span>`}</td>
       <td>${[...new Set(Object.values(f.found_at || {}).flat())].map((x) => `<code>${esc(x)}</code>`).join(" ")}${targetDetail(f)}</td></tr>`).join("")}
     </tbody></table>
-    <p class="cv-note">"비어 있음" 의 필드가 채울 자리다. 조건식(JSON Logic)이 있는 조항은 조건이 거짓이면 그 사실을 "요구 안 됨" 으로 뺀다. 대상 구성요소가 정해진 사실은 그 종류의 구성요소마다 보고(조건도 구성요소마다), 값이 빠진 구성요소를 적는다. 증빙 검사는 아직 없다.</p>`;
+    <p class="cv-note">"비어 있음" 과 "자리 없음" 이 누락이고, 비어 있음의 필드가 채울 자리다. "부분 대응" 은 값은 있지만 필드의 대상 범위나 표현 형태가 요구와 달라 부분 반영까지만 간다. 조건식(JSON Logic)이 있는 조항은 조건이 거짓이면 그 사실을 "요구 안 됨" 으로 빼고, 조건을 판단할 정보가 BOM 에 없으면(자리 자체가 없음) "판단 못 함" 이라 검토 필요다. 대상 구성요소가 정해진 사실은 그 종류의 구성요소마다 보고(조건도 구성요소마다), 값이 빠진 구성요소를 적는다. 증빙 검사는 아직 없다.</p>`;
   wireMarks(d);
 }
 // 대상 구성요소가 정해진 fact: 구성요소별 조건과 빠진 구성요소
@@ -185,16 +205,45 @@ function targetDetail(f) {
 
 // 브라우저 안 판정 (cards/judge/judge.py 와 같은 규칙). 검사 대상은 metadata.component 와 모델·데이터셋 구성요소.
 // fact 에 target 이 있으면 프로파일의 targets 로 그 종류의 구성요소를 찾아 하나씩 본다 (조건도 구성요소마다).
-function judgeBom(bom, name) {
+// 조건 변수는 값이 있으면 참, 자리는 있는데 비면 거짓, 자리 자체가 없으면 모름(null)이고, 모름이면 그 사실은 unknown 이라 카드가 검토 필요다.
+// 카드가 이 시스템에 적용되나 (judge.py 의 applicability): "applies" / "not_applies" / "unknown". 카드의 risk_class 가 any 면 위험등급을 안 보고,
+// 주체가 organisation(NIST·ISO)이면 역할을 안 본다. 보는 칸이 프로파일에 없으면 unknown (검토 필요).
+function applicability(card, system) {
+  const wanted = new Set(card.applicability?.risk_class || ["any"]), actor = card.obligation?.actor || "organisation";
+  const missing = [], mismatch = [];
+  if (!wanted.has("any")) {
+    const have = new Set(Array.isArray(system.risk_class) ? system.risk_class : system.risk_class ? [system.risk_class] : []);
+    if (have.has("gpai_systemic")) have.add("gpai");
+    if (!have.size) missing.push("위험등급(risk_class)");
+    else if (![...wanted].some((x) => have.has(x))) mismatch.push(`카드의 위험등급 ${[...wanted].sort().join(", ")} 과 시스템의 ${[...have].sort().join(", ")} 이 안 맞음`);
+  }
+  if (actor !== "organisation") {
+    if (!system.role) missing.push("역할(role)");
+    else if (system.role !== actor) mismatch.push(`카드의 주체 ${actor} 와 시스템의 역할 ${system.role} 이 안 맞음`);
+  }
+  if (mismatch.length) return ["not_applies", mismatch.join("; ")];
+  if (missing.length) return ["unknown", `시스템 프로파일에 ${missing.join("·")} 이 없어 적용 여부를 알 수 없음`];
+  return ["applies", null];
+}
+function judgeBom(bom, name, system = {}) {
   const comps = [];
   if (bom.metadata?.component) comps.push(bom.metadata.component);
   (function walk(items) { for (const c of items || []) { if (c.type === "machine-learning-model" || c.type === "data") comps.push(c); walk(c.components); } })(bom.components);
+  const isEmpty = (v) => v === null || v === undefined || v === "" || (Array.isArray(v) && !v.length) || (typeof v === "object" && !Array.isArray(v) && !Object.keys(v).length);
   const get = (obj, keys) => {
-    if (!keys.length) return obj === null || obj === undefined || obj === "" || (Array.isArray(obj) && !obj.length) || (typeof obj === "object" && !Array.isArray(obj) && !Object.keys(obj).length) ? [] : [obj];
+    if (!keys.length) return isEmpty(obj) ? [] : [obj];
     if (Array.isArray(obj)) return obj.flatMap((x) => get(x, keys));
     if (obj && typeof obj === "object" && keys[0] in obj) return get(obj[keys[0]], keys.slice(1));
     return [];
   };
+  // 값 상태 (judge.py 의 _probe): value 값 있음, empty 자리는 있는데 비어 있음, absent 자리 자체가 없음. 배열은 value > empty > absent 로 합친다
+  const probe = (obj, keys) => {
+    if (!keys.length) return isEmpty(obj) ? "empty" : "value";
+    if (Array.isArray(obj)) { const st = obj.map((x) => probe(x, keys)); return st.includes("value") ? "value" : st.includes("empty") ? "empty" : "absent"; }
+    if (obj && typeof obj === "object") return keys[0] in obj ? probe(obj[keys[0]], keys.slice(1)) : "absent";
+    return "absent";
+  };
+  const tri = (states) => states.includes("value") ? true : states.includes("empty") ? false : null;
   const lab = (c) => c["bom-ref"] || c.name || "?";
   const allComps = [];
   (function walk(items) { for (const c of items || []) { allComps.push(c); walk(c.components); } })(bom.components);
@@ -212,58 +261,68 @@ function judgeBom(bom, name) {
     if (["components", "services", "dependencies", "formulation", "declarations", "definitions", "metadata", "compositions"].includes(rootKey)) return get(bom, [rootKey, ...rest]).length ? ["$"] : [];
     return [];
   };
-  // 구성요소 하나에 그 경로의 값이 있나. 구성요소에 달리지 않는 경로(declarations 등)는 문서에서 본다
-  const onComp = (c, path) => {
-    if (path.startsWith("component.externalReferences.url (type:")) { const t = path.split("type:")[1].replace(/\)$/, ""); return (c.externalReferences || []).some((e) => e.type === t && e.url); }
+  // 구성요소 하나에 그 경로의 값이 있나 (value / empty / absent). 구성요소에 달리지 않는 경로(declarations 등)는 문서에서 본다
+  const probeComp = (c, path) => {
+    if (path.startsWith("component.externalReferences.url (type:")) { const t = path.split("type:")[1].replace(/\)$/, ""); const refs = c.externalReferences; if (refs === undefined || refs === null) return "absent"; return refs.some((e) => e.type === t && e.url) ? "value" : "empty"; }
     const [rootKey, ...rest] = path.split(".");
-    if (rootKey === "component") return get(c, rest).length > 0;
-    if (rootKey === "componentData") return c.type === "data" && get(c.data, rest).length > 0;
-    if (rootKey === "releaseNotes") return get(c, ["releaseNotes", ...rest]).length > 0;
-    if (rootKey === "components" && !rest.length) return allComps.includes(c);      // 구성요소 목록 자체: 실려 있으면 참
-    return resolve(path).length > 0;
+    if (rootKey === "component") return probe(c, rest);
+    if (rootKey === "componentData") return c.type === "data" && "data" in c ? probe(c.data, rest) : "absent";
+    if (rootKey === "releaseNotes") return probe(c, ["releaseNotes", ...rest]);
+    if (rootKey === "components" && !rest.length) return allComps.includes(c) ? "value" : "empty";      // 구성요소 목록 자체: 실려 있으면 참
+    return resolve(path).length ? "value" : "absent";
   };
-  // 조건식 변수(개념 id): 그 개념의 프로파일 경로(어느 카드든)에 BOM 값이 있으면 참. target 이 있는 fact 는 구성요소 하나에서 본다
-  const presentInBom = (k) => (profile[k]?.cdx || []).some((p) => resolve(p).length);
-  const logic = (expr, varOf = presentInBom) => {
+  const onComp = (c, path) => probeComp(c, path) === "value";
+  // 조건식 변수(개념 id): 문서 단위 참·거짓·모름. target 이 있는 fact 는 구성요소 하나에서 본다
+  const stateInBom = (k) => tri(comps.flatMap((c) => (profile[k]?.cdx || []).map((p) => probeComp(c, p))));
+  const logic = (expr, varOf = stateInBom) => {
     if (expr === null || typeof expr !== "object" || Array.isArray(expr)) return expr;
     const [op, raw] = Object.entries(expr)[0]; const args = Array.isArray(raw) ? raw : [raw];
     if (op === "var") return varOf(args[0]);
-    const v = args.map((a) => logic(a, varOf));
+    const v = args.map((a) => logic(a, varOf)), unk = v.some((x) => x === null || x === undefined);
     switch (op) {
-      case "==": return v[0] === v[1]; case "!=": return v[0] !== v[1]; case "!": return !v[0];
-      case "and": return v.every(Boolean); case "or": return v.some(Boolean);
-      case "if": return v[0] ? v[1] : v[2]; case "in": return (v[1] || []).includes(v[0]);
-      case ">": return v[0] > v[1]; case "<": return v[0] < v[1]; case ">=": return v[0] >= v[1]; case "<=": return v[0] <= v[1];
+      case "==": return unk ? null : v[0] === v[1]; case "!=": return unk ? null : v[0] !== v[1]; case "!": return unk ? null : !v[0];
+      case "and": return v.some((x) => x === false) ? false : unk ? null : true;
+      case "or": return v.some((x) => x === true) ? true : unk ? null : false;
+      case "if": return v[0] === null || v[0] === undefined ? null : v[0] ? v[1] : v[2];
+      case "in": return unk ? null : (v[1] || []).includes(v[0]);
+      case ">": return unk ? null : v[0] > v[1]; case "<": return unk ? null : v[0] < v[1]; case ">=": return unk ? null : v[0] >= v[1]; case "<=": return unk ? null : v[0] <= v[1];
       default: throw new Error("조건식 연산자를 모른다: " + op);
     }
   };
   const results = cards.map((c) => {
+    const [applies, whyApplies] = applicability(c, system);
+    if (applies === "not_applies") return {card_id: c.card_id, verdict: "비적용", reason: whyApplies, facts: []};
     const conditions = {};
     for (const cond of c.conditions || []) {
-      if (cond.expr) { try { conditions[cond.id] = {text: cond.text, result: !!logic(cond.expr)}; } catch (e) { conditions[cond.id] = {text: cond.text, result: null, error: e.message}; } }
-      else conditions[cond.id] = {text: cond.text, result: null};
+      if (cond.expr) { try { conditions[cond.id] = {text: cond.text, evaluated: true, result: logic(cond.expr)}; } catch (e) { conditions[cond.id] = {text: cond.text, evaluated: true, result: null, error: e.message}; } }
+      else conditions[cond.id] = {text: cond.text, evaluated: false, result: null};
     }
     const byId = Object.fromEntries((c.conditions || []).map((x) => [x.id, x]));
     const onTargets = (f, paths, entry) => {            // judge.py 의 judge_on_targets
-      const kind = f.target, comps = compsOfKind(kind);
-      entry.target = kind; let required = comps;
+      const kind = f.target, kcomps = compsOfKind(kind);
+      entry.target = kind; let required = kcomps;
       if (f.required === "conditional") {
         const expr = byId[f.condition]?.expr;
         entry.condition = f.condition; entry.condition_evaluated = expr !== undefined && expr !== null;
         if (entry.condition_evaluated) {
-          const vals = comps.map((x) => { try { return [x, !!logic(expr, (k) => (profile[k]?.cdx || []).some((p) => onComp(x, p)))]; } catch (e) { return [x, null]; } });
+          const vals = kcomps.map((x) => { try { return [x, logic(expr, (k) => tri((profile[k]?.cdx || []).map((p) => probeComp(x, p))))]; } catch (e) { return [x, null]; } });
           entry.condition_on = Object.fromEntries(vals.map(([x, v]) => [lab(x), v]));
-          required = vals.filter(([, v]) => v !== false).map(([x]) => x);
+          const unknown = vals.filter(([, v]) => v === null || v === undefined).map(([x]) => x);
+          if (unknown.length) return {...entry, status: "unknown", paths, reason: `조건 ${f.condition} 을 판단할 정보가 없는 ${KIND_KO[kind]} 구성요소: ${unknown.slice(0, 10).map(lab).join(", ")} (${byId[f.condition]?.text})`};
+          required = vals.filter(([, v]) => v === true).map(([x]) => x);
           if (!required.length) return {...entry, status: "not_required", paths, reason: `조건 ${f.condition} 이 참인 ${KIND_KO[kind]} 구성요소가 없음: ${byId[f.condition]?.text}`};
         }
       }
+      if (pending.has(f.concept)) return {...entry, status: "unknown", paths, reason: "매핑이 승인되지 않음 (프로파일 줄이 pending_review)"};
       if (!paths.length) return {...entry, status: "gap", paths: [], reason: "프로파일에 경로 없음 (스키마에 자리 없음)"};
       entry.checked = required.length;
       if (!required.length) return {...entry, status: "missing", paths, found_at: {}, reason: `BOM 에 ${KIND_KO[kind]} 구성요소가 없음`};
       const have = required.filter((x) => paths.some((p) => onComp(x, p))), missing = required.filter((x) => !have.includes(x));
       const found = {}; for (const p of paths) { const refs = have.filter((x) => onComp(x, p)).map(lab).slice(0, 10); if (refs.length) found[p] = refs; }
-      const out = {...entry, status: missing.length ? "missing" : "present", paths, found_at: found};
+      const status = missing.length ? "missing" : partial[f.concept] ? "partial" : "present";
+      const out = {...entry, status, paths, found_at: found};
       if (missing.length) Object.assign(out, {missing_on: missing.map(lab).slice(0, 10), missing_count: missing.length, reason: `요구되는 ${KIND_KO[kind]} 구성요소 ${required.length}개 중 ${missing.length}개에 값이 없음`});
+      else if (status === "partial") out.reason = partial[f.concept];
       return out;
     };
     const facts = c.facts.map((f) => {
@@ -272,19 +331,29 @@ function judgeBom(bom, name) {
       if (f.target) return onTargets(f, paths, entry);
       if (f.required === "conditional") {
         const cond = conditions[f.condition] || {};
-        entry.condition = f.condition; entry.condition_evaluated = cond.result !== null && cond.result !== undefined;
+        entry.condition = f.condition; entry.condition_evaluated = !!cond.evaluated;
+        if (cond.evaluated && (cond.result === null || cond.result === undefined)) return {...entry, status: "unknown", paths, reason: `조건 ${f.condition} 을 판단할 정보가 BOM 에 없음: ${cond.text}` + (cond.error ? ` (${cond.error})` : "")};
         if (cond.result === false) return {...entry, status: "not_required", paths, reason: `조건 ${f.condition} 이 거짓이라 요구되지 않음: ${cond.text}`};
       }
+      if (pending.has(f.concept)) return {...entry, status: "unknown", paths, reason: "매핑이 승인되지 않음 (프로파일 줄이 pending_review)"};
       if (!paths.length) return {...entry, status: "gap", paths: [], reason: "프로파일에 경로 없음 (스키마에 자리 없음)"};
       const found = {}; for (const p of paths) { const refs = resolve(p); if (refs.length) found[p] = refs.slice(0, 5); }
-      return {...entry, status: Object.keys(found).length ? "present" : "missing", paths, found_at: found};
+      const status = !Object.keys(found).length ? "missing" : partial[f.concept] ? "partial" : "present";
+      return {...entry, status, paths, found_at: found, ...(status === "partial" ? {reason: partial[f.concept]} : {})};
     });
-    const checkable = facts.filter((f) => f.status !== "gap" && f.status !== "not_required"), present = checkable.filter((f) => f.status === "present");
-    const verdict = !checkable.length ? "검토 필요" : present.length === checkable.length ? "반영" : present.length ? "부분 반영" : "미반영";
-    return {card_id: c.card_id, verdict, facts, ...(Object.keys(conditions).length ? {conditions} : {})};
+    const required = facts.filter((f) => f.status !== "not_required"), unknown = required.filter((f) => f.status === "unknown");
+    let verdict, reason;
+    if (applies === "unknown") { verdict = "검토 필요"; reason = whyApplies; }
+    else if (!profileApproved) { verdict = "검토 필요"; reason = "매핑 프로파일이 승인되지 않음"; }
+    else if (unknown.length) { verdict = "검토 필요"; reason = unknown.map((f) => `${f.concept}: ${f.reason}`).join("; "); }
+    else if (!required.length) { verdict = "반영"; reason = "요구되는 사실이 없음 (조건이 모두 거짓)"; }
+    else if (required.every((f) => f.status === "present")) verdict = "반영";
+    else if (required.every((f) => f.status === "missing" || f.status === "gap")) verdict = "미반영";
+    else verdict = "부분 반영";
+    return {card_id: c.card_id, verdict, ...(reason ? {reason} : {}), facts, ...(Object.keys(conditions).length ? {conditions} : {})};
   });
   const summary = Object.fromEntries(VERDICTS.map((v) => [v, results.filter((r) => r.verdict === v).length]));
-  return {bom: {bomFormat: bom.bomFormat, specVersion: bom.specVersion, serialNumber: bom.serialNumber, subject: bom.metadata?.component?.name || name}, summary, cards: results};
+  return {bom: {bomFormat: bom.bomFormat, specVersion: bom.specVersion, serialNumber: bom.serialNumber, subject: bom.metadata?.component?.name || name}, system_profile: system, summary, cards: results};
 }
 
 init().catch((err) => { root.innerHTML = `<p class="cv-muted">데이터를 읽지 못했다: ${esc(err.message)}</p>`; });

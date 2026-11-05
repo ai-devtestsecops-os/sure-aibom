@@ -2,45 +2,69 @@
  {
   "file": "recruit-screening.json",
   "subject": "recruit-screening",
+  "system_profile": {
+   "risk_class": [
+    "high_risk"
+   ],
+   "role": "provider"
+  },
   "summary": {
-   "반영": 20,
-   "부분 반영": 24,
-   "미반영": 103,
-   "비적용": 0,
-   "검토 필요": 43
+   "반영": 7,
+   "부분 반영": 25,
+   "미반영": 117,
+   "비적용": 41,
+   "검토 필요": 0
   }
  },
  {
   "file": "aiapp-demo.v0.6.json",
   "subject": "aiapp:demo",
+  "system_profile": {
+   "risk_class": [
+    "high_risk"
+   ],
+   "role": "provider"
+  },
   "summary": {
-   "반영": 47,
-   "부분 반영": 24,
-   "미반영": 76,
-   "비적용": 0,
-   "검토 필요": 43
+   "반영": 20,
+   "부분 반영": 28,
+   "미반영": 100,
+   "비적용": 41,
+   "검토 필요": 1
   }
  },
  {
   "file": "nanoGPT.v0.6.json",
   "subject": "nanoGPT",
+  "system_profile": {
+   "risk_class": [
+    "gpai"
+   ],
+   "role": "provider"
+  },
   "summary": {
-   "반영": 18,
-   "부분 반영": 16,
-   "미반영": 113,
-   "비적용": 0,
-   "검토 필요": 43
+   "반영": 8,
+   "부분 반영": 7,
+   "미반영": 66,
+   "비적용": 109,
+   "검토 필요": 0
   }
  },
  {
   "file": "python-slim.v0.6.json",
   "subject": "python:3.12-slim",
+  "system_profile": {
+   "risk_class": [
+    "minimal_risk"
+   ],
+   "role": "provider"
+  },
   "summary": {
-   "반영": 3,
-   "부분 반영": 9,
-   "미반영": 135,
-   "비적용": 0,
-   "검토 필요": 43
+   "반영": 0,
+   "부분 반영": 2,
+   "미반영": 46,
+   "비적용": 142,
+   "검토 필요": 0
   }
  }
 ]

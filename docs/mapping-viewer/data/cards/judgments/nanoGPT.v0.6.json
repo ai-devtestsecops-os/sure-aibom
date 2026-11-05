@@ -1,6 +1,6 @@
 {
- "engine_version": "0.5.0",
- "run_at": "2026-11-05T06:40:13Z",
+ "engine_version": "0.7.0",
+ "run_at": "2026-11-05T07:30:03Z",
  "bom": {
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
@@ -45,2386 +45,443 @@
    }
   }
  },
- "system_profile": {},
+ "system_profile": {
+  "risk_class": [
+   "gpai"
+  ],
+  "role": "provider"
+ },
  "checks": {
+  "applicability": "시스템 프로파일의 위험등급·역할. 카드가 보는 칸이 없으면 검토 필요",
   "path_existence": true,
-  "conditions": "카드에 조건식(expr)이 있는 것만",
+  "conditions": "카드에 조건식(expr)이 있는 것만. 변수 자리가 없으면 모름이라 검토 필요",
   "targets": "fact 에 target 이 있으면 그 종류의 구성요소마다 (조건도 구성요소마다)",
+  "approval": "프로파일과 줄의 승인 상태 (승인 안 됐으면 검토 필요)",
+  "fit": "프로파일 줄의 fit: partial 은 부분 반영",
   "evidence": false
  },
  "summary": {
-  "반영": 18,
-  "부분 반영": 16,
-  "미반영": 113,
-  "비적용": 0,
-  "검토 필요": 43
+  "반영": 8,
+  "부분 반영": 7,
+  "미반영": 66,
+  "비적용": 109,
+  "검토 필요": 0
  },
  "clause_summary": {
-  "반영": 11,
-  "부분 반영": 17,
-  "미반영": 72,
-  "비적용": 0,
-  "검토 필요": 29
+  "반영": 4,
+  "부분 반영": 7,
+  "미반영": 48,
+  "비적용": 70,
+  "검토 필요": 0
  },
  "cards": [
   {
    "card_id": "RC-EUAIA-Annex-IV-1-a",
    "card_version": 2,
    "title": "Annex IV(1)(a): 모델 구조·과업",
-   "verdict": "부분 반영",
-   "facts": [
-    {
-     "concept": "USE_CASES",
-     "label": "의도된 용도",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.useCases"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "COMPONENT_SUPPLIER",
-     "label": "공급자",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.supplier"
-     ],
-     "found_at": {
-      "component.supplier": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "COMPONENT_VERSION",
-     "label": "버전",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.version"
-     ],
-     "found_at": {
-      "component.version": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "USE_CASES",
-     "label": "의도된 용도",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.useCases"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-1-b",
    "card_version": 2,
    "title": "Annex IV(1)(b): 모델 구조·과업",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    },
-    "C3": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "TECHNICAL_REQUIREMENTS",
-     "label": "소프트웨어 구동 정보",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.technicalRequirements"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "TECHNICAL_REQUIREMENTS",
-     "label": "소프트웨어 구동 정보",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.technicalRequirements"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-1-c",
    "card_version": 2,
    "title": "Annex IV(1)(c): 모델 구조·과업",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "COMPONENTS",
-     "label": "구성요소 목록",
-     "required": "always",
-     "target": "software",
-     "checked": 0,
-     "status": "missing",
-     "paths": [
-      "components"
-     ],
-     "found_at": {},
-     "reason": "BOM 에 소프트웨어 구성요소가 없음"
-    },
-    {
-     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
-     "label": "배포 형태·버전 갱신 요건",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "COMPONENTS",
-     "label": "구성요소 목록",
-     "kind": "missing",
-     "suggested_paths": [
-      "components"
-     ]
-    },
-    {
-     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
-     "label": "배포 형태·버전 갱신 요건",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-1-d",
    "card_version": 2,
    "title": "Annex IV(1)(d): 모델 구조·과업",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
-     "label": "배포 형태·버전 갱신 요건",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
-     "label": "배포 형태·버전 갱신 요건",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-1-e",
    "card_version": 2,
    "title": "Annex IV(1)(e): 모델 구조·과업",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "TECHNICAL_REQUIREMENTS",
-     "label": "소프트웨어 구동 정보",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.technicalRequirements"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "TECHNICAL_REQUIREMENTS",
-     "label": "소프트웨어 구동 정보",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.technicalRequirements"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-1-g",
    "card_version": 2,
    "title": "Annex IV(1)(g): 모델 구조·과업",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-1-h",
    "card_version": 2,
    "title": "Annex IV(1)(h): 기술문서",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    },
-    "C3": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "DOCUMENTATION_REF",
-     "label": "외부참조: 문서",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:documentation)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "DOCUMENTATION_REF",
-     "label": "외부참조: 문서",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:documentation)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-2-a",
    "card_version": 2,
    "title": "Annex IV(2)(a): 모델 구조·과업",
-   "conditions": {
-    "C1": {
-     "text": "where relevant",
-     "result": null
-    },
-    "C2": {
-     "text": "where relevant",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "PEDIGREE",
-     "label": "계보",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.pedigree"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "WORKFLOWS_TASKS",
-     "label": "형성: 태스크",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "formulation.workflows.tasks"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "PEDIGREE",
-     "label": "계보",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.pedigree"
-     ]
-    },
-    {
-     "concept": "WORKFLOWS_TASKS",
-     "label": "형성: 태스크",
-     "kind": "missing",
-     "suggested_paths": [
-      "formulation.workflows.tasks"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-2-b",
    "card_version": 2,
    "title": "Annex IV(2)(b): 모델 구조·과업 · 성능측정",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "HYPERPARAMETERS",
-     "label": "하이퍼파라미터",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.hyperparameters"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "ARCHITECTURE_FAMILY",
-     "label": "아키텍처 계열",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.architectureFamily"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "MODEL_ARCHITECTURE",
-     "label": "구체적 아키텍처",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.modelArchitecture"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "OUTPUTS",
-     "label": "출력 형식",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.outputs"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DESIGN_CHOICES",
-     "label": "시스템 설계 선택·절충",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DESIGN_CHOICES",
-     "label": "시스템 설계 선택·절충",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "OPTIMIZATION_TARGET",
-     "label": "최적화 목표",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.optimizationTarget"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "HYPERPARAMETERS",
-     "label": "하이퍼파라미터",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.hyperparameters"
-     ]
-    },
-    {
-     "concept": "ARCHITECTURE_FAMILY",
-     "label": "아키텍처 계열",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.architectureFamily"
-     ]
-    },
-    {
-     "concept": "MODEL_ARCHITECTURE",
-     "label": "구체적 아키텍처",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.modelArchitecture"
-     ]
-    },
-    {
-     "concept": "OUTPUTS",
-     "label": "출력 형식",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.outputs"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ]
-    },
-    {
-     "concept": "DESIGN_CHOICES",
-     "label": "시스템 설계 선택·절충",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
-     ]
-    },
-    {
-     "concept": "DESIGN_CHOICES",
-     "label": "시스템 설계 선택·절충",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
-     ]
-    },
-    {
-     "concept": "OPTIMIZATION_TARGET",
-     "label": "최적화 목표",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.optimizationTarget"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-2-c",
    "card_version": 2,
    "title": "Annex IV(2)(c): 모델 구조·과업",
-   "verdict": "부분 반영",
-   "facts": [
-    {
-     "concept": "DEPENDENCIES",
-     "label": "의존관계",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "dependencies"
-     ],
-     "found_at": {
-      "dependencies": [
-       "$"
-      ]
-     }
-    },
-    {
-     "concept": "SYSTEM_DEV_TEST_COMPUTE",
-     "label": "시스템 개발·시험 연산자원",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "TRAINING_COMPUTE",
-     "label": "모델 훈련 연산자원",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.trainingCompute"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "SYSTEM_DEV_TEST_COMPUTE",
-     "label": "시스템 개발·시험 연산자원",
-     "kind": "gap",
-     "suggested_paths": []
-    },
-    {
-     "concept": "TRAINING_COMPUTE",
-     "label": "모델 훈련 연산자원",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.trainingCompute"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-2-d",
    "card_version": 2,
    "title": "Annex IV(2)(d): 모델 구조·과업 · 데이터셋 수집·출처 · 데이터 전처리",
-   "conditions": {
-    "C1": {
-     "text": "where relevant",
-     "result": null
-    },
-    "C2": {
-     "text": "where relevant",
-     "result": null
-    }
-   },
-   "verdict": "부분 반영",
-   "facts": [
-    {
-     "concept": "TRAINING_TECHNIQUES",
-     "label": "학습 과정 정보",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.trainingTechniques"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "COLLECTION_PROCESS",
-     "label": "데이터 수집 절차",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "componentData.collectionProcess"
-     ],
-     "found_at": {
-      "componentData.collectionProcess": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "PREPROCESSING",
-     "label": "데이터 전처리",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.preprocessing"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "SIZE",
-     "label": "데이터셋 크기",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "componentData.size"
-     ],
-     "found_at": {
-      "componentData.size": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "MODALITY",
-     "label": "데이터셋 유형",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "componentData.modality"
-     ],
-     "found_at": {
-      "componentData.modality": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "DATASETS",
-     "label": "사용한 데이터셋",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.datasets"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PROVENANCE",
-     "label": "패키지 출처 정보",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "componentData.provenance"
-     ],
-     "found_at": {
-      "componentData.provenance": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "TRAINING_TECHNIQUES",
-     "label": "학습 과정 정보",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.trainingTechniques"
-     ]
-    },
-    {
-     "concept": "PREPROCESSING",
-     "label": "데이터 전처리",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.preprocessing"
-     ]
-    },
-    {
-     "concept": "DATASETS",
-     "label": "사용한 데이터셋",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.datasets"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-2-e",
    "card_version": 2,
    "title": "Annex IV(2)(e): 모델 구조·과업",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "EXPLAINABILITY_METHODS",
-     "label": "설명 방법",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.explainabilityMethods"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "kind": "gap",
-     "suggested_paths": []
-    },
-    {
-     "concept": "EXPLAINABILITY_METHODS",
-     "label": "설명 방법",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.explainabilityMethods"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-2-f",
    "card_version": 2,
    "title": "Annex IV(2)(f): 모델 구조·과업",
-   "conditions": {
-    "C3": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "PREDETERMINED_CHANGES",
-     "label": "사전 명세된 변경사항",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "PREDETERMINED_CHANGES",
-     "label": "사전 명세된 변경사항",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-2-g",
    "card_version": 2,
    "title": "Annex IV(2)(g): 성능측정 · 모델 구조·과업",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "WORKFLOWS_TASKS",
-     "label": "형성: 태스크",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "formulation.workflows.tasks"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "TEST_LOG_REPORT_REF",
-     "label": "시험 로그·보고서 참조",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ]
-    },
-    {
-     "concept": "WORKFLOWS_TASKS",
-     "label": "형성: 태스크",
-     "kind": "missing",
-     "suggested_paths": [
-      "formulation.workflows.tasks"
-     ]
-    },
-    {
-     "concept": "TEST_LOG_REPORT_REF",
-     "label": "시험 로그·보고서 참조",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-2-h",
    "card_version": 2,
    "title": "Annex IV(2)(h): 모델 구조·과업",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "APPLIED_CONTROLS",
-     "label": "적용한 통제",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "APPLIED_CONTROLS",
-     "label": "적용한 통제",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-3",
    "card_version": 1,
    "title": "Annex IV(3): 모델 한계·가정 · 성능측정",
-   "conditions": {
-    "C1": {
-     "text": "as appropriate",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "EXPLAINABILITY_METHODS",
-     "label": "설명 방법",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.explainabilityMethods"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_NAME",
-     "label": "위험의 이름",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.ethicalConsiderations.name"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "TECHNICAL_LIMITATIONS",
-     "label": "기술적 한계",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.technicalLimitations"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "INPUTS",
-     "label": "입력 형식",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.inputs"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_SLICE",
-     "label": "성능 지표 구간",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.slice"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "EXPLAINABILITY_METHODS",
-     "label": "설명 방법",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.explainabilityMethods"
-     ]
-    },
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_NAME",
-     "label": "위험의 이름",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.ethicalConsiderations.name"
-     ]
-    },
-    {
-     "concept": "TECHNICAL_LIMITATIONS",
-     "label": "기술적 한계",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.technicalLimitations"
-     ]
-    },
-    {
-     "concept": "INPUTS",
-     "label": "입력 형식",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.inputs"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_SLICE",
-     "label": "성능 지표 구간",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.slice"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ]
-    },
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-4",
    "card_version": 1,
    "title": "Annex IV(4): 성능측정 · 입증·검증",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DECLARATIONS_CLAIMS",
-     "label": "주장",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "declarations.claims"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DECLARATIONS_EVIDENCE",
-     "label": "증거",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "declarations.evidence"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ]
-    },
-    {
-     "concept": "DECLARATIONS_CLAIMS",
-     "label": "주장",
-     "kind": "missing",
-     "suggested_paths": [
-      "declarations.claims"
-     ]
-    },
-    {
-     "concept": "DECLARATIONS_EVIDENCE",
-     "label": "증거",
-     "kind": "missing",
-     "suggested_paths": [
-      "declarations.evidence"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-5",
    "card_version": 1,
    "title": "Annex IV(5): 위험·영향평가",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-6",
    "card_version": 1,
    "title": "Annex IV(6): 운용·유지관리",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "PEDIGREE_COMMITS",
-     "label": "계보: 커밋",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.pedigree.commits"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PEDIGREE_NOTES",
-     "label": "계보: 메모",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.pedigree.notes"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "PEDIGREE_COMMITS",
-     "label": "계보: 커밋",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.pedigree.commits"
-     ]
-    },
-    {
-     "concept": "PEDIGREE_NOTES",
-     "label": "계보: 메모",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.pedigree.notes"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-7",
    "card_version": 1,
    "title": "Annex IV(7): 표준 준수·대체 해결책",
-   "conditions": {
-    "C1": {
-     "text": "where no such harmonised standards have been applied",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "STANDARDS_NAME",
-     "label": "준수 표준",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "definitions.standards.name"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
-     "label": "표준 대체 준수 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "STANDARDS_NAME",
-     "label": "준수 표준",
-     "kind": "missing",
-     "suggested_paths": [
-      "definitions.standards.name"
-     ]
-    },
-    {
-     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
-     "label": "표준 대체 준수 수단",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IV-8",
    "card_version": 1,
    "title": "Annex IV(8): 적합성 증서·선언서",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "ATTESTATION_REF",
-     "label": "외부참조: 증명",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:attestation)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "ATTESTATION_REF",
-     "label": "외부참조: 증명",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:attestation)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-IX-3",
    "card_version": 1,
    "title": "Annex IX(3): 실세계시험 등록",
-   "verdict": "부분 반영",
-   "facts": [
-    {
-     "concept": "COMPONENT_CPE",
-     "label": "CPE 식별자",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.cpe"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "COMPONENT_DESCRIPTION",
-     "label": "구성요소 설명",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.description"
-     ],
-     "found_at": {
-      "component.description": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "USE_CASES",
-     "label": "의도된 용도",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.useCases"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "COMPONENT_PURL",
-     "label": "purl 식별자",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.purl"
-     ],
-     "found_at": {
-      "component.purl": [
-       "pkg:generic/ai/3.46",
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "COMPONENT_CPE",
-     "label": "CPE 식별자",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.cpe"
-     ]
-    },
-    {
-     "concept": "USE_CASES",
-     "label": "의도된 용도",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.useCases"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-V-1",
    "card_version": 1,
    "title": "Annex V(1): 적합성 증서·선언서",
-   "verdict": "부분 반영",
-   "facts": [
-    {
-     "concept": "COMPONENT_CPE",
-     "label": "CPE 식별자",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.cpe"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "COMPONENT_NAME",
-     "label": "구성요소 이름",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.name"
-     ],
-     "found_at": {
-      "component.name": [
-       "application:/nanoGPT@",
-       "pkg:generic/ai/3.46",
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "COMPONENT_PURL",
-     "label": "purl 식별자",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.purl"
-     ],
-     "found_at": {
-      "component.purl": [
-       "pkg:generic/ai/3.46",
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "COMPONENT_TYPE",
-     "label": "구성요소 유형",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.type"
-     ],
-     "found_at": {
-      "component.type": [
-       "application:/nanoGPT@",
-       "pkg:generic/ai/3.46",
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "COMPONENT_CPE",
-     "label": "CPE 식별자",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.cpe"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-V-2",
    "card_version": 1,
    "title": "Annex V(2): 적합성 증서·선언서",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "반영",
-   "facts": [
-    {
-     "concept": "COMPONENT_SUPPLIER",
-     "label": "공급자",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.supplier"
-     ],
-     "found_at": {
-      "component.supplier": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인",
-     "required": "conditional",
-     "condition": "C1",
-     "condition_evaluated": false,
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-V-6",
    "card_version": 1,
    "title": "Annex V(6): 표준 준수·대체 해결책",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "STANDARDS_NAME",
-     "label": "준수 표준",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "definitions.standards.name"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "STANDARDS_NAME",
-     "label": "준수 표준",
-     "kind": "missing",
-     "suggested_paths": [
-      "definitions.standards.name"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-V-7",
    "card_version": 1,
    "title": "Annex V(7): 적합성 증서·선언서",
-   "conditions": {
-    "C1": {
-     "text": "Where applicable",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "CERTIFICATION_REPORT_REF",
-     "label": "외부참조: 인증 보고서",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:certification-report)"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "CONFORMITY_ASSESSMENT_DECLARATION",
-     "label": "적합성평가절차·선언서 발급 정보",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "CERTIFICATION_REPORT_REF",
-     "label": "외부참조: 인증 보고서",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:certification-report)"
-     ]
-    },
-    {
-     "concept": "CONFORMITY_ASSESSMENT_DECLARATION",
-     "label": "적합성평가절차·선언서 발급 정보",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-V-8",
    "card_version": 1,
    "title": "Annex V(8): 적합성 증서·선언서",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "CONFORMITY_ASSESSMENT_DECLARATION",
-     "label": "적합성평가절차·선언서 발급 정보",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "CONFORMITY_ASSESSMENT_DECLARATION",
-     "label": "적합성평가절차·선언서 발급 정보",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-1",
    "card_version": 1,
    "title": "Annex VIII §A(1): 등록·배포 정보",
-   "verdict": "반영",
-   "facts": [
-    {
-     "concept": "COMPONENT_SUPPLIER",
-     "label": "공급자",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.supplier"
-     ],
-     "found_at": {
-      "component.supplier": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    }
-   ],
-   "gaps": []
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-10",
    "card_version": 1,
    "title": "Annex VIII §A(10): 등록·배포 정보",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "MARKET_STATUS_REGIONS",
-     "label": "시장 유통 상태·배포 지역",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "MARKET_STATUS_REGIONS",
-     "label": "시장 유통 상태·배포 지역",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-11",
    "card_version": 1,
    "title": "Annex VIII §A(11): 적합성 증서·선언서",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "ATTESTATION_REF",
-     "label": "외부참조: 증명",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:attestation)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "ATTESTATION_REF",
-     "label": "외부참조: 증명",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:attestation)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-12",
    "card_version": 1,
    "title": "Annex VIII §A(12): 기술문서",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "DOCUMENTATION_REF",
-     "label": "외부참조: 문서",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:documentation)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "DOCUMENTATION_REF",
-     "label": "외부참조: 문서",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:documentation)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-13",
    "card_version": 1,
    "title": "Annex VIII §A(13): 등록·배포 정보",
-   "verdict": "반영",
-   "facts": [
-    {
-     "concept": "WEBSITE_REF",
-     "label": "외부참조: 웹사이트",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.externalReferences.url (type:website)"
-     ],
-     "found_at": {
-      "component.externalReferences.url (type:website)": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    }
-   ],
-   "gaps": []
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-3",
    "card_version": 1,
    "title": "Annex VIII §A(3): 등록·배포 정보",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인",
-     "required": "conditional",
-     "condition": "C1",
-     "condition_evaluated": false,
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-4",
    "card_version": 1,
    "title": "Annex VIII §A(4): 등록·배포 정보",
-   "verdict": "부분 반영",
-   "facts": [
-    {
-     "concept": "COMPONENT_CPE",
-     "label": "CPE 식별자",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.cpe"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "COMPONENT_NAME",
-     "label": "구성요소 이름",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.name"
-     ],
-     "found_at": {
-      "component.name": [
-       "application:/nanoGPT@",
-       "pkg:generic/ai/3.46",
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "COMPONENT_PURL",
-     "label": "purl 식별자",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.purl"
-     ],
-     "found_at": {
-      "component.purl": [
-       "pkg:generic/ai/3.46",
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "COMPONENT_CPE",
-     "label": "CPE 식별자",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.cpe"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-5",
    "card_version": 1,
    "title": "Annex VIII §A(5): 의도된 용도·사용자",
-   "verdict": "부분 반영",
-   "facts": [
-    {
-     "concept": "COMPONENT_DESCRIPTION",
-     "label": "구성요소 설명",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.description"
-     ],
-     "found_at": {
-      "component.description": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "USE_CASES",
-     "label": "의도된 용도",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.useCases"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "COMPONENTS",
-     "label": "구성요소 목록",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "components"
-     ],
-     "found_at": {
-      "components": [
-       "$"
-      ]
-     }
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "USE_CASES",
-     "label": "의도된 용도",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.useCases"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-6",
    "card_version": 1,
    "title": "Annex VIII §A(6): 모델 구조·과업 · 데이터셋 수집·출처",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "ARCHITECTURE_FAMILY",
-     "label": "아키텍처 계열",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.architectureFamily"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DATASETS",
-     "label": "사용한 데이터셋",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.datasets"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "INPUTS",
-     "label": "입력 형식",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.inputs"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "MODEL_ARCHITECTURE",
-     "label": "구체적 아키텍처",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.modelArchitecture"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "ARCHITECTURE_FAMILY",
-     "label": "아키텍처 계열",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.architectureFamily"
-     ]
-    },
-    {
-     "concept": "DATASETS",
-     "label": "사용한 데이터셋",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.datasets"
-     ]
-    },
-    {
-     "concept": "INPUTS",
-     "label": "입력 형식",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.inputs"
-     ]
-    },
-    {
-     "concept": "MODEL_ARCHITECTURE",
-     "label": "구체적 아키텍처",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.modelArchitecture"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-7",
    "card_version": 1,
    "title": "Annex VIII §A(7): 등록·배포 정보",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "MARKET_STATUS_REGIONS",
-     "label": "시장 유통 상태·배포 지역",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "MARKET_STATUS_REGIONS",
-     "label": "시장 유통 상태·배포 지역",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-8",
    "card_version": 1,
    "title": "Annex VIII §A(8): 적합성 증서·선언서",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "VALID_UNTIL_TIME",
-     "label": "인증서 만료일",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "CERTIFICATION_REPORT_REF",
-     "label": "외부참조: 인증 보고서",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:certification-report)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "VALID_UNTIL_TIME",
-     "label": "인증서 만료일",
-     "kind": "gap",
-     "suggested_paths": []
-    },
-    {
-     "concept": "CERTIFICATION_REPORT_REF",
-     "label": "외부참조: 인증 보고서",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:certification-report)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-A-9",
    "card_version": 1,
    "title": "Annex VIII §A(9): 적합성 증서·선언서",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "CERTIFICATION_REPORT_REF",
-     "label": "외부참조: 인증 보고서",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:certification-report)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "CERTIFICATION_REPORT_REF",
-     "label": "외부참조: 인증 보고서",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:certification-report)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-B-1",
    "card_version": 1,
    "title": "Annex VIII §B(1): 등록·배포 정보",
-   "verdict": "반영",
-   "facts": [
-    {
-     "concept": "COMPONENT_SUPPLIER",
-     "label": "공급자",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.supplier"
-     ],
-     "found_at": {
-      "component.supplier": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    }
-   ],
-   "gaps": []
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-B-3",
    "card_version": 1,
    "title": "Annex VIII §B(3): 등록·배포 정보",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인",
-     "required": "conditional",
-     "condition": "C1",
-     "condition_evaluated": false,
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-B-4",
    "card_version": 1,
    "title": "Annex VIII §B(4): 등록·배포 정보",
-   "verdict": "부분 반영",
-   "facts": [
-    {
-     "concept": "COMPONENT_CPE",
-     "label": "CPE 식별자",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.cpe"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "COMPONENT_NAME",
-     "label": "구성요소 이름",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.name"
-     ],
-     "found_at": {
-      "component.name": [
-       "application:/nanoGPT@",
-       "pkg:generic/ai/3.46",
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "COMPONENT_PURL",
-     "label": "purl 식별자",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.purl"
-     ],
-     "found_at": {
-      "component.purl": [
-       "pkg:generic/ai/3.46",
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "COMPONENT_CPE",
-     "label": "CPE 식별자",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.cpe"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-B-5",
    "card_version": 1,
    "title": "Annex VIII §B(5): 의도된 용도·사용자",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "USE_CASES",
-     "label": "의도된 용도",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.useCases"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "USE_CASES",
-     "label": "의도된 용도",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.useCases"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-B-6",
    "card_version": 1,
    "title": "Annex VIII §B(6): 위험·영향평가",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
-     "label": "고위험 분류 판정 근거",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
-     "label": "고위험 분류 판정 근거",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-B-7",
    "card_version": 1,
    "title": "Annex VIII §B(7): 위험·영향평가",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
-     "label": "고위험 분류 판정 근거",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ]
-    },
-    {
-     "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
-     "label": "고위험 분류 판정 근거",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-B-8",
    "card_version": 1,
    "title": "Annex VIII §B(8): 등록·배포 정보",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "MARKET_STATUS_REGIONS",
-     "label": "시장 유통 상태·배포 지역",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "MARKET_STATUS_REGIONS",
-     "label": "시장 유통 상태·배포 지역",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-B-9",
    "card_version": 1,
    "title": "Annex VIII §B(9): 등록·배포 정보",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "MARKET_STATUS_REGIONS",
-     "label": "시장 유통 상태·배포 지역",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "MARKET_STATUS_REGIONS",
-     "label": "시장 유통 상태·배포 지역",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-C-1",
    "card_version": 1,
    "title": "Annex VIII §C(1): 등록·배포 정보",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "METADATA_MANUFACTURER",
-     "label": "문서 생성 조직",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "metadata.manufacturer"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "METADATA_MANUFACTURER",
-     "label": "문서 생성 조직",
-     "kind": "missing",
-     "suggested_paths": [
-      "metadata.manufacturer"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음; 카드의 주체 deployer 와 시스템의 역할 provider 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-C-3",
    "card_version": 1,
    "title": "Annex VIII §C(3): 등록·배포 정보",
-   "verdict": "반영",
-   "facts": [
-    {
-     "concept": "WEBSITE_REF",
-     "label": "외부참조: 웹사이트",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.externalReferences.url (type:website)"
-     ],
-     "found_at": {
-      "component.externalReferences.url (type:website)": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    }
-   ],
-   "gaps": []
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-C-4",
    "card_version": 1,
    "title": "Annex VIII §C(4): 위험·영향평가",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-VIII-C-5",
    "card_version": 1,
    "title": "Annex VIII §C(5): 위험·영향평가",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Annex-XI-1-1-a",
@@ -2803,10 +860,12 @@
    "conditions": {
     "C1": {
      "text": "where applicable",
+     "evaluated": false,
      "result": null
     },
     "C2": {
      "text": "where applicable",
+     "evaluated": false,
      "result": null
     }
    },
@@ -2979,6 +1038,7 @@
    "conditions": {
     "C3": {
      "text": "where the energy consumption of the model is unknown",
+     "evaluated": false,
      "result": null
     }
    },
@@ -3113,6 +1173,7 @@
    "conditions": {
     "C1": {
      "text": "Where applicable",
+     "evaluated": false,
      "result": null
     }
    },
@@ -3165,6 +1226,7 @@
    "conditions": {
     "C1": {
      "text": "Where applicable",
+     "evaluated": false,
      "result": null
     }
    },
@@ -3305,10 +1367,12 @@
    "conditions": {
     "C1": {
      "text": "where applicable",
+     "evaluated": false,
      "result": null
     },
     "C2": {
      "text": "where applicable",
+     "evaluated": false,
      "result": null
     }
    },
@@ -3343,10 +1407,12 @@
    "conditions": {
     "C1": {
      "text": "where applicable",
+     "evaluated": false,
      "result": null
     },
     "C2": {
      "text": "where applicable",
+     "evaluated": false,
      "result": null
     }
    },
@@ -3644,6 +1710,7 @@
    "conditions": {
     "C1": {
      "text": "where applicable",
+     "evaluated": false,
      "result": null
     }
    },
@@ -3703,1671 +1770,327 @@
    "card_id": "RC-EUAIA-Article-10-2-a",
    "card_version": 2,
    "title": "Article 10(2)(a): 데이터셋 수집·출처",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "DESIGN_CHOICES",
-     "label": "데이터 설계 선택",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "DESIGN_CHOICES",
-     "label": "데이터 설계 선택",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-10-2-b",
    "card_version": 2,
    "title": "Article 10(2)(b): 데이터셋 수집·출처",
-   "conditions": {
-    "C1": {
-     "text": "in the case of personal data",
-     "result": false
-    }
-   },
-   "verdict": "반영",
-   "facts": [
-    {
-     "concept": "COLLECTION_PROCESS",
-     "label": "데이터 수집 절차",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "componentData.collectionProcess"
-     ],
-     "found_at": {
-      "componentData.collectionProcess": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "ORIGINAL_COLLECTION_PURPOSE",
-     "label": "데이터 수집의 원래 목적",
-     "required": "conditional",
-     "target": "dataset",
-     "condition": "C1",
-     "condition_evaluated": true,
-     "condition_on": {
-      "pkg:huggingface/datasets/Skylion007/openwebtext": false
-     },
-     "status": "not_required",
-     "paths": [
-      "componentData.originalCollectionPurpose"
-     ],
-     "reason": "조건 C1 이 참인 데이터셋 구성요소가 없음: in the case of personal data"
-    }
-   ],
-   "gaps": []
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-10-2-c",
    "card_version": 2,
    "title": "Article 10(2)(c): 데이터셋 수집·출처",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "PREPROCESSING",
-     "label": "학습 데이터 전처리",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.preprocessing"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "UPDATE_MECHANISM",
-     "label": "데이터셋 갱신 방식",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.updateMechanism"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "PREPROCESSING",
-     "label": "학습 데이터 전처리",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.preprocessing"
-     ]
-    },
-    {
-     "concept": "UPDATE_MECHANISM",
-     "label": "데이터셋 갱신 방식",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.updateMechanism"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-10-2-d",
    "card_version": 2,
    "title": "Article 10(2)(d): 데이터셋 수집·출처",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "REPRESENTATION_ASSUMPTIONS",
-     "label": "데이터의 표상 가정",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.representationAssumptions"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "REPRESENTATION_ASSUMPTIONS",
-     "label": "데이터의 표상 가정",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.representationAssumptions"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-10-2-e",
    "card_version": 2,
    "title": "Article 10(2)(e): 데이터셋 수집·출처",
-   "verdict": "부분 반영",
-   "facts": [
-    {
-     "concept": "AVAILABILITY",
-     "label": "데이터셋 가용성",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "componentData.contents.availability"
-     ],
-     "found_at": {
-      "componentData.contents.availability": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "SIZE",
-     "label": "데이터셋 크기",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "componentData.size"
-     ],
-     "found_at": {
-      "componentData.size": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "DECLARATIONS_CLAIMS",
-     "label": "주장",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "declarations.claims"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DECLARATIONS_EVIDENCE",
-     "label": "증거",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "declarations.evidence"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "DECLARATIONS_CLAIMS",
-     "label": "주장",
-     "kind": "missing",
-     "suggested_paths": [
-      "declarations.claims"
-     ]
-    },
-    {
-     "concept": "DECLARATIONS_EVIDENCE",
-     "label": "증거",
-     "kind": "missing",
-     "suggested_paths": [
-      "declarations.evidence"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-10-2-f",
    "card_version": 2,
    "title": "Article 10(2)(f): 데이터셋 수집·출처",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "KNOWN_BIAS_NAME",
-     "label": "알려진 편향",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.knownBias.name"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "KNOWN_BIAS_NAME",
-     "label": "알려진 편향",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.knownBias.name"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-10-2-g",
    "card_version": 2,
    "title": "Article 10(2)(g): 데이터셋 수집·출처",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "KNOWN_BIAS_MITIGATION_STRATEGY",
-     "label": "편향 완화 조치",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.knownBias.mitigationStrategy"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "KNOWN_BIAS_MITIGATION_STRATEGY",
-     "label": "편향 완화 조치",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.knownBias.mitigationStrategy"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-10-2-h",
    "card_version": 2,
    "title": "Article 10(2)(h): 데이터셋 수집·출처",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "KNOWN_GAPS",
-     "label": "데이터 공백·결함",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.knownGaps",
-      "componentData.knownGaps.name"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "KNOWN_GAPS_MITIGATION_STRATEGY",
-     "label": "데이터 공백·결함",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.knownGaps.mitigationStrategy"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "KNOWN_GAPS",
-     "label": "데이터 공백·결함",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.knownGaps",
-      "componentData.knownGaps.name"
-     ]
-    },
-    {
-     "concept": "KNOWN_GAPS_MITIGATION_STRATEGY",
-     "label": "데이터 공백·결함",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.knownGaps.mitigationStrategy"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-10-3",
    "card_version": 1,
    "title": "Article 10(3): 데이터셋 수집·출처",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "NOISE",
-     "label": "데이터셋 잡음",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.noise"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "KNOWN_BIAS_NAME",
-     "label": "알려진 편향",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.knownBias.name"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DECLARATIONS_CLAIMS",
-     "label": "주장",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "declarations.claims"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DECLARATIONS_EVIDENCE",
-     "label": "증거",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "declarations.evidence"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "KNOWN_GAPS",
-     "label": "데이터 공백·결함",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.knownGaps",
-      "componentData.knownGaps.name"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "STATISTICS",
-     "label": "데이터셋 통계 특성",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.statistics"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "NOISE",
-     "label": "데이터셋 잡음",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.noise"
-     ]
-    },
-    {
-     "concept": "KNOWN_BIAS_NAME",
-     "label": "알려진 편향",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.knownBias.name"
-     ]
-    },
-    {
-     "concept": "DECLARATIONS_CLAIMS",
-     "label": "주장",
-     "kind": "missing",
-     "suggested_paths": [
-      "declarations.claims"
-     ]
-    },
-    {
-     "concept": "DECLARATIONS_EVIDENCE",
-     "label": "증거",
-     "kind": "missing",
-     "suggested_paths": [
-      "declarations.evidence"
-     ]
-    },
-    {
-     "concept": "KNOWN_GAPS",
-     "label": "데이터 공백·결함",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.knownGaps",
-      "componentData.knownGaps.name"
-     ]
-    },
-    {
-     "concept": "STATISTICS",
-     "label": "데이터셋 통계 특성",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.statistics"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-10-4",
    "card_version": 1,
    "title": "Article 10(4): 데이터셋 수집·출처",
-   "conditions": {
-    "C1": {
-     "text": "to the extent required by the intended purpose",
-     "result": null
-    }
-   },
-   "verdict": "반영",
-   "facts": [
-    {
-     "concept": "INTENDED_USE",
-     "label": "데이터셋 의도된 용도",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "componentData.intendedUse"
-     ],
-     "found_at": {
-      "componentData.intendedUse": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    }
-   ],
-   "gaps": []
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-10-5-b",
    "card_version": 1,
    "title": "Article 10(5)(b): 데이터셋 수집·출처",
-   "conditions": {
-    "C1": {
-     "text": "To the extent that it is strictly necessary for the purpose of ensuring bias detection and correction in relation to the high-risk AI systems in accordance with paragraph (2)",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "ANONYMIZATION_METHODS",
-     "label": "익명화 방법",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.anonymizationMethods"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "ANONYMIZATION_METHODS",
-     "label": "익명화 방법",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.anonymizationMethods"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-10-5",
    "card_version": 1,
    "title": "Article 10(5): 데이터셋 수집·출처",
-   "conditions": {
-    "C1": {
-     "text": "To the extent that it is strictly necessary for the purpose of ensuring bias detection and correction in relation to the high-risk AI systems in accordance with paragraph (2)",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "SENSITIVE_PERSONAL_INFORMATION",
-     "label": "민감 개인정보 사용",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.sensitivePersonalInformation"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "SENSITIVE_DATA",
-     "label": "민감 데이터",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.sensitiveData"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "SENSITIVE_PERSONAL_INFORMATION",
-     "label": "민감 개인정보 사용",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.sensitivePersonalInformation"
-     ]
-    },
-    {
-     "concept": "SENSITIVE_DATA",
-     "label": "민감 데이터",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.sensitiveData"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-11-1",
    "card_version": 1,
    "title": "Article 11(1): 기술문서",
-   "conditions": {
-    "C1": {
-     "text": "Where an SME",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "DOCUMENTATION_REF",
-     "label": "외부참조: 문서",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:documentation)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "DOCUMENTATION_REF",
-     "label": "외부참조: 문서",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:documentation)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-11-2",
    "card_version": 1,
    "title": "Article 11(2): 기술문서",
-   "conditions": {
-    "C1": {
-     "text": "Where a high-risk AI system related to a product covered by the Union harmonisation legislation listed in Section A of Annex I is placed on the market or put into service",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "DOCUMENTATION_REF",
-     "label": "외부참조: 문서",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:documentation)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "DOCUMENTATION_REF",
-     "label": "외부참조: 문서",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:documentation)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-12-1",
    "card_version": 1,
    "title": "Article 12(1): 로깅·추적성",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "LOGGING_MECHANISM",
-     "label": "로깅 메커니즘",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "LOGGING_MECHANISM",
-     "label": "로깅 메커니즘",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-12-2",
    "card_version": 1,
    "title": "Article 12(2): 로깅·추적성",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "LOGGING_MECHANISM",
-     "label": "로깅 메커니즘",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "LOGGING_MECHANISM",
-     "label": "로깅 메커니즘",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-12-3-a",
    "card_version": 1,
    "title": "Article 12(3)(a): 로깅·추적성",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "LOGGING_MECHANISM",
-     "label": "로깅 메커니즘",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "LOGGING_MECHANISM",
-     "label": "로깅 메커니즘",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-13-1",
    "card_version": 1,
    "title": "Article 13(1): 설명가능성",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "EXPLAINABILITY_METHODS",
-     "label": "설명 방법",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.explainabilityMethods"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "EXPLAINABILITY_METHODS",
-     "label": "설명 방법",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.explainabilityMethods"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-13-2",
    "card_version": 1,
    "title": "Article 13(2): 기술문서",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "DOCUMENTATION_REF",
-     "label": "외부참조: 문서",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:documentation)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "DOCUMENTATION_REF",
-     "label": "외부참조: 문서",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:documentation)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-13-3-a",
    "card_version": 1,
    "title": "Article 13(3)(a): 등록·배포 정보",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    },
-    "C2": {
-     "text": "where applicable",
-     "result": null
-    },
-    "C5": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "반영",
-   "facts": [
-    {
-     "concept": "COMPONENT_SUPPLIER",
-     "label": "공급자",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.supplier"
-     ],
-     "found_at": {
-      "component.supplier": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    },
-    {
-     "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인",
-     "required": "conditional",
-     "condition": "C1",
-     "condition_evaluated": false,
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-13-3-b",
    "card_version": 1,
    "title": "Article 13(3)(b): 설명가능성 · 모델 한계·가정 · 의도된 용도·사용자 · 데이터셋 수집·출처 · 성능측정",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    },
-    "C2": {
-     "text": "where applicable",
-     "result": null
-    },
-    "C3": {
-     "text": "when appropriate",
-     "result": null
-    },
-    "C4": {
-     "text": "when appropriate",
-     "result": null
-    },
-    "C5": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "EXPLAINABILITY_METHODS",
-     "label": "설명 방법",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.explainabilityMethods"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_NAME",
-     "label": "위험의 이름",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.ethicalConsiderations.name"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "TECHNICAL_LIMITATIONS",
-     "label": "기술적 한계",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.technicalLimitations"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "USE_CASES",
-     "label": "의도된 용도",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.useCases"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "INPUTS",
-     "label": "입력 형식",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.inputs"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_SLICE",
-     "label": "성능 지표 구간",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.slice"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DATASETS",
-     "label": "사용한 데이터셋",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.datasets"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "EXPLAINABILITY_METHODS",
-     "label": "설명 방법",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.explainabilityMethods"
-     ]
-    },
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_NAME",
-     "label": "위험의 이름",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.ethicalConsiderations.name"
-     ]
-    },
-    {
-     "concept": "TECHNICAL_LIMITATIONS",
-     "label": "기술적 한계",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.technicalLimitations"
-     ]
-    },
-    {
-     "concept": "USE_CASES",
-     "label": "의도된 용도",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.useCases"
-     ]
-    },
-    {
-     "concept": "INPUTS",
-     "label": "입력 형식",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.inputs"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_SLICE",
-     "label": "성능 지표 구간",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.slice"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ]
-    },
-    {
-     "concept": "DATASETS",
-     "label": "사용한 데이터셋",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.datasets"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-13-3-c",
    "card_version": 1,
    "title": "Article 13(3)(c): 운용·유지관리",
-   "conditions": {
-    "C6": {
-     "text": "if any",
-     "result": null
-    }
-   },
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "PREDETERMINED_CHANGES",
-     "label": "사전 명세된 변경사항",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "PREDETERMINED_CHANGES",
-     "label": "사전 명세된 변경사항",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-13-3-d",
    "card_version": 1,
    "title": "Article 13(3)(d): 인적 감독",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-13-3-e",
    "card_version": 1,
    "title": "Article 13(3)(e): 운용·유지관리",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "TECHNICAL_REQUIREMENTS",
-     "label": "소프트웨어 구동 정보",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.technicalRequirements"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "EXPECTED_LIFETIME_MAINTENANCE",
-     "label": "예상 수명·유지관리 주기",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "TECHNICAL_REQUIREMENTS",
-     "label": "소프트웨어 구동 정보",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.technicalRequirements"
-     ]
-    },
-    {
-     "concept": "EXPECTED_LIFETIME_MAINTENANCE",
-     "label": "예상 수명·유지관리 주기",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-13-3-f",
    "card_version": 1,
    "title": "Article 13(3)(f): 로깅·추적성",
-   "conditions": {
-    "C7": {
-     "text": "where relevant",
-     "result": null
-    }
-   },
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "LOGGING_MECHANISM",
-     "label": "로깅 메커니즘",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "LOGGING_MECHANISM",
-     "label": "로깅 메커니즘",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-14-1",
    "card_version": 1,
    "title": "Article 14(1): 인적 감독",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-14-3-a",
    "card_version": 1,
    "title": "Article 14(3)(a): 인적 감독",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-14-3-b",
    "card_version": 1,
    "title": "Article 14(3)(b): 인적 감독",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-14-4-a",
    "card_version": 1,
    "title": "Article 14(4)(a): 인적 감독",
-   "conditions": {
-    "C1": {
-     "text": "as appropriate",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "TECHNICAL_LIMITATIONS",
-     "label": "기술적 한계",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.technicalLimitations"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "TECHNICAL_LIMITATIONS",
-     "label": "기술적 한계",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.technicalLimitations"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-14-4-c",
    "card_version": 1,
    "title": "Article 14(4)(c): 인적 감독",
-   "conditions": {
-    "C1": {
-     "text": "as appropriate",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "EXPLAINABILITY_METHODS",
-     "label": "설명 방법",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.explainabilityMethods"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "EXPLAINABILITY_METHODS",
-     "label": "설명 방법",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.explainabilityMethods"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-14-4-d",
    "card_version": 1,
    "title": "Article 14(4)(d): 인적 감독",
-   "conditions": {
-    "C1": {
-     "text": "as appropriate",
-     "result": null
-    }
-   },
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-14-4-e",
    "card_version": 1,
    "title": "Article 14(4)(e): 인적 감독",
-   "conditions": {
-    "C1": {
-     "text": "as appropriate",
-     "result": null
-    }
-   },
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-14-5",
    "card_version": 1,
    "title": "Article 14(5): 인적 감독",
-   "conditions": {
-    "C1": {
-     "text": "unless that identification has been separately verified and confirmed by at least two natural persons with the necessary competence",
-     "result": null
-    },
-    "C2": {
-     "text": "where Union or national law considers the application of this requirement to be disproportionate",
-     "result": null
-    }
-   },
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-15-3",
    "card_version": 1,
    "title": "Article 15(3): 성능측정",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-15-4",
    "card_version": 1,
    "title": "Article 15(4): 견고성·회복력",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "RESILIENCE_FAILSAFE_MEASURES",
-     "label": "회복력·안전장애 방안",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "RESILIENCE_FAILSAFE_MEASURES",
-     "label": "회복력·안전장애 방안",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-15-5",
    "card_version": 1,
    "title": "Article 15(5): 보안평가",
-   "conditions": {
-    "C1": {
-     "text": "where appropriate",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "THREAT_MODEL_REF",
-     "label": "외부참조: 위협 모델",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:threat-model)"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "RESILIENCE_FAILSAFE_MEASURES",
-     "label": "회복력·안전장애 방안",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "APPLIED_CONTROLS",
-     "label": "적용한 통제",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "THREAT_MODEL_REF",
-     "label": "외부참조: 위협 모델",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:threat-model)"
-     ]
-    },
-    {
-     "concept": "RESILIENCE_FAILSAFE_MEASURES",
-     "label": "회복력·안전장애 방안",
-     "kind": "gap",
-     "suggested_paths": []
-    },
-    {
-     "concept": "APPLIED_CONTROLS",
-     "label": "적용한 통제",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-16-b",
    "card_version": 1,
    "title": "Article 16(b): 등록·배포 정보",
-   "conditions": {
-    "C1": {
-     "text": "where that is not possible",
-     "result": null
-    },
-    "C2": {
-     "text": "where that is not possible",
-     "result": null
-    }
-   },
-   "verdict": "반영",
-   "facts": [
-    {
-     "concept": "COMPONENT_SUPPLIER",
-     "label": "공급자",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.supplier"
-     ],
-     "found_at": {
-      "component.supplier": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    }
-   ],
-   "gaps": []
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-16-g",
    "card_version": 1,
    "title": "Article 16(g): 적합성 증서·선언서",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "ATTESTATION_REF",
-     "label": "외부참조: 증명",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:attestation)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "ATTESTATION_REF",
-     "label": "외부참조: 증명",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:attestation)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-16-h",
    "card_version": 1,
    "title": "Article 16(h): 적합성 증서·선언서",
-   "conditions": {
-    "C1": {
-     "text": "where that is not possible",
-     "result": null
-    },
-    "C2": {
-     "text": "where that is not possible",
-     "result": null
-    }
-   },
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "CONFORMITY_MARKING",
-     "label": "적합성 표시 (CE 마킹)",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "CONFORMITY_MARKING",
-     "label": "적합성 표시 (CE 마킹)",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-23-3",
    "card_version": 1,
    "title": "Article 23(3): 등록·배포 정보",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "반영",
-   "facts": [
-    {
-     "concept": "COMPONENT_SUPPLIER",
-     "label": "공급자",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.supplier"
-     ],
-     "found_at": {
-      "component.supplier": [
-       "pkg:huggingface/datasets/Skylion007/openwebtext"
-      ]
-     }
-    }
-   ],
-   "gaps": []
+   "verdict": "비적용",
+   "reason": "카드의 주체 importer 와 시스템의 역할 provider 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-25-4",
    "card_version": 1,
    "title": "Article 25(4): 제3자·공급망",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "facts": [
     {
      "concept": "THIRD_PARTY_SUPPORT_SCOPE",
@@ -5391,157 +2114,33 @@
    "card_id": "RC-EUAIA-Article-26-4",
    "card_version": 1,
    "title": "Article 26(4): 데이터셋 수집·출처",
-   "conditions": {
-    "C1": {
-     "text": "to the extent the deployer exercises control over the input data",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "KNOWN_BIAS_NAME",
-     "label": "알려진 편향",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.knownBias.name"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DECLARATIONS_CLAIMS",
-     "label": "주장",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "declarations.claims"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DECLARATIONS_EVIDENCE",
-     "label": "증거",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "declarations.evidence"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "KNOWN_BIAS_NAME",
-     "label": "알려진 편향",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.knownBias.name"
-     ]
-    },
-    {
-     "concept": "DECLARATIONS_CLAIMS",
-     "label": "주장",
-     "kind": "missing",
-     "suggested_paths": [
-      "declarations.claims"
-     ]
-    },
-    {
-     "concept": "DECLARATIONS_EVIDENCE",
-     "label": "증거",
-     "kind": "missing",
-     "suggested_paths": [
-      "declarations.evidence"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음; 카드의 주체 deployer 와 시스템의 역할 provider 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-27-1-c",
    "card_version": 1,
    "title": "Article 27(1)(c): 집단·환경 영향",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "GROUP_AT_RISK",
-     "label": "위험에 놓인 집단",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "GROUP_AT_RISK",
-     "label": "위험에 놓인 집단",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음; 카드의 주체 deployer 와 시스템의 역할 provider 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-27-1-e",
    "card_version": 1,
    "title": "Article 27(1)(e): 인적 감독",
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음; 카드의 주체 deployer 와 시스템의 역할 provider 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-27-1",
    "card_version": 1,
    "title": "Article 27(1): 위험·영향평가",
-   "conditions": {
-    "C1": {
-     "text": "in the case of the materialisation of those risks",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음; 카드의 주체 deployer 와 시스템의 역할 provider 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-41-5",
@@ -5550,6 +2149,7 @@
    "conditions": {
     "C1": {
      "text": "Where providers of high-risk AI systems or general-purpose AI models do not comply with the common specifications referred to in paragraph 1",
+     "evaluated": false,
      "result": null
     }
    },
@@ -5613,161 +2213,41 @@
    "card_id": "RC-EUAIA-Article-47-1",
    "card_version": 1,
    "title": "Article 47(1): 적합성 증서·선언서",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "ATTESTATION_REF",
-     "label": "외부참조: 증명",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:attestation)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "ATTESTATION_REF",
-     "label": "외부참조: 증명",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:attestation)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-48-2",
    "card_version": 1,
    "title": "Article 48(2): 적합성 증서·선언서",
-   "conditions": {
-    "C1": {
-     "text": "if it can easily be accessed via the interface from which that system is accessed or via an easily accessible machine-readable code or other electronic means",
-     "result": null
-    }
-   },
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "CONFORMITY_MARKING",
-     "label": "적합성 표시 (CE 마킹)",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "CONFORMITY_MARKING",
-     "label": "적합성 표시 (CE 마킹)",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-48-4",
    "card_version": 1,
    "title": "Article 48(4): 적합성 증서·선언서",
-   "conditions": {
-    "C1": {
-     "text": "Where applicable",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "CERTIFICATION_REPORT_REF",
-     "label": "외부참조: 인증 보고서",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:certification-report)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "CERTIFICATION_REPORT_REF",
-     "label": "외부참조: 인증 보고서",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:certification-report)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-50-1",
    "card_version": 1,
    "title": "Article 50(1): 콘텐츠·상호작용 표시",
-   "conditions": {
-    "C1": {
-     "text": "unless this is obvious from the point of view of a natural person who is reasonably well-informed",
-     "result": null
-    },
-    "C2": {
-     "text": "unless those systems are available for the public to report a criminal offence",
-     "result": null
-    }
-   },
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "CONTENT_INTERACTION_DISCLOSURE",
-     "label": "콘텐츠·상호작용 표시",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "CONTENT_INTERACTION_DISCLOSURE",
-     "label": "콘텐츠·상호작용 표시",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['limited_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-50-2",
    "card_version": 1,
    "title": "Article 50(2): 콘텐츠·상호작용 표시",
-   "conditions": {
-    "C1": {
-     "text": "to the extent the AI systems perform an assistive function for standard editing or do not substantially alter the input data provided by the deployer or the semantics thereof",
-     "result": null
-    },
-    "C2": {
-     "text": "where authorised by law to detect",
-     "result": null
-    }
-   },
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "CONTENT_INTERACTION_DISCLOSURE",
-     "label": "콘텐츠·상호작용 표시",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "CONTENT_INTERACTION_DISCLOSURE",
-     "label": "콘텐츠·상호작용 표시",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['limited_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-53-1-a",
@@ -5914,6 +2394,7 @@
    "conditions": {
     "C1": {
      "text": "to the extent that those standards cover those obligations",
+     "evaluated": false,
      "result": null
     }
    },
@@ -6123,7 +2604,7 @@
    "card_id": "RC-EUAIA-Article-55-1-d",
    "card_version": 1,
    "title": "Article 55(1)(d): 보안평가",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "facts": [
     {
      "concept": "APPLIED_CONTROLS",
@@ -6150,6 +2631,7 @@
    "conditions": {
     "C1": {
      "text": "to the extent that those standards cover those obligations",
+     "evaluated": false,
      "result": null
     }
    },
@@ -6259,353 +2741,73 @@
    "card_id": "RC-EUAIA-Article-9-2-a",
    "card_version": 1,
    "title": "Article 9(2)(a): 위험·영향평가",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_NAME",
-     "label": "위험의 이름",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.ethicalConsiderations.name"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ]
-    },
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_NAME",
-     "label": "위험의 이름",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.ethicalConsiderations.name"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-9-2-b",
    "card_version": 1,
    "title": "Article 9(2)(b): 위험·영향평가",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-9-2-c",
    "card_version": 1,
    "title": "Article 9(2)(c): 위험·영향평가",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "RISK_ASSESSMENT_REF",
-     "label": "외부참조: 위험평가",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.externalReferences.url (type:risk-assessment)"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-9-2-d",
    "card_version": 1,
    "title": "Article 9(2)(d): 위험·영향평가",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
-     "label": "위험 완화 전략",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
-     "label": "위험 완화 전략",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-9-5-a",
    "card_version": 1,
    "title": "Article 9(5)(a): 위험·영향평가",
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
-     "label": "위험 완화 전략",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
-     "label": "위험 완화 전략",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-9-5-b",
    "card_version": 1,
    "title": "Article 9(5)(b): 위험·영향평가",
-   "conditions": {
-    "C1": {
-     "text": "where appropriate",
-     "result": null
-    },
-    "C2": {
-     "text": "where appropriate",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
-     "label": "위험 완화 전략",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
-     "label": "위험 완화 전략",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-9-5",
    "card_version": 1,
    "title": "Article 9(5): 위험·영향평가",
-   "conditions": {
-    "C1": {
-     "text": "where appropriate",
-     "result": null
-    },
-    "C2": {
-     "text": "where appropriate",
-     "result": null
-    }
-   },
-   "verdict": "검토 필요",
-   "facts": [
-    {
-     "concept": "RESIDUAL_RISK_ACCEPTANCE",
-     "label": "잔여위험 수용 판정",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "RESIDUAL_RISK_ACCEPTANCE",
-     "label": "잔여위험 수용 판정",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-9-8",
    "card_version": 1,
    "title": "Article 9(8): 성능측정",
-   "conditions": {
-    "C1": {
-     "text": "as appropriate",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "DECISION_THRESHOLD",
-     "label": "지표 임계값",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.decisionThreshold"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "DECISION_THRESHOLD",
-     "label": "지표 임계값",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.decisionThreshold"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ]
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-EUAIA-Article-9-9",
    "card_version": 1,
    "title": "Article 9(9): 집단·환경 영향",
-   "conditions": {
-    "C1": {
-     "text": "as appropriate",
-     "result": null
-    }
-   },
-   "verdict": "미반영",
-   "facts": [
-    {
-     "concept": "GROUP_AT_RISK",
-     "label": "위험에 놓인 집단",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "HARMS",
-     "label": "집단에 대한 피해",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.fairnessAssessments.harms"
-     ],
-     "found_at": {}
-    }
-   ],
-   "gaps": [
-    {
-     "concept": "GROUP_AT_RISK",
-     "label": "위험에 놓인 집단",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
-     ]
-    },
-    {
-     "concept": "HARMS",
-     "label": "집단에 대한 피해",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.fairnessAssessments.harms"
-     ]
-    }
-   ]
+   "verdict": "비적용",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['gpai'] 이 안 맞음",
+   "facts": []
   },
   {
    "card_id": "RC-ISO42001-A.4.2",
@@ -7050,7 +3252,7 @@
    "card_id": "RC-ISO42001-A.6.2.8",
    "card_version": 1,
    "title": "A.6.2.8: 로깅·추적성",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "facts": [
     {
      "concept": "LOGGING_MECHANISM",
@@ -7388,7 +3590,7 @@
    "card_id": "RC-NISTRMF-MANAGE-3.1",
    "card_version": 1,
    "title": "MANAGE 3.1: 제3자·공급망",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "facts": [
     {
      "concept": "APPLIED_CONTROLS",
@@ -7585,10 +3787,11 @@
    "conditions": {
     "C1": {
      "text": "in the case of assessing existing AI systems – re-evaluated",
+     "evaluated": false,
      "result": null
     }
    },
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "facts": [
     {
      "concept": "BUSINESS_USE_CONTEXT",
@@ -7798,7 +4001,7 @@
    "card_id": "RC-NISTRMF-MAP-3.1",
    "card_version": 1,
    "title": "MAP 3.1: 잠재적 이점·비용",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "facts": [
     {
      "concept": "POTENTIAL_BENEFITS_COSTS",
@@ -7822,7 +4025,7 @@
    "card_id": "RC-NISTRMF-MAP-3.2",
    "card_version": 1,
    "title": "MAP 3.2: 잠재적 이점·비용",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "facts": [
     {
      "concept": "POTENTIAL_BENEFITS_COSTS",
@@ -7874,7 +4077,7 @@
    "card_id": "RC-NISTRMF-MAP-4.2",
    "card_version": 1,
    "title": "MAP 4.2: 제3자·공급망",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "facts": [
     {
      "concept": "APPLIED_CONTROLS",
@@ -7926,7 +4129,7 @@
    "card_id": "RC-NISTRMF-MEASURE-1.1",
    "card_version": 1,
    "title": "MEASURE 1.1: 위험·영향평가",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "facts": [
     {
      "concept": "UNMEASURED_RISKS",
@@ -8032,7 +4235,7 @@
    "card_id": "RC-NISTRMF-MEASURE-2.10",
    "card_version": 1,
    "title": "MEASURE 2.10: 프라이버시 평가",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "facts": [
     {
      "concept": "PRIVACY_ASSESSMENT_REF",
@@ -8329,6 +4532,7 @@
    "conditions": {
     "C1": {
      "text": "if made to operate beyond its knowledge limits",
+     "evaluated": false,
      "result": null
     }
    },
@@ -8576,7 +4780,7 @@
    "card_id": "RC-NISTRMF-MEASURE-4.2",
    "card_version": 1,
    "title": "MEASURE 4.2: 위험·영향평가",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "facts": [
     {
      "concept": "TRUSTWORTHINESS_COMPOSITE_MEASURE",
@@ -8600,7 +4804,7 @@
    "card_id": "RC-NISTRMF-MEASURE-4.3",
    "card_version": 1,
    "title": "MEASURE 4.3: 성능측정",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "facts": [
     {
      "concept": "PERFORMANCE_CHANGE",
@@ -8625,7 +4829,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex IV(1)",
-   "verdict": "부분 반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-IV-1-a",
     "RC-EUAIA-Annex-IV-1-b",
@@ -8639,7 +4843,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex IV(2)",
-   "verdict": "부분 반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-IV-2-a",
     "RC-EUAIA-Annex-IV-2-b",
@@ -8654,7 +4858,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex IV(3)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-IV-3"
    ]
@@ -8662,7 +4866,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex IV(4)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-IV-4"
    ]
@@ -8670,7 +4874,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex IV(5)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-IV-5"
    ]
@@ -8678,7 +4882,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex IV(6)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-IV-6"
    ]
@@ -8686,7 +4890,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex IV(7)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-IV-7"
    ]
@@ -8694,7 +4898,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex IV(8)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-IV-8"
    ]
@@ -8702,7 +4906,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex IX(3)",
-   "verdict": "부분 반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-IX-3"
    ]
@@ -8710,7 +4914,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex V(1)",
-   "verdict": "부분 반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-V-1"
    ]
@@ -8718,7 +4922,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex V(2)",
-   "verdict": "반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-V-2"
    ]
@@ -8726,7 +4930,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex V(6)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-V-6"
    ]
@@ -8734,7 +4938,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex V(7)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-V-7"
    ]
@@ -8742,7 +4946,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex V(8)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-V-8"
    ]
@@ -8750,7 +4954,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §A(1)",
-   "verdict": "반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-A-1"
    ]
@@ -8758,7 +4962,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §A(10)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-A-10"
    ]
@@ -8766,7 +4970,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §A(11)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-A-11"
    ]
@@ -8774,7 +4978,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §A(12)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-A-12"
    ]
@@ -8782,7 +4986,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §A(13)",
-   "verdict": "반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-A-13"
    ]
@@ -8790,7 +4994,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §A(3)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-A-3"
    ]
@@ -8798,7 +5002,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §A(4)",
-   "verdict": "부분 반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-A-4"
    ]
@@ -8806,7 +5010,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §A(5)",
-   "verdict": "부분 반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-A-5"
    ]
@@ -8814,7 +5018,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §A(6)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-A-6"
    ]
@@ -8822,7 +5026,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §A(7)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-A-7"
    ]
@@ -8830,7 +5034,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §A(8)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-A-8"
    ]
@@ -8838,7 +5042,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §A(9)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-A-9"
    ]
@@ -8846,7 +5050,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §B(1)",
-   "verdict": "반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-B-1"
    ]
@@ -8854,7 +5058,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §B(3)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-B-3"
    ]
@@ -8862,7 +5066,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §B(4)",
-   "verdict": "부분 반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-B-4"
    ]
@@ -8870,7 +5074,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §B(5)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-B-5"
    ]
@@ -8878,7 +5082,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §B(6)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-B-6"
    ]
@@ -8886,7 +5090,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §B(7)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-B-7"
    ]
@@ -8894,7 +5098,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §B(8)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-B-8"
    ]
@@ -8902,7 +5106,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §B(9)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-B-9"
    ]
@@ -8910,7 +5114,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §C(1)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-C-1"
    ]
@@ -8918,7 +5122,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §C(3)",
-   "verdict": "반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-C-3"
    ]
@@ -8926,7 +5130,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §C(4)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-C-4"
    ]
@@ -8934,7 +5138,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Annex VIII §C(5)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Annex-VIII-C-5"
    ]
@@ -9016,7 +5220,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 10(2)",
-   "verdict": "부분 반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-10-2-a",
     "RC-EUAIA-Article-10-2-b",
@@ -9031,7 +5235,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 10(3)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-10-3"
    ]
@@ -9039,7 +5243,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 10(4)",
-   "verdict": "반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-10-4"
    ]
@@ -9047,7 +5251,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 10(5)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-10-5-b",
     "RC-EUAIA-Article-10-5"
@@ -9056,7 +5260,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 11(1)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-11-1"
    ]
@@ -9064,7 +5268,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 11(2)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-11-2"
    ]
@@ -9072,7 +5276,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 12(1)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-12-1"
    ]
@@ -9080,7 +5284,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 12(2)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-12-2"
    ]
@@ -9088,7 +5292,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 12(3)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-12-3-a"
    ]
@@ -9096,7 +5300,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 13(1)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-13-1"
    ]
@@ -9104,7 +5308,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 13(2)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-13-2"
    ]
@@ -9112,7 +5316,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 13(3)",
-   "verdict": "부분 반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-13-3-a",
     "RC-EUAIA-Article-13-3-b",
@@ -9125,7 +5329,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 14(1)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-14-1"
    ]
@@ -9133,7 +5337,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 14(3)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-14-3-a",
     "RC-EUAIA-Article-14-3-b"
@@ -9142,7 +5346,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 14(4)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-14-4-a",
     "RC-EUAIA-Article-14-4-c",
@@ -9153,7 +5357,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 14(5)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-14-5"
    ]
@@ -9161,7 +5365,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 15(3)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-15-3"
    ]
@@ -9169,7 +5373,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 15(4)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-15-4"
    ]
@@ -9177,7 +5381,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 15(5)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-15-5"
    ]
@@ -9185,7 +5389,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 16",
-   "verdict": "부분 반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-16-b",
     "RC-EUAIA-Article-16-g",
@@ -9195,7 +5399,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 23(3)",
-   "verdict": "반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-23-3"
    ]
@@ -9203,7 +5407,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 25(4)",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "cards": [
     "RC-EUAIA-Article-25-4"
    ]
@@ -9211,7 +5415,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 26(4)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-26-4"
    ]
@@ -9219,7 +5423,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 27(1)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-27-1-c",
     "RC-EUAIA-Article-27-1-e",
@@ -9237,7 +5441,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 47(1)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-47-1"
    ]
@@ -9245,7 +5449,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 48(2)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-48-2"
    ]
@@ -9253,7 +5457,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 48(4)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-48-4"
    ]
@@ -9261,7 +5465,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 50(1)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-50-1"
    ]
@@ -9269,7 +5473,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 50(2)",
-   "verdict": "검토 필요",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-50-2"
    ]
@@ -9321,7 +5525,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 9(2)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-9-2-a",
     "RC-EUAIA-Article-9-2-b",
@@ -9332,7 +5536,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 9(5)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-9-5-a",
     "RC-EUAIA-Article-9-5-b",
@@ -9342,7 +5546,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 9(8)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-9-8"
    ]
@@ -9350,7 +5554,7 @@
   {
    "regulation": "EUAIA",
    "clause_id": "Article 9(9)",
-   "verdict": "미반영",
+   "verdict": "비적용",
    "cards": [
     "RC-EUAIA-Article-9-9"
    ]
@@ -9446,7 +5650,7 @@
   {
    "regulation": "ISO42001",
    "clause_id": "A.6.2.8",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "cards": [
     "RC-ISO42001-A.6.2.8"
    ]
@@ -9518,7 +5722,7 @@
   {
    "regulation": "NISTRMF",
    "clause_id": "MANAGE 3.1",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "cards": [
     "RC-NISTRMF-MANAGE-3.1"
    ]
@@ -9534,7 +5738,7 @@
   {
    "regulation": "NISTRMF",
    "clause_id": "MAP 1.4",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "cards": [
     "RC-NISTRMF-MAP-1.4"
    ]
@@ -9574,7 +5778,7 @@
   {
    "regulation": "NISTRMF",
    "clause_id": "MAP 3.1",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "cards": [
     "RC-NISTRMF-MAP-3.1"
    ]
@@ -9582,7 +5786,7 @@
   {
    "regulation": "NISTRMF",
    "clause_id": "MAP 3.2",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "cards": [
     "RC-NISTRMF-MAP-3.2"
    ]
@@ -9598,7 +5802,7 @@
   {
    "regulation": "NISTRMF",
    "clause_id": "MAP 4.2",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "cards": [
     "RC-NISTRMF-MAP-4.2"
    ]
@@ -9614,7 +5818,7 @@
   {
    "regulation": "NISTRMF",
    "clause_id": "MEASURE 1.1",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "cards": [
     "RC-NISTRMF-MEASURE-1.1"
    ]
@@ -9630,7 +5834,7 @@
   {
    "regulation": "NISTRMF",
    "clause_id": "MEASURE 2.10",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "cards": [
     "RC-NISTRMF-MEASURE-2.10"
    ]
@@ -9702,7 +5906,7 @@
   {
    "regulation": "NISTRMF",
    "clause_id": "MEASURE 4.2",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "cards": [
     "RC-NISTRMF-MEASURE-4.2"
    ]
@@ -9710,7 +5914,7 @@
   {
    "regulation": "NISTRMF",
    "clause_id": "MEASURE 4.3",
-   "verdict": "검토 필요",
+   "verdict": "미반영",
    "cards": [
     "RC-NISTRMF-MEASURE-4.3"
    ]

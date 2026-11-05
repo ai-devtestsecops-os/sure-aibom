@@ -13,7 +13,7 @@
     aibom_v0.6_properties.json      추가 필드를 --spec 1.7 로 낼 때의 properties 키 (정의서 생성 코드와 같은 규칙)
     cards/cards.json                ai-bom/cards 의 승인 카드 (호 단위, 190장. ISO/IEC 42001 은 원문·구절을 빼고 제목만). 규제 판정 화면이 조항의 원문과 사실을 보여 줄 때 쓴다
     cards/vocabulary.json, cards/profile.json   통제 어휘, 매핑 프로파일 (ai-bom/cards 그대로)
-    cards/judgments/*.json          예제 BOM 에 판정 엔진을 돌린 기록 (aibom-examples 는 옆 폴더가 있을 때만)
+    cards/judgments/*.json          예제 BOM 에 판정 엔진을 돌린 기록 (aibom-examples 는 옆 폴더가 있을 때만). 예제마다 시스템 프로파일(위험등급·역할)을 정해 두고 돌린다
 추출기 초안과 승인 카드의 비교는 내부용이라 문서 사이트에 싣지 않는다.
 """
 import json
@@ -33,7 +33,11 @@ KEEP = ("aibom_cli_sources.json", "aibom_cli_spdx_sources.json")
 CARDS = os.path.join(AIBOM, "cards")
 # aibom-examples 는 저장소 밖(/mnt/yhchoe/aibom-examples). AIBOM_EXAMPLES 로 바꿀 수 있다
 EXAMPLES = os.environ.get("AIBOM_EXAMPLES") or os.path.join(os.path.dirname(os.path.dirname(CLI)), "aibom-examples", "results", "0.2.0")
-EXAMPLE_BOMS = ("aiapp-demo.v0.6.cdx.json", "nanoGPT.v0.6.cdx.json", "python-slim.v0.6.cdx.json")
+# 예제 BOM 과 그 시스템 프로파일 (위험등급·역할). 판정 엔진은 이것이 없으면 EU AI Act 카드를 검토 필요로 낸다
+HIGH_RISK_PROVIDER = {"risk_class": ["high_risk"], "role": "provider"}
+EXAMPLE_BOMS = (("aiapp-demo.v0.6.cdx.json", HIGH_RISK_PROVIDER),
+                ("nanoGPT.v0.6.cdx.json", {"risk_class": ["gpai"], "role": "provider"}),
+                ("python-slim.v0.6.cdx.json", {"risk_class": ["minimal_risk"], "role": "provider"}))
 
 
 def save(name, obj):
@@ -120,21 +124,21 @@ def cards():
     # 예제 BOM 판정
     index = []
     profile = J.load_profile(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"))
-    bom_paths = [os.path.join(CARDS, "judge", "examples", "recruit-screening.cdx.json")]       # 특허 실시예를 흉내 낸 작은 BOM
+    bom_paths = [(os.path.join(CARDS, "judge", "examples", "recruit-screening.cdx.json"), HIGH_RISK_PROVIDER)]   # 특허 실시예를 흉내 낸 작은 BOM (고위험 제공자)
     if os.path.isdir(EXAMPLES):
-        bom_paths += [os.path.join(EXAMPLES, n) for n in EXAMPLE_BOMS]
+        bom_paths += [(os.path.join(EXAMPLES, n), system) for n, system in EXAMPLE_BOMS]
     if True:
-        for path in bom_paths:
+        for path, system in bom_paths:
             name = os.path.basename(path)
             if not os.path.exists(path):
                 continue
             with open(path, encoding="utf-8") as fh:
                 bom = json.load(fh)
-            record = J.judge(bom, shown, profile, {})
+            record = J.judge(bom, shown, profile, system)
             fname = name.replace(".cdx.json", ".json")
             with open(os.path.join(out, "judgments", fname), "w", encoding="utf-8") as fh:
                 json.dump(record, fh, ensure_ascii=False, indent=1)
-            index.append({"file": fname, "subject": record["bom"]["subject"], "summary": record["summary"]})
+            index.append({"file": fname, "subject": record["bom"]["subject"], "system_profile": system, "summary": record["summary"]})
     with open(os.path.join(out, "judgments", "index.json"), "w", encoding="utf-8") as fh:
         json.dump(index, fh, ensure_ascii=False, indent=1)
     return len(shown), len(index)
