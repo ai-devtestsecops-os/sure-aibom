@@ -11,7 +11,7 @@
                                     ISO/IEC 42001 행만 본문을 조항 제목으로 바꾼다 (public_requirements)
 만드는 것:
     aibom_v0.6_properties.json      추가 필드를 --spec 1.7 로 낼 때의 properties 키 (정의서 생성 코드와 같은 규칙)
-    cards/cards.json                ai-bom/cards 의 승인 카드 129장 (ISO/IEC 42001 은 원문·구절을 빼고 제목만). 규제 판정 화면이 조항의 원문과 사실을 보여 줄 때 쓴다
+    cards/cards.json                ai-bom/cards 의 승인 카드 (호 단위, 190장. ISO/IEC 42001 은 원문·구절을 빼고 제목만). 규제 판정 화면이 조항의 원문과 사실을 보여 줄 때 쓴다
     cards/vocabulary.json, cards/profile.json   통제 어휘, 매핑 프로파일 (ai-bom/cards 그대로)
     cards/judgments/*.json          예제 BOM 에 판정 엔진을 돌린 기록 (aibom-examples 는 옆 폴더가 있을 때만)
 추출기 초안과 승인 카드의 비교는 내부용이라 문서 사이트에 싣지 않는다.

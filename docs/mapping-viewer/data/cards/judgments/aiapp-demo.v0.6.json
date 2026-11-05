@@ -1,6 +1,6 @@
 {
- "engine_version": "0.4.0",
- "run_at": "2026-10-27T07:27:18Z",
+ "engine_version": "0.5.0",
+ "run_at": "2026-11-05T06:40:13Z",
  "bom": {
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
@@ -53,6 +53,13 @@
   "evidence": false
  },
  "summary": {
+  "반영": 47,
+  "부분 반영": 24,
+  "미반영": 76,
+  "비적용": 0,
+  "검토 필요": 43
+ },
+ "clause_summary": {
   "반영": 24,
   "부분 반영": 22,
   "미반영": 54,
@@ -61,73 +68,11 @@
  },
  "cards": [
   {
-   "card_id": "RC-EUAIA-Annex-IV-1",
+   "card_id": "RC-EUAIA-Annex-IV-1-a",
    "card_version": 2,
-   "title": "Annex IV(1): 모델 구조·과업 · 기술문서",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    },
-    "C2": {
-     "text": "where the AI system is a component of products",
-     "result": null
-    },
-    "C3": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
+   "title": "Annex IV(1)(a): 모델 구조·과업",
    "verdict": "반영",
    "facts": [
-    {
-     "concept": "TECHNICAL_REQUIREMENTS",
-     "label": "소프트웨어 구동 정보",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.considerations.technicalRequirements"
-     ],
-     "found_at": {
-      "component.modelCard.considerations.technicalRequirements": [
-       "pkg:generic/ollama/llama3.2:1b",
-       "pkg:generic/local/llama",
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
-    {
-     "concept": "TECHNICAL_REQUIREMENTS",
-     "label": "소프트웨어 구동 정보",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.considerations.technicalRequirements"
-     ],
-     "found_at": {
-      "component.modelCard.considerations.technicalRequirements": [
-       "pkg:generic/ollama/llama3.2:1b",
-       "pkg:generic/local/llama",
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
-    {
-     "concept": "DOCUMENTATION_REF",
-     "label": "외부참조: 문서",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.externalReferences.url (type:documentation)"
-     ],
-     "found_at": {
-      "component.externalReferences.url (type:documentation)": [
-       "pkg:huggingface/google-bert/bert-base-uncased"
-      ]
-     }
-    },
     {
      "concept": "USE_CASES",
      "label": "의도된 용도",
@@ -175,7 +120,52 @@
        "pkg:huggingface/datasets/legacy-datasets/wikipedia"
       ]
      }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-1-b",
+   "card_version": 2,
+   "title": "Annex IV(1)(b): 모델 구조·과업",
+   "conditions": {
+    "C1": {
+     "text": "where applicable",
+     "result": null
     },
+    "C3": {
+     "text": "where applicable",
+     "result": null
+    }
+   },
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "TECHNICAL_REQUIREMENTS",
+     "label": "소프트웨어 구동 정보",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.considerations.technicalRequirements"
+     ],
+     "found_at": {
+      "component.modelCard.considerations.technicalRequirements": [
+       "pkg:generic/ollama/llama3.2:1b",
+       "pkg:generic/local/llama",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-1-c",
+   "card_version": 2,
+   "title": "Annex IV(1)(c): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
     {
      "concept": "COMPONENTS",
      "label": "구성요소 목록",
@@ -208,18 +198,26 @@
      "status": "gap",
      "paths": [],
      "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
+    }
+   ],
+   "gaps": [
     {
      "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
      "label": "배포 형태·버전 갱신 요건",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-1-d",
+   "card_version": 2,
+   "title": "Annex IV(1)(d): 모델 구조·과업",
+   "verdict": "검토 필요",
+   "facts": [
     {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
+     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+     "label": "배포 형태·버전 갱신 요건",
      "required": "always",
      "status": "gap",
      "paths": [],
@@ -232,13 +230,51 @@
      "label": "배포 형태·버전 갱신 요건",
      "kind": "gap",
      "suggested_paths": []
-    },
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-1-e",
+   "card_version": 2,
+   "title": "Annex IV(1)(e): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
     {
-     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
-     "label": "배포 형태·버전 갱신 요건",
-     "kind": "gap",
-     "suggested_paths": []
-    },
+     "concept": "TECHNICAL_REQUIREMENTS",
+     "label": "소프트웨어 구동 정보",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.considerations.technicalRequirements"
+     ],
+     "found_at": {
+      "component.modelCard.considerations.technicalRequirements": [
+       "pkg:generic/ollama/llama3.2:1b",
+       "pkg:generic/local/llama",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-1-g",
+   "card_version": 2,
+   "title": "Annex IV(1)(g): 모델 구조·과업",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
     {
      "concept": "HUMAN_OVERSIGHT_MEASURES",
      "label": "인적 감독 수단",
@@ -248,9 +284,42 @@
    ]
   },
   {
-   "card_id": "RC-EUAIA-Annex-IV-2",
+   "card_id": "RC-EUAIA-Annex-IV-1-h",
    "card_version": 2,
-   "title": "Annex IV(2): 모델 구조·과업 · 데이터셋 수집·출처 · 데이터 전처리 · 성능측정",
+   "title": "Annex IV(1)(h): 기술문서",
+   "conditions": {
+    "C1": {
+     "text": "where applicable",
+     "result": null
+    },
+    "C3": {
+     "text": "where applicable",
+     "result": null
+    }
+   },
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {
+      "component.externalReferences.url (type:documentation)": [
+       "pkg:huggingface/google-bert/bert-base-uncased"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-2-a",
+   "card_version": 2,
+   "title": "Annex IV(2)(a): 모델 구조·과업",
    "conditions": {
     "C1": {
      "text": "where relevant",
@@ -259,12 +328,52 @@
     "C2": {
      "text": "where relevant",
      "result": null
-    },
-    "C3": {
-     "text": "where applicable",
-     "result": null
     }
    },
+   "verdict": "부분 반영",
+   "facts": [
+    {
+     "concept": "PEDIGREE",
+     "label": "계보",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.pedigree"
+     ],
+     "found_at": {
+      "component.pedigree": [
+       "pkg:generic/local/llama",
+       "pkg:generic/huggingface/tiny-random-gpt2",
+       "pkg:generic/huggingface/tiny-gpt2-lora"
+      ]
+     }
+    },
+    {
+     "concept": "WORKFLOWS_TASKS",
+     "label": "형성: 태스크",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "formulation.workflows.tasks"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "WORKFLOWS_TASKS",
+     "label": "형성: 태스크",
+     "kind": "missing",
+     "suggested_paths": [
+      "formulation.workflows.tasks"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-2-b",
+   "card_version": 2,
+   "title": "Annex IV(2)(b): 모델 구조·과업 · 성능측정",
    "verdict": "부분 반영",
    "facts": [
     {
@@ -283,6 +392,222 @@
       ]
      }
     },
+    {
+     "concept": "ARCHITECTURE_FAMILY",
+     "label": "아키텍처 계열",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.architectureFamily"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.architectureFamily": [
+       "pkg:generic/local/llama",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
+    },
+    {
+     "concept": "MODEL_ARCHITECTURE",
+     "label": "구체적 아키텍처",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.modelArchitecture"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.modelArchitecture": [
+       "pkg:huggingface/google-bert/bert-base-uncased"
+      ]
+     }
+    },
+    {
+     "concept": "OUTPUTS",
+     "label": "출력 형식",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.outputs"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.outputs": [
+       "pkg:generic/local/llama",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DESIGN_CHOICES",
+     "label": "시스템 설계 선택·절충",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "DESIGN_CHOICES",
+     "label": "시스템 설계 선택·절충",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "OPTIMIZATION_TARGET",
+     "label": "최적화 목표",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.optimizationTarget"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ]
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ]
+    },
+    {
+     "concept": "DESIGN_CHOICES",
+     "label": "시스템 설계 선택·절충",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
+     ]
+    },
+    {
+     "concept": "DESIGN_CHOICES",
+     "label": "시스템 설계 선택·절충",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
+     ]
+    },
+    {
+     "concept": "OPTIMIZATION_TARGET",
+     "label": "최적화 목표",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.optimizationTarget"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-2-c",
+   "card_version": 2,
+   "title": "Annex IV(2)(c): 모델 구조·과업",
+   "verdict": "부분 반영",
+   "facts": [
+    {
+     "concept": "DEPENDENCIES",
+     "label": "의존관계",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "dependencies"
+     ],
+     "found_at": {
+      "dependencies": [
+       "$"
+      ]
+     }
+    },
+    {
+     "concept": "SYSTEM_DEV_TEST_COMPUTE",
+     "label": "시스템 개발·시험 연산자원",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    },
+    {
+     "concept": "TRAINING_COMPUTE",
+     "label": "모델 훈련 연산자원",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.trainingCompute"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "SYSTEM_DEV_TEST_COMPUTE",
+     "label": "시스템 개발·시험 연산자원",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "TRAINING_COMPUTE",
+     "label": "모델 훈련 연산자원",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.trainingCompute"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-2-d",
+   "card_version": 2,
+   "title": "Annex IV(2)(d): 모델 구조·과업 · 데이터셋 수집·출처 · 데이터 전처리",
+   "conditions": {
+    "C1": {
+     "text": "where relevant",
+     "result": null
+    },
+    "C2": {
+     "text": "where relevant",
+     "result": null
+    }
+   },
+   "verdict": "부분 반영",
+   "facts": [
     {
      "concept": "TRAINING_TECHNIQUES",
      "label": "학습 과정 정보",
@@ -352,22 +677,6 @@
      }
     },
     {
-     "concept": "ARCHITECTURE_FAMILY",
-     "label": "아키텍처 계열",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.architectureFamily"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.architectureFamily": [
-       "pkg:generic/local/llama",
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
-    {
      "concept": "DATASETS",
      "label": "사용한 데이터셋",
      "required": "always",
@@ -381,188 +690,6 @@
        "pkg:generic/huggingface/tiny-random-gpt2"
       ]
      }
-    },
-    {
-     "concept": "MODEL_ARCHITECTURE",
-     "label": "구체적 아키텍처",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.modelArchitecture"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.modelArchitecture": [
-       "pkg:huggingface/google-bert/bert-base-uncased"
-      ]
-     }
-    },
-    {
-     "concept": "OUTPUTS",
-     "label": "출력 형식",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.outputs"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.outputs": [
-       "pkg:generic/local/llama",
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_TYPE",
-     "label": "성능 지표 유형",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PERFORMANCE_METRICS_VALUE",
-     "label": "성능 지표 값",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PEDIGREE",
-     "label": "계보",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.pedigree"
-     ],
-     "found_at": {
-      "component.pedigree": [
-       "pkg:generic/local/llama",
-       "pkg:generic/huggingface/tiny-random-gpt2",
-       "pkg:generic/huggingface/tiny-gpt2-lora"
-      ]
-     }
-    },
-    {
-     "concept": "DEPENDENCIES",
-     "label": "의존관계",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "dependencies"
-     ],
-     "found_at": {
-      "dependencies": [
-       "$"
-      ]
-     }
-    },
-    {
-     "concept": "WORKFLOWS_TASKS",
-     "label": "형성: 태스크",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "formulation.workflows.tasks"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DESIGN_CHOICES",
-     "label": "시스템 설계 선택·절충",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "SYSTEM_DEV_TEST_COMPUTE",
-     "label": "시스템 개발·시험 연산자원",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "PREDETERMINED_CHANGES",
-     "label": "사전 명세된 변경사항",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "TEST_LOG_REPORT_REF",
-     "label": "시험 로그·보고서 참조",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "APPLIED_CONTROLS",
-     "label": "적용한 통제",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "DESIGN_CHOICES",
-     "label": "시스템 설계 선택·절충",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "OPTIMIZATION_TARGET",
-     "label": "최적화 목표",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.optimizationTarget"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "TRAINING_COMPUTE",
-     "label": "모델 훈련 연산자원",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.trainingCompute"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "EXPLAINABILITY_METHODS",
-     "label": "설명 방법",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.explainabilityMethods"
-     ],
-     "found_at": {}
     },
     {
      "concept": "PROVENANCE",
@@ -597,7 +724,127 @@
      "suggested_paths": [
       "componentData.preprocessing"
      ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-2-e",
+   "card_version": 2,
+   "title": "Annex IV(2)(e): 모델 구조·과업",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
     },
+    {
+     "concept": "EXPLAINABILITY_METHODS",
+     "label": "설명 방법",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.explainabilityMethods"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    },
+    {
+     "concept": "EXPLAINABILITY_METHODS",
+     "label": "설명 방법",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.explainabilityMethods"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-2-f",
+   "card_version": 2,
+   "title": "Annex IV(2)(f): 모델 구조·과업",
+   "conditions": {
+    "C3": {
+     "text": "where applicable",
+     "result": null
+    }
+   },
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "PREDETERMINED_CHANGES",
+     "label": "사전 명세된 변경사항",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PREDETERMINED_CHANGES",
+     "label": "사전 명세된 변경사항",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-2-g",
+   "card_version": 2,
+   "title": "Annex IV(2)(g): 성능측정 · 모델 구조·과업",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "PERFORMANCE_METRICS_TYPE",
+     "label": "성능 지표 유형",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.type"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "PERFORMANCE_METRICS_VALUE",
+     "label": "성능 지표 값",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "WORKFLOWS_TASKS",
+     "label": "형성: 태스크",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "formulation.workflows.tasks"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TEST_LOG_REPORT_REF",
+     "label": "시험 로그·보고서 참조",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
     {
      "concept": "PERFORMANCE_METRICS_TYPE",
      "label": "성능 지표 유형",
@@ -623,76 +870,34 @@
      ]
     },
     {
-     "concept": "DESIGN_CHOICES",
-     "label": "시스템 설계 선택·절충",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
-     ]
-    },
-    {
-     "concept": "SYSTEM_DEV_TEST_COMPUTE",
-     "label": "시스템 개발·시험 연산자원",
-     "kind": "gap",
-     "suggested_paths": []
-    },
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "kind": "gap",
-     "suggested_paths": []
-    },
-    {
-     "concept": "PREDETERMINED_CHANGES",
-     "label": "사전 명세된 변경사항",
-     "kind": "gap",
-     "suggested_paths": []
-    },
-    {
      "concept": "TEST_LOG_REPORT_REF",
      "label": "시험 로그·보고서 참조",
      "kind": "gap",
      "suggested_paths": []
-    },
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-IV-2-h",
+   "card_version": 2,
+   "title": "Annex IV(2)(h): 모델 구조·과업",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "APPLIED_CONTROLS",
+     "label": "적용한 통제",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
     {
      "concept": "APPLIED_CONTROLS",
      "label": "적용한 통제",
      "kind": "gap",
      "suggested_paths": []
-    },
-    {
-     "concept": "DESIGN_CHOICES",
-     "label": "시스템 설계 선택·절충",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
-     ]
-    },
-    {
-     "concept": "OPTIMIZATION_TARGET",
-     "label": "최적화 목표",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.optimizationTarget"
-     ]
-    },
-    {
-     "concept": "TRAINING_COMPUTE",
-     "label": "모델 훈련 연산자원",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.trainingCompute"
-     ]
-    },
-    {
-     "concept": "EXPLAINABILITY_METHODS",
-     "label": "설명 방법",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.explainabilityMethods"
-     ]
     }
    ]
   },
@@ -2210,10 +2415,48 @@
    ]
   },
   {
-   "card_id": "RC-EUAIA-Annex-XI-1-1",
+   "card_id": "RC-EUAIA-Annex-XI-1-1-a",
    "card_version": 1,
-   "title": "Annex XI §1(1): 모델 구조·과업",
-   "verdict": "부분 반영",
+   "title": "Annex XI §1(1)(a): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.considerations.useCases"
+     ],
+     "found_at": {
+      "component.modelCard.considerations.useCases": [
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
+    },
+    {
+     "concept": "TASK",
+     "label": "과업",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.task"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.task": [
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-1-1-b",
+   "card_version": 1,
+   "title": "Annex XI §1(1)(b): 모델 구조·과업",
+   "verdict": "반영",
    "facts": [
     {
      "concept": "COMPONENT_LICENSES",
@@ -2232,21 +2475,58 @@
        "pkg:huggingface/datasets/stanfordnlp/imdb"
       ]
      }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-1-1-c",
+   "card_version": 1,
+   "title": "Annex XI §1(1)(c): 모델 구조·과업",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RELEASE_NOTES_TIMESTAMP",
+     "label": "출시일",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "releaseNotes.timestamp"
+     ],
+     "found_at": {}
     },
     {
-     "concept": "USE_CASES",
-     "label": "의도된 용도",
+     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+     "label": "배포 형태·버전 갱신 요건",
      "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.considerations.useCases"
-     ],
-     "found_at": {
-      "component.modelCard.considerations.useCases": [
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RELEASE_NOTES_TIMESTAMP",
+     "label": "출시일",
+     "kind": "missing",
+     "suggested_paths": [
+      "releaseNotes.timestamp"
+     ]
     },
+    {
+     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+     "label": "배포 형태·버전 갱신 요건",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-1-1-d",
+   "card_version": 1,
+   "title": "Annex XI §1(1)(d): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
     {
      "concept": "ARCHITECTURE_FAMILY",
      "label": "아키텍처 계열",
@@ -2257,22 +2537,6 @@
      ],
      "found_at": {
       "component.modelCard.modelParameters.architectureFamily": [
-       "pkg:generic/local/llama",
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
-    {
-     "concept": "INPUTS",
-     "label": "입력 형식",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.inputs"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.inputs": [
        "pkg:generic/local/llama",
        "pkg:huggingface/google-bert/bert-base-uncased",
        "pkg:generic/huggingface/tiny-random-gpt2"
@@ -2294,55 +2558,6 @@
      }
     },
     {
-     "concept": "OUTPUTS",
-     "label": "출력 형식",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.outputs"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.outputs": [
-       "pkg:generic/local/llama",
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
-    {
-     "concept": "TASK",
-     "label": "과업",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.task"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.task": [
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
-    {
-     "concept": "RELEASE_NOTES_TIMESTAMP",
-     "label": "출시일",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "releaseNotes.timestamp"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
-     "label": "배포 형태·버전 갱신 요건",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
      "concept": "PARAMETER_COUNT",
      "label": "파라미터 수·모델 크기",
      "required": "always",
@@ -2359,41 +2574,117 @@
      }
     }
    ],
-   "gaps": [
-    {
-     "concept": "RELEASE_NOTES_TIMESTAMP",
-     "label": "출시일",
-     "kind": "missing",
-     "suggested_paths": [
-      "releaseNotes.timestamp"
-     ]
-    },
-    {
-     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
-     "label": "배포 형태·버전 갱신 요건",
-     "kind": "gap",
-     "suggested_paths": []
-    }
-   ]
+   "gaps": []
   },
   {
-   "card_id": "RC-EUAIA-Annex-XI-1-2",
+   "card_id": "RC-EUAIA-Annex-XI-1-1-e",
    "card_version": 1,
-   "title": "Annex XI §1(2): 모델 구조·과업 · 데이터셋 수집·출처 · 데이터 전처리",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
+   "title": "Annex XI §1(1)(e): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.inputs"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.inputs": [
+       "pkg:generic/local/llama",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
     },
-    "C2": {
-     "text": "where applicable",
-     "result": null
-    },
-    "C3": {
-     "text": "where the energy consumption of the model is unknown",
-     "result": null
+    {
+     "concept": "OUTPUTS",
+     "label": "출력 형식",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.outputs"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.outputs": [
+       "pkg:generic/local/llama",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
     }
-   },
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-1-1-f",
+   "card_version": 1,
+   "title": "Annex XI §1(1)(f): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_LICENSES",
+     "label": "라이선스",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.licenses"
+     ],
+     "found_at": {
+      "component.licenses": [
+       "pkg:generic/ollama/llama3.2:1b",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:huggingface/datasets/bookcorpus/bookcorpus",
+       "pkg:generic/huggingface/tiny-random-gpt2",
+       "pkg:huggingface/datasets/stanfordnlp/imdb"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-1-2-a",
+   "card_version": 1,
+   "title": "Annex XI §1(2)(a): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {
+      "component.externalReferences.url (type:documentation)": [
+       "pkg:huggingface/google-bert/bert-base-uncased"
+      ]
+     }
+    },
+    {
+     "concept": "COMPONENTS",
+     "label": "구성요소 목록",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "components"
+     ],
+     "found_at": {
+      "components": [
+       "$"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-1-2-b",
+   "card_version": 1,
+   "title": "Annex XI §1(2)(b): 모델 구조·과업",
    "verdict": "부분 반영",
    "facts": [
     {
@@ -2423,15 +2714,71 @@
      "found_at": {}
     },
     {
-     "concept": "TRAINING_TECHNIQUES",
-     "label": "학습 과정 정보",
+     "concept": "DESIGN_CHOICES",
+     "label": "모델 설계 선택",
      "required": "always",
      "status": "missing",
      "paths": [
-      "component.modelCard.modelParameters.trainingTechniques"
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
      ],
      "found_at": {}
     },
+    {
+     "concept": "OPTIMIZATION_TARGET",
+     "label": "최적화 목표",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.optimizationTarget"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "TRAINING_TECHNIQUES",
+     "label": "학습 과정 정보",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.trainingTechniques"
+     ]
+    },
+    {
+     "concept": "DESIGN_CHOICES",
+     "label": "모델 설계 선택",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
+     ]
+    },
+    {
+     "concept": "OPTIMIZATION_TARGET",
+     "label": "최적화 목표",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.optimizationTarget"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-1-2-c",
+   "card_version": 1,
+   "title": "Annex XI §1(2)(c): 데이터셋 수집·출처 · 데이터 전처리",
+   "conditions": {
+    "C1": {
+     "text": "where applicable",
+     "result": null
+    },
+    "C2": {
+     "text": "where applicable",
+     "result": null
+    }
+   },
+   "verdict": "부분 반영",
+   "facts": [
     {
      "concept": "COLLECTION_PROCESS",
      "label": "데이터 수집 절차",
@@ -2491,91 +2838,12 @@
      }
     },
     {
-     "concept": "DOCUMENTATION_REF",
-     "label": "외부참조: 문서",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.externalReferences.url (type:documentation)"
-     ],
-     "found_at": {
-      "component.externalReferences.url (type:documentation)": [
-       "pkg:huggingface/google-bert/bert-base-uncased"
-      ]
-     }
-    },
-    {
-     "concept": "ENERGY_CONSUMPTIONS",
-     "label": "에너지 소비",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.environmentalConsiderations.energyConsumptions"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "COMPONENTS",
-     "label": "구성요소 목록",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "components"
-     ],
-     "found_at": {
-      "components": [
-       "$"
-      ]
-     }
-    },
-    {
      "concept": "KNOWN_BIAS_DETECTION_METHOD",
      "label": "편향 탐지 방법",
      "required": "always",
      "status": "missing",
      "paths": [
       "componentData.knownBias.detectionMethod"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "TRAINING_COMPUTE",
-     "label": "모델 훈련 연산자원",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.trainingCompute"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "TRAINING_TIME",
-     "label": "모델 훈련 연산자원",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.trainingTime"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DESIGN_CHOICES",
-     "label": "모델 설계 선택",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "OPTIMIZATION_TARGET",
-     "label": "최적화 목표",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.optimizationTarget"
      ],
      "found_at": {}
     },
@@ -2598,22 +2866,6 @@
    ],
    "gaps": [
     {
-     "concept": "TRAINING_TECHNIQUES",
-     "label": "학습 과정 정보",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.trainingTechniques"
-     ]
-    },
-    {
-     "concept": "TRAINING_TECHNIQUES",
-     "label": "학습 과정 정보",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.trainingTechniques"
-     ]
-    },
-    {
      "concept": "PREPROCESSING",
      "label": "데이터 전처리",
      "kind": "missing",
@@ -2622,19 +2874,59 @@
      ]
     },
     {
-     "concept": "ENERGY_CONSUMPTIONS",
-     "label": "에너지 소비",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.environmentalConsiderations.energyConsumptions"
-     ]
-    },
-    {
      "concept": "KNOWN_BIAS_DETECTION_METHOD",
      "label": "편향 탐지 방법",
      "kind": "missing",
      "suggested_paths": [
       "componentData.knownBias.detectionMethod"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-1-2-d",
+   "card_version": 1,
+   "title": "Annex XI §1(2)(d): 모델 구조·과업",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "TRAINING_TECHNIQUES",
+     "label": "학습 과정 정보",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.trainingTechniques"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TRAINING_COMPUTE",
+     "label": "모델 훈련 연산자원",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.trainingCompute"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "TRAINING_TIME",
+     "label": "모델 훈련 연산자원",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.trainingTime"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "TRAINING_TECHNIQUES",
+     "label": "학습 과정 정보",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.modelParameters.trainingTechniques"
      ]
     },
     {
@@ -2652,22 +2944,39 @@
      "suggested_paths": [
       "component.modelCard.modelParameters.trainingTime"
      ]
-    },
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XI-1-2-e",
+   "card_version": 1,
+   "title": "Annex XI §1(2)(e): 모델 구조·과업",
+   "conditions": {
+    "C3": {
+     "text": "where the energy consumption of the model is unknown",
+     "result": null
+    }
+   },
+   "verdict": "미반영",
+   "facts": [
     {
-     "concept": "DESIGN_CHOICES",
-     "label": "모델 설계 선택",
+     "concept": "ENERGY_CONSUMPTIONS",
+     "label": "에너지 소비",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.environmentalConsiderations.energyConsumptions"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ENERGY_CONSUMPTIONS",
+     "label": "에너지 소비",
      "kind": "missing",
      "suggested_paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
-     ]
-    },
-    {
-     "concept": "OPTIMIZATION_TARGET",
-     "label": "최적화 목표",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.modelParameters.optimizationTarget"
+      "component.modelCard.considerations.environmentalConsiderations.energyConsumptions"
      ]
     }
    ]
@@ -2854,38 +3163,49 @@
    "gaps": []
   },
   {
-   "card_id": "RC-EUAIA-Annex-XII-1",
+   "card_id": "RC-EUAIA-Annex-XII-1-a",
    "card_version": 2,
-   "title": "Annex XII(1): 모델 구조·과업",
-   "conditions": {
-    "C1": {
-     "text": "where applicable",
-     "result": null
-    },
-    "C2": {
-     "text": "where applicable",
-     "result": null
-    }
-   },
-   "verdict": "부분 반영",
+   "title": "Annex XII(1)(a): 모델 구조·과업",
+   "verdict": "반영",
    "facts": [
     {
-     "concept": "TECHNICAL_REQUIREMENTS",
-     "label": "소프트웨어 구동 정보",
+     "concept": "TASK",
+     "label": "과업",
      "required": "always",
      "status": "present",
      "paths": [
-      "component.modelCard.considerations.technicalRequirements"
+      "component.modelCard.modelParameters.task"
      ],
      "found_at": {
-      "component.modelCard.considerations.technicalRequirements": [
-       "pkg:generic/ollama/llama3.2:1b",
-       "pkg:generic/local/llama",
+      "component.modelCard.modelParameters.task": [
        "pkg:huggingface/google-bert/bert-base-uncased",
        "pkg:generic/huggingface/tiny-random-gpt2"
       ]
      }
     },
+    {
+     "concept": "USE_CASES",
+     "label": "의도된 용도",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.considerations.useCases"
+     ],
+     "found_at": {
+      "component.modelCard.considerations.useCases": [
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XII-1-b",
+   "card_version": 2,
+   "title": "Annex XII(1)(b): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
     {
      "concept": "COMPONENT_LICENSES",
      "label": "라이선스",
@@ -2903,84 +3223,104 @@
        "pkg:huggingface/datasets/stanfordnlp/imdb"
       ]
      }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XII-1-c",
+   "card_version": 2,
+   "title": "Annex XII(1)(c): 모델 구조·과업",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RELEASE_NOTES_TIMESTAMP",
+     "label": "출시일",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "releaseNotes.timestamp"
+     ],
+     "found_at": {}
     },
     {
-     "concept": "ARCHITECTURE_FAMILY",
-     "label": "아키텍처 계열",
+     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+     "label": "배포 형태·버전 갱신 요건",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RELEASE_NOTES_TIMESTAMP",
+     "label": "출시일",
+     "kind": "missing",
+     "suggested_paths": [
+      "releaseNotes.timestamp"
+     ]
+    },
+    {
+     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
+     "label": "배포 형태·버전 갱신 요건",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XII-1-d",
+   "card_version": 2,
+   "title": "Annex XII(1)(d): 모델 구조·과업",
+   "conditions": {
+    "C1": {
+     "text": "where applicable",
+     "result": null
+    },
+    "C2": {
+     "text": "where applicable",
+     "result": null
+    }
+   },
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "TECHNICAL_REQUIREMENTS",
+     "label": "소프트웨어 구동 정보",
      "required": "always",
      "status": "present",
      "paths": [
-      "component.modelCard.modelParameters.architectureFamily"
+      "component.modelCard.considerations.technicalRequirements"
      ],
      "found_at": {
-      "component.modelCard.modelParameters.architectureFamily": [
+      "component.modelCard.considerations.technicalRequirements": [
+       "pkg:generic/ollama/llama3.2:1b",
        "pkg:generic/local/llama",
        "pkg:huggingface/google-bert/bert-base-uncased",
        "pkg:generic/huggingface/tiny-random-gpt2"
       ]
      }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XII-1-e",
+   "card_version": 2,
+   "title": "Annex XII(1)(e): 모델 구조·과업",
+   "conditions": {
+    "C1": {
+     "text": "where applicable",
+     "result": null
     },
-    {
-     "concept": "INPUTS",
-     "label": "입력 형식",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.inputs"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.inputs": [
-       "pkg:generic/local/llama",
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
-    {
-     "concept": "MODEL_ARCHITECTURE",
-     "label": "구체적 아키텍처",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.modelArchitecture"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.modelArchitecture": [
-       "pkg:huggingface/google-bert/bert-base-uncased"
-      ]
-     }
-    },
-    {
-     "concept": "OUTPUTS",
-     "label": "출력 형식",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.outputs"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.outputs": [
-       "pkg:generic/local/llama",
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
-    {
-     "concept": "TASK",
-     "label": "과업",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.task"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.task": [
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
+    "C2": {
+     "text": "where applicable",
+     "result": null
+    }
+   },
+   "verdict": "반영",
+   "facts": [
     {
      "concept": "COMPONENTS",
      "label": "구성요소 목록",
@@ -3003,54 +3343,6 @@
        "pkg:deb/debian/ca-certificates@20250419?arch=all&distro=debian-13.7",
        "pkg:deb/debian/coreutils@9.7-3?arch=amd64&distro=debian-13.7",
        "pkg:deb/debian/dash@0.5.12-12?arch=amd64&distro=debian-13.7"
-      ]
-     }
-    },
-    {
-     "concept": "RELEASE_NOTES_TIMESTAMP",
-     "label": "출시일",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "releaseNotes.timestamp"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "PARAMETER_COUNT",
-     "label": "파라미터 수·모델 크기",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.parameterCount"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.parameterCount": [
-       "pkg:generic/local/llama",
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
-    {
-     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
-     "label": "배포 형태·버전 갱신 요건",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "USE_CASES",
-     "label": "의도된 용도",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.considerations.useCases"
-     ],
-     "found_at": {
-      "component.modelCard.considerations.useCases": [
-       "pkg:generic/huggingface/tiny-random-gpt2"
       ]
      }
     },
@@ -3080,27 +3372,232 @@
      }
     }
    ],
-   "gaps": [
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XII-1-f",
+   "card_version": 2,
+   "title": "Annex XII(1)(f): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
     {
-     "concept": "RELEASE_NOTES_TIMESTAMP",
-     "label": "출시일",
-     "kind": "missing",
-     "suggested_paths": [
-      "releaseNotes.timestamp"
-     ]
+     "concept": "ARCHITECTURE_FAMILY",
+     "label": "아키텍처 계열",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.architectureFamily"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.architectureFamily": [
+       "pkg:generic/local/llama",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
     },
     {
-     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
-     "label": "배포 형태·버전 갱신 요건",
-     "kind": "gap",
-     "suggested_paths": []
+     "concept": "MODEL_ARCHITECTURE",
+     "label": "구체적 아키텍처",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.modelArchitecture"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.modelArchitecture": [
+       "pkg:huggingface/google-bert/bert-base-uncased"
+      ]
+     }
+    },
+    {
+     "concept": "PARAMETER_COUNT",
+     "label": "파라미터 수·모델 크기",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.parameterCount"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.parameterCount": [
+       "pkg:generic/local/llama",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XII-1-g",
+   "card_version": 2,
+   "title": "Annex XII(1)(g): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.inputs"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.inputs": [
+       "pkg:generic/local/llama",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
+    },
+    {
+     "concept": "OUTPUTS",
+     "label": "출력 형식",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.outputs"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.outputs": [
+       "pkg:generic/local/llama",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XII-1-h",
+   "card_version": 2,
+   "title": "Annex XII(1)(h): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_LICENSES",
+     "label": "라이선스",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.licenses"
+     ],
+     "found_at": {
+      "component.licenses": [
+       "pkg:generic/ollama/llama3.2:1b",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:huggingface/datasets/bookcorpus/bookcorpus",
+       "pkg:generic/huggingface/tiny-random-gpt2",
+       "pkg:huggingface/datasets/stanfordnlp/imdb"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XII-2-a",
+   "card_version": 1,
+   "title": "Annex XII(2)(a): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "DOCUMENTATION_REF",
+     "label": "외부참조: 문서",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.externalReferences.url (type:documentation)"
+     ],
+     "found_at": {
+      "component.externalReferences.url (type:documentation)": [
+       "pkg:huggingface/google-bert/bert-base-uncased"
+      ]
+     }
+    },
+    {
+     "concept": "COMPONENTS",
+     "label": "구성요소 목록",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "components"
+     ],
+     "found_at": {
+      "components": [
+       "$"
+      ]
+     }
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Annex-XII-2-b",
+   "card_version": 1,
+   "title": "Annex XII(2)(b): 모델 구조·과업",
+   "verdict": "부분 반영",
+   "facts": [
+    {
+     "concept": "INPUTS",
+     "label": "입력 형식",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.inputs"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.inputs": [
+       "pkg:generic/local/llama",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
+    },
+    {
+     "concept": "OUTPUTS",
+     "label": "출력 형식",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.outputs"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.outputs": [
+       "pkg:generic/local/llama",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
+    },
+    {
+     "concept": "INPUT_OUTPUT_ML_PARAMETERS_MAX_SIZE",
+     "label": "문맥 길이·입출력 최대 크기",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "inputOutputMLParameters.maxSize"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "INPUT_OUTPUT_ML_PARAMETERS_MAX_SIZE",
+     "label": "문맥 길이·입출력 최대 크기",
+     "kind": "missing",
+     "suggested_paths": [
+      "inputOutputMLParameters.maxSize"
+     ]
     }
    ]
   },
   {
-   "card_id": "RC-EUAIA-Annex-XII-2",
+   "card_id": "RC-EUAIA-Annex-XII-2-c",
    "card_version": 1,
-   "title": "Annex XII(2): 데이터셋 수집·출처 · 데이터 전처리 · 모델 구조·과업",
+   "title": "Annex XII(2)(c): 데이터 전처리 · 데이터셋 수집·출처",
    "conditions": {
     "C1": {
      "text": "where applicable",
@@ -3136,76 +3633,6 @@
      }
     },
     {
-     "concept": "DOCUMENTATION_REF",
-     "label": "외부참조: 문서",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.externalReferences.url (type:documentation)"
-     ],
-     "found_at": {
-      "component.externalReferences.url (type:documentation)": [
-       "pkg:huggingface/google-bert/bert-base-uncased"
-      ]
-     }
-    },
-    {
-     "concept": "INPUTS",
-     "label": "입력 형식",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.inputs"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.inputs": [
-       "pkg:generic/local/llama",
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
-    {
-     "concept": "OUTPUTS",
-     "label": "출력 형식",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.outputs"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.outputs": [
-       "pkg:generic/local/llama",
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
-    {
-     "concept": "COMPONENTS",
-     "label": "구성요소 목록",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "components"
-     ],
-     "found_at": {
-      "components": [
-       "$"
-      ]
-     }
-    },
-    {
-     "concept": "INPUT_OUTPUT_ML_PARAMETERS_MAX_SIZE",
-     "label": "문맥 길이·입출력 최대 크기",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "inputOutputMLParameters.maxSize"
-     ],
-     "found_at": {}
-    },
-    {
      "concept": "PROVENANCE",
      "label": "패키지 출처 정보",
      "required": "always",
@@ -3230,39 +3657,51 @@
      "suggested_paths": [
       "componentData.preprocessing"
      ]
-    },
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-10-2-a",
+   "card_version": 2,
+   "title": "Article 10(2)(a): 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
     {
-     "concept": "INPUT_OUTPUT_ML_PARAMETERS_MAX_SIZE",
-     "label": "문맥 길이·입출력 최대 크기",
+     "concept": "DESIGN_CHOICES",
+     "label": "데이터 설계 선택",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "DESIGN_CHOICES",
+     "label": "데이터 설계 선택",
      "kind": "missing",
      "suggested_paths": [
-      "inputOutputMLParameters.maxSize"
+      "component.modelCard.modelParameters.designChoices",
+      "componentData.designChoices"
      ]
     }
    ]
   },
   {
-   "card_id": "RC-EUAIA-Article-10-2",
+   "card_id": "RC-EUAIA-Article-10-2-b",
    "card_version": 2,
-   "title": "Article 10(2): 데이터셋 수집·출처",
+   "title": "Article 10(2)(b): 데이터셋 수집·출처",
    "conditions": {
     "C1": {
      "text": "in the case of personal data",
      "result": false
     }
    },
-   "verdict": "부분 반영",
+   "verdict": "반영",
    "facts": [
-    {
-     "concept": "PREPROCESSING",
-     "label": "학습 데이터 전처리",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.preprocessing"
-     ],
-     "found_at": {}
-    },
     {
      "concept": "COLLECTION_PROCESS",
      "label": "데이터 수집 절차",
@@ -3279,6 +3718,107 @@
       ]
      }
     },
+    {
+     "concept": "ORIGINAL_COLLECTION_PURPOSE",
+     "label": "데이터 수집의 원래 목적",
+     "required": "conditional",
+     "target": "dataset",
+     "condition": "C1",
+     "condition_evaluated": true,
+     "condition_on": {
+      "pkg:huggingface/datasets/bookcorpus/bookcorpus": false,
+      "pkg:huggingface/datasets/stanfordnlp/imdb": false,
+      "pkg:huggingface/datasets/legacy-datasets/wikipedia": false
+     },
+     "status": "not_required",
+     "paths": [
+      "componentData.originalCollectionPurpose"
+     ],
+     "reason": "조건 C1 이 참인 데이터셋 구성요소가 없음: in the case of personal data"
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Article-10-2-c",
+   "card_version": 2,
+   "title": "Article 10(2)(c): 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "PREPROCESSING",
+     "label": "학습 데이터 전처리",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.preprocessing"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "UPDATE_MECHANISM",
+     "label": "데이터셋 갱신 방식",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.updateMechanism"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "PREPROCESSING",
+     "label": "학습 데이터 전처리",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.preprocessing"
+     ]
+    },
+    {
+     "concept": "UPDATE_MECHANISM",
+     "label": "데이터셋 갱신 방식",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.updateMechanism"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-10-2-d",
+   "card_version": 2,
+   "title": "Article 10(2)(d): 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "REPRESENTATION_ASSUMPTIONS",
+     "label": "데이터의 표상 가정",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.representationAssumptions"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "REPRESENTATION_ASSUMPTIONS",
+     "label": "데이터의 표상 가정",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.representationAssumptions"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-10-2-e",
+   "card_version": 2,
+   "title": "Article 10(2)(e): 데이터셋 수집·출처",
+   "verdict": "부분 반영",
+   "facts": [
     {
      "concept": "AVAILABILITY",
      "label": "데이터셋 가용성",
@@ -3312,26 +3852,6 @@
      }
     },
     {
-     "concept": "UPDATE_MECHANISM",
-     "label": "데이터셋 갱신 방식",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.updateMechanism"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "KNOWN_BIAS_NAME",
-     "label": "알려진 편향",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.knownBias.name"
-     ],
-     "found_at": {}
-    },
-    {
      "concept": "DECLARATIONS_CLAIMS",
      "label": "주장",
      "required": "always",
@@ -3348,106 +3868,12 @@
      "status": "missing",
      "paths": [
       "declarations.evidence"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "DESIGN_CHOICES",
-     "label": "데이터 설계 선택",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "KNOWN_BIAS_MITIGATION_STRATEGY",
-     "label": "편향 완화 조치",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.knownBias.mitigationStrategy"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "KNOWN_GAPS",
-     "label": "데이터 공백·결함",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.knownGaps",
-      "componentData.knownGaps.name"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "KNOWN_GAPS_MITIGATION_STRATEGY",
-     "label": "데이터 공백·결함",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.knownGaps.mitigationStrategy"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "ORIGINAL_COLLECTION_PURPOSE",
-     "label": "데이터 수집의 원래 목적",
-     "required": "conditional",
-     "target": "dataset",
-     "condition": "C1",
-     "condition_evaluated": true,
-     "condition_on": {
-      "pkg:huggingface/datasets/bookcorpus/bookcorpus": false,
-      "pkg:huggingface/datasets/stanfordnlp/imdb": false,
-      "pkg:huggingface/datasets/legacy-datasets/wikipedia": false
-     },
-     "status": "not_required",
-     "paths": [
-      "componentData.originalCollectionPurpose"
-     ],
-     "reason": "조건 C1 이 참인 데이터셋 구성요소가 없음: in the case of personal data"
-    },
-    {
-     "concept": "REPRESENTATION_ASSUMPTIONS",
-     "label": "데이터의 표상 가정",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.representationAssumptions"
      ],
      "found_at": {}
     }
    ],
    "gaps": [
     {
-     "concept": "PREPROCESSING",
-     "label": "학습 데이터 전처리",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.preprocessing"
-     ]
-    },
-    {
-     "concept": "UPDATE_MECHANISM",
-     "label": "데이터셋 갱신 방식",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.updateMechanism"
-     ]
-    },
-    {
-     "concept": "KNOWN_BIAS_NAME",
-     "label": "알려진 편향",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.knownBias.name"
-     ]
-    },
-    {
      "concept": "DECLARATIONS_CLAIMS",
      "label": "주장",
      "kind": "missing",
@@ -3462,16 +3888,55 @@
      "suggested_paths": [
       "declarations.evidence"
      ]
-    },
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-10-2-f",
+   "card_version": 2,
+   "title": "Article 10(2)(f): 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
     {
-     "concept": "DESIGN_CHOICES",
-     "label": "데이터 설계 선택",
+     "concept": "KNOWN_BIAS_NAME",
+     "label": "알려진 편향",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.knownBias.name"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "KNOWN_BIAS_NAME",
+     "label": "알려진 편향",
      "kind": "missing",
      "suggested_paths": [
-      "component.modelCard.modelParameters.designChoices",
-      "componentData.designChoices"
+      "componentData.knownBias.name"
      ]
-    },
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-10-2-g",
+   "card_version": 2,
+   "title": "Article 10(2)(g): 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "KNOWN_BIAS_MITIGATION_STRATEGY",
+     "label": "편향 완화 조치",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.knownBias.mitigationStrategy"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
     {
      "concept": "KNOWN_BIAS_MITIGATION_STRATEGY",
      "label": "편향 완화 조치",
@@ -3479,7 +3944,38 @@
      "suggested_paths": [
       "componentData.knownBias.mitigationStrategy"
      ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-10-2-h",
+   "card_version": 2,
+   "title": "Article 10(2)(h): 데이터셋 수집·출처",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "KNOWN_GAPS",
+     "label": "데이터 공백·결함",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.knownGaps",
+      "componentData.knownGaps.name"
+     ],
+     "found_at": {}
     },
+    {
+     "concept": "KNOWN_GAPS_MITIGATION_STRATEGY",
+     "label": "데이터 공백·결함",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.knownGaps.mitigationStrategy"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
     {
      "concept": "KNOWN_GAPS",
      "label": "데이터 공백·결함",
@@ -3495,14 +3991,6 @@
      "kind": "missing",
      "suggested_paths": [
       "componentData.knownGaps.mitigationStrategy"
-     ]
-    },
-    {
-     "concept": "REPRESENTATION_ASSUMPTIONS",
-     "label": "데이터의 표상 가정",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.representationAssumptions"
      ]
     }
    ]
@@ -3661,6 +4149,40 @@
    "gaps": []
   },
   {
+   "card_id": "RC-EUAIA-Article-10-5-b",
+   "card_version": 1,
+   "title": "Article 10(5)(b): 데이터셋 수집·출처",
+   "conditions": {
+    "C1": {
+     "text": "To the extent that it is strictly necessary for the purpose of ensuring bias detection and correction in relation to the high-risk AI systems in accordance with paragraph (2)",
+     "result": null
+    }
+   },
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ANONYMIZATION_METHODS",
+     "label": "익명화 방법",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "componentData.anonymizationMethods"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ANONYMIZATION_METHODS",
+     "label": "익명화 방법",
+     "kind": "missing",
+     "suggested_paths": [
+      "componentData.anonymizationMethods"
+     ]
+    }
+   ]
+  },
+  {
    "card_id": "RC-EUAIA-Article-10-5",
    "card_version": 1,
    "title": "Article 10(5): 데이터셋 수집·출처",
@@ -3683,16 +4205,6 @@
      "found_at": {}
     },
     {
-     "concept": "ANONYMIZATION_METHODS",
-     "label": "익명화 방법",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "componentData.anonymizationMethods"
-     ],
-     "found_at": {}
-    },
-    {
      "concept": "SENSITIVE_DATA",
      "label": "민감 데이터",
      "required": "always",
@@ -3710,14 +4222,6 @@
      "kind": "missing",
      "suggested_paths": [
       "component.modelCard.considerations.sensitivePersonalInformation"
-     ]
-    },
-    {
-     "concept": "ANONYMIZATION_METHODS",
-     "label": "익명화 방법",
-     "kind": "missing",
-     "suggested_paths": [
-      "componentData.anonymizationMethods"
      ]
     },
     {
@@ -3837,9 +4341,9 @@
    ]
   },
   {
-   "card_id": "RC-EUAIA-Article-12-3",
+   "card_id": "RC-EUAIA-Article-12-3-a",
    "card_version": 1,
-   "title": "Article 12(3): 로깅·추적성",
+   "title": "Article 12(3)(a): 로깅·추적성",
    "verdict": "검토 필요",
    "facts": [
     {
@@ -3912,9 +4416,66 @@
    "gaps": []
   },
   {
-   "card_id": "RC-EUAIA-Article-13-3",
+   "card_id": "RC-EUAIA-Article-13-3-a",
    "card_version": 1,
-   "title": "Article 13(3): 운용·유지관리 · 설명가능성 · 모델 한계·가정 · 의도된 용도·사용자 · 데이터셋 수집·출처 · 성능측정 · 등록·배포 정보 · 로깅·추적성 · 인적 감독",
+   "title": "Article 13(3)(a): 등록·배포 정보",
+   "conditions": {
+    "C1": {
+     "text": "where applicable",
+     "result": null
+    },
+    "C2": {
+     "text": "where applicable",
+     "result": null
+    },
+    "C5": {
+     "text": "where applicable",
+     "result": null
+    }
+   },
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "COMPONENT_SUPPLIER",
+     "label": "공급자",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.supplier"
+     ],
+     "found_at": {
+      "component.supplier": [
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:huggingface/datasets/bookcorpus/bookcorpus",
+       "pkg:huggingface/datasets/stanfordnlp/imdb",
+       "pkg:huggingface/datasets/legacy-datasets/wikipedia"
+      ]
+     }
+    },
+    {
+     "concept": "AUTHORISED_REPRESENTATIVE",
+     "label": "수권대리인",
+     "required": "conditional",
+     "condition": "C1",
+     "condition_evaluated": false,
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "AUTHORISED_REPRESENTATIVE",
+     "label": "수권대리인",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-13-3-b",
+   "card_version": 1,
+   "title": "Article 13(3)(b): 설명가능성 · 모델 한계·가정 · 의도된 용도·사용자 · 데이터셋 수집·출처 · 성능측정",
    "conditions": {
     "C1": {
      "text": "where applicable",
@@ -3935,35 +4496,10 @@
     "C5": {
      "text": "where applicable",
      "result": null
-    },
-    "C6": {
-     "text": "if any",
-     "result": null
-    },
-    "C7": {
-     "text": "where relevant",
-     "result": null
     }
    },
    "verdict": "부분 반영",
    "facts": [
-    {
-     "concept": "TECHNICAL_REQUIREMENTS",
-     "label": "소프트웨어 구동 정보",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.considerations.technicalRequirements"
-     ],
-     "found_at": {
-      "component.modelCard.considerations.technicalRequirements": [
-       "pkg:generic/ollama/llama3.2:1b",
-       "pkg:generic/local/llama",
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
     {
      "concept": "EXPLAINABILITY_METHODS",
      "label": "설명 방법",
@@ -4075,65 +4611,6 @@
      "found_at": {}
     },
     {
-     "concept": "COMPONENT_SUPPLIER",
-     "label": "공급자",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.supplier"
-     ],
-     "found_at": {
-      "component.supplier": [
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:huggingface/datasets/bookcorpus/bookcorpus",
-       "pkg:huggingface/datasets/stanfordnlp/imdb",
-       "pkg:huggingface/datasets/legacy-datasets/wikipedia"
-      ]
-     }
-    },
-    {
-     "concept": "LOGGING_MECHANISM",
-     "label": "로깅 메커니즘",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "EXPECTED_LIFETIME_MAINTENANCE",
-     "label": "예상 수명·유지관리 주기",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "PREDETERMINED_CHANGES",
-     "label": "사전 명세된 변경사항",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
-     "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인",
-     "required": "conditional",
-     "condition": "C1",
-     "condition_evaluated": false,
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
-    },
-    {
      "concept": "DATASETS",
      "label": "사용한 데이터셋",
      "required": "always",
@@ -4213,34 +4690,129 @@
      "suggested_paths": [
       "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
      ]
-    },
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-13-3-c",
+   "card_version": 1,
+   "title": "Article 13(3)(c): 운용·유지관리",
+   "conditions": {
+    "C6": {
+     "text": "if any",
+     "result": null
+    }
+   },
+   "verdict": "검토 필요",
+   "facts": [
     {
-     "concept": "LOGGING_MECHANISM",
-     "label": "로깅 메커니즘",
-     "kind": "gap",
-     "suggested_paths": []
-    },
-    {
-     "concept": "EXPECTED_LIFETIME_MAINTENANCE",
-     "label": "예상 수명·유지관리 주기",
-     "kind": "gap",
-     "suggested_paths": []
-    },
+     "concept": "PREDETERMINED_CHANGES",
+     "label": "사전 명세된 변경사항",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
     {
      "concept": "PREDETERMINED_CHANGES",
      "label": "사전 명세된 변경사항",
      "kind": "gap",
      "suggested_paths": []
-    },
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-13-3-d",
+   "card_version": 1,
+   "title": "Article 13(3)(d): 인적 감독",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
     {
      "concept": "HUMAN_OVERSIGHT_MEASURES",
      "label": "인적 감독 수단",
      "kind": "gap",
      "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-13-3-e",
+   "card_version": 1,
+   "title": "Article 13(3)(e): 운용·유지관리",
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "TECHNICAL_REQUIREMENTS",
+     "label": "소프트웨어 구동 정보",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.considerations.technicalRequirements"
+     ],
+     "found_at": {
+      "component.modelCard.considerations.technicalRequirements": [
+       "pkg:generic/ollama/llama3.2:1b",
+       "pkg:generic/local/llama",
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
     },
     {
-     "concept": "AUTHORISED_REPRESENTATIVE",
-     "label": "수권대리인",
+     "concept": "EXPECTED_LIFETIME_MAINTENANCE",
+     "label": "예상 수명·유지관리 주기",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "EXPECTED_LIFETIME_MAINTENANCE",
+     "label": "예상 수명·유지관리 주기",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-13-3-f",
+   "card_version": 1,
+   "title": "Article 13(3)(f): 로깅·추적성",
+   "conditions": {
+    "C7": {
+     "text": "where relevant",
+     "result": null
+    }
+   },
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "LOGGING_MECHANISM",
+     "label": "로깅 메커니즘",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "LOGGING_MECHANISM",
+     "label": "로깅 메커니즘",
      "kind": "gap",
      "suggested_paths": []
     }
@@ -4271,9 +4843,9 @@
    ]
   },
   {
-   "card_id": "RC-EUAIA-Article-14-3",
+   "card_id": "RC-EUAIA-Article-14-3-a",
    "card_version": 1,
-   "title": "Article 14(3): 인적 감독",
+   "title": "Article 14(3)(a): 인적 감독",
    "verdict": "검토 필요",
    "facts": [
     {
@@ -4295,9 +4867,67 @@
    ]
   },
   {
-   "card_id": "RC-EUAIA-Article-14-4",
+   "card_id": "RC-EUAIA-Article-14-3-b",
    "card_version": 1,
-   "title": "Article 14(4): 인적 감독",
+   "title": "Article 14(3)(b): 인적 감독",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-14-4-a",
+   "card_version": 1,
+   "title": "Article 14(4)(a): 인적 감독",
+   "conditions": {
+    "C1": {
+     "text": "as appropriate",
+     "result": null
+    }
+   },
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-14-4-c",
+   "card_version": 1,
+   "title": "Article 14(4)(c): 인적 감독",
    "conditions": {
     "C1": {
      "text": "as appropriate",
@@ -4315,17 +4945,31 @@
       "component.modelCard.considerations.explainabilityMethods"
      ],
      "found_at": {}
-    },
+    }
+   ],
+   "gaps": [
     {
-     "concept": "TECHNICAL_LIMITATIONS",
-     "label": "기술적 한계",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.technicalLimitations"
-     ],
-     "found_at": {}
-    },
+     "concept": "EXPLAINABILITY_METHODS",
+     "label": "설명 방법",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.explainabilityMethods"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-14-4-d",
+   "card_version": 1,
+   "title": "Article 14(4)(d): 인적 감독",
+   "conditions": {
+    "C1": {
+     "text": "as appropriate",
+     "result": null
+    }
+   },
+   "verdict": "검토 필요",
+   "facts": [
     {
      "concept": "HUMAN_OVERSIGHT_MEASURES",
      "label": "인적 감독 수단",
@@ -4337,21 +4981,35 @@
    ],
    "gaps": [
     {
-     "concept": "EXPLAINABILITY_METHODS",
-     "label": "설명 방법",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.explainabilityMethods"
-     ]
-    },
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-14-4-e",
+   "card_version": 1,
+   "title": "Article 14(4)(e): 인적 감독",
+   "conditions": {
+    "C1": {
+     "text": "as appropriate",
+     "result": null
+    }
+   },
+   "verdict": "검토 필요",
+   "facts": [
     {
-     "concept": "TECHNICAL_LIMITATIONS",
-     "label": "기술적 한계",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.technicalLimitations"
-     ]
-    },
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
     {
      "concept": "HUMAN_OVERSIGHT_MEASURES",
      "label": "인적 감독 수단",
@@ -4527,9 +5185,9 @@
    ]
   },
   {
-   "card_id": "RC-EUAIA-Article-16",
+   "card_id": "RC-EUAIA-Article-16-b",
    "card_version": 1,
-   "title": "Article 16: 적합성 증서·선언서 · 등록·배포 정보",
+   "title": "Article 16(b): 등록·배포 정보",
    "conditions": {
     "C1": {
      "text": "where that is not possible",
@@ -4540,18 +5198,8 @@
      "result": null
     }
    },
-   "verdict": "부분 반영",
+   "verdict": "반영",
    "facts": [
-    {
-     "concept": "ATTESTATION_REF",
-     "label": "외부참조: 증명",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.externalReferences.url (type:attestation)"
-     ],
-     "found_at": {}
-    },
     {
      "concept": "COMPONENT_SUPPLIER",
      "label": "공급자",
@@ -4568,14 +5216,25 @@
        "pkg:huggingface/datasets/legacy-datasets/wikipedia"
       ]
      }
-    },
+    }
+   ],
+   "gaps": []
+  },
+  {
+   "card_id": "RC-EUAIA-Article-16-g",
+   "card_version": 1,
+   "title": "Article 16(g): 적합성 증서·선언서",
+   "verdict": "미반영",
+   "facts": [
     {
-     "concept": "CONFORMITY_MARKING",
-     "label": "적합성 표시 (CE 마킹)",
+     "concept": "ATTESTATION_REF",
+     "label": "외부참조: 증명",
      "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:attestation)"
+     ],
+     "found_at": {}
     }
    ],
    "gaps": [
@@ -4586,7 +5245,35 @@
      "suggested_paths": [
       "component.externalReferences.url (type:attestation)"
      ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-16-h",
+   "card_version": 1,
+   "title": "Article 16(h): 적합성 증서·선언서",
+   "conditions": {
+    "C1": {
+     "text": "where that is not possible",
+     "result": null
     },
+    "C2": {
+     "text": "where that is not possible",
+     "result": null
+    }
+   },
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "CONFORMITY_MARKING",
+     "label": "적합성 표시 (CE 마킹)",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
     {
      "concept": "CONFORMITY_MARKING",
      "label": "적합성 표시 (CE 마킹)",
@@ -4722,6 +5409,58 @@
    ]
   },
   {
+   "card_id": "RC-EUAIA-Article-27-1-c",
+   "card_version": 1,
+   "title": "Article 27(1)(c): 집단·환경 영향",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "GROUP_AT_RISK",
+     "label": "위험에 놓인 집단",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "GROUP_AT_RISK",
+     "label": "위험에 놓인 집단",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-27-1-e",
+   "card_version": 1,
+   "title": "Article 27(1)(e): 인적 감독",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "HUMAN_OVERSIGHT_MEASURES",
+     "label": "인적 감독 수단",
+     "kind": "gap",
+     "suggested_paths": []
+    }
+   ]
+  },
+  {
    "card_id": "RC-EUAIA-Article-27-1",
    "card_version": 1,
    "title": "Article 27(1): 위험·영향평가",
@@ -4742,24 +5481,6 @@
       "component.externalReferences.url (type:risk-assessment)"
      ],
      "found_at": {}
-    },
-    {
-     "concept": "GROUP_AT_RISK",
-     "label": "위험에 놓인 집단",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
     }
    ],
    "gaps": [
@@ -4770,20 +5491,6 @@
      "suggested_paths": [
       "component.externalReferences.url (type:risk-assessment)"
      ]
-    },
-    {
-     "concept": "GROUP_AT_RISK",
-     "label": "위험에 놓인 집단",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.fairnessAssessments.groupAtRisk"
-     ]
-    },
-    {
-     "concept": "HUMAN_OVERSIGHT_MEASURES",
-     "label": "인적 감독 수단",
-     "kind": "gap",
-     "suggested_paths": []
     }
    ]
   },
@@ -5014,9 +5721,9 @@
    ]
   },
   {
-   "card_id": "RC-EUAIA-Article-53-1",
+   "card_id": "RC-EUAIA-Article-53-1-a",
    "card_version": 1,
-   "title": "Article 53(1): 모델 구조·과업 · 기술문서 · 성능측정",
+   "title": "Article 53(1)(a): 모델 구조·과업 · 기술문서 · 성능측정",
    "verdict": "부분 반영",
    "facts": [
     {
@@ -5044,21 +5751,6 @@
      }
     },
     {
-     "concept": "DATASETS",
-     "label": "사용한 데이터셋",
-     "required": "always",
-     "status": "present",
-     "paths": [
-      "component.modelCard.modelParameters.datasets"
-     ],
-     "found_at": {
-      "component.modelCard.modelParameters.datasets": [
-       "pkg:huggingface/google-bert/bert-base-uncased",
-       "pkg:generic/huggingface/tiny-random-gpt2"
-      ]
-     }
-    },
-    {
      "concept": "PERFORMANCE_METRICS_TYPE",
      "label": "성능 지표 유형",
      "required": "always",
@@ -5075,16 +5767,6 @@
      "status": "missing",
      "paths": [
       "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "TECHNICAL_LIMITATIONS",
-     "label": "기술적 한계",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.technicalLimitations"
      ],
      "found_at": {}
     }
@@ -5113,7 +5795,27 @@
      "suggested_paths": [
       "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
      ]
-    },
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-53-1-b",
+   "card_version": 1,
+   "title": "Article 53(1)(b): 모델 한계·가정",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "TECHNICAL_LIMITATIONS",
+     "label": "기술적 한계",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.technicalLimitations"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
     {
      "concept": "TECHNICAL_LIMITATIONS",
      "label": "기술적 한계",
@@ -5123,6 +5825,30 @@
      ]
     }
    ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-53-1-d",
+   "card_version": 1,
+   "title": "Article 53(1)(d): 모델 구조·과업",
+   "verdict": "반영",
+   "facts": [
+    {
+     "concept": "DATASETS",
+     "label": "사용한 데이터셋",
+     "required": "always",
+     "status": "present",
+     "paths": [
+      "component.modelCard.modelParameters.datasets"
+     ],
+     "found_at": {
+      "component.modelCard.modelParameters.datasets": [
+       "pkg:huggingface/google-bert/bert-base-uncased",
+       "pkg:generic/huggingface/tiny-random-gpt2"
+      ]
+     }
+    }
+   ],
+   "gaps": []
   },
   {
    "card_id": "RC-EUAIA-Article-53-4",
@@ -5209,15 +5935,9 @@
    ]
   },
   {
-   "card_id": "RC-EUAIA-Article-55-1",
+   "card_id": "RC-EUAIA-Article-55-1-a",
    "card_version": 1,
-   "title": "Article 55(1): 입증·검증 · 위험·영향평가 · 성능측정 · 보안평가",
-   "conditions": {
-    "C1": {
-     "text": "as appropriate",
-     "result": null
-    }
-   },
+   "title": "Article 55(1)(a): 입증·검증 · 성능측정",
    "verdict": "미반영",
    "facts": [
     {
@@ -5227,26 +5947,6 @@
      "status": "missing",
      "paths": [
       "component.externalReferences.url (type:adversary-model)"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
-     "label": "위험 완화 전략",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_NAME",
-     "label": "위험의 이름",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.ethicalConsiderations.name"
      ],
      "found_at": {}
     },
@@ -5269,14 +5969,6 @@
       "component.modelCard.quantitativeAnalysis.performanceMetrics.value"
      ],
      "found_at": {}
-    },
-    {
-     "concept": "APPLIED_CONTROLS",
-     "label": "적용한 통제",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
     },
     {
      "concept": "TASKS_RESOURCE_REFERENCES",
@@ -5299,22 +5991,6 @@
      ]
     },
     {
-     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
-     "label": "위험 완화 전략",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
-     ]
-    },
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_NAME",
-     "label": "위험의 이름",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.ethicalConsiderations.name"
-     ]
-    },
-    {
      "concept": "PERFORMANCE_METRICS_TYPE",
      "label": "성능 지표 유형",
      "kind": "missing",
@@ -5331,18 +6007,82 @@
      ]
     },
     {
-     "concept": "APPLIED_CONTROLS",
-     "label": "적용한 통제",
-     "kind": "gap",
-     "suggested_paths": []
-    },
-    {
      "concept": "TASKS_RESOURCE_REFERENCES",
      "label": "형성: 리소스 참조",
      "kind": "missing",
      "suggested_paths": [
       "formulation.workflows.tasks.resourceReferences"
      ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-55-1-b",
+   "card_version": 1,
+   "title": "Article 55(1)(b): 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
+     "label": "위험 완화 전략",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
+     ],
+     "found_at": {}
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_NAME",
+     "label": "위험의 이름",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.ethicalConsiderations.name"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
+     "label": "위험 완화 전략",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
+     ]
+    },
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_NAME",
+     "label": "위험의 이름",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.ethicalConsiderations.name"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-55-1-d",
+   "card_version": 1,
+   "title": "Article 55(1)(d): 보안평가",
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "APPLIED_CONTROLS",
+     "label": "적용한 통제",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "APPLIED_CONTROLS",
+     "label": "적용한 통제",
+     "kind": "gap",
+     "suggested_paths": []
     }
    ]
   },
@@ -5459,9 +6199,9 @@
    ]
   },
   {
-   "card_id": "RC-EUAIA-Article-9-2",
+   "card_id": "RC-EUAIA-Article-9-2-a",
    "card_version": 1,
-   "title": "Article 9(2): 위험·영향평가",
+   "title": "Article 9(2)(a): 위험·영향평가",
    "verdict": "미반영",
    "facts": [
     {
@@ -5471,16 +6211,6 @@
      "status": "missing",
      "paths": [
       "component.externalReferences.url (type:risk-assessment)"
-     ],
-     "found_at": {}
-    },
-    {
-     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
-     "label": "위험 완화 전략",
-     "required": "always",
-     "status": "missing",
-     "paths": [
-      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
      ],
      "found_at": {}
     },
@@ -5505,14 +6235,6 @@
      ]
     },
     {
-     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
-     "label": "위험 완화 전략",
-     "kind": "missing",
-     "suggested_paths": [
-      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
-     ]
-    },
-    {
      "concept": "ETHICAL_CONSIDERATIONS_NAME",
      "label": "위험의 이름",
      "kind": "missing",
@@ -5523,9 +6245,121 @@
    ]
   },
   {
-   "card_id": "RC-EUAIA-Article-9-5",
+   "card_id": "RC-EUAIA-Article-9-2-b",
    "card_version": 1,
-   "title": "Article 9(5): 위험·영향평가",
+   "title": "Article 9(2)(b): 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-9-2-c",
+   "card_version": 1,
+   "title": "Article 9(2)(c): 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "RISK_ASSESSMENT_REF",
+     "label": "외부참조: 위험평가",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.externalReferences.url (type:risk-assessment)"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-9-2-d",
+   "card_version": 1,
+   "title": "Article 9(2)(d): 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
+     "label": "위험 완화 전략",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
+     "label": "위험 완화 전략",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-9-5-a",
+   "card_version": 1,
+   "title": "Article 9(5)(a): 위험·영향평가",
+   "verdict": "미반영",
+   "facts": [
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
+     "label": "위험 완화 전략",
+     "required": "always",
+     "status": "missing",
+     "paths": [
+      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
+     ],
+     "found_at": {}
+    }
+   ],
+   "gaps": [
+    {
+     "concept": "ETHICAL_CONSIDERATIONS_MITIGATION_STRATEGY",
+     "label": "위험 완화 전략",
+     "kind": "missing",
+     "suggested_paths": [
+      "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
+     ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-9-5-b",
+   "card_version": 1,
+   "title": "Article 9(5)(b): 위험·영향평가",
    "conditions": {
     "C1": {
      "text": "where appropriate",
@@ -5547,14 +6381,6 @@
       "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
      ],
      "found_at": {}
-    },
-    {
-     "concept": "RESIDUAL_RISK_ACCEPTANCE",
-     "label": "잔여위험 수용 판정",
-     "required": "always",
-     "status": "gap",
-     "paths": [],
-     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
     }
    ],
    "gaps": [
@@ -5565,7 +6391,35 @@
      "suggested_paths": [
       "component.modelCard.considerations.ethicalConsiderations.mitigationStrategy"
      ]
+    }
+   ]
+  },
+  {
+   "card_id": "RC-EUAIA-Article-9-5",
+   "card_version": 1,
+   "title": "Article 9(5): 위험·영향평가",
+   "conditions": {
+    "C1": {
+     "text": "where appropriate",
+     "result": null
     },
+    "C2": {
+     "text": "where appropriate",
+     "result": null
+    }
+   },
+   "verdict": "검토 필요",
+   "facts": [
+    {
+     "concept": "RESIDUAL_RISK_ACCEPTANCE",
+     "label": "잔여위험 수용 판정",
+     "required": "always",
+     "status": "gap",
+     "paths": [],
+     "reason": "프로파일에 경로 없음 (스키마에 자리 없음)"
+    }
+   ],
+   "gaps": [
     {
      "concept": "RESIDUAL_RISK_ACCEPTANCE",
      "label": "잔여위험 수용 판정",
@@ -7681,6 +8535,1101 @@
      "kind": "gap",
      "suggested_paths": []
     }
+   ]
+  }
+ ],
+ "clauses": [
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex IV(1)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Annex-IV-1-a",
+    "RC-EUAIA-Annex-IV-1-b",
+    "RC-EUAIA-Annex-IV-1-c",
+    "RC-EUAIA-Annex-IV-1-d",
+    "RC-EUAIA-Annex-IV-1-e",
+    "RC-EUAIA-Annex-IV-1-g",
+    "RC-EUAIA-Annex-IV-1-h"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex IV(2)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Annex-IV-2-a",
+    "RC-EUAIA-Annex-IV-2-b",
+    "RC-EUAIA-Annex-IV-2-c",
+    "RC-EUAIA-Annex-IV-2-d",
+    "RC-EUAIA-Annex-IV-2-e",
+    "RC-EUAIA-Annex-IV-2-f",
+    "RC-EUAIA-Annex-IV-2-g",
+    "RC-EUAIA-Annex-IV-2-h"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex IV(3)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Annex-IV-3"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex IV(4)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-IV-4"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex IV(5)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-IV-5"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex IV(6)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Annex-IV-6"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex IV(7)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-IV-7"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex IV(8)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-IV-8"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex IX(3)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Annex-IX-3"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex V(1)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Annex-V-1"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex V(2)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Annex-V-2"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex V(6)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-V-6"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex V(7)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-V-7"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex V(8)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Annex-V-8"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §A(1)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-A-1"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §A(10)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-A-10"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §A(11)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-A-11"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §A(12)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-A-12"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §A(13)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-A-13"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §A(3)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-A-3"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §A(4)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-A-4"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §A(5)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-A-5"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §A(6)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-A-6"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §A(7)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-A-7"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §A(8)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-A-8"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §A(9)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-A-9"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §B(1)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-B-1"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §B(3)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-B-3"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §B(4)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-B-4"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §B(5)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-B-5"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §B(6)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-B-6"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §B(7)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-B-7"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §B(8)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-B-8"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §B(9)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-B-9"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §C(1)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-C-1"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §C(3)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-C-3"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §C(4)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-C-4"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex VIII §C(5)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-VIII-C-5"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex XI §1(1)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Annex-XI-1-1-a",
+    "RC-EUAIA-Annex-XI-1-1-b",
+    "RC-EUAIA-Annex-XI-1-1-c",
+    "RC-EUAIA-Annex-XI-1-1-d",
+    "RC-EUAIA-Annex-XI-1-1-e",
+    "RC-EUAIA-Annex-XI-1-1-f"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex XI §1(2)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Annex-XI-1-2-a",
+    "RC-EUAIA-Annex-XI-1-2-b",
+    "RC-EUAIA-Annex-XI-1-2-c",
+    "RC-EUAIA-Annex-XI-1-2-d",
+    "RC-EUAIA-Annex-XI-1-2-e"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex XI §2(1)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-XI-2-1"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex XI §2(2)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Annex-XI-2-2"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex XI §2(3)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Annex-XI-2-3"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex XII(1)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Annex-XII-1-a",
+    "RC-EUAIA-Annex-XII-1-b",
+    "RC-EUAIA-Annex-XII-1-c",
+    "RC-EUAIA-Annex-XII-1-d",
+    "RC-EUAIA-Annex-XII-1-e",
+    "RC-EUAIA-Annex-XII-1-f",
+    "RC-EUAIA-Annex-XII-1-g",
+    "RC-EUAIA-Annex-XII-1-h"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Annex XII(2)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Annex-XII-2-a",
+    "RC-EUAIA-Annex-XII-2-b",
+    "RC-EUAIA-Annex-XII-2-c"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 10(2)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Article-10-2-a",
+    "RC-EUAIA-Article-10-2-b",
+    "RC-EUAIA-Article-10-2-c",
+    "RC-EUAIA-Article-10-2-d",
+    "RC-EUAIA-Article-10-2-e",
+    "RC-EUAIA-Article-10-2-f",
+    "RC-EUAIA-Article-10-2-g",
+    "RC-EUAIA-Article-10-2-h"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 10(3)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Article-10-3"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 10(4)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Article-10-4"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 10(5)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-10-5-b",
+    "RC-EUAIA-Article-10-5"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 11(1)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Article-11-1"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 11(2)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Article-11-2"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 12(1)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Article-12-1"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 12(2)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Article-12-2"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 12(3)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Article-12-3-a"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 13(1)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-13-1"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 13(2)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Article-13-2"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 13(3)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Article-13-3-a",
+    "RC-EUAIA-Article-13-3-b",
+    "RC-EUAIA-Article-13-3-c",
+    "RC-EUAIA-Article-13-3-d",
+    "RC-EUAIA-Article-13-3-e",
+    "RC-EUAIA-Article-13-3-f"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 14(1)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Article-14-1"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 14(3)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Article-14-3-a",
+    "RC-EUAIA-Article-14-3-b"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 14(4)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-14-4-a",
+    "RC-EUAIA-Article-14-4-c",
+    "RC-EUAIA-Article-14-4-d",
+    "RC-EUAIA-Article-14-4-e"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 14(5)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Article-14-5"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 15(3)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-15-3"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 15(4)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Article-15-4"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 15(5)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-15-5"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 16",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Article-16-b",
+    "RC-EUAIA-Article-16-g",
+    "RC-EUAIA-Article-16-h"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 23(3)",
+   "verdict": "반영",
+   "cards": [
+    "RC-EUAIA-Article-23-3"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 25(4)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Article-25-4"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 26(4)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-26-4"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 27(1)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-27-1-c",
+    "RC-EUAIA-Article-27-1-e",
+    "RC-EUAIA-Article-27-1"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 41(5)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-41-5"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 47(1)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-47-1"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 48(2)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Article-48-2"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 48(4)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-48-4"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 50(1)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Article-50-1"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 50(2)",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-EUAIA-Article-50-2"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 53(1)",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-EUAIA-Article-53-1-a",
+    "RC-EUAIA-Article-53-1-b",
+    "RC-EUAIA-Article-53-1-d"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 53(4)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-53-4"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 55(1)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-55-1-a",
+    "RC-EUAIA-Article-55-1-b",
+    "RC-EUAIA-Article-55-1-d"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 55(2)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-55-2"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 6(4)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-6-4"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 9(2)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-9-2-a",
+    "RC-EUAIA-Article-9-2-b",
+    "RC-EUAIA-Article-9-2-c",
+    "RC-EUAIA-Article-9-2-d"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 9(5)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-9-5-a",
+    "RC-EUAIA-Article-9-5-b",
+    "RC-EUAIA-Article-9-5"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 9(8)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-9-8"
+   ]
+  },
+  {
+   "regulation": "EUAIA",
+   "clause_id": "Article 9(9)",
+   "verdict": "미반영",
+   "cards": [
+    "RC-EUAIA-Article-9-9"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.4.2",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-ISO42001-A.4.2"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.4.3",
+   "verdict": "반영",
+   "cards": [
+    "RC-ISO42001-A.4.3"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.4.4",
+   "verdict": "미반영",
+   "cards": [
+    "RC-ISO42001-A.4.4"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.4.5",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-ISO42001-A.4.5"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.5.3",
+   "verdict": "미반영",
+   "cards": [
+    "RC-ISO42001-A.5.3"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.5.4",
+   "verdict": "미반영",
+   "cards": [
+    "RC-ISO42001-A.5.4"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.5.5",
+   "verdict": "미반영",
+   "cards": [
+    "RC-ISO42001-A.5.5"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.6.2.2",
+   "verdict": "미반영",
+   "cards": [
+    "RC-ISO42001-A.6.2.2"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.6.2.3",
+   "verdict": "반영",
+   "cards": [
+    "RC-ISO42001-A.6.2.3"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.6.2.4",
+   "verdict": "미반영",
+   "cards": [
+    "RC-ISO42001-A.6.2.4"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.6.2.7",
+   "verdict": "반영",
+   "cards": [
+    "RC-ISO42001-A.6.2.7"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.6.2.8",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-ISO42001-A.6.2.8"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.7.3",
+   "verdict": "반영",
+   "cards": [
+    "RC-ISO42001-A.7.3"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.7.4",
+   "verdict": "미반영",
+   "cards": [
+    "RC-ISO42001-A.7.4"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.7.5",
+   "verdict": "반영",
+   "cards": [
+    "RC-ISO42001-A.7.5"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.7.6",
+   "verdict": "미반영",
+   "cards": [
+    "RC-ISO42001-A.7.6"
+   ]
+  },
+  {
+   "regulation": "ISO42001",
+   "clause_id": "A.8.2",
+   "verdict": "반영",
+   "cards": [
+    "RC-ISO42001-A.8.2"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "GOVERN 4.2",
+   "verdict": "미반영",
+   "cards": [
+    "RC-NISTRMF-GOVERN-4.2"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MANAGE 1.1",
+   "verdict": "미반영",
+   "cards": [
+    "RC-NISTRMF-MANAGE-1.1"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MANAGE 1.4",
+   "verdict": "미반영",
+   "cards": [
+    "RC-NISTRMF-MANAGE-1.4"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MANAGE 3.1",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-NISTRMF-MANAGE-3.1"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MAP 1.1",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-NISTRMF-MAP-1.1"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MAP 1.4",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-NISTRMF-MAP-1.4"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MAP 1.6",
+   "verdict": "미반영",
+   "cards": [
+    "RC-NISTRMF-MAP-1.6"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MAP 2.1",
+   "verdict": "반영",
+   "cards": [
+    "RC-NISTRMF-MAP-2.1"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MAP 2.2",
+   "verdict": "미반영",
+   "cards": [
+    "RC-NISTRMF-MAP-2.2"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MAP 2.3",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-NISTRMF-MAP-2.3"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MAP 3.1",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-NISTRMF-MAP-3.1"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MAP 3.2",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-NISTRMF-MAP-3.2"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MAP 3.3",
+   "verdict": "반영",
+   "cards": [
+    "RC-NISTRMF-MAP-3.3"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MAP 4.2",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-NISTRMF-MAP-4.2"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MAP 5.1",
+   "verdict": "미반영",
+   "cards": [
+    "RC-NISTRMF-MAP-5.1"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MEASURE 1.1",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-NISTRMF-MEASURE-1.1"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MEASURE 2.1",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-NISTRMF-MEASURE-2.1"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MEASURE 2.10",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-NISTRMF-MEASURE-2.10"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MEASURE 2.11",
+   "verdict": "미반영",
+   "cards": [
+    "RC-NISTRMF-MEASURE-2.11"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MEASURE 2.12",
+   "verdict": "미반영",
+   "cards": [
+    "RC-NISTRMF-MEASURE-2.12"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MEASURE 2.3",
+   "verdict": "미반영",
+   "cards": [
+    "RC-NISTRMF-MEASURE-2.3"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MEASURE 2.5",
+   "verdict": "미반영",
+   "cards": [
+    "RC-NISTRMF-MEASURE-2.5"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MEASURE 2.6",
+   "verdict": "미반영",
+   "cards": [
+    "RC-NISTRMF-MEASURE-2.6"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MEASURE 2.7",
+   "verdict": "미반영",
+   "cards": [
+    "RC-NISTRMF-MEASURE-2.7"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MEASURE 2.8",
+   "verdict": "미반영",
+   "cards": [
+    "RC-NISTRMF-MEASURE-2.8"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MEASURE 2.9",
+   "verdict": "부분 반영",
+   "cards": [
+    "RC-NISTRMF-MEASURE-2.9"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MEASURE 4.2",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-NISTRMF-MEASURE-4.2"
+   ]
+  },
+  {
+   "regulation": "NISTRMF",
+   "clause_id": "MEASURE 4.3",
+   "verdict": "검토 필요",
+   "cards": [
+    "RC-NISTRMF-MEASURE-4.3"
    ]
   }
  ]

@@ -99,21 +99,51 @@ function regCards() {                                 // 고른 규제의 카드
   const reg = $("#cv-reg").value;
   return currentRecord.cards.filter((r) => !reg || r.card_id.startsWith("RC-" + reg + "-"));
 }
+// 카드 단위는 호라서 항(parent_clause_id) 하나에 카드가 여럿일 수 있다. 항의 종합 판정 (cards/judge/judge.py 의 aggregate 와 같은 규칙):
+// 판정한 카드(반영·부분 반영·미반영)가 전부 반영이면 반영, 전부 미반영이면 미반영, 섞이면 부분 반영. 판정한 카드가 없으면 검토 필요가 있을 때 검토 필요, 아니면 비적용.
+const clauseOf = (id) => cardById[id]?.source?.parent_clause_id || cardById[id]?.source?.clause_id || id.replace(/^RC-[A-Z0-9]+-/, "");
+function aggregate(verdicts) {
+  const judged = verdicts.filter((v) => v === "반영" || v === "부분 반영" || v === "미반영");
+  if (!judged.length) return verdicts.includes("검토 필요") ? "검토 필요" : "비적용";
+  if (judged.every((v) => v === "반영")) return "반영";
+  if (judged.every((v) => v === "미반영")) return "미반영";
+  return "부분 반영";
+}
+function clauseGroups(rs) {                           // 판정 목록 → [{clause, reg, verdict, cards}] (원문 차례)
+  const groups = new Map();
+  for (const r of rs) { const key = regOf(r.card_id) + "|" + clauseOf(r.card_id); if (!groups.has(key)) groups.set(key, {clause: clauseOf(r.card_id), reg: regOf(r.card_id), cards: []}); groups.get(key).cards.push(r); }
+  return [...groups.values()].map((g) => ({...g, verdict: aggregate(g.cards.map((r) => r.verdict))}));
+}
 function showRecord(rec) { currentRecord = rec; renderSummary(); renderJudgList(); }
 function renderSummary() {
   if (!currentRecord) return;
-  const rec = currentRecord, rs = regCards(), total = rs.length;
+  const rec = currentRecord, rs = regCards(), total = rs.length, groups = clauseGroups(rs);
   const s = Object.fromEntries(VERDICTS.map((v) => [v, rs.filter((r) => r.verdict === v).length]));
-  $("#cv-judg-summary").innerHTML = `<div class="cv-stat"><b>${esc(rec.bom.subject || rec.bom.serialNumber || "")}</b>조항 ${total}개 · ${esc(rec.bom.bomFormat)} ${esc(rec.bom.specVersion)}</div>`
-    + VERDICTS.map((v) => `<div class="cv-stat"><span class="cv-verdict ${vclass(v)}">${v}</span> <b>${s[v]}</b></div>`).join("")
+  const cs = Object.fromEntries(VERDICTS.map((v) => [v, groups.filter((g) => g.verdict === v).length]));
+  $("#cv-judg-summary").innerHTML = `<div class="cv-stat"><b>${esc(rec.bom.subject || rec.bom.serialNumber || "")}</b>카드 ${total}장 (조항 ${groups.length}개) · ${esc(rec.bom.bomFormat)} ${esc(rec.bom.specVersion)}</div>`
+    + VERDICTS.map((v) => `<div class="cv-stat"><span class="cv-verdict ${vclass(v)}">${v}</span> <b>${s[v]}</b><span class="cv-muted"> · 조항 ${cs[v]}</span></div>`).join("")
     + `<div class="cv-bar" style="flex-basis:100%">${VERDICTS.map((v) => `<span class="${vclass(v)}" style="width:${100 * s[v] / Math.max(total, 1)}%"></span>`).join("")}</div>`;
 }
 function renderJudgList() {
   if (!currentRecord) return;
   const want = $("#cv-verdict-filter").value;
-  const items = regCards().filter((r) => !want || r.verdict === want);
-  groupedList($("#cv-judg-list"), items, (r) => { const f = r.facts || []; const p = f.filter((x) => x.status === "present").length, g = f.filter((x) => x.status === "gap" || x.status === "not_required").length;
-    return `<span class="cv-id">${esc(cardById[r.card_id]?.source?.clause_id || r.card_id.replace(/^RC-[A-Z0-9]+-/, ""))}</span><span class="cv-sub"><span class="cv-verdict ${vclass(r.verdict)}">${r.verdict}</span> ${p}/${f.length - g}</span>`; }, renderJudg);
+  const groups = clauseGroups(regCards()).map((g) => ({...g, cards: g.cards.filter((r) => !want || r.verdict === want)})).filter((g) => g.cards.length);
+  const container = $("#cv-judg-list");
+  container.innerHTML = "";
+  let lastReg = null;
+  for (const g of groups) {
+    if (g.reg !== lastReg) { const h = document.createElement("div"); h.className = "cv-group"; h.textContent = g.reg; container.appendChild(h); lastReg = g.reg; }
+    if (g.cards.length > 1) {                          // 호가 여럿인 항: 항의 종합 판정을 머리로
+      const h = document.createElement("div"); h.className = "cv-clause"; h.innerHTML = `<span class="cv-id">${esc(g.clause)}</span><span class="cv-sub"><span class="cv-verdict ${vclass(g.verdict)}">${g.verdict}</span> 종합</span>`; container.appendChild(h);
+    }
+    for (const r of g.cards) {
+      const f = r.facts || []; const p = f.filter((x) => x.status === "present").length, n = f.filter((x) => x.status === "gap" || x.status === "not_required").length;
+      const row = document.createElement("div"); row.className = "cv-item" + (g.cards.length > 1 ? " cv-point" : ""); row.dataset.id = r.card_id;
+      row.innerHTML = `<span class="cv-id">${esc(cardById[r.card_id]?.source?.clause_id || r.card_id.replace(/^RC-[A-Z0-9]+-/, ""))}</span><span class="cv-sub"><span class="cv-verdict ${vclass(r.verdict)}">${r.verdict}</span> ${p}/${f.length - n}</span>`;
+      row.addEventListener("click", () => { container.querySelectorAll(".cv-item").forEach((x) => x.classList.toggle("active", x === row)); renderJudg(r); });
+      container.appendChild(row);
+    }
+  }
 }
 function renderJudg(r) {
   const d = $("#cv-judg-detail"), card = cardById[r.card_id], facts = r.facts || [];

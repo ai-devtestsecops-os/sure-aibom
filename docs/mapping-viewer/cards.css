@@ -21,6 +21,10 @@
 .card-viewer .cv-item.active {background: var(--accent-soft);}
 .card-viewer .cv-item .cv-id {font-family: var(--mono); font-size: .74rem;}
 .card-viewer .cv-item .cv-sub {color: var(--text-muted); font-size: .7rem; white-space: nowrap;}
+.card-viewer .cv-clause {padding: .4rem .6rem .2rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: .5rem; align-items: baseline;}
+.card-viewer .cv-clause .cv-id {font-family: var(--mono); font-size: .74rem; font-weight: 700;}
+.card-viewer .cv-clause .cv-sub {color: var(--text-muted); font-size: .7rem; white-space: nowrap;}
+.card-viewer .cv-item.cv-point {border-top: 0; padding-top: .2rem; padding-left: 1.4rem;}
 .card-viewer .cv-detail {border: 1px solid var(--border); border-radius: 8px; padding: .8rem 1rem; background: var(--bg); overflow: auto; max-height: 70vh;}
 .card-viewer .cv-detail h3 {margin: 0 0 .3rem; font-size: 1rem;}
 .card-viewer .cv-detail h4 {margin: .9rem 0 .3rem; font-size: .82rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em;}
