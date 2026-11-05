@@ -11,6 +11,8 @@
 .card-viewer select {font: inherit; padding: .3rem .5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text);}
 .card-viewer .cv-upload {padding: .3rem .6rem; border: 1px dashed var(--border); border-radius: 6px; cursor: pointer; color: var(--text-muted);}
 .card-viewer .cv-upload input {display: none;}
+.card-viewer .cv-roles {display: inline-flex; gap: .4rem; align-items: center; padding: .3rem .5rem; border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted);}
+.card-viewer .cv-roles label {color: var(--text); cursor: pointer;}
 .card-viewer .cv-muted {color: var(--text-muted);}
 .card-viewer .cv-split {display: grid; grid-template-columns: minmax(14rem, 1fr) minmax(0, 2.2fr); gap: .8rem; min-height: 24rem;}
 @media (max-width: 900px) {.card-viewer .cv-split {grid-template-columns: 1fr;}}

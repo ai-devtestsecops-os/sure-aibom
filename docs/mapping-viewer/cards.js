@@ -100,21 +100,27 @@ function initJudgment() {
     try { currentBom = JSON.parse(await file.text()); currentName = file.name; setProfileInputs(null); showRecord(judgeBom(currentBom, currentName, systemProfile())); sel.value = ""; }
     catch (err) { $("#cv-judg-summary").innerHTML = `<span class="cv-chip gap">읽을 수 없는 파일: ${esc(err.message)}</span>`; }
   });
-  for (const id of ["#cv-risk", "#cv-role"]) $(id).addEventListener("change", () => { if (currentBom) showRecord(judgeBom(currentBom, currentName, systemProfile())); });
+  for (const el of [$("#cv-risk"), ...roleBoxes()]) el.addEventListener("change", () => { if (currentBom) showRecord(judgeBom(currentBom, currentName, systemProfile())); });
   if (judgIndex.length) sel.dispatchEvent(new Event("change"));
 }
 // 시스템 프로파일 (특허 2층): 위험등급과 역할. 올린 BOM 은 선택 칸에서 읽고, 예제는 기록에 적힌 것을 보여 주기만 한다
+const roleBoxes = () => [...root.querySelectorAll("input[name=cv-role]")];
 function systemProfile() {
-  const risk = $("#cv-risk").value, role = $("#cv-role").value;
-  return {...(risk ? {risk_class: [risk]} : {}), ...(role ? {role} : {})};
+  const risk = $("#cv-risk").value, roles = roleBoxes().filter((b) => b.checked).map((b) => b.value);
+  return {...(risk ? {risk_class: [risk]} : {}), ...(roles.length ? {role: roles} : {})};
 }
 function setProfileInputs(system) {                   // system 이 있으면(예제) 그 값으로 고정, 없으면(올린 BOM) 고르게 둔다
-  const fixed = !!system;
-  $("#cv-risk").value = fixed ? ((system.risk_class || [])[0] || "") : $("#cv-risk").value;
-  $("#cv-role").value = fixed ? (system.role || "") : $("#cv-role").value;
-  $("#cv-risk").disabled = fixed; $("#cv-role").disabled = fixed;
+  const fixed = !!system, roles = fixed ? (Array.isArray(system.role) ? system.role : system.role ? [system.role] : []) : null;
+  if (fixed) $("#cv-risk").value = (system.risk_class || [])[0] || "";
+  $("#cv-risk").disabled = fixed;
+  for (const b of roleBoxes()) { if (fixed) b.checked = roles.includes(b.value); b.disabled = fixed; }
 }
-const profileText = (system) => { const r = (system?.risk_class || []).map((x) => RISK_KO[x] || x).join("+"), o = system?.role ? (ROLE_KO[system.role] || system.role) : ""; return r || o ? [r, o].filter(Boolean).join(" · ") : "없음"; }
+const profileText = (system) => {
+  const r = (system?.risk_class || []).map((x) => RISK_KO[x] || x).join("+");
+  const roles = Array.isArray(system?.role) ? system.role : system?.role ? [system.role] : [];
+  const o = roles.map((x) => ROLE_KO[x] || x).join("+");
+  return r || o ? [r, o].filter(Boolean).join(" · ") : "없음";
+};
 function regCards() {                                 // 고른 규제의 카드 판정
   const reg = $("#cv-reg").value;
   return currentRecord.cards.filter((r) => !reg || r.card_id.startsWith("RC-" + reg + "-"));
@@ -207,7 +213,7 @@ function targetDetail(f) {
 // fact 에 target 이 있으면 프로파일의 targets 로 그 종류의 구성요소를 찾아 하나씩 본다 (조건도 구성요소마다).
 // 조건 변수는 값이 있으면 참, 자리는 있는데 비면 거짓, 자리 자체가 없으면 모름(null)이고, 모름이면 그 사실은 unknown 이라 카드가 검토 필요다.
 // 카드가 이 시스템에 적용되나 (judge.py 의 applicability): "applies" / "not_applies" / "unknown". 카드의 risk_class 가 any 면 위험등급을 안 보고,
-// 주체가 organisation(NIST·ISO)이면 역할을 안 본다. 보는 칸이 프로파일에 없으면 unknown (검토 필요).
+// 주체가 organisation(NIST·ISO)이나 operator(제공자·배포자·수입자·유통자를 묶는 말)면 역할을 안 본다. 보는 칸이 프로파일에 없으면 unknown (검토 필요).
 function applicability(card, system) {
   const wanted = new Set(card.applicability?.risk_class || ["any"]), actor = card.obligation?.actor || "organisation";
   const missing = [], mismatch = [];
@@ -217,9 +223,10 @@ function applicability(card, system) {
     if (!have.size) missing.push("위험등급(risk_class)");
     else if (![...wanted].some((x) => have.has(x))) mismatch.push(`카드의 위험등급 ${[...wanted].sort().join(", ")} 과 시스템의 ${[...have].sort().join(", ")} 이 안 맞음`);
   }
-  if (actor !== "organisation") {
-    if (!system.role) missing.push("역할(role)");
-    else if (system.role !== actor) mismatch.push(`카드의 주체 ${actor} 와 시스템의 역할 ${system.role} 이 안 맞음`);
+  if (actor !== "organisation" && actor !== "operator") {      // 역할은 목록 (제공자이면서 배포자일 수 있다)
+    const roles = Array.isArray(system.role) ? system.role : system.role ? [system.role] : [];
+    if (!roles.length) missing.push("역할(role)");
+    else if (!roles.includes(actor)) mismatch.push(`카드의 주체 ${actor} 가 시스템의 역할 ${[...roles].sort().join(", ")} 에 없음`);
   }
   if (mismatch.length) return ["not_applies", mismatch.join("; ")];
   if (missing.length) return ["unknown", `시스템 프로파일에 ${missing.join("·")} 이 없어 적용 여부를 알 수 없음`];

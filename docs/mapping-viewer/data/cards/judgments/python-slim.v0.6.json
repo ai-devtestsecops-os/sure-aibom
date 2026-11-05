@@ -1,6 +1,6 @@
 {
  "engine_version": "0.7.0",
- "run_at": "2026-11-05T07:30:03Z",
+ "run_at": "2026-11-05T07:36:19Z",
  "bom": {
   "bomFormat": "CycloneDX",
   "specVersion": "1.7",
@@ -49,7 +49,9 @@
   "risk_class": [
    "minimal_risk"
   ],
-  "role": "provider"
+  "role": [
+   "provider"
+  ]
  },
  "checks": {
   "applicability": "시스템 프로파일의 위험등급·역할. 카드가 보는 칸이 없으면 검토 필요",
@@ -456,7 +458,7 @@
    "card_version": 1,
    "title": "Annex VIII §C(1): 등록·배포 정보",
    "verdict": "비적용",
-   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['minimal_risk'] 이 안 맞음; 카드의 주체 deployer 와 시스템의 역할 provider 이 안 맞음",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['minimal_risk'] 이 안 맞음; 카드의 주체 deployer 가 시스템의 역할 ['provider'] 에 없음",
    "facts": []
   },
   {
@@ -1000,7 +1002,7 @@
    "card_version": 1,
    "title": "Article 23(3): 등록·배포 정보",
    "verdict": "비적용",
-   "reason": "카드의 주체 importer 와 시스템의 역할 provider 이 안 맞음",
+   "reason": "카드의 주체 importer 가 시스템의 역할 ['provider'] 에 없음",
    "facts": []
   },
   {
@@ -1032,7 +1034,7 @@
    "card_version": 1,
    "title": "Article 26(4): 데이터셋 수집·출처",
    "verdict": "비적용",
-   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['minimal_risk'] 이 안 맞음; 카드의 주체 deployer 와 시스템의 역할 provider 이 안 맞음",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['minimal_risk'] 이 안 맞음; 카드의 주체 deployer 가 시스템의 역할 ['provider'] 에 없음",
    "facts": []
   },
   {
@@ -1040,7 +1042,7 @@
    "card_version": 1,
    "title": "Article 27(1)(c): 집단·환경 영향",
    "verdict": "비적용",
-   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['minimal_risk'] 이 안 맞음; 카드의 주체 deployer 와 시스템의 역할 provider 이 안 맞음",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['minimal_risk'] 이 안 맞음; 카드의 주체 deployer 가 시스템의 역할 ['provider'] 에 없음",
    "facts": []
   },
   {
@@ -1048,7 +1050,7 @@
    "card_version": 1,
    "title": "Article 27(1)(e): 인적 감독",
    "verdict": "비적용",
-   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['minimal_risk'] 이 안 맞음; 카드의 주체 deployer 와 시스템의 역할 provider 이 안 맞음",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['minimal_risk'] 이 안 맞음; 카드의 주체 deployer 가 시스템의 역할 ['provider'] 에 없음",
    "facts": []
   },
   {
@@ -1056,7 +1058,7 @@
    "card_version": 1,
    "title": "Article 27(1): 위험·영향평가",
    "verdict": "비적용",
-   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['minimal_risk'] 이 안 맞음; 카드의 주체 deployer 와 시스템의 역할 provider 이 안 맞음",
+   "reason": "카드의 위험등급 ['high_risk'] 과 시스템의 ['minimal_risk'] 이 안 맞음; 카드의 주체 deployer 가 시스템의 역할 ['provider'] 에 없음",
    "facts": []
   },
   {

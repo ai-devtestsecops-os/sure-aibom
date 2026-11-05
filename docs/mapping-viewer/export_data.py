@@ -34,10 +34,10 @@ CARDS = os.path.join(AIBOM, "cards")
 # aibom-examples 는 저장소 밖(/mnt/yhchoe/aibom-examples). AIBOM_EXAMPLES 로 바꿀 수 있다
 EXAMPLES = os.environ.get("AIBOM_EXAMPLES") or os.path.join(os.path.dirname(os.path.dirname(CLI)), "aibom-examples", "results", "0.2.0")
 # 예제 BOM 과 그 시스템 프로파일 (위험등급·역할). 판정 엔진은 이것이 없으면 EU AI Act 카드를 검토 필요로 낸다
-HIGH_RISK_PROVIDER = {"risk_class": ["high_risk"], "role": "provider"}
+HIGH_RISK_PROVIDER = {"risk_class": ["high_risk"], "role": ["provider"]}
 EXAMPLE_BOMS = (("aiapp-demo.v0.6.cdx.json", HIGH_RISK_PROVIDER),
-                ("nanoGPT.v0.6.cdx.json", {"risk_class": ["gpai"], "role": "provider"}),
-                ("python-slim.v0.6.cdx.json", {"risk_class": ["minimal_risk"], "role": "provider"}))
+                ("nanoGPT.v0.6.cdx.json", {"risk_class": ["gpai"], "role": ["provider"]}),
+                ("python-slim.v0.6.cdx.json", {"risk_class": ["minimal_risk"], "role": ["provider"]}))
 
 
 def save(name, obj):

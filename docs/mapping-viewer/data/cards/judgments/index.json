@@ -6,7 +6,9 @@
    "risk_class": [
     "high_risk"
    ],
-   "role": "provider"
+   "role": [
+    "provider"
+   ]
   },
   "summary": {
    "반영": 7,
@@ -23,7 +25,9 @@
    "risk_class": [
     "high_risk"
    ],
-   "role": "provider"
+   "role": [
+    "provider"
+   ]
   },
   "summary": {
    "반영": 20,
@@ -40,7 +44,9 @@
    "risk_class": [
     "gpai"
    ],
-   "role": "provider"
+   "role": [
+    "provider"
+   ]
   },
   "summary": {
    "반영": 8,
@@ -57,7 +63,9 @@
    "risk_class": [
     "minimal_risk"
    ],
-   "role": "provider"
+   "role": [
+    "provider"
+   ]
   },
   "summary": {
    "반영": 0,
