@@ -22,7 +22,7 @@ async function load(name) { const r = await fetch(BASE + name); if (!r.ok) throw
 async function init() {
   const [c, v, p, ex, src] = await Promise.all([load("cards.json"), load("vocabulary.json"), load("profile.json"), load("boms/index.json").catch(() => []), load("source.json").catch(() => ({}))]);
   cards = c; cardById = Object.fromEntries(c.map((x) => [x.card_id, x])); vocab = Object.fromEntries(v.concepts.map((x) => [x.id, x])); examples = ex;
-  if (src.cards === "gold") { const n = document.createElement("p"); n.className = "cv-note"; n.textContent = "지금 판정에 쓰는 카드는 요구사항 표에서 변환한 정답 카드(cards/gold)다. 승인한 카드가 생기면 그것으로 바뀐다."; root.prepend(n); }
+  if (src.cards === "gold") { const n = document.createElement("p"); n.className = "cv-note"; n.textContent = "지금 판정에 쓰는 카드는 요구사항 표에서 변환한 정답 카드(cards/gold)입니다. 승인한 카드가 생기면 그것으로 바뀝니다."; root.prepend(n); }
   targets = p.targets || {};                          // fact 의 target(대상 구성요소 종류)을 BOM 에서 찾는 법
   profileApproved = p.status === "approved";
   for (const line of p.lines) {                       // 개념별 줄: concept → {cdx: [...], spdx: [...]}
@@ -36,16 +36,11 @@ async function init() {
 }
 
 // ---------- 공통 ----------
-function regChips(el, onChange) {                     // 규제 고르기: 칩마다 체크박스라 여럿을 함께 본다. 처음엔 모두 켜져 있다
-  el.innerHTML = `<span class="cv-regs-label">규제</span>` + Object.entries(REG_NAME).map(([k, n]) =>
-    `<label class="cv-regchip${regSel.has(k) ? " active" : ""}"><input type="checkbox" value="${k}"${regSel.has(k) ? " checked" : ""}> ${n}</label>`).join("");
-  el.querySelectorAll("input").forEach((b) => b.addEventListener("change", () => {
-    if (b.checked) regSel.add(b.value); else regSel.delete(b.value);
-    b.closest("label").classList.toggle("active", b.checked); onChange();
-  }));
+function regChecks(el, onChange) {                    // 규제 고르기: 체크박스라 여럿을 함께 본다. 처음엔 모두 켜져 있다
+  el.innerHTML = Object.entries(REG_NAME).map(([k, n]) => `<label><input type="checkbox" value="${k}"${regSel.has(k) ? " checked" : ""}> ${n}</label>`).join("");
+  el.querySelectorAll("input").forEach((b) => b.addEventListener("change", () => { if (b.checked) regSel.add(b.value); else regSel.delete(b.value); onChange(); }));
 }
 function label(concept) { return vocab[concept]?.label_ko || concept; }
-const compCount = (bom) => { let n = 0; (function walk(items) { for (const c of items || []) { n += 1; walk(c.components); } })(bom.components); return n; };
 
 // 원문에 구절을 칠한다. spans: [{text, cls, idx}] . 겹치면 긴 것부터 칠하고 나머지는 건너뛴다.
 function highlightText(text, spans) {
@@ -89,13 +84,13 @@ function initJudgment() {
   $("#cv-examples").querySelectorAll("button").forEach((b) => b.addEventListener("click", async () => {
     const e = examples[+b.dataset.i];
     try { const r = await fetch(BASE + "boms/" + e.file); if (!r.ok) throw new Error(e.file); useBom(await r.json(), e.file, e.size, e.system_profile); }
-    catch (err) { dropError(`예제를 읽지 못했다: ${esc(err.message)}`); }
+    catch (err) { dropError(`예제를 읽지 못했습니다: ${esc(err.message)}`); }
   }));
   drop.addEventListener("click", () => input.click());
   drop.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); input.click(); } });
   for (const t of ["dragenter", "dragover"]) drop.addEventListener(t, (ev) => { ev.preventDefault(); drop.classList.add("over"); });
   for (const t of ["dragleave", "drop"]) drop.addEventListener(t, (ev) => { ev.preventDefault(); drop.classList.remove("over"); });
-  drop.addEventListener("drop", (ev) => { const f = ev.dataTransfer?.files?.[0]; if (f) readFile(f); else dropError("파일이 아니다"); });
+  drop.addEventListener("drop", (ev) => { const f = ev.dataTransfer?.files?.[0]; if (f) readFile(f); else dropError("파일이 아닙니다"); });
   input.addEventListener("change", (ev) => { const f = ev.target.files[0]; if (f) readFile(f); input.value = ""; });
   $("#cv-another").addEventListener("click", () => { $("#cv-main").hidden = true; showBomView(false); $("#cv-drop-error").hidden = true; $("#cv-upload").hidden = false; drop.focus(); });
   $("#cv-show-bom").addEventListener("click", () => showBomView($("#cv-bom-view").hidden));
@@ -103,7 +98,7 @@ function initJudgment() {
   for (const t of ["dragenter", "dragover"]) bar.addEventListener(t, (ev) => { ev.preventDefault(); bar.classList.add("over"); });
   for (const t of ["dragleave", "drop"]) bar.addEventListener(t, (ev) => { ev.preventDefault(); bar.classList.remove("over"); });
   bar.addEventListener("drop", (ev) => { const f = ev.dataTransfer?.files?.[0]; if (f) readFile(f); });
-  regChips($("#cv-reg"), () => { syncProfilePanel(); renderSummary(); renderJudgList(); });
+  regChecks($("#cv-reg"), () => { syncProfilePanel(); renderSummary(); renderJudgList(); });
   for (const b of extraBoxes()) b.addEventListener("change", () => {          // 체계적 위험은 범용 AI 모델 위에 얹힌다
     const gpai = extraBoxes().find((x) => x.value === "gpai"), systemic = extraBoxes().find((x) => x.value === "gpai_systemic");
     if (b === systemic && b.checked) gpai.checked = true;
@@ -112,12 +107,12 @@ function initJudgment() {
   for (const el of [$("#cv-system"), ...extraBoxes(), ...roleBoxes()]) el.addEventListener("change", () => { if (currentBom) rejudge(); });
 }
 function rejudge() { const system = systemProfile(); updateProfileAlert(system); showRecord(judgeBom(currentBom, currentName, system)); }
-function syncProfilePanel() { $("#cv-profile").hidden = !regSel.has("EUAIA"); }   // 적용 조건은 EU AI Act 에만 있다
+function syncProfilePanel() { $("#cv-eu").hidden = !regSel.has("EUAIA"); }   // 적용 조건은 EU AI Act 에만 있다
 async function readFile(file) {
   try {
     const bom = JSON.parse(await file.text());
-    if (!bom || typeof bom !== "object" || Array.isArray(bom)) throw new Error("JSON 객체가 아니다");
-    if (bom.bomFormat !== "CycloneDX") throw new Error("CycloneDX 문서가 아니다 (bomFormat 이 " + (bom.bomFormat ? `'${bom.bomFormat}'` : "없음") + ")");
+    if (!bom || typeof bom !== "object" || Array.isArray(bom)) throw new Error("JSON 객체가 아닙니다");
+    if (bom.bomFormat !== "CycloneDX") throw new Error("CycloneDX 문서가 아닙니다 (bomFormat 이 " + (bom.bomFormat ? `'${bom.bomFormat}'` : "없음") + ")");
     useBom(bom, file.name, file.size, null);
   } catch (err) {                                     // 결과 화면에서 떨어뜨린 파일이 잘못됐으면 올리기 화면으로 돌아가 알린다
     $("#cv-main").hidden = true; showBomView(false); $("#cv-upload").hidden = false;
@@ -131,25 +126,25 @@ function useBom(bom, name, size, system) {
   $("#cv-drop-error").hidden = true;
   applyProfileInputs(system || {});
   $("#cv-file").textContent = name; $("#cv-file").title = name;
-  $("#cv-file-meta").textContent = `${bom.bomFormat} ${bom.specVersion || ""} · 구성요소 ${compCount(bom)}개 · ${fmtSize(currentSize)}`;
+  $("#cv-file-meta").textContent = fmtSize(currentSize);
   showBomView(false);
   $("#cv-upload").hidden = true; $("#cv-main").hidden = false;
-  $("#cv-judg-detail").innerHTML = `<p class="cv-muted">조항을 고르면 원문과 요구 사실, 사실마다 BOM 에 값이 있었는지가 나온다.</p>`;
+  $("#cv-judg-detail").innerHTML = `<p class="cv-muted">조항을 고르면 원문과 요구 사실, 사실마다 BOM 에 값이 있었는지가 나옵니다.</p>`;
   verdictFilter = "";
   syncProfilePanel();
   rejudge();
 }
 const BOM_VIEW_MAX = 400000;                          // 글자 수. 큰 BOM(1.5 MB)은 앞부분만 보인다
-function showBomView(on) {                            // 토글 버튼: 글자는 그대로 두고 눌린 상태만 바꾼다 (크기가 변하지 않게)
+function showBomView(on) {                            // 파일 줄 자체가 펼침 버튼. 열리면 꺾쇠가 아래를 본다
   const view = $("#cv-bom-view"), btn = $("#cv-show-bom");
   view.hidden = !on; btn.classList.toggle("active", on); btn.setAttribute("aria-expanded", String(on));
   if (!on || !currentBom) return;
   const text = JSON.stringify(currentBom, null, 2), cut = text.length > BOM_VIEW_MAX;
-  $("#cv-bom-pre").textContent = cut ? text.slice(0, BOM_VIEW_MAX) + `\n… (앞 ${fmtSize(BOM_VIEW_MAX)} 만 보인다. 전체 ${fmtSize(text.length)})` : text;
+  $("#cv-bom-pre").textContent = cut ? text.slice(0, BOM_VIEW_MAX) + `\n… (앞 ${fmtSize(BOM_VIEW_MAX)} 만 보입니다. 전체 ${fmtSize(text.length)})` : text;
 }
 const fmtSize = (n) => n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : n >= 1024 ? `${Math.round(n / 1024)} KB` : `${n} B`;
-// 시스템 프로파일 (2층): 위험등급과 역할. 위험등급은 시스템 칸 하나(고위험 / 고위험 아님)에 얹히는 것(투명성 의무, 범용 AI 모델, 체계적 위험)을
-// 더한 목록이다. 시스템 칸을 고르지 않으면 위험등급을 비워 두어, 위험등급을 보는 카드는 검토 필요가 된다
+// 시스템 프로파일 (2층): 위험등급과 역할. 위험등급은 고위험 여부(high_risk / minimal_risk)에 얹히는 것(시스템의 투명성 의무 limited_risk, 모델의
+// 범용 AI 모델 gpai 와 체계적 위험 gpai_systemic)을 더한 목록이다. 고위험 여부를 고르지 않으면 위험등급을 비워 두어, 위험등급을 보는 카드는 검토 필요가 된다
 const roleBoxes = () => [...root.querySelectorAll("input[name=cv-role]")];
 const extraBoxes = () => [...root.querySelectorAll("input[name=cv-extra]")];
 const asList = (v) => Array.isArray(v) ? v : v ? [v] : [];
@@ -164,10 +159,9 @@ function applyProfileInputs(system) {
   for (const b of extraBoxes()) b.checked = rc.includes(b.value) || (b.value === "gpai" && rc.includes("gpai_systemic"));
   for (const b of roleBoxes()) b.checked = roles.includes(b.value);
 }
-function updateProfileAlert(system) {                // 비운 칸이 있으면 그 칸을 보는 조항이 검토 필요가 된다고 알린다
-  const lack = [!system.risk_class && "위험 분류", !system.role && "역할"].filter(Boolean);
-  const el = $("#cv-profile-alert"); el.hidden = !lack.length;
-  if (lack.length) el.textContent = `${lack.length === 2 ? "위험 분류와 역할을" : lack[0] === "역할" ? "역할을" : "위험 분류를"} 고르지 않았다. 그것을 보는 EU AI Act 조항은 검토 필요로 나온다.`;
+function updateProfileAlert(system) {                // 비운 칸의 라벨 옆에 빨간 글씨로, 그 칸을 보는 조항이 검토 필요가 된다고 알린다
+  $("#cv-hint-system").hidden = Boolean(system.risk_class);
+  $("#cv-hint-role").hidden = Boolean(system.role);
 }
 function regCards() {                                 // 고른 규제들의 카드 판정
   return currentRecord.cards.filter((r) => regSel.has(r.card_id.split("-")[1]));
@@ -194,9 +188,8 @@ function renderSummary() {
   const rs = regCards(), groups = clauseGroups(rs);
   const s = Object.fromEntries(VERDICTS.map((v) => [v, rs.filter((r) => r.verdict === v).length]));
   const cs = Object.fromEntries(VERDICTS.map((v) => [v, groups.filter((g) => g.verdict === v).length]));
-  $("#cv-results-count").textContent = `조항 ${groups.length}개 · 항목 ${rs.length}개${verdictFilter ? ` · ${verdictFilter}만 보임` : ""}`;
   const box = $("#cv-judg-summary");
-  box.innerHTML = VERDICTS.map((v) => `<button type="button" class="cv-tile ${vclass(v)}${verdictFilter === v ? " active" : ""}" data-v="${v}" title="누르면 이 판정만 보인다. 다시 누르면 전체">
+  box.innerHTML = VERDICTS.map((v) => `<button type="button" class="cv-tile ${vclass(v)}${verdictFilter === v ? " active" : ""}" data-v="${v}" title="누르면 이 판정만 보입니다. 다시 누르면 전체가 보입니다">
     <span class="cv-tile-l"><span class="cv-dot"></span>${v}</span><span class="cv-tile-n">${s[v]}</span><span class="cv-tile-s">조항 ${cs[v]}</span></button>`).join("");
   box.querySelectorAll(".cv-tile").forEach((b) => b.addEventListener("click", () => { verdictFilter = verdictFilter === b.dataset.v ? "" : b.dataset.v; renderSummary(); renderJudgList(); }));
 }
@@ -206,7 +199,7 @@ function renderJudgList() {
   const groups = clauseGroups(regCards()).map((g) => ({...g, cards: g.cards.filter((r) => !verdictFilter || r.verdict === verdictFilter)})).filter((g) => g.cards.length);
   const container = $("#cv-judg-list");
   container.innerHTML = "";
-  if (!groups.length) { container.innerHTML = `<p class="cv-muted" style="padding:.8rem">${regSel.size ? "해당하는 조항이 없다." : "규제를 하나 이상 고르세요."}</p>`; return; }
+  if (!groups.length) { container.innerHTML = `<p class="cv-muted" style="padding:.8rem">${regSel.size ? "해당하는 조항이 없습니다." : "규제를 하나 이상 고르세요."}</p>`; return; }
   let lastReg = null;
   for (const g of groups) {
     if (g.reg !== lastReg) { const h = document.createElement("div"); h.className = "cv-group"; h.textContent = g.reg; container.appendChild(h); lastReg = g.reg; }
@@ -238,7 +231,7 @@ function renderJudg(r) {
     ${r.reason ? `<p class="cv-note">${esc(r.reason)}</p>` : ""}
     ${text ? `<div class="cv-text">${highlightText(text, spans)}${ko ? `<span class="cv-trans">${esc(ko)}</span>` : ""}</div>
       <div class="cv-legend"><span class="cv-muted">칠한 구절 = 조항이 요구하는 사실</span><span><i></i>BOM 에 있음</span><span><i class="partial"></i>부분 대응</span><span><i class="missing"></i>비어 있거나 자리 없음</span><span><i class="muted"></i>요구 안 됨 · 판단 못 함</span></div>`
-      : `<p class="cv-note">이 규제의 원문은 저작권 때문에 싣지 않는다. 요구 사실과 필드만 보인다.</p>`}
+      : `<p class="cv-note">이 규제의 원문은 저작권 때문에 싣지 않습니다. 요구 사실과 필드만 보입니다.</p>`}
     ${r.conditions ? `<h4>조건</h4><ul>${Object.entries(r.conditions).map(([k, c]) => `<li><code>${esc(k)}</code> ${esc(c.text)} → <b>${!c.evaluated ? "평가 못 함 (조건식 없음)" : c.result === null || c.result === undefined ? "모름 (판단할 정보 없음)" : c.result ? "참" : "거짓"}</b></li>`).join("")}</ul>` : ""}
     <h4>조항이 요구하는 사실 (${facts.length})</h4>
     <table class="cv-facts"><thead><tr><th>상태</th><th>요구 사실</th><th>BOM 필드 · 값이 있는 구성요소</th></tr></thead><tbody>
@@ -248,7 +241,7 @@ function renderJudg(r) {
       <td>${(f.paths || []).map((p) => `<span class="cv-path">${esc(p)}</span>`).join(" ") || `<span class="cv-muted">${esc(f.reason || "")}</span>`}
       ${found.length ? `<br><span class="cv-muted">값 있음:</span> ${found.map((x) => `<code>${esc(x)}</code>`).join(" ")}` : ""}${targetDetail(f)}</td></tr>`; }).join("")}
     </tbody></table>
-    <p class="cv-note">"비어 있음" 과 "자리 없음" 이 누락이고, 비어 있음의 필드가 채울 자리다. "부분 대응" 은 값은 있지만 필드의 대상 범위나 표현 형태가 요구와 달라 부분 반영까지만 간다. 조건식(JSON Logic)이 있는 조항은 조건이 거짓이면 그 사실을 "요구 안 됨" 으로 빼고, 조건을 판단할 정보가 BOM 에 없으면(자리 자체가 없음) "판단 못 함" 이라 검토 필요다. 대상 구성요소가 정해진 사실은 그 종류의 구성요소마다 보고(조건도 구성요소마다), 값이 빠진 구성요소를 적는다. 증빙 검사는 아직 없다.</p>`;
+    <p class="cv-note">"비어 있음" 과 "자리 없음" 이 누락이고, 비어 있음의 필드가 채울 자리입니다. "부분 대응" 은 값은 있지만 필드의 대상 범위나 표현 형태가 요구와 달라 부분 반영까지만 갑니다. 조건식(JSON Logic)이 있는 조항은 조건이 거짓이면 그 사실을 "요구 안 됨" 으로 빼고, 조건을 판단할 정보가 BOM 에 없으면(자리 자체가 없음) "판단 못 함" 이라 검토 필요입니다. 대상 구성요소가 정해진 사실은 그 종류의 구성요소마다 보고(조건도 구성요소마다), 값이 빠진 구성요소를 적습니다. 증빙 검사는 아직 없습니다.</p>`;
   wireMarks(d);
 }
 // 대상 구성요소가 정해진 fact: 구성요소별 조건과 빠진 구성요소
@@ -415,5 +408,5 @@ function judgeBom(bom, name, system = {}) {
   return {bom: {bomFormat: bom.bomFormat, specVersion: bom.specVersion, serialNumber: bom.serialNumber, subject: bom.metadata?.component?.name || name}, system_profile: system, summary, cards: results};
 }
 
-init().catch((err) => { root.innerHTML = `<p class="cv-muted">데이터를 읽지 못했다: ${esc(err.message)}</p>`; });
+init().catch((err) => { root.innerHTML = `<p class="cv-muted">데이터를 읽지 못했습니다: ${esc(err.message)}</p>`; });
 })();
