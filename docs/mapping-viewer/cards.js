@@ -98,8 +98,11 @@ function initJudgment() {
   input.addEventListener("change", (ev) => { const f = ev.target.files[0]; if (f) readFile(f); input.value = ""; });
   $("#cv-another").addEventListener("click", () => { $("#cv-main").hidden = true; showBomView(false); $("#cv-drop-error").hidden = true; $("#cv-upload").hidden = false; drop.focus(); });
   $("#cv-show-bom").addEventListener("click", () => showBomView($("#cv-bom-view").hidden));
-  $("#cv-hide-bom").addEventListener("click", () => showBomView(false));
-  regSeg($("#cv-reg"), () => { renderSummary(); renderJudgList(); });
+  const bar = $("#cv-filebar");                       // 결과 화면의 파일 줄에 다른 파일을 끌어다 놓으면 그 파일로 바꾼다
+  for (const t of ["dragenter", "dragover"]) bar.addEventListener(t, (ev) => { ev.preventDefault(); bar.classList.add("over"); });
+  for (const t of ["dragleave", "drop"]) bar.addEventListener(t, (ev) => { ev.preventDefault(); bar.classList.remove("over"); });
+  bar.addEventListener("drop", (ev) => { const f = ev.dataTransfer?.files?.[0]; if (f) readFile(f); });
+  regSeg($("#cv-reg"), () => { syncProfilePanel(); renderSummary(); renderJudgList(); });
   for (const b of extraBoxes()) b.addEventListener("change", () => {          // 체계적 위험은 범용 AI 모델 위에 얹힌다
     const gpai = extraBoxes().find((x) => x.value === "gpai"), systemic = extraBoxes().find((x) => x.value === "gpai_systemic");
     if (b === systemic && b.checked) gpai.checked = true;
@@ -108,13 +111,17 @@ function initJudgment() {
   for (const el of [$("#cv-system"), ...extraBoxes(), ...roleBoxes()]) el.addEventListener("change", () => { if (currentBom) rejudge(); });
 }
 function rejudge() { const system = systemProfile(); updateProfileAlert(system); showRecord(judgeBom(currentBom, currentName, system)); }
+function syncProfilePanel() { $("#cv-profile").hidden = Boolean(regFilter) && regFilter !== "EUAIA"; }   // 적용 조건은 EU AI Act 에만 있다
 async function readFile(file) {
   try {
     const bom = JSON.parse(await file.text());
     if (!bom || typeof bom !== "object" || Array.isArray(bom)) throw new Error("JSON 객체가 아니다");
     if (bom.bomFormat !== "CycloneDX") throw new Error("CycloneDX 문서가 아니다 (bomFormat 이 " + (bom.bomFormat ? `'${bom.bomFormat}'` : "없음") + ")");
     useBom(bom, file.name, file.size, null);
-  } catch (err) { dropError(`읽을 수 없는 파일 (${esc(file.name)}): ${esc(err.message)}`); }
+  } catch (err) {                                     // 결과 화면에서 떨어뜨린 파일이 잘못됐으면 올리기 화면으로 돌아가 알린다
+    $("#cv-main").hidden = true; showBomView(false); $("#cv-upload").hidden = false;
+    dropError(`읽을 수 없는 파일 (${esc(file.name)}): ${esc(err.message)}`);
+  }
 }
 function dropError(html) { const e = $("#cv-drop-error"); e.innerHTML = html; e.hidden = false; }
 // BOM 하나를 화면에 올린다. system 이 있으면(예제) 프로파일 칸을 그 값으로 채우고, 없으면(올린 파일) 비운다. 어느 쪽이든 바꿀 수 있다
@@ -128,15 +135,16 @@ function useBom(bom, name, size, system) {
   $("#cv-upload").hidden = true; $("#cv-main").hidden = false;
   $("#cv-judg-detail").innerHTML = `<p class="cv-muted">조항을 고르면 원문과 요구 사실, 사실마다 BOM 에 값이 있었는지가 나온다.</p>`;
   verdictFilter = "";
+  syncProfilePanel();
   rejudge();
 }
 const BOM_VIEW_MAX = 400000;                          // 글자 수. 큰 BOM(1.5 MB)은 앞부분만 보인다
-function showBomView(on) {
-  const view = $("#cv-bom-view"); view.hidden = !on; $("#cv-show-bom").textContent = on ? "원본 닫기" : "원본 JSON";
+function showBomView(on) {                            // 토글 버튼: 글자는 그대로 두고 눌린 상태만 바꾼다 (크기가 변하지 않게)
+  const view = $("#cv-bom-view"), btn = $("#cv-show-bom");
+  view.hidden = !on; btn.classList.toggle("active", on); btn.setAttribute("aria-expanded", String(on));
   if (!on || !currentBom) return;
   const text = JSON.stringify(currentBom, null, 2), cut = text.length > BOM_VIEW_MAX;
   $("#cv-bom-pre").textContent = cut ? text.slice(0, BOM_VIEW_MAX) + `\n… (앞 ${fmtSize(BOM_VIEW_MAX)} 만 보인다. 전체 ${fmtSize(text.length)})` : text;
-  $("#cv-bom-info").textContent = `${currentName} · ${currentBom.bomFormat} ${currentBom.specVersion || ""} · 구성요소 ${compCount(currentBom)}개`;
 }
 const fmtSize = (n) => n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : n >= 1024 ? `${Math.round(n / 1024)} KB` : `${n} B`;
 // 시스템 프로파일 (2층): 위험등급과 역할. 위험등급은 시스템 칸 하나(고위험 / 고위험 아님)에 얹히는 것(투명성 의무, 범용 AI 모델, 체계적 위험)을
