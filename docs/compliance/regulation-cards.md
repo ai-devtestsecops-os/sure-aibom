@@ -22,13 +22,13 @@ EU AI Act 조항은 시스템이 고위험인지, 투명성 의무나 범용 AI 
   </section>
   <section class="cv-main" id="cv-main" hidden>
     <div class="cv-filebar" id="cv-filebar">
-      <button type="button" class="cv-filerow" id="cv-show-bom" aria-expanded="false" aria-controls="cv-bom-view" title="누르면 파일 내용이 펼쳐집니다. 다시 누르면 접힙니다">
+      <button type="button" class="cv-filerow" id="cv-show-bom" aria-expanded="false" aria-controls="cv-bom-view">
         <svg class="cv-chev" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
         <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M14 3v5h5"/></svg>
         <span class="cv-filename" id="cv-file"></span>
         <span class="cv-filemeta" id="cv-file-meta"></span>
       </button>
-      <button type="button" class="cv-btn" id="cv-another" title="올리기 화면으로 돌아갑니다. 파일을 이 줄에 끌어다 놓아도 바뀝니다"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L8 8m4-4l4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>새 BOM 올리기</button>
+      <button type="button" class="cv-btn" id="cv-another"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L8 8m4-4l4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>새 BOM 올리기</button>
     </div>
     <div class="cv-bom-view" id="cv-bom-view" hidden><pre id="cv-bom-pre"></pre></div>
     <div class="cv-profile" id="cv-profile">
@@ -42,28 +42,25 @@ EU AI Act 조항은 시스템이 고위험인지, 투명성 의무나 범용 AI 
           <div class="cv-field">
             <span class="cv-label">시스템 <span class="cv-hint" id="cv-hint-system" hidden><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3 2.5 20h19L12 3z"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 10v4"/><circle cx="12" cy="17" r="1.1" fill="currentColor"/></svg>고르지 않으면 관련 조항은 검토 필요</span></span>
             <div class="cv-checks">
-              <select id="cv-system" title="고위험 AI 시스템은 부속서 I 제품의 안전 구성요소이거나 부속서 III 의 분야에 쓰는 시스템입니다">
-                <option value="">고위험 여부 선택</option>
-                <option value="high_risk">고위험 AI 시스템</option>
-                <option value="minimal_risk">고위험 아님</option>
-              </select>
-              <label title="사람과 직접 상호작용하거나 합성 콘텐츠를 만드는 시스템, 감정 인식·생체 분류·딥페이크에 쓰는 시스템이면 고위험 여부와 상관없이 해당합니다"><input type="checkbox" name="cv-extra" value="limited_risk"> 투명성 의무</label>
+              <label><input type="checkbox" name="cv-system" value="high_risk"> 고위험 AI 시스템</label>
+              <label><input type="checkbox" name="cv-system" value="minimal_risk"> 고위험 아님</label>
+              <label><input type="checkbox" name="cv-extra" value="limited_risk"> 투명성 의무</label>
             </div>
           </div>
           <div class="cv-field">
             <span class="cv-label">모델</span>
             <div class="cv-checks">
-              <label title="BOM 의 대상이 범용 AI 모델이거나 그 제공자의 의무를 볼 때"><input type="checkbox" name="cv-extra" value="gpai"> 범용 AI 모델</label>
-              <label title="학습 연산량이 10²⁵ FLOPs 를 넘거나 위원회가 지정한 범용 AI 모델"><input type="checkbox" name="cv-extra" value="gpai_systemic"> 체계적 위험</label>
+              <label><input type="checkbox" name="cv-extra" value="gpai"> 범용 AI 모델</label>
+              <label><input type="checkbox" name="cv-extra" value="gpai_systemic"> 체계적 위험</label>
             </div>
           </div>
           <div class="cv-field">
             <span class="cv-label">역할 <span class="cv-hint" id="cv-hint-role" hidden><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M12 3 2.5 20h19L12 3z"/><path stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M12 10v4"/><circle cx="12" cy="17" r="1.1" fill="currentColor"/></svg>고르지 않으면 관련 조항은 검토 필요</span></span>
             <div class="cv-checks">
-              <label title="AI 시스템을 개발해 시장에 내놓거나 자기 이름으로 서비스를 개시하는 조직"><input type="checkbox" name="cv-role" value="provider"> 제공자</label>
-              <label title="자기 권한으로 AI 시스템을 사용하는 조직. 직접 만들어 자기 조직에서 쓰면 제공자이면서 배포자"><input type="checkbox" name="cv-role" value="deployer"> 배포자</label>
-              <label title="제3국 제공자의 AI 시스템을 EU 시장에 들여오는 조직"><input type="checkbox" name="cv-role" value="importer"> 수입자</label>
-              <label title="제공자·수입자가 아니면서 공급망에서 AI 시스템을 시장에 공급하는 조직"><input type="checkbox" name="cv-role" value="distributor"> 유통자</label>
+              <label><input type="checkbox" name="cv-role" value="provider"> 제공자</label>
+              <label><input type="checkbox" name="cv-role" value="deployer"> 배포자</label>
+              <label><input type="checkbox" name="cv-role" value="importer"> 수입자</label>
+              <label><input type="checkbox" name="cv-role" value="distributor"> 유통자</label>
             </div>
           </div>
         </div>

@@ -55,7 +55,6 @@
 .card-viewer .cv-eu {margin: .7rem 0 0 .35rem; padding: .15rem 0 .1rem 1rem; border-left: 2px solid var(--border);}   /* 규제 줄 아래에 EU AI Act 에만 딸린 조건 */
 .card-viewer .cv-eu-head {display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .6rem; margin-bottom: .55rem; font-size: .72rem;}
 .card-viewer .cv-fields {display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .7rem 1.4rem;}   /* 시스템 · 모델 · 역할이 너비를 셋으로 나눈다 (이 페이지는 목차 칸을 숨겨 본문이 넓다) */
-.card-viewer .cv-field select {width: auto; max-width: none;}
 @media (max-width: 900px) {.card-viewer .cv-fields {grid-template-columns: 1fr;}}
 .card-viewer .cv-field {display: flex; flex-direction: column; gap: .35rem; min-width: 0;}
 .card-viewer .cv-label {font-size: .72rem; font-weight: 700; color: var(--text-muted);}

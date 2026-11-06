@@ -104,7 +104,10 @@ function initJudgment() {
     if (b === systemic && b.checked) gpai.checked = true;
     if (b === gpai && !b.checked) systemic.checked = false;
   });
-  for (const el of [$("#cv-system"), ...extraBoxes(), ...roleBoxes()]) el.addEventListener("change", () => { if (currentBom) rejudge(); });
+  for (const b of systemBoxes()) b.addEventListener("change", () => {         // 고위험 여부는 둘 중 하나: 하나를 켜면 다른 것은 꺼진다 (둘 다 끄면 모름)
+    if (b.checked) for (const x of systemBoxes()) if (x !== b) x.checked = false;
+  });
+  for (const el of [...systemBoxes(), ...extraBoxes(), ...roleBoxes()]) el.addEventListener("change", () => { if (currentBom) rejudge(); });
 }
 function rejudge() { const system = systemProfile(); updateProfileAlert(system); showRecord(judgeBom(currentBom, currentName, system)); }
 function syncProfilePanel() { $("#cv-eu").hidden = !regSel.has("EUAIA"); }   // 적용 조건은 EU AI Act 에만 있다
@@ -145,17 +148,20 @@ function showBomView(on) {                            // 파일 줄 자체가 �
 const fmtSize = (n) => n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : n >= 1024 ? `${Math.round(n / 1024)} KB` : `${n} B`;
 // 시스템 프로파일 (2층): 위험등급과 역할. 위험등급은 고위험 여부(high_risk / minimal_risk)에 얹히는 것(시스템의 투명성 의무 limited_risk, 모델의
 // 범용 AI 모델 gpai 와 체계적 위험 gpai_systemic)을 더한 목록이다. 고위험 여부를 고르지 않으면 위험등급을 비워 두어, 위험등급을 보는 카드는 검토 필요가 된다
+// (특허: 적용대상을 판단할 정보가 없으면 검토 필요. 체크 하나로 줄이면 빈칸이 "고위험 아님"이 되어 버려서 둘을 둔다)
+const systemBoxes = () => [...root.querySelectorAll("input[name=cv-system]")];   // 고위험 여부 (체크 둘, 서로 배타. 둘 다 끄면 모름)
 const roleBoxes = () => [...root.querySelectorAll("input[name=cv-role]")];
 const extraBoxes = () => [...root.querySelectorAll("input[name=cv-extra]")];
 const asList = (v) => Array.isArray(v) ? v : v ? [v] : [];
 function systemProfile() {
-  const sys = $("#cv-system").value, extras = extraBoxes().filter((b) => b.checked).map((b) => b.value);
+  const sys = systemBoxes().find((b) => b.checked)?.value || "", extras = extraBoxes().filter((b) => b.checked).map((b) => b.value);
   const roles = roleBoxes().filter((b) => b.checked).map((b) => b.value);
   return {...(sys ? {risk_class: [sys, ...extras]} : {}), ...(roles.length ? {role: roles} : {})};
 }
 function applyProfileInputs(system) {
   const rc = asList(system.risk_class), roles = asList(system.role);
-  $("#cv-system").value = !rc.length ? "" : rc.includes("high_risk") ? "high_risk" : "minimal_risk";
+  const sys = !rc.length ? "" : rc.includes("high_risk") ? "high_risk" : "minimal_risk";
+  for (const b of systemBoxes()) b.checked = b.value === sys;
   for (const b of extraBoxes()) b.checked = rc.includes(b.value) || (b.value === "gpai" && rc.includes("gpai_systemic"));
   for (const b of roleBoxes()) b.checked = roles.includes(b.value);
 }
@@ -188,7 +194,7 @@ function renderSummary() {
   const rs = regCards();
   const s = Object.fromEntries(VERDICTS.map((v) => [v, rs.filter((r) => r.verdict === v).length]));
   const box = $("#cv-judg-summary");
-  box.innerHTML = VERDICTS.map((v) => `<label class="cv-tile ${vclass(v)}${verdictSel.has(v) ? " active" : ""}" title="체크를 풀면 이 판정이 목록에서 빠집니다"><input type="checkbox" value="${v}"${verdictSel.has(v) ? " checked" : ""}>
+  box.innerHTML = VERDICTS.map((v) => `<label class="cv-tile ${vclass(v)}${verdictSel.has(v) ? " active" : ""}"><input type="checkbox" value="${v}"${verdictSel.has(v) ? " checked" : ""}>
     <span class="cv-tile-l"><span class="cv-dot"></span>${v}</span><span class="cv-tile-n">${s[v]}</span></label>`).join("");
   box.querySelectorAll("input").forEach((b) => b.addEventListener("change", () => { if (b.checked) verdictSel.add(b.value); else verdictSel.delete(b.value); renderSummary(); renderJudgList(); }));
 }
@@ -206,8 +212,8 @@ function renderJudgList() {
     if (g.reg !== lastReg) { const h = document.createElement("div"); h.className = "cv-group"; h.textContent = g.reg; container.appendChild(h); lastReg = g.reg; }
     const key = g.reg + "|" + g.clause, grouped = g.cards.length > 1, folded = grouped && collapsed.has(key), rows = [];
     if (grouped) {                                     // 호가 여럿인 항: 항의 판정을 머리줄로. 카드가 없어 상세는 없고, 누르면 호 줄을 접고 편다
-      const h = document.createElement("div"); h.className = "cv-clause" + (folded ? "" : " open"); h.setAttribute("role", "button"); h.tabIndex = 0; h.setAttribute("aria-expanded", String(!folded)); h.title = "누르면 호 줄을 접거나 폅니다";
-      h.innerHTML = `<span class="cv-head">${CHEV}<span class="cv-id">${esc(g.clause)}</span></span><span class="cv-sub"><span class="cv-verdict ${vclass(g.verdict)}" title="아래 호의 판정을 묶은 항의 판정입니다. 모두 반영이면 반영, 모두 미반영이면 미반영, 섞이면 부분 반영">${g.verdict}</span><span class="cv-count"></span></span>`;
+      const h = document.createElement("div"); h.className = "cv-clause" + (folded ? "" : " open"); h.setAttribute("role", "button"); h.tabIndex = 0; h.setAttribute("aria-expanded", String(!folded));
+      h.innerHTML = `<span class="cv-head">${CHEV}<span class="cv-id">${esc(g.clause)}</span></span><span class="cv-sub"><span class="cv-verdict ${vclass(g.verdict)}">${g.verdict}</span><span class="cv-count"></span></span>`;
       const toggle = () => { const open = collapsed.has(key); if (open) collapsed.delete(key); else collapsed.add(key); h.classList.toggle("open", open); h.setAttribute("aria-expanded", String(open)); rows.forEach((x) => { x.hidden = !open; }); };
       h.addEventListener("click", toggle);
       h.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggle(); } });
