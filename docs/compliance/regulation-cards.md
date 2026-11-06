@@ -16,20 +16,18 @@ EU AI Act 조항은 시스템의 위험 분류와 조직의 역할에 따라 적
     <div class="cv-examples" id="cv-examples"></div>
   </section>
   <section class="cv-main" id="cv-main" hidden>
-    <div class="cv-filebar" id="cv-filebar" title="다른 파일을 여기에 끌어다 놓아도 된다">
-      <div class="cv-fileinfo">
+    <div class="cv-filebar" id="cv-filebar">
+      <button type="button" class="cv-filerow" id="cv-show-bom" aria-expanded="false" aria-controls="cv-bom-view" title="누르면 파일 내용이 펼쳐진다. 다시 누르면 접힌다">
+        <svg class="cv-chev" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>
         <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" d="M14 3v5h5"/></svg>
         <span class="cv-filename" id="cv-file"></span>
         <span class="cv-filemeta" id="cv-file-meta"></span>
-      </div>
-      <div class="cv-fileactions">
-        <button type="button" class="cv-btn cv-toggle" id="cv-show-bom" aria-expanded="false" aria-controls="cv-bom-view">원본 JSON<svg class="cv-chev" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/></svg></button>
-        <button type="button" class="cv-linkbtn" id="cv-another">다른 파일 올리기</button>
-      </div>
+      </button>
+      <button type="button" class="cv-btn" id="cv-another" title="올리기 화면으로 돌아간다. 파일을 이 줄에 끌어다 놓아도 바뀐다"><svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L8 8m4-4l4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>새 BOM 올리기</button>
     </div>
     <div class="cv-bom-view" id="cv-bom-view" hidden><pre id="cv-bom-pre"></pre></div>
     <div class="cv-results-head">
-      <div class="cv-seg" id="cv-reg" role="group" aria-label="규제"></div>
+      <div class="cv-regs" id="cv-reg" role="group" aria-label="규제"></div>
       <span class="cv-muted" id="cv-results-count"></span>
     </div>
     <div class="cv-profile" id="cv-profile">

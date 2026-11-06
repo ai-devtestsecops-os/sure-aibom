@@ -15,7 +15,7 @@ let cards = [], cardById = {}, vocab = {}, profile = {}, targets = {}, examples 
 let pending = new Set(), partial = {}, profileApproved = true;      // 승인 안 된 줄, 부분 대응 줄(개념 → 이유), 프로파일 승인 여부
 const KIND_KO = {system: "시스템", model: "모델", dataset: "데이터셋", software: "소프트웨어"};
 let currentBom = null, currentName = "", currentSize = 0;      // 지금 판정하는 BOM. 올린 것이든 예제든 브라우저 안에서 판정한다 (프로파일을 바꾸면 다시)
-let regFilter = "", verdictFilter = "";                       // 목록 거르기: 규제(세그먼트 버튼), 판정(집계 타일을 누르면)
+let regSel = new Set(Object.keys(REG_NAME)), verdictFilter = "";   // 목록 거르기: 고른 규제들(칩, 여럿 가능), 판정(집계 타일을 누르면)
 
 async function load(name) { const r = await fetch(BASE + name); if (!r.ok) throw new Error(name); return r.json(); }
 
@@ -36,11 +36,12 @@ async function init() {
 }
 
 // ---------- 공통 ----------
-function regSeg(el, onChange) {                       // 규제 고르기 (세그먼트 버튼). 비우면 모든 규제
-  const opts = [["", "모든 규제"], ...Object.entries(REG_NAME)];
-  el.innerHTML = opts.map(([k, n]) => `<button type="button" data-reg="${k}" class="${k === regFilter ? "active" : ""}">${n}</button>`).join("");
-  el.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
-    regFilter = b.dataset.reg; el.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b)); onChange();
+function regChips(el, onChange) {                     // 규제 고르기: 칩마다 체크박스라 여럿을 함께 본다. 처음엔 모두 켜져 있다
+  el.innerHTML = `<span class="cv-regs-label">규제</span>` + Object.entries(REG_NAME).map(([k, n]) =>
+    `<label class="cv-regchip${regSel.has(k) ? " active" : ""}"><input type="checkbox" value="${k}"${regSel.has(k) ? " checked" : ""}> ${n}</label>`).join("");
+  el.querySelectorAll("input").forEach((b) => b.addEventListener("change", () => {
+    if (b.checked) regSel.add(b.value); else regSel.delete(b.value);
+    b.closest("label").classList.toggle("active", b.checked); onChange();
   }));
 }
 function label(concept) { return vocab[concept]?.label_ko || concept; }
@@ -102,7 +103,7 @@ function initJudgment() {
   for (const t of ["dragenter", "dragover"]) bar.addEventListener(t, (ev) => { ev.preventDefault(); bar.classList.add("over"); });
   for (const t of ["dragleave", "drop"]) bar.addEventListener(t, (ev) => { ev.preventDefault(); bar.classList.remove("over"); });
   bar.addEventListener("drop", (ev) => { const f = ev.dataTransfer?.files?.[0]; if (f) readFile(f); });
-  regSeg($("#cv-reg"), () => { syncProfilePanel(); renderSummary(); renderJudgList(); });
+  regChips($("#cv-reg"), () => { syncProfilePanel(); renderSummary(); renderJudgList(); });
   for (const b of extraBoxes()) b.addEventListener("change", () => {          // 체계적 위험은 범용 AI 모델 위에 얹힌다
     const gpai = extraBoxes().find((x) => x.value === "gpai"), systemic = extraBoxes().find((x) => x.value === "gpai_systemic");
     if (b === systemic && b.checked) gpai.checked = true;
@@ -111,7 +112,7 @@ function initJudgment() {
   for (const el of [$("#cv-system"), ...extraBoxes(), ...roleBoxes()]) el.addEventListener("change", () => { if (currentBom) rejudge(); });
 }
 function rejudge() { const system = systemProfile(); updateProfileAlert(system); showRecord(judgeBom(currentBom, currentName, system)); }
-function syncProfilePanel() { $("#cv-profile").hidden = Boolean(regFilter) && regFilter !== "EUAIA"; }   // 적용 조건은 EU AI Act 에만 있다
+function syncProfilePanel() { $("#cv-profile").hidden = !regSel.has("EUAIA"); }   // 적용 조건은 EU AI Act 에만 있다
 async function readFile(file) {
   try {
     const bom = JSON.parse(await file.text());
@@ -168,8 +169,8 @@ function updateProfileAlert(system) {                // 비운 칸이 있으면 
   const el = $("#cv-profile-alert"); el.hidden = !lack.length;
   if (lack.length) el.textContent = `${lack.length === 2 ? "위험 분류와 역할을" : lack[0] === "역할" ? "역할을" : "위험 분류를"} 고르지 않았다. 그것을 보는 EU AI Act 조항은 검토 필요로 나온다.`;
 }
-function regCards() {                                 // 고른 규제의 카드 판정
-  return currentRecord.cards.filter((r) => !regFilter || r.card_id.startsWith("RC-" + regFilter + "-"));
+function regCards() {                                 // 고른 규제들의 카드 판정
+  return currentRecord.cards.filter((r) => regSel.has(r.card_id.split("-")[1]));
 }
 // 카드 단위는 호라서 항(parent_clause_id) 하나에 카드가 여럿일 수 있다. 항의 종합 판정 (cards/judge/judge.py 의 aggregate 와 같은 규칙):
 // 판정한 카드(반영·부분 반영·미반영)가 전부 반영이면 반영, 전부 미반영이면 미반영, 섞이면 부분 반영. 판정한 카드가 없으면 검토 필요가 있을 때 검토 필요, 아니면 비적용.
@@ -205,7 +206,7 @@ function renderJudgList() {
   const groups = clauseGroups(regCards()).map((g) => ({...g, cards: g.cards.filter((r) => !verdictFilter || r.verdict === verdictFilter)})).filter((g) => g.cards.length);
   const container = $("#cv-judg-list");
   container.innerHTML = "";
-  if (!groups.length) { container.innerHTML = `<p class="cv-muted" style="padding:.8rem">해당하는 조항이 없다.</p>`; return; }
+  if (!groups.length) { container.innerHTML = `<p class="cv-muted" style="padding:.8rem">${regSel.size ? "해당하는 조항이 없다." : "규제를 하나 이상 고르세요."}</p>`; return; }
   let lastReg = null;
   for (const g of groups) {
     if (g.reg !== lastReg) { const h = document.createElement("div"); h.className = "cv-group"; h.textContent = g.reg; container.appendChild(h); lastReg = g.reg; }

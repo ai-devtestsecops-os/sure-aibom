@@ -13,13 +13,9 @@
 .card-viewer .cv-muted {color: var(--text-muted);}
 .card-viewer .cv-btn {font: inherit; font-size: .76rem; padding: .32rem .7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); cursor: pointer; line-height: 1.2;}
 .card-viewer .cv-btn:hover {border-color: var(--accent); color: var(--accent);}
-.card-viewer .cv-toggle {display: inline-flex; align-items: center; gap: .3rem;}
+.card-viewer .cv-btn svg {vertical-align: -.15em; margin-right: .3rem;}
 .card-viewer .cv-chev {transition: transform .15s; flex: none; color: var(--text-muted);}
-.card-viewer .cv-toggle.active .cv-chev, .card-viewer .cv-help[open] .cv-chev {transform: rotate(180deg);}
-.card-viewer .cv-btn.active {background: var(--bg-subtle); border-color: var(--accent); color: var(--accent);}
-.card-viewer .cv-btn.active .cv-chev {color: inherit;}
-.card-viewer .cv-linkbtn {font: inherit; font-size: .76rem; padding: .32rem .2rem; border: 0; background: transparent; color: var(--text-muted); cursor: pointer; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--border);}
-.card-viewer .cv-linkbtn:hover {color: var(--text); text-decoration-color: currentColor;}
+.card-viewer .cv-help[open] .cv-chev {transform: rotate(180deg);}
 .card-viewer select {font: inherit; padding: .34rem .5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); width: 100%; max-width: 16rem;}
 
 /* 올리기 */
@@ -40,12 +36,13 @@
 .card-viewer .cv-ex-file {font-family: var(--mono); font-size: .68rem; color: var(--text-muted); margin-top: .15rem;}
 
 /* 파일 줄과 원본 */
-.card-viewer .cv-filebar {display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .5rem .8rem; padding: .55rem .8rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-subtle);}
+.card-viewer .cv-filebar {display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .4rem .8rem; padding: .35rem .5rem .35rem .4rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-subtle);}
 .card-viewer .cv-filebar.over {border-color: var(--accent); background: var(--accent-soft);}
-.card-viewer .cv-fileinfo {display: inline-flex; align-items: center; gap: .45rem; min-width: 0; color: var(--text-muted);}
+.card-viewer .cv-filerow {font: inherit; display: inline-flex; align-items: center; gap: .45rem; min-width: 0; flex: 1 1 auto; padding: .25rem .45rem; border: 0; border-radius: 6px; background: transparent; color: var(--text-muted); cursor: pointer; text-align: left;}
+.card-viewer .cv-filerow:hover {background: var(--bg); color: var(--text);}
+.card-viewer .cv-filerow.active .cv-chev {transform: rotate(90deg);}
 .card-viewer .cv-filename {font-family: var(--mono); font-size: .76rem; color: var(--text); font-weight: 600; max-width: 22rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
 .card-viewer .cv-filemeta {font-size: .72rem; white-space: nowrap;}
-.card-viewer .cv-fileactions {display: inline-flex; gap: .4rem;}
 .card-viewer .cv-bom-view {border: 1px solid var(--border); border-radius: 8px; overflow: hidden; margin-top: .6rem;}
 .card-viewer .cv-bom-view pre {margin: 0; padding: .6rem .8rem; max-height: 50vh; overflow: auto; font-size: .72rem; line-height: 1.45; background: var(--bg-subtle);}
 
@@ -73,11 +70,12 @@
 
 /* 규제 고르기와 집계 타일 */
 .card-viewer .cv-results-head {display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .4rem .8rem; margin: 1rem 0 .55rem; font-size: .74rem;}
-.card-viewer .cv-seg {display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--bg);}
-.card-viewer .cv-seg button {font: inherit; font-size: .74rem; padding: .3rem .7rem; border: 0; border-right: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer;}
-.card-viewer .cv-seg button:last-child {border-right: 0;}
-.card-viewer .cv-seg button:hover {color: var(--text);}
-.card-viewer .cv-seg button.active {background: var(--accent-soft); color: var(--accent); font-weight: 700;}
+.card-viewer .cv-regs {display: inline-flex; flex-wrap: wrap; align-items: center; gap: .4rem;}
+.card-viewer .cv-regs-label {font-size: .72rem; font-weight: 700; color: var(--text-muted); margin-right: .2rem;}
+.card-viewer .cv-regchip {display: inline-flex; align-items: center; gap: .35rem; padding: .25rem .7rem .25rem .5rem; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); color: var(--text-muted); cursor: pointer; font-size: .74rem; white-space: nowrap; transition: border-color .15s, background .15s;}
+.card-viewer .cv-regchip:hover {border-color: var(--accent); color: var(--text);}
+.card-viewer .cv-regchip.active {background: var(--accent-soft); border-color: var(--accent); color: var(--accent); font-weight: 600;}
+.card-viewer .cv-regchip input {margin: 0; accent-color: var(--accent);}
 .card-viewer .cv-tiles {display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .5rem; margin-bottom: .7rem;}
 @media (max-width: 700px) {.card-viewer .cv-tiles {grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));}}
 .card-viewer .cv-tile {font: inherit; text-align: left; display: flex; flex-direction: column; gap: .15rem; padding: .5rem .7rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); cursor: pointer; min-width: 0; transition: border-color .15s, box-shadow .15s;}
