@@ -88,25 +88,27 @@
 .card-viewer .v-미반영 .cv-dot {background: var(--gap-dot);}
 .card-viewer .v-검토필요 .cv-dot {background: var(--rev-dot);}
 .card-viewer .cv-tile-n {font-size: .95rem; font-weight: 700; line-height: 1.2;}
-.card-viewer .cv-tile-s {font-size: .68rem; color: var(--text-muted); white-space: nowrap;}
 
 /* 목록 | 상세 */
 .card-viewer .cv-split {display: grid; grid-template-columns: minmax(16rem, 1fr) minmax(0, 2fr); gap: .8rem; min-height: 24rem;}
 @media (max-width: 900px) {.card-viewer .cv-split {grid-template-columns: 1fr;}}
 .card-viewer .cv-list {border: 1px solid var(--border); border-radius: 8px; max-height: 72vh; overflow: auto; background: var(--bg);}
 .card-viewer .cv-group {padding: .35rem .7rem; font-weight: 700; font-size: .7rem; letter-spacing: .03em; text-transform: uppercase; color: var(--text-muted); background: var(--bg-subtle); position: sticky; top: 0; z-index: 1;}
-.card-viewer .cv-item, .card-viewer .cv-clause {padding: .42rem .7rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: .6rem; align-items: center;}
-.card-viewer .cv-item {cursor: pointer;}
-.card-viewer .cv-item:hover {background: var(--bg-subtle);}
+/* 줄의 왼쪽 2rem 은 항 머리줄의 꺾쇠 자리라, 카드 줄의 번호와 머리줄의 번호가 같은 자리에서 시작한다. 호 줄은 그보다 더 들인다 */
+.card-viewer .cv-item, .card-viewer .cv-clause {padding: .42rem .7rem .42rem 2rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: .6rem; align-items: center;}
+.card-viewer .cv-item, .card-viewer .cv-clause {cursor: pointer;}
+.card-viewer .cv-item[hidden] {display: none;}
+.card-viewer .cv-item:hover, .card-viewer .cv-clause:hover {background: var(--bg-subtle);}
+.card-viewer .cv-head {display: inline-flex; align-items: center; gap: .4rem; min-width: 0;}
+.card-viewer .cv-clause.open .cv-chev {transform: rotate(90deg);}
 .card-viewer .cv-item.active {background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent);}
 .card-viewer .cv-row-main {display: flex; flex-direction: column; gap: .1rem; min-width: 0;}
 .card-viewer .cv-id {font-family: var(--mono); font-size: .74rem; white-space: nowrap;}
-.card-viewer .cv-clause .cv-id {font-weight: 700;}
 .card-viewer .cv-topic {font-size: .7rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
 .card-viewer .cv-sub {display: inline-flex; align-items: center; gap: .4rem; color: var(--text-muted); font-size: .7rem; white-space: nowrap; flex: none;}
 .card-viewer .cv-count {font-family: var(--mono); min-width: 2rem; text-align: right;}
-.card-viewer .cv-item.cv-point {border-top: 0; padding-top: .25rem; padding-left: 1.5rem;}
-.card-viewer .cv-clause {padding-bottom: .25rem;}
+.card-viewer .cv-item.cv-point {border-top: 0; padding-top: .25rem; padding-left: 2.7rem;}
+.card-viewer .cv-clause {padding-left: .7rem; padding-bottom: .25rem;}
 .card-viewer .cv-detail {border: 1px solid var(--border); border-radius: 8px; padding: .9rem 1.1rem; background: var(--bg); overflow: auto; max-height: 72vh;}
 .card-viewer .cv-detail h3 {margin: 0 0 .35rem; font-size: 1rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem;}
 .card-viewer .cv-detail h4 {margin: 1rem 0 .35rem; font-size: .7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em;}

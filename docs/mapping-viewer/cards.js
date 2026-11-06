@@ -130,7 +130,7 @@ function useBom(bom, name, size, system) {
   showBomView(false);
   $("#cv-upload").hidden = true; $("#cv-main").hidden = false;
   $("#cv-judg-detail").innerHTML = `<p class="cv-muted">조항을 고르면 원문과 요구 사실, 사실마다 BOM 에 값이 있었는지가 나옵니다.</p>`;
-  verdictSel = new Set(VERDICTS);
+  verdictSel = new Set(VERDICTS); collapsed = new Set();
   syncProfilePanel();
   rejudge();
 }
@@ -182,18 +182,19 @@ function clauseGroups(rs) {                           // 판정 목록 → [{cla
   return [...groups.values()].map((g) => ({...g, verdict: aggregate(g.cards.map((r) => r.verdict))}));
 }
 function showRecord(rec) { currentRecord = rec; renderSummary(); renderJudgList(); }
-// 판정 집계 칩. 호 단위 항목 수와 항(조항) 수. 처음엔 모두 켜져 있고, 칩을 누르면 그 판정을 목록에서 숨기거나 다시 보인다 (여럿 조합 가능)
+// 판정 집계 칩. 호 단위 항목 수만 센다 (항의 종합 판정은 목록의 항 머리줄에만, 말 없이 칩으로). 처음엔 모두 켜져 있고, 체크를 풀면 그 판정이 목록에서 빠진다 (여럿 조합 가능)
 function renderSummary() {
   if (!currentRecord) return;
-  const rs = regCards(), groups = clauseGroups(rs);
+  const rs = regCards();
   const s = Object.fromEntries(VERDICTS.map((v) => [v, rs.filter((r) => r.verdict === v).length]));
-  const cs = Object.fromEntries(VERDICTS.map((v) => [v, groups.filter((g) => g.verdict === v).length]));
   const box = $("#cv-judg-summary");
   box.innerHTML = VERDICTS.map((v) => `<label class="cv-tile ${vclass(v)}${verdictSel.has(v) ? " active" : ""}" title="체크를 풀면 이 판정이 목록에서 빠집니다"><input type="checkbox" value="${v}"${verdictSel.has(v) ? " checked" : ""}>
-    <span class="cv-tile-l"><span class="cv-dot"></span>${v}</span><span class="cv-tile-n">${s[v]}</span><span class="cv-tile-s">조항 ${cs[v]}</span></label>`).join("");
+    <span class="cv-tile-l"><span class="cv-dot"></span>${v}</span><span class="cv-tile-n">${s[v]}</span></label>`).join("");
   box.querySelectorAll("input").forEach((b) => b.addEventListener("change", () => { if (b.checked) verdictSel.add(b.value); else verdictSel.delete(b.value); renderSummary(); renderJudgList(); }));
 }
 const topicOf = (card) => card?.topic || (card?.title || "").split(": ").slice(1).join(": ");
+const CHEV = '<svg class="cv-chev" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" d="M9 6l6 6-6 6"/></svg>';   // 파일 줄·용어 설명과 같은 꺾쇠
+let collapsed = new Set();                             // 접어 둔 항 (규제|항). 새 BOM 을 올리면 비운다
 function renderJudgList() {
   if (!currentRecord) return;
   const groups = clauseGroups(regCards()).map((g) => ({...g, cards: g.cards.filter((r) => verdictSel.has(r.verdict))})).filter((g) => g.cards.length);
@@ -203,16 +204,22 @@ function renderJudgList() {
   let lastReg = null;
   for (const g of groups) {
     if (g.reg !== lastReg) { const h = document.createElement("div"); h.className = "cv-group"; h.textContent = g.reg; container.appendChild(h); lastReg = g.reg; }
-    if (g.cards.length > 1) {                          // 호가 여럿인 항: 항의 종합 판정을 머리로
-      const h = document.createElement("div"); h.className = "cv-clause"; h.innerHTML = `<span class="cv-id">${esc(g.clause)}</span><span class="cv-sub"><span class="cv-verdict ${vclass(g.verdict)}">${g.verdict}</span><span class="cv-count">종합</span></span>`; container.appendChild(h);
+    const key = g.reg + "|" + g.clause, grouped = g.cards.length > 1, folded = grouped && collapsed.has(key), rows = [];
+    if (grouped) {                                     // 호가 여럿인 항: 항의 판정을 머리줄로. 카드가 없어 상세는 없고, 누르면 호 줄을 접고 편다
+      const h = document.createElement("div"); h.className = "cv-clause" + (folded ? "" : " open"); h.setAttribute("role", "button"); h.tabIndex = 0; h.setAttribute("aria-expanded", String(!folded)); h.title = "누르면 호 줄을 접거나 폅니다";
+      h.innerHTML = `<span class="cv-head">${CHEV}<span class="cv-id">${esc(g.clause)}</span></span><span class="cv-sub"><span class="cv-verdict ${vclass(g.verdict)}" title="아래 호의 판정을 묶은 항의 판정입니다. 모두 반영이면 반영, 모두 미반영이면 미반영, 섞이면 부분 반영">${g.verdict}</span><span class="cv-count"></span></span>`;
+      const toggle = () => { const open = collapsed.has(key); if (open) collapsed.delete(key); else collapsed.add(key); h.classList.toggle("open", open); h.setAttribute("aria-expanded", String(open)); rows.forEach((x) => { x.hidden = !open; }); };
+      h.addEventListener("click", toggle);
+      h.addEventListener("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); toggle(); } });
+      container.appendChild(h);
     }
     for (const r of g.cards) {
-      const card = cardById[r.card_id], f = r.facts || []; const p = f.filter((x) => x.status === "present").length, n = f.filter((x) => x.status === "not_required").length;
-      const row = document.createElement("div"); row.className = "cv-item" + (g.cards.length > 1 ? " cv-point" : ""); row.dataset.id = r.card_id;
+      const card = cardById[r.card_id], f = r.facts || []; const p = f.filter((x) => x.status === "present" || x.status === "partial").length, n = f.filter((x) => x.status === "not_required").length;   // 분자: 값이 있는 사실 (부분 대응 포함)
+      const row = document.createElement("div"); row.className = "cv-item" + (grouped ? " cv-point" : ""); row.dataset.id = r.card_id; row.hidden = folded;
       row.innerHTML = `<span class="cv-row-main"><span class="cv-id">${esc(card?.source?.clause_id || r.card_id.replace(/^RC-[A-Z0-9]+-/, ""))}</span><span class="cv-topic" title="${esc(topicOf(card))}">${esc(topicOf(card))}</span></span>`
-        + `<span class="cv-sub"><span class="cv-verdict ${vclass(r.verdict)}">${r.verdict}</span><span class="cv-count" title="요구 사실 중 BOM 에 있는 것">${f.length ? `${p}/${f.length - n}` : ""}</span></span>`;
+        + `<span class="cv-sub"><span class="cv-verdict ${vclass(r.verdict)}">${r.verdict}</span><span class="cv-count" title="요구 사실 중 BOM 에 값이 있는 것 (부분 대응 포함)">${f.length ? `${p}/${f.length - n}` : ""}</span></span>`;
       row.addEventListener("click", () => { container.querySelectorAll(".cv-item").forEach((x) => x.classList.toggle("active", x === row)); renderJudg(r); });
-      container.appendChild(row);
+      container.appendChild(row); rows.push(row);
     }
   }
 }
