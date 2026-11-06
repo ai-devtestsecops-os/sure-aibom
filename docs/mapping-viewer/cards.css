@@ -1,79 +1,133 @@
-/* 규제 판정 화면 (compliance/regulation-cards.md). 필드 탐색기(viewer.css)와 같은 색 변수를 쓴다. */
+/* 규제 판정 화면 (compliance/regulation-cards.md). 필드 탐색기(viewer.css)와 같은 색 변수를 쓴다.
+   짜임: 올리기(드롭존 + 예제 카드) → 파일 줄 → 시스템 프로파일(폼) → 규제 고르기 + 판정 집계 타일(누르면 거름) → 목록 | 상세 */
 .card-viewer {--bg: #fff; --bg-subtle: #f6f8fa; --border: #d8dee4; --text: #1f2328; --text-muted: #656d76; --accent: #0969da; --accent-soft: #ddf0ff;
-  --hit-bg: #dafbe1; --hit-fg: #116329; --extra-bg: #fff8c5; --extra-fg: #7d5b00; --miss-bg: #eaeef2; --miss-fg: #57606a; --gap-bg: #ffebe9; --gap-fg: #cf222e;
+  --hit-bg: #dafbe1; --hit-fg: #116329; --hit-dot: #1a7f37; --extra-bg: #fff8c5; --extra-fg: #7d5b00; --extra-dot: #bf8700;
+  --miss-bg: #eaeef2; --miss-fg: #57606a; --miss-dot: #8c959f; --gap-bg: #ffebe9; --gap-fg: #cf222e; --gap-dot: #cf222e;
   --sans: var(--md-text-font-family, system-ui, sans-serif); --mono: var(--md-code-font-family, ui-monospace, monospace);
-  font-family: var(--sans); color: var(--text); font-size: .8rem; margin: 1rem 0 1.5rem;}
+  font-family: var(--sans); color: var(--text); font-size: .8rem; margin: 1.2rem 0 1.5rem;}
 [data-md-color-scheme="slate"] .card-viewer {--bg: var(--md-default-bg-color); --bg-subtle: var(--md-code-bg-color); --border: var(--md-default-fg-color--lightest);
   --text: var(--md-default-fg-color); --text-muted: var(--md-default-fg-color--light); --accent: #58a6ff; --accent-soft: rgba(56, 139, 253, .2);
-  --hit-bg: rgba(34, 197, 94, .22); --hit-fg: #86efac; --extra-bg: rgba(234, 179, 8, .22); --extra-fg: #fde68a; --miss-bg: rgba(148, 163, 184, .2); --miss-fg: #cbd5e1;
-  --gap-bg: rgba(248, 113, 113, .22); --gap-fg: #fca5a5;}
-.card-viewer .cv-toolbar {display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin-bottom: .6rem;}
-.card-viewer select {font: inherit; padding: .3rem .5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text);}
-.card-viewer .cv-dropzone {border: 2px dashed var(--border); border-radius: 12px; padding: 2.4rem 1rem 1.6rem; text-align: center; background: var(--bg-subtle); cursor: pointer; color: var(--text-muted); outline: none;}
-.card-viewer .cv-dropzone:hover, .card-viewer .cv-dropzone:focus, .card-viewer .cv-dropzone.over {border-color: var(--accent); background: var(--accent-soft); color: var(--text);}
-.card-viewer .cv-dropzone input {display: none;}
-.card-viewer .cv-drop-icon {font-size: 2rem; line-height: 1; margin-bottom: .6rem; color: var(--accent);}
-.card-viewer .cv-drop-main {font-size: 1rem; color: var(--text);}
-.card-viewer .cv-drop-main .cv-link {color: var(--accent); text-decoration: underline;}
-.card-viewer .cv-drop-sub {margin-top: .4rem; font-size: .76rem;}
-.card-viewer .cv-drop-examples {margin-top: 1rem; font-size: .76rem;}
-.card-viewer .cv-drop-examples button {font: inherit; margin: 0 .15rem; padding: .15rem .55rem; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); color: var(--text); cursor: pointer;}
-.card-viewer .cv-drop-examples button:hover {border-color: var(--accent); color: var(--accent);}
-.card-viewer .cv-drop-error {margin-top: .8rem; color: var(--gap-fg); font-size: .78rem;}
-.card-viewer .cv-btn {font: inherit; font-size: .76rem; padding: .3rem .6rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); cursor: pointer;}
-.card-viewer .cv-btn:hover {border-color: var(--accent); color: var(--accent);}
-.card-viewer .cv-file {display: inline-flex; align-items: center; gap: .35rem; padding: .3rem .6rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-subtle); font-family: var(--mono); font-size: .74rem; max-width: 24rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
-.card-viewer .cv-file .cv-size {color: var(--text-muted); font-family: var(--sans);}
-.card-viewer .cv-bom-view {border: 1px solid var(--border); border-radius: 8px; background: var(--bg); margin-bottom: .6rem;}
-.card-viewer .cv-bom-head {display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .4rem .7rem; border-bottom: 1px solid var(--border); font-size: .76rem; color: var(--text-muted);}
-.card-viewer .cv-bom-view pre {margin: 0; padding: .6rem .8rem; max-height: 50vh; overflow: auto; font-size: .72rem; line-height: 1.45; background: var(--bg-subtle);}
-.card-viewer .cv-roles {display: inline-flex; gap: .4rem; align-items: center; padding: .3rem .5rem; border: 1px solid var(--border); border-radius: 6px; color: var(--text-muted);}
-.card-viewer .cv-roles label {color: var(--text); cursor: pointer;}
+  --hit-bg: rgba(34, 197, 94, .22); --hit-fg: #86efac; --hit-dot: #3fb950; --extra-bg: rgba(234, 179, 8, .22); --extra-fg: #fde68a; --extra-dot: #d29922;
+  --miss-bg: rgba(148, 163, 184, .2); --miss-fg: #cbd5e1; --miss-dot: #8b949e; --gap-bg: rgba(248, 113, 113, .22); --gap-fg: #fca5a5; --gap-dot: #f85149;}
+.card-viewer * {box-sizing: border-box;}
 .card-viewer .cv-muted {color: var(--text-muted);}
-.card-viewer .cv-split {display: grid; grid-template-columns: minmax(14rem, 1fr) minmax(0, 2.2fr); gap: .8rem; min-height: 24rem;}
+.card-viewer .cv-btn {font: inherit; font-size: .76rem; padding: .32rem .7rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); cursor: pointer; line-height: 1.2;}
+.card-viewer .cv-btn:hover {border-color: var(--accent); color: var(--accent);}
+.card-viewer select {font: inherit; padding: .34rem .5rem; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text); width: 100%; max-width: 16rem;}
+
+/* 올리기 */
+.card-viewer .cv-dropzone {border: 2px dashed var(--border); border-radius: 10px; padding: 2.2rem 1rem 1.8rem; text-align: center; background: var(--bg-subtle); cursor: pointer; color: var(--text-muted); outline: none; transition: border-color .15s, background .15s;}
+.card-viewer .cv-dropzone:hover, .card-viewer .cv-dropzone:focus-visible, .card-viewer .cv-dropzone.over {border-color: var(--accent); background: var(--accent-soft); color: var(--text);}
+.card-viewer .cv-dropzone input {display: none;}
+.card-viewer .cv-drop-icon {display: block; margin: 0 auto .6rem; color: var(--accent);}
+.card-viewer .cv-drop-main {font-size: .96rem; color: var(--text);}
+.card-viewer .cv-drop-main .cv-link {color: var(--accent); text-decoration: underline;}
+.card-viewer .cv-drop-sub {margin-top: .35rem; font-size: .74rem;}
+.card-viewer .cv-drop-error {margin-top: .8rem; color: var(--gap-fg); font-size: .78rem;}
+.card-viewer .cv-examples-head {margin: 1.1rem 0 .45rem; font-size: .72rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-muted);}
+.card-viewer .cv-examples {display: grid; grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr)); gap: .6rem;}
+.card-viewer .cv-example {font: inherit; text-align: left; display: flex; flex-direction: column; gap: .25rem; padding: .7rem .85rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); cursor: pointer; transition: border-color .15s, box-shadow .15s;}
+.card-viewer .cv-example:hover, .card-viewer .cv-example:focus-visible {border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); outline: none;}
+.card-viewer .cv-ex-title {font-weight: 700; font-size: .8rem;}
+.card-viewer .cv-ex-note {font-size: .72rem; color: var(--text-muted); line-height: 1.45;}
+.card-viewer .cv-ex-file {font-family: var(--mono); font-size: .68rem; color: var(--text-muted); margin-top: .15rem;}
+
+/* 파일 줄과 원본 */
+.card-viewer .cv-filebar {display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .5rem .8rem; padding: .55rem .8rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg-subtle);}
+.card-viewer .cv-fileinfo {display: inline-flex; align-items: center; gap: .45rem; min-width: 0; color: var(--text-muted);}
+.card-viewer .cv-filename {font-family: var(--mono); font-size: .76rem; color: var(--text); font-weight: 600; max-width: 22rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.card-viewer .cv-filemeta {font-size: .72rem; white-space: nowrap;}
+.card-viewer .cv-fileactions {display: inline-flex; gap: .4rem;}
+.card-viewer .cv-bom-view {border: 1px solid var(--border); border-radius: 8px; background: var(--bg); margin-top: .6rem;}
+.card-viewer .cv-bom-head {display: flex; justify-content: space-between; align-items: center; gap: .5rem; padding: .4rem .7rem; border-bottom: 1px solid var(--border); font-size: .74rem; color: var(--text-muted);}
+.card-viewer .cv-bom-view pre {margin: 0; padding: .6rem .8rem; max-height: 50vh; overflow: auto; font-size: .72rem; line-height: 1.45; background: var(--bg-subtle);}
+
+/* 시스템 프로파일 */
+.card-viewer .cv-profile {margin-top: .8rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); padding: .7rem .9rem .8rem;}
+.card-viewer .cv-profile-head {display: flex; flex-wrap: wrap; align-items: baseline; gap: .2rem .6rem; margin-bottom: .6rem; font-size: .74rem;}
+.card-viewer .cv-profile-title {font-weight: 700; font-size: .8rem; color: var(--text);}
+.card-viewer .cv-fields {display: grid; grid-template-columns: minmax(10rem, 12rem) minmax(0, 1.15fr) minmax(0, 1fr); gap: .7rem 1.2rem;}
+@media (max-width: 900px) {.card-viewer .cv-fields {grid-template-columns: 1fr;}}
+.card-viewer .cv-field {display: flex; flex-direction: column; gap: .35rem; min-width: 0;}
+.card-viewer .cv-label {font-size: .72rem; font-weight: 700; color: var(--text-muted); display: inline-flex; align-items: center; gap: .35rem;}
+.card-viewer .cv-ref {font-weight: 500; font-family: var(--mono); font-size: .64rem; padding: .02rem .35rem; border: 1px solid var(--border); border-radius: 4px; color: var(--text-muted);}
+.card-viewer .cv-checks {display: flex; flex-wrap: wrap; gap: .3rem .7rem; min-height: 1.9rem; align-items: center;}
+.card-viewer .cv-checks label {display: inline-flex; align-items: center; gap: .3rem; cursor: pointer; white-space: nowrap; color: var(--text);}
+.card-viewer .cv-checks input {margin: 0; accent-color: var(--accent);}
+.card-viewer .cv-alert {margin-top: .6rem; padding: .4rem .65rem; border-radius: 6px; background: var(--extra-bg); color: var(--extra-fg); font-size: .74rem;}
+
+/* 규제 고르기와 집계 타일 */
+.card-viewer .cv-results-head {display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .4rem .8rem; margin: 1rem 0 .55rem; font-size: .74rem;}
+.card-viewer .cv-seg {display: inline-flex; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; background: var(--bg);}
+.card-viewer .cv-seg button {font: inherit; font-size: .74rem; padding: .3rem .7rem; border: 0; border-right: 1px solid var(--border); background: transparent; color: var(--text-muted); cursor: pointer;}
+.card-viewer .cv-seg button:last-child {border-right: 0;}
+.card-viewer .cv-seg button:hover {color: var(--text);}
+.card-viewer .cv-seg button.active {background: var(--accent-soft); color: var(--accent); font-weight: 700;}
+.card-viewer .cv-tiles {display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: .5rem; margin-bottom: .7rem;}
+@media (max-width: 700px) {.card-viewer .cv-tiles {grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));}}
+.card-viewer .cv-tile {font: inherit; text-align: left; display: flex; flex-direction: column; gap: .15rem; padding: .5rem .7rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); cursor: pointer; min-width: 0; transition: border-color .15s, box-shadow .15s;}
+.card-viewer .cv-tile:hover {border-color: var(--accent);}
+.card-viewer .cv-tile.active {border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-soft); background: var(--accent-soft);}
+.card-viewer .cv-tile-l {display: inline-flex; align-items: center; gap: .35rem; font-size: .72rem; color: var(--text-muted); white-space: nowrap;}
+.card-viewer .cv-dot {width: .5rem; height: .5rem; border-radius: 50%; background: var(--miss-dot); flex: none;}
+.card-viewer .v-반영 .cv-dot {background: var(--hit-dot);}
+.card-viewer .v-부분반영 .cv-dot {background: var(--extra-dot);}
+.card-viewer .v-미반영 .cv-dot {background: var(--gap-dot);}
+.card-viewer .cv-tile-n {font-size: 1.25rem; font-weight: 700; line-height: 1.2;}
+.card-viewer .cv-tile-s {font-size: .68rem; color: var(--text-muted);}
+
+/* 목록 | 상세 */
+.card-viewer .cv-split {display: grid; grid-template-columns: minmax(16rem, 1fr) minmax(0, 2fr); gap: .8rem; min-height: 24rem;}
 @media (max-width: 900px) {.card-viewer .cv-split {grid-template-columns: 1fr;}}
-.card-viewer .cv-list {border: 1px solid var(--border); border-radius: 8px; max-height: 70vh; overflow: auto; background: var(--bg);}
-.card-viewer .cv-group {padding: .35rem .6rem; font-weight: 700; font-size: .72rem; color: var(--text-muted); background: var(--bg-subtle); position: sticky; top: 0;}
-.card-viewer .cv-item {padding: .4rem .6rem; border-top: 1px solid var(--border); cursor: pointer; display: flex; justify-content: space-between; gap: .5rem; align-items: baseline;}
+.card-viewer .cv-list {border: 1px solid var(--border); border-radius: 8px; max-height: 72vh; overflow: auto; background: var(--bg);}
+.card-viewer .cv-group {padding: .35rem .7rem; font-weight: 700; font-size: .7rem; letter-spacing: .03em; text-transform: uppercase; color: var(--text-muted); background: var(--bg-subtle); position: sticky; top: 0; z-index: 1;}
+.card-viewer .cv-item, .card-viewer .cv-clause {padding: .42rem .7rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: .6rem; align-items: center;}
+.card-viewer .cv-item {cursor: pointer;}
 .card-viewer .cv-item:hover {background: var(--bg-subtle);}
-.card-viewer .cv-item.active {background: var(--accent-soft);}
-.card-viewer .cv-item .cv-id {font-family: var(--mono); font-size: .74rem;}
-.card-viewer .cv-item .cv-sub {color: var(--text-muted); font-size: .7rem; white-space: nowrap;}
-.card-viewer .cv-clause {padding: .4rem .6rem .2rem; border-top: 1px solid var(--border); display: flex; justify-content: space-between; gap: .5rem; align-items: baseline;}
-.card-viewer .cv-clause .cv-id {font-family: var(--mono); font-size: .74rem; font-weight: 700;}
-.card-viewer .cv-clause .cv-sub {color: var(--text-muted); font-size: .7rem; white-space: nowrap;}
-.card-viewer .cv-item.cv-point {border-top: 0; padding-top: .2rem; padding-left: 1.4rem;}
-.card-viewer .cv-detail {border: 1px solid var(--border); border-radius: 8px; padding: .8rem 1rem; background: var(--bg); overflow: auto; max-height: 70vh;}
-.card-viewer .cv-detail h3 {margin: 0 0 .3rem; font-size: 1rem;}
-.card-viewer .cv-detail h4 {margin: .9rem 0 .3rem; font-size: .82rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: .03em;}
-.card-viewer .cv-meta {display: flex; flex-wrap: wrap; gap: .35rem .5rem; margin: .3rem 0 .6rem;}
-.card-viewer .cv-chip {display: inline-block; padding: .1rem .5rem; border-radius: 999px; background: var(--bg-subtle); border: 1px solid var(--border); font-size: .7rem;}
+.card-viewer .cv-item.active {background: var(--accent-soft); box-shadow: inset 3px 0 0 var(--accent);}
+.card-viewer .cv-row-main {display: flex; flex-direction: column; gap: .1rem; min-width: 0;}
+.card-viewer .cv-id {font-family: var(--mono); font-size: .74rem; white-space: nowrap;}
+.card-viewer .cv-clause .cv-id {font-weight: 700;}
+.card-viewer .cv-topic {font-size: .7rem; color: var(--text-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;}
+.card-viewer .cv-sub {display: inline-flex; align-items: center; gap: .4rem; color: var(--text-muted); font-size: .7rem; white-space: nowrap; flex: none;}
+.card-viewer .cv-count {font-family: var(--mono); min-width: 2rem; text-align: right;}
+.card-viewer .cv-item.cv-point {border-top: 0; padding-top: .25rem; padding-left: 1.5rem;}
+.card-viewer .cv-clause {padding-bottom: .25rem;}
+.card-viewer .cv-detail {border: 1px solid var(--border); border-radius: 8px; padding: .9rem 1.1rem; background: var(--bg); overflow: auto; max-height: 72vh;}
+.card-viewer .cv-detail h3 {margin: 0 0 .35rem; font-size: 1rem; display: flex; flex-wrap: wrap; align-items: center; gap: .5rem;}
+.card-viewer .cv-detail h4 {margin: 1rem 0 .35rem; font-size: .7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .04em;}
+.card-viewer .cv-meta {display: flex; flex-wrap: wrap; gap: .3rem .5rem; margin: .2rem 0 .7rem;}
+.card-viewer .cv-chip {display: inline-block; padding: .08rem .5rem; border-radius: 999px; background: var(--bg-subtle); border: 1px solid var(--border); font-size: .7rem; white-space: nowrap;}
 .card-viewer .cv-chip.gap, .card-viewer .cv-chip.missing {background: var(--gap-bg); color: var(--gap-fg); border-color: transparent;}
 .card-viewer .cv-chip.present {background: var(--hit-bg); color: var(--hit-fg); border-color: transparent;}
-.card-viewer .cv-chip.not_required {background: var(--miss-bg); color: var(--miss-fg); border-color: transparent;}
-.card-viewer .cv-chip.unknown {background: var(--miss-bg); color: var(--miss-fg); border-color: transparent;}
+.card-viewer .cv-chip.not_required, .card-viewer .cv-chip.unknown {background: var(--miss-bg); color: var(--miss-fg); border-color: transparent;}
 .card-viewer .cv-chip.partial {background: var(--extra-bg); color: var(--extra-fg); border-color: transparent;}
-.card-viewer .cv-text {line-height: 1.6; padding: .6rem .8rem; background: var(--bg-subtle); border-radius: 6px; font-size: .78rem;}
+.card-viewer .cv-text {line-height: 1.65; padding: .65rem .85rem; background: var(--bg-subtle); border-radius: 6px; font-size: .78rem;}
 .card-viewer .cv-text mark {background: var(--hit-bg); color: inherit; border-radius: 3px; padding: 0 .1em; cursor: pointer; border-bottom: 2px solid var(--hit-fg);}
 .card-viewer .cv-text mark.missing {background: var(--gap-bg); border-bottom-color: var(--gap-fg);}
 .card-viewer .cv-text mark.partial {background: var(--extra-bg); border-bottom-color: var(--extra-fg);}
 .card-viewer .cv-text mark.muted {background: var(--miss-bg); border-bottom-color: var(--miss-fg);}
 .card-viewer .cv-text mark.focus {outline: 2px solid var(--accent);}
 .card-viewer .cv-text .cv-trans {display: block; margin-top: .5rem; color: var(--text-muted); font-size: .74rem;}
-.card-viewer table.cv-facts {width: 100%; border-collapse: collapse; font-size: .76rem; margin: .2rem 0;}
-.card-viewer table.cv-facts th, .card-viewer table.cv-facts td {text-align: left; padding: .3rem .45rem; border-bottom: 1px solid var(--border); vertical-align: top;}
-.card-viewer table.cv-facts th {color: var(--text-muted); font-weight: 600;}
+.card-viewer .cv-legend {display: flex; flex-wrap: wrap; gap: .3rem .9rem; margin-top: .45rem; font-size: .7rem; color: var(--text-muted);}
+.card-viewer .cv-legend span {display: inline-flex; align-items: center; gap: .3rem;}
+.card-viewer .cv-legend i {width: .9rem; height: .55rem; border-radius: 2px; background: var(--hit-bg); border-bottom: 2px solid var(--hit-fg);}
+.card-viewer .cv-legend i.partial {background: var(--extra-bg); border-bottom-color: var(--extra-fg);}
+.card-viewer .cv-legend i.missing {background: var(--gap-bg); border-bottom-color: var(--gap-fg);}
+.card-viewer .cv-legend i.muted {background: var(--miss-bg); border-bottom-color: var(--miss-fg);}
+.card-viewer table.cv-facts {width: 100%; table-layout: fixed; border-collapse: collapse; font-size: .76rem; margin: .2rem 0;}
+.card-viewer table.cv-facts th, .card-viewer table.cv-facts td {text-align: left; padding: .35rem .45rem; border-bottom: 1px solid var(--border); vertical-align: top; overflow-wrap: anywhere;}
+.card-viewer table.cv-facts th {color: var(--text-muted); font-weight: 600; font-size: .7rem;}
+.card-viewer table.cv-facts th:nth-child(1) {width: 5.8rem;}
+.card-viewer table.cv-facts th:nth-child(2) {width: 36%;}
+.card-viewer table.cv-facts tr[data-idx] {cursor: pointer;}
 .card-viewer table.cv-facts tr.focus td {background: var(--accent-soft);}
-.card-viewer table.cv-facts code, .card-viewer .cv-path {font-family: var(--mono); font-size: .72rem; background: var(--bg-subtle); padding: .05rem .3rem; border-radius: 4px; white-space: nowrap;}
-.card-viewer .cv-path a {color: var(--accent); text-decoration: none;}
-.card-viewer .cv-verdict {font-weight: 700; padding: .1rem .5rem; border-radius: 999px; font-size: .7rem; white-space: nowrap;}
+.card-viewer table.cv-facts code, .card-viewer .cv-path {font-family: var(--mono); font-size: .72rem; background: var(--bg-subtle); padding: .05rem .3rem; border-radius: 4px; overflow-wrap: anywhere; box-decoration-break: clone; -webkit-box-decoration-break: clone;}
+.card-viewer .cv-verdict {font-weight: 700; padding: .1rem .5rem; border-radius: 999px; font-size: .68rem; white-space: nowrap;}
 .card-viewer .v-반영 {background: var(--hit-bg); color: var(--hit-fg);}
 .card-viewer .v-부분반영 {background: var(--extra-bg); color: var(--extra-fg);}
 .card-viewer .v-미반영 {background: var(--gap-bg); color: var(--gap-fg);}
 .card-viewer .v-검토필요, .card-viewer .v-비적용 {background: var(--miss-bg); color: var(--miss-fg);}
-.card-viewer #cv-judg-summary {display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .6rem;}
-.card-viewer .cv-stat {padding: .35rem .7rem; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); font-size: .76rem;}
-.card-viewer .cv-stat b {font-size: 1rem; margin-right: .3rem;}
-.card-viewer .cv-bar {display: flex; height: 8px; border-radius: 4px; overflow: hidden; background: var(--bg-subtle); margin: .3rem 0 .6rem;}
-.card-viewer .cv-bar span {display: block; height: 100%;}
+.card-viewer .cv-tile.v-반영, .card-viewer .cv-tile.v-부분반영, .card-viewer .cv-tile.v-미반영, .card-viewer .cv-tile.v-검토필요, .card-viewer .cv-tile.v-비적용 {background: var(--bg); color: var(--text); font-weight: 400;}
+.card-viewer .cv-tile.active {background: var(--accent-soft);}
 .card-viewer .cv-note {font-size: .74rem; color: var(--text-muted); margin-top: .5rem;}

@@ -14,10 +14,8 @@ const vclass = (v) => "v-" + v.replace(/\s/g, "");
 let cards = [], cardById = {}, vocab = {}, profile = {}, targets = {}, examples = [];
 let pending = new Set(), partial = {}, profileApproved = true;      // 승인 안 된 줄, 부분 대응 줄(개념 → 이유), 프로파일 승인 여부
 const KIND_KO = {system: "시스템", model: "모델", dataset: "데이터셋", software: "소프트웨어"};
-const RISK_KO = {high_risk: "고위험 AI 시스템", minimal_risk: "고위험 아님", limited_risk: "투명성 의무 (50조)", gpai: "범용 AI 모델", gpai_systemic: "범용 AI 모델 (체계적 위험)", any: "모든 AI 시스템"};
-const RISK_ORDER = ["high_risk", "minimal_risk", "limited_risk", "gpai", "gpai_systemic"];
-const ROLE_KO = {provider: "제공자", deployer: "배포자", importer: "수입자", distributor: "유통자", authorised_representative: "수권대리인", operator: "운영자", organisation: "조직"};
 let currentBom = null, currentName = "", currentSize = 0;      // 지금 판정하는 BOM. 올린 것이든 예제든 브라우저 안에서 판정한다 (프로파일을 바꾸면 다시)
+let regFilter = "", verdictFilter = "";                       // 목록 거르기: 규제(세그먼트 버튼), 판정(집계 타일을 누르면)
 
 async function load(name) { const r = await fetch(BASE + name); if (!r.ok) throw new Error(name); return r.json(); }
 
@@ -38,22 +36,15 @@ async function init() {
 }
 
 // ---------- 공통 ----------
-function regSelect(el, onChange) {
-  el.innerHTML = `<option value="">모든 규제</option>` + Object.entries(REG_NAME).map(([k, n]) => `<option value="${k}">${n}</option>`).join("");
-  el.addEventListener("change", onChange);
-}
-function groupedList(container, items, render, onPick) {
-  container.innerHTML = "";
-  let lastReg = null;
-  for (const it of items) {
-    const reg = regOf(it.card_id);
-    if (reg !== lastReg) { const g = document.createElement("div"); g.className = "cv-group"; g.textContent = reg; container.appendChild(g); lastReg = reg; }
-    const row = document.createElement("div"); row.className = "cv-item"; row.dataset.id = it.card_id; row.innerHTML = render(it);
-    row.addEventListener("click", () => { container.querySelectorAll(".cv-item").forEach((r) => r.classList.toggle("active", r === row)); onPick(it); });
-    container.appendChild(row);
-  }
+function regSeg(el, onChange) {                       // 규제 고르기 (세그먼트 버튼). 비우면 모든 규제
+  const opts = [["", "모든 규제"], ...Object.entries(REG_NAME)];
+  el.innerHTML = opts.map(([k, n]) => `<button type="button" data-reg="${k}" class="${k === regFilter ? "active" : ""}">${n}</button>`).join("");
+  el.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+    regFilter = b.dataset.reg; el.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b)); onChange();
+  }));
 }
 function label(concept) { return vocab[concept]?.label_ko || concept; }
+const compCount = (bom) => { let n = 0; (function walk(items) { for (const c of items || []) { n += 1; walk(c.components); } })(bom.components); return n; };
 
 // 원문에 구절을 칠한다. spans: [{text, cls, idx}] . 겹치면 긴 것부터 칠하고 나머지는 건너뛴다.
 function highlightText(text, spans) {
@@ -89,13 +80,12 @@ function focusFact(detail, idx) {
 }
 
 // ---------- 판정 ----------
-// 처음엔 BOM 을 올리는 자리(드롭존)만 보인다. 파일을 끌어다 놓거나 골라 올리거나 예제를 누르면 브라우저 안에서 판정해 화면을 연다.
+// 처음엔 올리는 자리(드롭존과 예제 카드)만 보인다. 파일을 끌어다 놓거나 골라 올리거나 예제를 누르면 브라우저 안에서 판정해 결과 화면을 연다.
 let currentRecord = null;
 function initJudgment() {
   const drop = $("#cv-drop"), input = $("#cv-bom-file");
-  $("#cv-examples").innerHTML = examples.map((e, i) => `<button type="button" data-i="${i}" title="${esc(e.note || "")} (${esc(e.file)}, ${fmtSize(e.size || 0)})">${esc(e.label || e.subject)}</button>`).join("") || `<span class="cv-muted">없음</span>`;
-  $("#cv-examples").querySelectorAll("button").forEach((b) => b.addEventListener("click", async (ev) => {
-    ev.stopPropagation();
+  $("#cv-examples").innerHTML = examples.map((e, i) => `<button type="button" class="cv-example" data-i="${i}"><span class="cv-ex-title">${esc(e.label || e.subject)}</span><span class="cv-ex-note">${esc(e.note || "")}</span><span class="cv-ex-file">${esc(e.file)} · ${fmtSize(e.size || 0)}</span></button>`).join("") || `<span class="cv-muted">없음</span>`;
+  $("#cv-examples").querySelectorAll("button").forEach((b) => b.addEventListener("click", async () => {
     const e = examples[+b.dataset.i];
     try { const r = await fetch(BASE + "boms/" + e.file); if (!r.ok) throw new Error(e.file); useBom(await r.json(), e.file, e.size, e.system_profile); }
     catch (err) { dropError(`예제를 읽지 못했다: ${esc(err.message)}`); }
@@ -106,18 +96,18 @@ function initJudgment() {
   for (const t of ["dragleave", "drop"]) drop.addEventListener(t, (ev) => { ev.preventDefault(); drop.classList.remove("over"); });
   drop.addEventListener("drop", (ev) => { const f = ev.dataTransfer?.files?.[0]; if (f) readFile(f); else dropError("파일이 아니다"); });
   input.addEventListener("change", (ev) => { const f = ev.target.files[0]; if (f) readFile(f); input.value = ""; });
-  $("#cv-another").addEventListener("click", () => { $("#cv-main").hidden = true; showBomView(false); $("#cv-drop-error").hidden = true; drop.hidden = false; drop.focus(); });
+  $("#cv-another").addEventListener("click", () => { $("#cv-main").hidden = true; showBomView(false); $("#cv-drop-error").hidden = true; $("#cv-upload").hidden = false; drop.focus(); });
   $("#cv-show-bom").addEventListener("click", () => showBomView($("#cv-bom-view").hidden));
   $("#cv-hide-bom").addEventListener("click", () => showBomView(false));
-  regSelect($("#cv-reg"), () => { renderSummary(); renderJudgList(); });
-  $("#cv-verdict-filter").addEventListener("change", renderJudgList);
+  regSeg($("#cv-reg"), () => { renderSummary(); renderJudgList(); });
   for (const b of extraBoxes()) b.addEventListener("change", () => {          // 체계적 위험은 범용 AI 모델 위에 얹힌다
     const gpai = extraBoxes().find((x) => x.value === "gpai"), systemic = extraBoxes().find((x) => x.value === "gpai_systemic");
     if (b === systemic && b.checked) gpai.checked = true;
     if (b === gpai && !b.checked) systemic.checked = false;
   });
-  for (const el of [$("#cv-system"), ...extraBoxes(), ...roleBoxes()]) el.addEventListener("change", () => { if (currentBom) showRecord(judgeBom(currentBom, currentName, systemProfile())); });
+  for (const el of [$("#cv-system"), ...extraBoxes(), ...roleBoxes()]) el.addEventListener("change", () => { if (currentBom) rejudge(); });
 }
+function rejudge() { const system = systemProfile(); updateProfileAlert(system); showRecord(judgeBom(currentBom, currentName, system)); }
 async function readFile(file) {
   try {
     const bom = JSON.parse(await file.text());
@@ -129,23 +119,24 @@ async function readFile(file) {
 function dropError(html) { const e = $("#cv-drop-error"); e.innerHTML = html; e.hidden = false; }
 // BOM 하나를 화면에 올린다. system 이 있으면(예제) 프로파일 칸을 그 값으로 채우고, 없으면(올린 파일) 비운다. 어느 쪽이든 바꿀 수 있다
 function useBom(bom, name, size, system) {
-  currentBom = bom; currentName = name; currentSize = size || 0;
+  currentBom = bom; currentName = name; currentSize = size || JSON.stringify(bom).length;
   $("#cv-drop-error").hidden = true;
   applyProfileInputs(system || {});
-  $("#cv-file").innerHTML = `<span title="${esc(name)}">${esc(name)}</span><span class="cv-size">${fmtSize(currentSize)}</span>`;
+  $("#cv-file").textContent = name; $("#cv-file").title = name;
+  $("#cv-file-meta").textContent = `${bom.bomFormat} ${bom.specVersion || ""} · 구성요소 ${compCount(bom)}개 · ${fmtSize(currentSize)}`;
   showBomView(false);
-  $("#cv-drop").hidden = true; $("#cv-main").hidden = false;
+  $("#cv-upload").hidden = true; $("#cv-main").hidden = false;
   $("#cv-judg-detail").innerHTML = `<p class="cv-muted">조항을 고르면 원문과 요구 사실, 사실마다 BOM 에 값이 있었는지가 나온다.</p>`;
-  showRecord(judgeBom(bom, name, systemProfile()));
+  verdictFilter = "";
+  rejudge();
 }
 const BOM_VIEW_MAX = 400000;                          // 글자 수. 큰 BOM(1.5 MB)은 앞부분만 보인다
 function showBomView(on) {
-  const view = $("#cv-bom-view"); view.hidden = !on; $("#cv-show-bom").textContent = on ? "BOM 닫기" : "BOM 보기";
+  const view = $("#cv-bom-view"); view.hidden = !on; $("#cv-show-bom").textContent = on ? "원본 닫기" : "원본 JSON";
   if (!on || !currentBom) return;
   const text = JSON.stringify(currentBom, null, 2), cut = text.length > BOM_VIEW_MAX;
   $("#cv-bom-pre").textContent = cut ? text.slice(0, BOM_VIEW_MAX) + `\n… (앞 ${fmtSize(BOM_VIEW_MAX)} 만 보인다. 전체 ${fmtSize(text.length)})` : text;
-  let n = 0; (function walk(items) { for (const c of items || []) { n += 1; walk(c.components); } })(currentBom.components);
-  $("#cv-bom-info").textContent = `${currentName} · ${currentBom.bomFormat} ${currentBom.specVersion || ""} · 구성요소 ${n}개 · ${fmtSize(currentSize || text.length)}`;
+  $("#cv-bom-info").textContent = `${currentName} · ${currentBom.bomFormat} ${currentBom.specVersion || ""} · 구성요소 ${compCount(currentBom)}개`;
 }
 const fmtSize = (n) => n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : n >= 1024 ? `${Math.round(n / 1024)} KB` : `${n} B`;
 // 시스템 프로파일 (2층): 위험등급과 역할. 위험등급은 시스템 칸 하나(고위험 / 고위험 아님)에 얹히는 것(투명성 의무, 범용 AI 모델, 체계적 위험)을
@@ -164,17 +155,13 @@ function applyProfileInputs(system) {
   for (const b of extraBoxes()) b.checked = rc.includes(b.value) || (b.value === "gpai" && rc.includes("gpai_systemic"));
   for (const b of roleBoxes()) b.checked = roles.includes(b.value);
 }
-const profileText = (system) => {
-  const rc = asList(system?.risk_class);
-  const r = [...RISK_ORDER.filter((x) => rc.includes(x)), ...rc.filter((x) => !RISK_ORDER.includes(x))]
-    .filter((x) => !(x === "gpai" && rc.includes("gpai_systemic"))).map((x) => RISK_KO[x] || x).join("+");
-  const roles = asList(system?.role);
-  const o = roles.map((x) => ROLE_KO[x] || x).join("+");
-  return r || o ? [r, o].filter(Boolean).join(" · ") : "없음";
-};
+function updateProfileAlert(system) {                // 비운 칸이 있으면 그 칸을 보는 조항이 검토 필요가 된다고 알린다
+  const lack = [!system.risk_class && "위험 분류", !system.role && "역할"].filter(Boolean);
+  const el = $("#cv-profile-alert"); el.hidden = !lack.length;
+  if (lack.length) el.textContent = `${lack.length === 2 ? "위험 분류와 역할을" : lack[0] === "역할" ? "역할을" : "위험 분류를"} 고르지 않았다. 그것을 보는 EU AI Act 조항은 검토 필요로 나온다.`;
+}
 function regCards() {                                 // 고른 규제의 카드 판정
-  const reg = $("#cv-reg").value;
-  return currentRecord.cards.filter((r) => !reg || r.card_id.startsWith("RC-" + reg + "-"));
+  return currentRecord.cards.filter((r) => !regFilter || r.card_id.startsWith("RC-" + regFilter + "-"));
 }
 // 카드 단위는 호라서 항(parent_clause_id) 하나에 카드가 여럿일 수 있다. 항의 종합 판정 (cards/judge/judge.py 의 aggregate 와 같은 규칙):
 // 판정한 카드(반영·부분 반영·미반영)가 전부 반영이면 반영, 전부 미반영이면 미반영, 섞이면 부분 반영. 판정한 카드가 없으면 검토 필요가 있을 때 검토 필요, 아니면 비적용.
@@ -192,32 +179,36 @@ function clauseGroups(rs) {                           // 판정 목록 → [{cla
   return [...groups.values()].map((g) => ({...g, verdict: aggregate(g.cards.map((r) => r.verdict))}));
 }
 function showRecord(rec) { currentRecord = rec; renderSummary(); renderJudgList(); }
+// 판정 집계 타일. 호 단위 항목 수가 크게, 항(조항) 수가 작게. 타일을 누르면 그 판정만 목록에 남고, 다시 누르면 푼다
 function renderSummary() {
   if (!currentRecord) return;
-  const rec = currentRecord, rs = regCards(), total = rs.length, groups = clauseGroups(rs);
+  const rs = regCards(), groups = clauseGroups(rs);
   const s = Object.fromEntries(VERDICTS.map((v) => [v, rs.filter((r) => r.verdict === v).length]));
   const cs = Object.fromEntries(VERDICTS.map((v) => [v, groups.filter((g) => g.verdict === v).length]));
-  const lack = [!rec.system_profile?.risk_class && "시스템", !rec.system_profile?.role && "역할"].filter(Boolean);
-  $("#cv-judg-summary").innerHTML = `<div class="cv-stat"><b>${esc(rec.bom.subject || rec.bom.serialNumber || "")}</b>카드 ${total}장 (조항 ${groups.length}개) · ${esc(rec.bom.bomFormat)} ${esc(rec.bom.specVersion)} · 시스템 프로파일 ${esc(profileText(rec.system_profile))}${lack.length ? ` <span class="cv-muted">(${lack.join("·")}을 고르지 않아 그것을 보는 조항은 검토 필요)</span>` : ""}</div>`
-    + VERDICTS.map((v) => `<div class="cv-stat"><span class="cv-verdict ${vclass(v)}">${v}</span> <b>${s[v]}</b><span class="cv-muted"> · 조항 ${cs[v]}</span></div>`).join("")
-    + `<div class="cv-bar" style="flex-basis:100%">${VERDICTS.map((v) => `<span class="${vclass(v)}" style="width:${100 * s[v] / Math.max(total, 1)}%"></span>`).join("")}</div>`;
+  $("#cv-results-count").textContent = `조항 ${groups.length}개 · 항목 ${rs.length}개${verdictFilter ? ` · ${verdictFilter}만 보임` : ""}`;
+  const box = $("#cv-judg-summary");
+  box.innerHTML = VERDICTS.map((v) => `<button type="button" class="cv-tile ${vclass(v)}${verdictFilter === v ? " active" : ""}" data-v="${v}" title="누르면 이 판정만 보인다. 다시 누르면 전체">
+    <span class="cv-tile-l"><span class="cv-dot"></span>${v}</span><span class="cv-tile-n">${s[v]}</span><span class="cv-tile-s">조항 ${cs[v]}</span></button>`).join("");
+  box.querySelectorAll(".cv-tile").forEach((b) => b.addEventListener("click", () => { verdictFilter = verdictFilter === b.dataset.v ? "" : b.dataset.v; renderSummary(); renderJudgList(); }));
 }
+const topicOf = (card) => card?.topic || (card?.title || "").split(": ").slice(1).join(": ");
 function renderJudgList() {
   if (!currentRecord) return;
-  const want = $("#cv-verdict-filter").value;
-  const groups = clauseGroups(regCards()).map((g) => ({...g, cards: g.cards.filter((r) => !want || r.verdict === want)})).filter((g) => g.cards.length);
+  const groups = clauseGroups(regCards()).map((g) => ({...g, cards: g.cards.filter((r) => !verdictFilter || r.verdict === verdictFilter)})).filter((g) => g.cards.length);
   const container = $("#cv-judg-list");
   container.innerHTML = "";
+  if (!groups.length) { container.innerHTML = `<p class="cv-muted" style="padding:.8rem">해당하는 조항이 없다.</p>`; return; }
   let lastReg = null;
   for (const g of groups) {
     if (g.reg !== lastReg) { const h = document.createElement("div"); h.className = "cv-group"; h.textContent = g.reg; container.appendChild(h); lastReg = g.reg; }
     if (g.cards.length > 1) {                          // 호가 여럿인 항: 항의 종합 판정을 머리로
-      const h = document.createElement("div"); h.className = "cv-clause"; h.innerHTML = `<span class="cv-id">${esc(g.clause)}</span><span class="cv-sub"><span class="cv-verdict ${vclass(g.verdict)}">${g.verdict}</span> 종합</span>`; container.appendChild(h);
+      const h = document.createElement("div"); h.className = "cv-clause"; h.innerHTML = `<span class="cv-id">${esc(g.clause)}</span><span class="cv-sub"><span class="cv-verdict ${vclass(g.verdict)}">${g.verdict}</span><span class="cv-count">종합</span></span>`; container.appendChild(h);
     }
     for (const r of g.cards) {
-      const f = r.facts || []; const p = f.filter((x) => x.status === "present").length, n = f.filter((x) => x.status === "not_required").length;
+      const card = cardById[r.card_id], f = r.facts || []; const p = f.filter((x) => x.status === "present").length, n = f.filter((x) => x.status === "not_required").length;
       const row = document.createElement("div"); row.className = "cv-item" + (g.cards.length > 1 ? " cv-point" : ""); row.dataset.id = r.card_id;
-      row.innerHTML = `<span class="cv-id">${esc(cardById[r.card_id]?.source?.clause_id || r.card_id.replace(/^RC-[A-Z0-9]+-/, ""))}</span><span class="cv-sub"><span class="cv-verdict ${vclass(r.verdict)}">${r.verdict}</span> ${p}/${f.length - n}</span>`;
+      row.innerHTML = `<span class="cv-row-main"><span class="cv-id">${esc(card?.source?.clause_id || r.card_id.replace(/^RC-[A-Z0-9]+-/, ""))}</span><span class="cv-topic" title="${esc(topicOf(card))}">${esc(topicOf(card))}</span></span>`
+        + `<span class="cv-sub"><span class="cv-verdict ${vclass(r.verdict)}">${r.verdict}</span><span class="cv-count" title="요구 사실 중 BOM 에 있는 것">${f.length ? `${p}/${f.length - n}` : ""}</span></span>`;
       row.addEventListener("click", () => { container.querySelectorAll(".cv-item").forEach((x) => x.classList.toggle("active", x === row)); renderJudg(r); });
       container.appendChild(row);
     }
@@ -237,16 +228,16 @@ function renderJudg(r) {
     </div>
     ${r.reason ? `<p class="cv-note">${esc(r.reason)}</p>` : ""}
     ${text ? `<div class="cv-text">${highlightText(text, spans)}${ko ? `<span class="cv-trans">${esc(ko)}</span>` : ""}</div>
-      <p class="cv-note">칠한 구절이 조항이 요구하는 사실이다. 초록은 BOM 에 있음, 노랑은 부분 대응, 빨강은 비어 있거나 BOM 형식에 자리가 없음, 회색은 이 BOM 에는 요구되지 않거나 판단할 정보가 없음.</p>`
+      <div class="cv-legend"><span class="cv-muted">칠한 구절 = 조항이 요구하는 사실</span><span><i></i>BOM 에 있음</span><span><i class="partial"></i>부분 대응</span><span><i class="missing"></i>비어 있거나 자리 없음</span><span><i class="muted"></i>요구 안 됨 · 판단 못 함</span></div>`
       : `<p class="cv-note">이 규제의 원문은 저작권 때문에 싣지 않는다. 요구 사실과 필드만 보인다.</p>`}
     ${r.conditions ? `<h4>조건</h4><ul>${Object.entries(r.conditions).map(([k, c]) => `<li><code>${esc(k)}</code> ${esc(c.text)} → <b>${!c.evaluated ? "평가 못 함 (조건식 없음)" : c.result === null || c.result === undefined ? "모름 (판단할 정보 없음)" : c.result ? "참" : "거짓"}</b></li>`).join("")}</ul>` : ""}
     <h4>조항이 요구하는 사실 (${facts.length})</h4>
-    <table class="cv-facts"><thead><tr><th>상태</th><th>사실</th><th>BOM 필드</th><th>값이 있는 구성요소</th></tr></thead><tbody>
-    ${facts.map((f, i) => `<tr data-idx="${i}"><td><span class="cv-chip ${f.status}">${STATUS_KO[f.status] || f.status}</span>
+    <table class="cv-facts"><thead><tr><th>상태</th><th>요구 사실</th><th>BOM 필드 · 값이 있는 구성요소</th></tr></thead><tbody>
+    ${facts.map((f, i) => { const found = [...new Set(Object.values(f.found_at || {}).flat())]; return `<tr data-idx="${i}"><td><span class="cv-chip ${f.status}">${STATUS_KO[f.status] || f.status}</span>
       ${f.condition_evaluated === false ? `<br><span class="cv-muted">조건 미평가</span>` : f.condition ? `<br><span class="cv-muted">조건 ${esc(f.condition)}</span>` : ""}</td>
       <td>${esc(f.label || label(f.concept))}<br><code>${esc(f.concept)}</code>${f.target ? `<br><span class="cv-muted">대상 ${esc(KIND_KO[f.target] || f.target)}</span>` : ""}</td>
-      <td>${(f.paths || []).map((p) => `<span class="cv-path">${esc(p)}</span>`).join(" ") || `<span class="cv-muted">${esc(f.reason || "")}</span>`}</td>
-      <td>${[...new Set(Object.values(f.found_at || {}).flat())].map((x) => `<code>${esc(x)}</code>`).join(" ")}${targetDetail(f)}</td></tr>`).join("")}
+      <td>${(f.paths || []).map((p) => `<span class="cv-path">${esc(p)}</span>`).join(" ") || `<span class="cv-muted">${esc(f.reason || "")}</span>`}
+      ${found.length ? `<br><span class="cv-muted">값 있음:</span> ${found.map((x) => `<code>${esc(x)}</code>`).join(" ")}` : ""}${targetDetail(f)}</td></tr>`; }).join("")}
     </tbody></table>
     <p class="cv-note">"비어 있음" 과 "자리 없음" 이 누락이고, 비어 있음의 필드가 채울 자리다. "부분 대응" 은 값은 있지만 필드의 대상 범위나 표현 형태가 요구와 달라 부분 반영까지만 간다. 조건식(JSON Logic)이 있는 조항은 조건이 거짓이면 그 사실을 "요구 안 됨" 으로 빼고, 조건을 판단할 정보가 BOM 에 없으면(자리 자체가 없음) "판단 못 함" 이라 검토 필요다. 대상 구성요소가 정해진 사실은 그 종류의 구성요소마다 보고(조건도 구성요소마다), 값이 빠진 구성요소를 적는다. 증빙 검사는 아직 없다.</p>`;
   wireMarks(d);
