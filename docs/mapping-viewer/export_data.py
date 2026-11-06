@@ -13,7 +13,7 @@
     aibom_v0.6_properties.json      추가 필드를 --spec 1.7 로 낼 때의 properties 키 (정의서 생성 코드와 같은 규칙)
     cards/cards.json                ai-bom/cards 의 승인 카드 (호 단위, 190장. ISO/IEC 42001 은 원문·구절을 빼고 제목만). 규제 판정 화면이 조항의 원문과 사실을 보여 줄 때 쓴다
     cards/vocabulary.json, cards/profile.json   통제 어휘, 매핑 프로파일 (ai-bom/cards 그대로)
-    cards/boms/*.cdx.json, boms/index.json   예제 BOM 과 목록 (위험등급마다 하나씩 손으로 만든 것, ai-bom/cards/judge/examples). 화면이 브라우저 안에서 판정하므로 BOM 자체를 두고,
+    cards/boms/*.cdx.json, boms/index.json   예제 BOM 과 목록 (고위험·투명성 의무·범용 AI 모델 하나씩 손으로 만든 것, ai-bom/cards/judge/examples). 화면이 브라우저 안에서 판정하므로 BOM 자체를 두고,
                                     목록에 기본 시스템 프로파일(위험등급·역할)과 파이썬 엔진의 판정 요약을 적어 둔다
 추출기 초안과 승인 카드의 비교는 내부용이라 문서 사이트에 싣지 않는다.
 """
@@ -32,14 +32,15 @@ COPY = ("aibom_v0.6_cyclonedx.json", "aibom_v0.6_spdx.json", "aibom_v0.6_spdx_ma
 # 여기서 만들지 않지만 뷰어가 읽는 파일 — tests/test_fields.py 가 만든다. 지우지 않는다.
 KEEP = ("aibom_cli_sources.json", "aibom_cli_spdx_sources.json")
 CARDS = os.path.join(AIBOM, "cards")
-# 규제 판정 화면의 예제 BOM: 위험등급마다 하나씩 손으로 만든 작은 BOM (ai-bom/cards/judge/examples). (파일, 기본 시스템 프로파일, 버튼 이름, 설명)
+# 규제 판정 화면의 예제 BOM: 고위험 시스템, 투명성 의무만 걸리는 시스템, 범용 AI 모델 하나씩 손으로 만든 작은 BOM (ai-bom/cards/judge/examples).
+# (파일, 기본 시스템 프로파일, 버튼 이름, 설명). 위험등급은 시스템 축(high_risk / minimal_risk)에 얹히는 것(limited_risk·gpai·gpai_systemic)을 더한 목록
 # 공개 사이트에 올리는 복사본에서는 설명 속성(aibom:example)의 내부용 문구를 바꾼다
 EXAMPLE_BOMS = (("recruit-screening.cdx.json", {"risk_class": ["high_risk"], "role": ["provider"]}, "고위험 AI 시스템 · 채용 심사",
                  "채용 지원자를 평가하는 고위험 AI 시스템. 개인데이터 데이터셋에 원래 수집 목적이 빠져 있어 10조(2)(b) 가 부분 반영이다"),
-                ("support-chatbot.cdx.json", {"risk_class": ["limited_risk"], "role": ["provider"]}, "제한 위험 · 고객 상담 챗봇",
-                 "사람과 대화하는 챗봇. 고위험 조항은 비적용이고 투명성 의무(50조)가 걸린다"),
-                ("foundation-llm.cdx.json", {"risk_class": ["gpai"], "role": ["provider"]}, "범용 AI 모델 · 기반 LLM",
-                 "범용 AI 모델 제공자. 53조와 부속서 XI·XII 의 모델 문서 항목을 본다"))
+                ("support-chatbot.cdx.json", {"risk_class": ["minimal_risk", "limited_risk"], "role": ["provider"]}, "투명성 의무 · 고객 상담 챗봇",
+                 "사람과 대화하는 챗봇. 고위험이 아니라 고위험 조항은 비적용이고 투명성 의무(50조)만 걸린다"),
+                ("foundation-llm.cdx.json", {"risk_class": ["minimal_risk", "gpai"], "role": ["provider"]}, "범용 AI 모델 · 기반 LLM",
+                 "범용 AI 모델 제공자. 53조와 부속서 XI·XII 의 모델 문서 항목을 본다. 체계적 위험은 없어 55조는 비적용이다"))
 HAND_MADE = "채용 심사 AI 를 가정해 손으로 만든 작은 BOM"
 
 

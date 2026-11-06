@@ -7928,7 +7928,7 @@
  },
  {
   "card_id": "RC-EUAIA-Article-55-1-a",
-  "card_version": 1,
+  "card_version": 2,
   "status": "approved",
   "confidence": 0.66,
   "regulation": {
@@ -7947,9 +7947,9 @@
   "title": "Article 55(1)(a): 입증·검증 · 성능측정",
   "topic": "입증·검증 · 성능측정",
   "applicability": {
-   "text": "범용 AI 모델의 제공자",
+   "text": "체계적 위험이 있는 범용 AI 모델의 제공자",
    "risk_class": [
-    "gpai"
+    "gpai_systemic"
    ]
   },
   "obligation": {
@@ -8000,11 +8000,11 @@
   "conditions": [],
   "exceptions": [],
   "evidence": [],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 6개)과 기준 카드(개념 6개)를 비교해 승인. 더함: TASKS_RESOURCE_REFERENCES (Q16. (a) 표준화된 프로토콜과 도구. 부속서 XI 2(1) 과 같은 개념) 초안이 놓침: PERFORMANCE_METRICS_VALUE 호 단위로 나눔 2026-11-05: 항 카드 RC-EUAIA-Article-55-1 (판 1) 의 (a)."
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 6개)과 기준 카드(개념 6개)를 비교해 승인. 더함: TASKS_RESOURCE_REFERENCES (Q16. (a) 표준화된 프로토콜과 도구. 부속서 XI 2(1) 과 같은 개념) 초안이 놓침: PERFORMANCE_METRICS_VALUE 호 단위로 나눔 2026-11-05: 항 카드 RC-EUAIA-Article-55-1 (판 1) 의 (a). 고침 2026-11-06 (판 2): 위험 등급 gpai → gpai_systemic (55조는 체계적 위험이 있는 범용 AI 모델 제공자의 의무 (51조))"
  },
  {
   "card_id": "RC-EUAIA-Article-55-1-b",
-  "card_version": 1,
+  "card_version": 2,
   "status": "approved",
   "confidence": 0.66,
   "regulation": {
@@ -8023,9 +8023,9 @@
   "title": "Article 55(1)(b): 위험·영향평가",
   "topic": "위험·영향평가",
   "applicability": {
-   "text": "범용 AI 모델의 제공자",
+   "text": "체계적 위험이 있는 범용 AI 모델의 제공자",
    "risk_class": [
-    "gpai"
+    "gpai_systemic"
    ]
   },
   "obligation": {
@@ -8058,11 +8058,11 @@
   "conditions": [],
   "exceptions": [],
   "evidence": [],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 6개)과 기준 카드(개념 6개)를 비교해 승인. 더함: TASKS_RESOURCE_REFERENCES (Q16. (a) 표준화된 프로토콜과 도구. 부속서 XI 2(1) 과 같은 개념) 초안이 놓침: PERFORMANCE_METRICS_VALUE 호 단위로 나눔 2026-11-05: 항 카드 RC-EUAIA-Article-55-1 (판 1) 의 (b)."
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 6개)과 기준 카드(개념 6개)를 비교해 승인. 더함: TASKS_RESOURCE_REFERENCES (Q16. (a) 표준화된 프로토콜과 도구. 부속서 XI 2(1) 과 같은 개념) 초안이 놓침: PERFORMANCE_METRICS_VALUE 호 단위로 나눔 2026-11-05: 항 카드 RC-EUAIA-Article-55-1 (판 1) 의 (b). 고침 2026-11-06 (판 2): 위험 등급 gpai → gpai_systemic (55조는 체계적 위험이 있는 범용 AI 모델 제공자의 의무 (51조))"
  },
  {
   "card_id": "RC-EUAIA-Article-55-1-d",
-  "card_version": 1,
+  "card_version": 2,
   "status": "approved",
   "confidence": 0.66,
   "regulation": {
@@ -8081,9 +8081,9 @@
   "title": "Article 55(1)(d): 보안평가",
   "topic": "보안평가",
   "applicability": {
-   "text": "범용 AI 모델의 제공자",
+   "text": "체계적 위험이 있는 범용 AI 모델의 제공자",
    "risk_class": [
-    "gpai"
+    "gpai_systemic"
    ]
   },
   "obligation": {
@@ -8107,11 +8107,11 @@
   "conditions": [],
   "exceptions": [],
   "evidence": [],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 6개)과 기준 카드(개념 6개)를 비교해 승인. 더함: TASKS_RESOURCE_REFERENCES (Q16. (a) 표준화된 프로토콜과 도구. 부속서 XI 2(1) 과 같은 개념) 초안이 놓침: PERFORMANCE_METRICS_VALUE 호 단위로 나눔 2026-11-05: 항 카드 RC-EUAIA-Article-55-1 (판 1) 의 (d)."
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 6개)과 기준 카드(개념 6개)를 비교해 승인. 더함: TASKS_RESOURCE_REFERENCES (Q16. (a) 표준화된 프로토콜과 도구. 부속서 XI 2(1) 과 같은 개념) 초안이 놓침: PERFORMANCE_METRICS_VALUE 호 단위로 나눔 2026-11-05: 항 카드 RC-EUAIA-Article-55-1 (판 1) 의 (d). 고침 2026-11-06 (판 2): 위험 등급 gpai → gpai_systemic (55조는 체계적 위험이 있는 범용 AI 모델 제공자의 의무 (51조))"
  },
  {
   "card_id": "RC-EUAIA-Article-55-2",
-  "card_version": 1,
+  "card_version": 2,
   "status": "approved",
   "confidence": 0.71,
   "regulation": {
@@ -8129,9 +8129,9 @@
   "title": "Article 55(2): 표준 준수·대체 해결책",
   "topic": "표준 준수·대체 해결책",
   "applicability": {
-   "text": "범용 AI 모델의 제공자",
+   "text": "체계적 위험이 있는 범용 AI 모델의 제공자",
    "risk_class": [
-    "gpai"
+    "gpai_systemic"
    ]
   },
   "obligation": {
@@ -8183,7 +8183,7 @@
   ],
   "exceptions": [],
   "evidence": [],
-  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 4개)과 기준 카드(개념 4개)를 비교해 승인. 초안에서 거름: ETHICAL_CONSIDERATIONS_NAME (Q16. '체계적 위험이 있는 모델의 제공자' 수식어) 초안이 놓침: DECLARATIONS_EVIDENCE"
+  "notes": "첫 승인 2026-10-26. 추출기 초안(개념 4개)과 기준 카드(개념 4개)를 비교해 승인. 초안에서 거름: ETHICAL_CONSIDERATIONS_NAME (Q16. '체계적 위험이 있는 모델의 제공자' 수식어) 초안이 놓침: DECLARATIONS_EVIDENCE 고침 2026-11-06 (판 2): 위험 등급 gpai → gpai_systemic (55조는 체계적 위험이 있는 범용 AI 모델 제공자의 의무 (51조))"
  },
  {
   "card_id": "RC-EUAIA-Article-6-4",

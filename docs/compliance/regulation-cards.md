@@ -1,7 +1,7 @@
 # 규제 판정
 
 만들어진 AI-BOM 이 규제(EU AI Act, NIST AI RMF, ISO/IEC 42001)를 얼마나 만족하는지 보여 준다. 규제 항목이 어느 필드에 해당하는지는 [필드 탐색기](field-mapping.md)에 있고, 여기서는 BOM 을 올리면 그 필드들이 채워졌는지를 조항마다 판정한다.
-판정은 시스템의 위험등급과 역할(제공자·배포자 등)에 따라 달라지므로, 올린 뒤 고른다. 예제는 위험등급마다 하나씩 손으로 만든 작은 BOM 이다.
+판정은 시스템이 고위험인지, 거기에 투명성 의무(50조)·범용 AI 모델·체계적 위험이 더해지는지, 역할(제공자·배포자 등)이 무엇인지에 따라 달라지므로, 올린 뒤 고른다. 예제는 고위험 시스템, 투명성 의무만 걸리는 시스템, 범용 AI 모델을 하나씩 손으로 만든 작은 BOM 이다.
 지금은 CycloneDX 형식(`.cdx.json`)만 판정한다.
 
 <div class="card-viewer" data-base="../../mapping-viewer/data/cards/">
@@ -17,11 +17,15 @@
       <span class="cv-file" id="cv-file"></span>
       <button type="button" class="cv-btn" id="cv-show-bom">BOM 보기</button>
       <button type="button" class="cv-btn" id="cv-another">다른 BOM 올리기</button>
-      <select id="cv-risk" title="시스템 프로파일: 위험등급">
-        <option value="">위험등급 (선택)</option>
-        <option value="high_risk">고위험 AI 시스템</option><option value="limited_risk">제한 위험 (투명성 의무)</option>
-        <option value="minimal_risk">최소 위험 (EU AI Act 의무 없음)</option><option value="gpai">범용 AI 모델</option><option value="gpai_systemic">범용 AI 모델 (체계적 위험)</option>
+      <select id="cv-system" title="시스템 프로파일: 고위험 AI 시스템인지 (6조, 부속서 I·III)">
+        <option value="">시스템 (선택)</option>
+        <option value="high_risk">고위험 AI 시스템</option><option value="minimal_risk">고위험 아님</option>
       </select>
+      <span class="cv-roles" title="시스템 프로파일: 시스템 등급에 더해지는 것 (여럿 가능). 투명성 의무는 사람과 대화하거나 합성 콘텐츠를 내는 시스템, 범용 AI 모델은 그 모델을 제공할 때, 체계적 위험은 그 모델이 51조로 지정될 때">해당하면:
+        <label><input type="checkbox" name="cv-extra" value="limited_risk"> 투명성 의무 (50조)</label>
+        <label><input type="checkbox" name="cv-extra" value="gpai"> 범용 AI 모델</label>
+        <label><input type="checkbox" name="cv-extra" value="gpai_systemic"> 체계적 위험</label>
+      </span>
       <span class="cv-roles" title="시스템 프로파일: 역할 (여럿 가능. 직접 만들어 자기 조직에서 쓰면 제공자이면서 배포자)">역할:
         <label><input type="checkbox" name="cv-role" value="provider"> 제공자</label>
         <label><input type="checkbox" name="cv-role" value="deployer"> 배포자</label>

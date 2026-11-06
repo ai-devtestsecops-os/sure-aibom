@@ -14,7 +14,8 @@ const vclass = (v) => "v-" + v.replace(/\s/g, "");
 let cards = [], cardById = {}, vocab = {}, profile = {}, targets = {}, examples = [];
 let pending = new Set(), partial = {}, profileApproved = true;      // 승인 안 된 줄, 부분 대응 줄(개념 → 이유), 프로파일 승인 여부
 const KIND_KO = {system: "시스템", model: "모델", dataset: "데이터셋", software: "소프트웨어"};
-const RISK_KO = {high_risk: "고위험 AI 시스템", limited_risk: "제한 위험", minimal_risk: "최소 위험", gpai: "범용 AI 모델", gpai_systemic: "범용 AI 모델 (체계적 위험)", any: "모든 AI 시스템"};
+const RISK_KO = {high_risk: "고위험 AI 시스템", minimal_risk: "고위험 아님", limited_risk: "투명성 의무 (50조)", gpai: "범용 AI 모델", gpai_systemic: "범용 AI 모델 (체계적 위험)", any: "모든 AI 시스템"};
+const RISK_ORDER = ["high_risk", "minimal_risk", "limited_risk", "gpai", "gpai_systemic"];
 const ROLE_KO = {provider: "제공자", deployer: "배포자", importer: "수입자", distributor: "유통자", authorised_representative: "수권대리인", operator: "운영자", organisation: "조직"};
 let currentBom = null, currentName = "", currentSize = 0;      // 지금 판정하는 BOM. 올린 것이든 예제든 브라우저 안에서 판정한다 (프로파일을 바꾸면 다시)
 
@@ -110,7 +111,12 @@ function initJudgment() {
   $("#cv-hide-bom").addEventListener("click", () => showBomView(false));
   regSelect($("#cv-reg"), () => { renderSummary(); renderJudgList(); });
   $("#cv-verdict-filter").addEventListener("change", renderJudgList);
-  for (const el of [$("#cv-risk"), ...roleBoxes()]) el.addEventListener("change", () => { if (currentBom) showRecord(judgeBom(currentBom, currentName, systemProfile())); });
+  for (const b of extraBoxes()) b.addEventListener("change", () => {          // 체계적 위험은 범용 AI 모델 위에 얹힌다
+    const gpai = extraBoxes().find((x) => x.value === "gpai"), systemic = extraBoxes().find((x) => x.value === "gpai_systemic");
+    if (b === systemic && b.checked) gpai.checked = true;
+    if (b === gpai && !b.checked) systemic.checked = false;
+  });
+  for (const el of [$("#cv-system"), ...extraBoxes(), ...roleBoxes()]) el.addEventListener("change", () => { if (currentBom) showRecord(judgeBom(currentBom, currentName, systemProfile())); });
 }
 async function readFile(file) {
   try {
@@ -142,20 +148,27 @@ function showBomView(on) {
   $("#cv-bom-info").textContent = `${currentName} · ${currentBom.bomFormat} ${currentBom.specVersion || ""} · 구성요소 ${n}개 · ${fmtSize(currentSize || text.length)}`;
 }
 const fmtSize = (n) => n >= 1048576 ? `${(n / 1048576).toFixed(1)} MB` : n >= 1024 ? `${Math.round(n / 1024)} KB` : `${n} B`;
-// 시스템 프로파일 (2층): 위험등급과 역할. 선택 칸에서 읽는다
+// 시스템 프로파일 (2층): 위험등급과 역할. 위험등급은 시스템 칸 하나(고위험 / 고위험 아님)에 얹히는 것(투명성 의무, 범용 AI 모델, 체계적 위험)을
+// 더한 목록이다. 시스템 칸을 고르지 않으면 위험등급을 비워 두어, 위험등급을 보는 카드는 검토 필요가 된다
 const roleBoxes = () => [...root.querySelectorAll("input[name=cv-role]")];
+const extraBoxes = () => [...root.querySelectorAll("input[name=cv-extra]")];
+const asList = (v) => Array.isArray(v) ? v : v ? [v] : [];
 function systemProfile() {
-  const risk = $("#cv-risk").value, roles = roleBoxes().filter((b) => b.checked).map((b) => b.value);
-  return {...(risk ? {risk_class: [risk]} : {}), ...(roles.length ? {role: roles} : {})};
+  const sys = $("#cv-system").value, extras = extraBoxes().filter((b) => b.checked).map((b) => b.value);
+  const roles = roleBoxes().filter((b) => b.checked).map((b) => b.value);
+  return {...(sys ? {risk_class: [sys, ...extras]} : {}), ...(roles.length ? {role: roles} : {})};
 }
 function applyProfileInputs(system) {
-  const roles = Array.isArray(system.role) ? system.role : system.role ? [system.role] : [];
-  $("#cv-risk").value = (system.risk_class || [])[0] || "";
+  const rc = asList(system.risk_class), roles = asList(system.role);
+  $("#cv-system").value = !rc.length ? "" : rc.includes("high_risk") ? "high_risk" : "minimal_risk";
+  for (const b of extraBoxes()) b.checked = rc.includes(b.value) || (b.value === "gpai" && rc.includes("gpai_systemic"));
   for (const b of roleBoxes()) b.checked = roles.includes(b.value);
 }
 const profileText = (system) => {
-  const r = (system?.risk_class || []).map((x) => RISK_KO[x] || x).join("+");
-  const roles = Array.isArray(system?.role) ? system.role : system?.role ? [system.role] : [];
+  const rc = asList(system?.risk_class);
+  const r = [...RISK_ORDER.filter((x) => rc.includes(x)), ...rc.filter((x) => !RISK_ORDER.includes(x))]
+    .filter((x) => !(x === "gpai" && rc.includes("gpai_systemic"))).map((x) => RISK_KO[x] || x).join("+");
+  const roles = asList(system?.role);
   const o = roles.map((x) => ROLE_KO[x] || x).join("+");
   return r || o ? [r, o].filter(Boolean).join(" · ") : "없음";
 };
@@ -184,7 +197,8 @@ function renderSummary() {
   const rec = currentRecord, rs = regCards(), total = rs.length, groups = clauseGroups(rs);
   const s = Object.fromEntries(VERDICTS.map((v) => [v, rs.filter((r) => r.verdict === v).length]));
   const cs = Object.fromEntries(VERDICTS.map((v) => [v, groups.filter((g) => g.verdict === v).length]));
-  $("#cv-judg-summary").innerHTML = `<div class="cv-stat"><b>${esc(rec.bom.subject || rec.bom.serialNumber || "")}</b>카드 ${total}장 (조항 ${groups.length}개) · ${esc(rec.bom.bomFormat)} ${esc(rec.bom.specVersion)} · 시스템 프로파일 ${esc(profileText(rec.system_profile))}${!rec.system_profile || (!rec.system_profile.risk_class && !rec.system_profile.role) ? ' <span class="cv-muted">(위험등급·역할을 보는 조항은 검토 필요)</span>' : ""}</div>`
+  const lack = [!rec.system_profile?.risk_class && "시스템", !rec.system_profile?.role && "역할"].filter(Boolean);
+  $("#cv-judg-summary").innerHTML = `<div class="cv-stat"><b>${esc(rec.bom.subject || rec.bom.serialNumber || "")}</b>카드 ${total}장 (조항 ${groups.length}개) · ${esc(rec.bom.bomFormat)} ${esc(rec.bom.specVersion)} · 시스템 프로파일 ${esc(profileText(rec.system_profile))}${lack.length ? ` <span class="cv-muted">(${lack.join("·")}을 고르지 않아 그것을 보는 조항은 검토 필요)</span>` : ""}</div>`
     + VERDICTS.map((v) => `<div class="cv-stat"><span class="cv-verdict ${vclass(v)}">${v}</span> <b>${s[v]}</b><span class="cv-muted"> · 조항 ${cs[v]}</span></div>`).join("")
     + `<div class="cv-bar" style="flex-basis:100%">${VERDICTS.map((v) => `<span class="${vclass(v)}" style="width:${100 * s[v] / Math.max(total, 1)}%"></span>`).join("")}</div>`;
 }

@@ -24,11 +24,12 @@
  {
   "file": "support-chatbot.cdx.json",
   "subject": "support-chatbot",
-  "label": "제한 위험 · 고객 상담 챗봇",
-  "note": "사람과 대화하는 챗봇. 고위험 조항은 비적용이고 투명성 의무(50조)가 걸린다",
+  "label": "투명성 의무 · 고객 상담 챗봇",
+  "note": "사람과 대화하는 챗봇. 고위험이 아니라 고위험 조항은 비적용이고 투명성 의무(50조)만 걸린다",
   "size": 1892,
   "system_profile": {
    "risk_class": [
+    "minimal_risk",
     "limited_risk"
    ],
    "role": [
@@ -47,10 +48,11 @@
   "file": "foundation-llm.cdx.json",
   "subject": "sure-llm-7b",
   "label": "범용 AI 모델 · 기반 LLM",
-  "note": "범용 AI 모델 제공자. 53조와 부속서 XI·XII 의 모델 문서 항목을 본다",
+  "note": "범용 AI 모델 제공자. 53조와 부속서 XI·XII 의 모델 문서 항목을 본다. 체계적 위험은 없어 55조는 비적용이다",
   "size": 4752,
   "system_profile": {
    "risk_class": [
+    "minimal_risk",
     "gpai"
    ],
    "role": [
@@ -58,10 +60,10 @@
    ]
   },
   "engine_summary": {
-   "반영": 32,
-   "부분 반영": 21,
-   "미반영": 28,
-   "비적용": 109,
+   "반영": 31,
+   "부분 반영": 19,
+   "미반영": 27,
+   "비적용": 113,
    "검토 필요": 0
   }
  }
