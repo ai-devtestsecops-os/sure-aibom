@@ -15,7 +15,7 @@ let cards = [], cardById = {}, vocab = {}, profile = {}, targets = {}, examples 
 let pending = new Set(), partial = {}, profileApproved = true;      // 승인 안 된 줄, 부분 대응 줄(개념 → 이유), 프로파일 승인 여부
 const KIND_KO = {system: "시스템", model: "모델", dataset: "데이터셋", software: "소프트웨어"};
 let currentBom = null, currentName = "", currentSize = 0;      // 지금 판정하는 BOM. 올린 것이든 예제든 브라우저 안에서 판정한다 (프로파일을 바꾸면 다시)
-let regSel = new Set(Object.keys(REG_NAME)), verdictFilter = "";   // 목록 거르기: 고른 규제들(칩, 여럿 가능), 판정(집계 타일을 누르면)
+let regSel = new Set(Object.keys(REG_NAME)), verdictSel = new Set(VERDICTS);   // 목록 거르기: 고른 규제들과 고른 판정들 (처음엔 모두 켜져 있고, 집계 칩을 누르면 끄고 켠다)
 
 async function load(name) { const r = await fetch(BASE + name); if (!r.ok) throw new Error(name); return r.json(); }
 
@@ -130,7 +130,7 @@ function useBom(bom, name, size, system) {
   showBomView(false);
   $("#cv-upload").hidden = true; $("#cv-main").hidden = false;
   $("#cv-judg-detail").innerHTML = `<p class="cv-muted">조항을 고르면 원문과 요구 사실, 사실마다 BOM 에 값이 있었는지가 나옵니다.</p>`;
-  verdictFilter = "";
+  verdictSel = new Set(VERDICTS);
   syncProfilePanel();
   rejudge();
 }
@@ -182,24 +182,24 @@ function clauseGroups(rs) {                           // 판정 목록 → [{cla
   return [...groups.values()].map((g) => ({...g, verdict: aggregate(g.cards.map((r) => r.verdict))}));
 }
 function showRecord(rec) { currentRecord = rec; renderSummary(); renderJudgList(); }
-// 판정 집계 타일. 호 단위 항목 수가 크게, 항(조항) 수가 작게. 타일을 누르면 그 판정만 목록에 남고, 다시 누르면 푼다
+// 판정 집계 칩. 호 단위 항목 수와 항(조항) 수. 처음엔 모두 켜져 있고, 칩을 누르면 그 판정을 목록에서 숨기거나 다시 보인다 (여럿 조합 가능)
 function renderSummary() {
   if (!currentRecord) return;
   const rs = regCards(), groups = clauseGroups(rs);
   const s = Object.fromEntries(VERDICTS.map((v) => [v, rs.filter((r) => r.verdict === v).length]));
   const cs = Object.fromEntries(VERDICTS.map((v) => [v, groups.filter((g) => g.verdict === v).length]));
   const box = $("#cv-judg-summary");
-  box.innerHTML = VERDICTS.map((v) => `<button type="button" class="cv-tile ${vclass(v)}${verdictFilter === v ? " active" : ""}" data-v="${v}" title="누르면 이 판정만 보입니다. 다시 누르면 전체가 보입니다">
-    <span class="cv-tile-l"><span class="cv-dot"></span>${v}</span><span class="cv-tile-n">${s[v]}</span><span class="cv-tile-s">조항 ${cs[v]}</span></button>`).join("");
-  box.querySelectorAll(".cv-tile").forEach((b) => b.addEventListener("click", () => { verdictFilter = verdictFilter === b.dataset.v ? "" : b.dataset.v; renderSummary(); renderJudgList(); }));
+  box.innerHTML = VERDICTS.map((v) => `<label class="cv-tile ${vclass(v)}${verdictSel.has(v) ? " active" : ""}" title="체크를 풀면 이 판정이 목록에서 빠집니다"><input type="checkbox" value="${v}"${verdictSel.has(v) ? " checked" : ""}>
+    <span class="cv-tile-l"><span class="cv-dot"></span>${v}</span><span class="cv-tile-n">${s[v]}</span><span class="cv-tile-s">조항 ${cs[v]}</span></label>`).join("");
+  box.querySelectorAll("input").forEach((b) => b.addEventListener("change", () => { if (b.checked) verdictSel.add(b.value); else verdictSel.delete(b.value); renderSummary(); renderJudgList(); }));
 }
 const topicOf = (card) => card?.topic || (card?.title || "").split(": ").slice(1).join(": ");
 function renderJudgList() {
   if (!currentRecord) return;
-  const groups = clauseGroups(regCards()).map((g) => ({...g, cards: g.cards.filter((r) => !verdictFilter || r.verdict === verdictFilter)})).filter((g) => g.cards.length);
+  const groups = clauseGroups(regCards()).map((g) => ({...g, cards: g.cards.filter((r) => verdictSel.has(r.verdict))})).filter((g) => g.cards.length);
   const container = $("#cv-judg-list");
   container.innerHTML = "";
-  if (!groups.length) { container.innerHTML = `<p class="cv-muted" style="padding:.8rem">${regSel.size ? "해당하는 조항이 없습니다." : "규제를 하나 이상 고르세요."}</p>`; return; }
+  if (!groups.length) { container.innerHTML = `<p class="cv-muted" style="padding:.8rem">${!regSel.size ? "규제를 하나 이상 고르세요." : !verdictSel.size ? "판정을 하나 이상 고르세요." : "해당하는 조항이 없습니다."}</p>`; return; }
   let lastReg = null;
   for (const g of groups) {
     if (g.reg !== lastReg) { const h = document.createElement("div"); h.className = "cv-group"; h.textContent = g.reg; container.appendChild(h); lastReg = g.reg; }
