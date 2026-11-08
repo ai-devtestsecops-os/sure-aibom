@@ -5,8 +5,8 @@ hide:
 
 # 규제 판정
 
-만들어진 AI-BOM 이 규제(EU AI Act, NIST AI RMF, ISO/IEC 42001)를 얼마나 만족하는지 조항마다 판정한다. 규제 항목이 어느 필드에 해당하는지는 [필드 탐색기](field-mapping.md)에 있고, 여기서는 BOM 에 그 필드가 채워졌는지를 본다.
-EU AI Act 조항은 시스템이 고위험인지, 투명성 의무나 범용 AI 모델에 해당하는지, 조직의 역할이 무엇인지에 따라 적용이 갈리므로, 판정 화면에서 그것을 고른다. 예제 BOM 세 개를 제공하며, 지금은 CycloneDX JSON 형식만 판정한다.
+만들어진 AI-BOM 이 규제(EU AI Act, NIST AI RMF, ISO/IEC 42001)를 얼마나 만족하는지 조항마다 판정한다. 규제 항목이 어느 필드에 해당하는지는 [필드 탐색기](field-mapping.md)에 있고, 여기서는 BOM 에 그 필드가 채워졌는지와 조항이 요구하는 증빙(사용 설명서, 로그, 선언서 등)이 BOM 에 달려 있는지를 본다.
+EU AI Act 조항은 시스템이 고위험인지, 투명성 의무나 범용 AI 모델에 해당하는지, 조직의 역할이 무엇인지에 따라 적용이 갈리므로, 판정 화면에서 그것을 고른다. 예제 BOM 을 CycloneDX 와 SPDX 판으로 세 개씩 제공한다. CycloneDX 1.7 JSON 과 SPDX 3.0.1 JSON-LD 를 받고, 같은 규제 카드를 형식마다 다른 매핑 프로파일로 판정한다.
 
 <div class="card-viewer" data-base="../../mapping-viewer/data/cards/">
   <section class="cv-upload" id="cv-upload">
@@ -14,7 +14,7 @@ EU AI Act 조항은 시스템이 고위험인지, 투명성 의무나 범용 AI 
       <input id="cv-bom-file" type="file" accept=".json,application/json">
       <svg class="cv-drop-icon" viewBox="0 0 24 24" width="36" height="36" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="M12 16V4m0 0L8 8m4-4l4 4M4 16v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
       <div class="cv-drop-main">AI-BOM 파일을 끌어다 놓거나 <span class="cv-link">파일을 선택</span>하세요</div>
-      <div class="cv-drop-sub">CycloneDX JSON 파일</div>
+      <div class="cv-drop-sub">CycloneDX 1.7 JSON 또는 SPDX 3.0.1 JSON-LD</div>
       <div class="cv-drop-error" id="cv-drop-error" hidden></div>
     </div>
     <div class="cv-examples-head">예제 BOM</div>

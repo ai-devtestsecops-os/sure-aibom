@@ -13,7 +13,7 @@
   "properties": [
    {
     "name": "aibom:example",
-    "value": "채용 심사 AI 를 가정해 손으로 만든 작은 BOM. 데이터셋이 둘이다. job-portal-applications 는 개인데이터 표시(sensitiveData)가 있고 원래 수집 목적(originalCollectionPurpose)이 없다. job-skill-taxonomy 는 개인데이터가 아니고(sensitiveData 가 빈 목록. 칸 자체가 없으면 개인데이터인지 판단할 수 없어 검토 필요다) 수집 목적이 있다. 10조(2)(b) 는 개인데이터인 데이터셋에서만 수집 목적을 보므로, 다른 데이터셋에 수집 목적이 있어도 보완 위치는 job-portal-applications 로 나온다."
+    "value": "채용 심사 AI 를 가정해 손으로 만든 작은 BOM. 데이터셋이 둘이다. job-portal-applications 는 개인데이터 표시(sensitiveData)가 있고 원래 수집 목적(originalCollectionPurpose)이 없다. job-skill-taxonomy 는 개인데이터가 아니고(sensitiveData 가 빈 목록. 칸 자체가 없으면 개인데이터인지 판단할 수 없어 검토 필요다) 수집 목적이 있다. 10조(2)(b) 는 개인데이터인 데이터셋에서만 수집 목적을 보므로, 다른 데이터셋에 수집 목적이 있어도 보완 위치는 job-portal-applications 로 나온다. 증빙: 모델에 사용 설명서 외부참조(type documentation, 해시 있음)가 있어 사실과 증빙이 모두 있는 부속서 IV(1)(h)·13조(2) 는 반영이고, 10조(5) 는 사실(민감 개인정보 표시 yes, 데이터셋의 sensitiveData)은 있지만 처리 기록 증빙(RECORD: externalReferences type log/evidence 또는 declarations)이 없어 부분 반영이다."
    }
   ]
  },
@@ -45,9 +45,23 @@
      ],
      "technicalRequirements": [
       "CPU"
+     ],
+     "sensitivePersonalInformation": "yes"
+    }
+   },
+   "externalReferences": [
+    {
+     "type": "documentation",
+     "url": "https://example.corp/recruit-screening/instructions-for-use-1.0.pdf",
+     "comment": "instructions for use (deployer manual)",
+     "hashes": [
+      {
+       "alg": "SHA-256",
+       "content": "3b7f6c0b2a1e9d8c7f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a"
+      }
      ]
     }
-   }
+   ]
   },
   {
    "type": "data",

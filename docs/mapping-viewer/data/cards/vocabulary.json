@@ -1,5 +1,5 @@
 {
- "_comment": "통제 어휘. 카드의 fact 와 프로파일 줄이 가리키는 개념 id 의 사전이다. 사람이 관리한다 (생성물이 아니다). 항목: id (대문자 스네이크, 규제·스키마와 무관한 이름표), label_ko (표시 이름), aliases (같은 뜻의 다른 표시 이름), gap (CycloneDX·SPDX 모두 자리가 없는 개념이면 true), synonyms (영어 원문에서 이 개념을 부르는 말. 추출기 용어집과 매핑 후보 생성기가 쓴다), synonyms_private (같은 것이지만 저작권 있는 원문(ISO/IEC 42001)의 구절이라 문서 사이트로 내보내지 않는 것). 새 개념은 여기 한 항목을 더한다. build_cards.py 는 표의 개념이 여기 없으면 멈춘다. 처음 125개는 요구사항 표에서 만들고 (id 는 필드 경로 끝 이름, 격차 개념은 손으로 지음) 동의어는 Claude 가 적은 것과 요구사항 표에서 사람이 표시한 영어 원문 구절(ISO 제외)을 합친 것이다 (2026-10-23).",
+ "_comment": "통제 어휘. 카드의 fact 와 프로파일 줄이 가리키는 개념 id 의 사전이다. 사람이 관리한다 (생성물이 아니다). 항목: id (대문자 스네이크, 규제·스키마와 무관한 이름표), label_ko (표시 이름), aliases (같은 뜻의 다른 표시 이름), gap (CycloneDX·SPDX 모두 자리가 없는 개념이면 true), synonyms (영어 원문에서 이 개념을 부르는 말. 추출기 용어집과 매핑 후보 생성기가 쓴다), synonyms_private (같은 것이지만 저작권 있는 원문(ISO/IEC 42001)의 구절이라 문서 사이트로 내보내지 않는 것). 새 개념은 여기 한 항목을 더한다. build_cards.py 는 표의 개념이 여기 없으면 멈춘다. 처음 125개는 요구사항 표에서 만들고 (id 는 필드 경로 끝 이름, 격차 개념은 손으로 지음) 동의어는 Claude 가 적은 것과 요구사항 표에서 사람이 표시한 영어 원문 구절(ISO 제외)을 합친 것이다 (2026-10-23). evidence_kinds 는 카드의 evidence[].concept(요구 증빙의 종류)의 사전이다. 추출기(extract.py 의 rules[\"evidence\"])가 쓰는 id 와 같아야 하고, 프로파일의 evidence.kinds 가 종류마다 BOM 에서 찾는 법을 적는다.",
  "version": 1,
  "concepts": [
   {
@@ -1782,6 +1782,83 @@
     "validation methodology",
     "verification and validation",
     "test methodology"
+   ]
+  }
+ ],
+ "evidence_kinds": [
+  {
+   "id": "INSTRUCTIONS_FOR_USE",
+   "label_ko": "사용 설명서",
+   "synonyms": [
+    "instructions for use",
+    "instructions of use",
+    "user manual"
+   ]
+  },
+  {
+   "id": "TECHNICAL_DOCUMENTATION",
+   "label_ko": "기술 문서",
+   "synonyms": [
+    "technical documentation",
+    "technical file"
+   ]
+  },
+  {
+   "id": "DOCUMENT",
+   "label_ko": "문서",
+   "synonyms": [
+    "documentation",
+    "document"
+   ]
+  },
+  {
+   "id": "DATASHEET",
+   "label_ko": "데이터시트",
+   "synonyms": [
+    "datasheet",
+    "data sheet"
+   ]
+  },
+  {
+   "id": "LOG",
+   "label_ko": "로그",
+   "synonyms": [
+    "log",
+    "logs",
+    "logging"
+   ]
+  },
+  {
+   "id": "RECORD",
+   "label_ko": "기록",
+   "synonyms": [
+    "record",
+    "records"
+   ]
+  },
+  {
+   "id": "REPORT",
+   "label_ko": "보고서",
+   "synonyms": [
+    "report",
+    "test report",
+    "evaluation report"
+   ]
+  },
+  {
+   "id": "DECLARATION",
+   "label_ko": "선언서",
+   "synonyms": [
+    "declaration",
+    "declaration of conformity"
+   ]
+  },
+  {
+   "id": "CERTIFICATE",
+   "label_ko": "인증서",
+   "synonyms": [
+    "certificate",
+    "certification"
    ]
   }
  ]

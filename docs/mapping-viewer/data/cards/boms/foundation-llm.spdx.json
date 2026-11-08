@@ -1,0 +1,356 @@
+{
+ "@context": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld",
+ "@graph": [
+  {
+   "type": "CreationInfo",
+   "@id": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "specVersion": "3.0.1",
+   "created": "2026-11-05T00:00:00Z",
+   "createdBy": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#agent/sure-aibom"
+   ]
+  },
+  {
+   "type": "SpdxDocument",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#document",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "name": "sure-llm-7b",
+   "profileConformance": [
+    "core",
+    "software",
+    "ai",
+    "dataset",
+    "simpleLicensing",
+    "extension"
+   ],
+   "rootElement": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#model:sure-llm-7b:1.2"
+   ],
+   "element": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#agent/sure-aibom",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#org/Example%20Labs",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#model:sure-llm-7b:1.2",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#license/Apache-2.0",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#dataset:web-corpus-2026",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#pkg:pypi/tokenizers@0.20.0",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#rel/hasDeclaredLicense/model:sure-llm-7b:1.2",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#rel/dependsOn/model:sure-llm-7b:1.2",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#agent/example-labs-mlops",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#agent/example-labs-data",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#evidence/train.log",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#evidence/provenance-2025.json",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#evidence/eval-report-1.2.pdf",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#rel/hasEvidence/train.log",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#rel/hasEvidence/provenance",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#rel/hasTest/eval-report"
+   ]
+  },
+  {
+   "type": "SoftwareAgent",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#agent/sure-aibom",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "name": "sure-aibom"
+  },
+  {
+   "type": "Organization",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#org/Example%20Labs",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "name": "Example Labs"
+  },
+  {
+   "type": "ai_AIPackage",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#model:sure-llm-7b:1.2",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "name": "sure-llm-7b",
+   "software_packageVersion": "1.2",
+   "software_primaryPurpose": "model",
+   "externalRef": [
+    {
+     "type": "ExternalRef",
+     "externalRefType": "documentation",
+     "locator": [
+      "https://example.org/sure-llm-7b/model-card"
+     ]
+    }
+   ],
+   "suppliedBy": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#org/Example%20Labs",
+   "aibom_task": "text-generation",
+   "aibom_architectureFamily": "transformer",
+   "aibom_modelArchitecture": "decoder-only, 32 layers",
+   "aibom_inputs": [
+    "text"
+   ],
+   "aibom_outputs": [
+    "text"
+   ],
+   "ai_hyperparameter": [
+    {
+     "type": "DictionaryEntry",
+     "key": "learning_rate",
+     "value": "3e-4"
+    },
+    {
+     "type": "DictionaryEntry",
+     "key": "context_length",
+     "value": "8192"
+    }
+   ],
+   "aibom_parameterCount": 7000000000,
+   "ai_informationAboutTraining": "pretraining (causal language modeling), supervised fine-tuning",
+   "aibom_designChoices": [
+    "RoPE positional encoding",
+    "SwiGLU activation"
+   ],
+   "aibom_optimizationTarget": "next-token cross-entropy",
+   "aibom_trainingCompute": "1.2e23 FLOP",
+   "aibom_trainingTime": "21 days on 256 H100",
+   "ai_metric": [
+    {
+     "type": "DictionaryEntry",
+     "key": "MMLU",
+     "value": "0.63"
+    },
+    {
+     "type": "DictionaryEntry",
+     "key": "HellaSwag",
+     "value": "0.79"
+    }
+   ],
+   "aibom_useCases": [
+    "general text generation",
+    "chat assistants"
+   ],
+   "ai_limitation": "context limited to 8192 tokens; may state false facts with confidence",
+   "ai_informationAboutApplication": "16 GB GPU memory (int8)",
+   "aibom_ethicalConsiderations": [
+    "toxic or biased generations"
+   ],
+   "aibom_ethicalConsiderationsMitigationStrategy": [
+    {
+     "type": "DictionaryEntry",
+     "key": "toxic or biased generations",
+     "value": "safety fine-tuning and output filtering"
+    }
+   ],
+   "aibom_limitationIdentificationMethods": [
+    "held-out benchmark evaluation",
+    "internal red teaming"
+   ],
+   "extension": [
+    {
+     "type": "extension_CdxPropertiesExtension",
+     "extension_cdxProperty": [
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "bom-ref",
+       "extension_cdxPropValue": "model:sure-llm-7b:1.2"
+      },
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "releaseNotes.type",
+       "extension_cdxPropValue": "major"
+      },
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "releaseNotes.timestamp",
+       "extension_cdxPropValue": "2026-10-01T00:00:00Z"
+      },
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "releaseNotes.notes.text",
+       "extension_cdxPropValue": "1.2: context length 8192"
+      }
+     ]
+    }
+   ],
+   "releaseTime": "2026-10-01T00:00:00Z"
+  },
+  {
+   "type": "simplelicensing_LicenseExpression",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#license/Apache-2.0",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "simplelicensing_licenseExpression": "Apache-2.0"
+  },
+  {
+   "type": "dataset_DatasetPackage",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#dataset:web-corpus-2026",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "name": "web-corpus-2026",
+   "software_packageVersion": "2026-03",
+   "software_primaryPurpose": "data",
+   "software_downloadLocation": "https://example.org/web-corpus-2026",
+   "dataset_datasetType": [
+    "text"
+   ],
+   "dataset_datasetSize": 2400000000000,
+   "dataset_dataCollectionProcess": "web crawl (Common Crawl snapshots 2025-2026) with URL filtering",
+   "software_sourceInfo": "https://commoncrawl.org",
+   "dataset_dataPreprocessing": [
+    "deduplication",
+    "language filtering",
+    "toxicity filtering"
+   ],
+   "dataset_knownBias": [
+    "English-centric"
+   ],
+   "aibom_knownBiasDetectionMethod": [
+    {
+     "type": "DictionaryEntry",
+     "key": "English-centric",
+     "value": "language distribution analysis"
+    }
+   ],
+   "extension": [
+    {
+     "type": "extension_CdxPropertiesExtension",
+     "extension_cdxProperty": [
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "bom-ref",
+       "extension_cdxPropValue": "dataset:web-corpus-2026"
+      },
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "data.name",
+       "extension_cdxPropValue": "web-corpus-2026"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "software_Package",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#pkg:pypi/tokenizers@0.20.0",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "name": "tokenizers",
+   "software_packageVersion": "0.20.0",
+   "software_packageUrl": "pkg:pypi/tokenizers@0.20.0",
+   "software_primaryPurpose": "library",
+   "extension": [
+    {
+     "type": "extension_CdxPropertiesExtension",
+     "extension_cdxProperty": [
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "bom-ref",
+       "extension_cdxPropValue": "pkg:pypi/tokenizers@0.20.0"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "Relationship",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#rel/hasDeclaredLicense/model:sure-llm-7b:1.2",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "from": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#model:sure-llm-7b:1.2",
+   "relationshipType": "hasDeclaredLicense",
+   "to": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#license/Apache-2.0"
+   ]
+  },
+  {
+   "type": "Relationship",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#rel/dependsOn/model:sure-llm-7b:1.2",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "from": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#model:sure-llm-7b:1.2",
+   "relationshipType": "dependsOn",
+   "to": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#dataset:web-corpus-2026",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#pkg:pypi/tokenizers@0.20.0"
+   ]
+  },
+  {
+   "type": "CreationInfo",
+   "@id": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo/mlops-2026-03",
+   "specVersion": "3.0.1",
+   "created": "2026-03-20T00:00:00Z",
+   "createdBy": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#agent/example-labs-mlops"
+   ]
+  },
+  {
+   "type": "CreationInfo",
+   "@id": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo/data-2025-01",
+   "specVersion": "3.0.1",
+   "created": "2025-01-15T00:00:00Z",
+   "createdBy": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#agent/example-labs-data"
+   ]
+  },
+  {
+   "type": "Organization",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#agent/example-labs-mlops",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "name": "Example Labs MLOps"
+  },
+  {
+   "type": "Organization",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#agent/example-labs-data",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "name": "Example Labs Data Team"
+  },
+  {
+   "type": "software_File",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#evidence/train.log",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo/mlops-2026-03",
+   "name": "train.log",
+   "description": "training run log: loss curves, hyperparameters, data mix per step",
+   "verifiedUsing": [
+    {
+     "type": "Hash",
+     "algorithm": "sha256",
+     "hashValue": "3b7f6c0b2a1e9d8c7f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7d6c5b4a"
+    }
+   ],
+   "software_primaryPurpose": "evidence"
+  },
+  {
+   "type": "software_File",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#evidence/provenance-2025.json",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo/data-2025-01",
+   "name": "provenance-2025.json",
+   "description": "data provenance record for web-corpus-2026 (expired: must be renewed yearly)",
+   "validUntilTime": "2026-01-15T00:00:00Z",
+   "software_primaryPurpose": "evidence"
+  },
+  {
+   "type": "software_File",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#evidence/eval-report-1.2.pdf",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo/mlops-2026-03",
+   "name": "eval-report-1.2.pdf",
+   "description": "evaluation report: MMLU, HellaSwag, internal red teaming",
+   "software_primaryPurpose": "documentation"
+  },
+  {
+   "type": "Relationship",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#rel/hasEvidence/train.log",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "from": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#model:sure-llm-7b:1.2",
+   "relationshipType": "hasEvidence",
+   "to": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#evidence/train.log"
+   ]
+  },
+  {
+   "type": "Relationship",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#rel/hasEvidence/provenance",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "from": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#model:sure-llm-7b:1.2",
+   "relationshipType": "hasEvidence",
+   "to": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#evidence/provenance-2025.json"
+   ]
+  },
+  {
+   "type": "Relationship",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#rel/hasTest/eval-report",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#creationinfo",
+   "from": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#model:sure-llm-7b:1.2",
+   "relationshipType": "hasTest",
+   "to": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000002#evidence/eval-report-1.2.pdf"
+   ]
+  }
+ ]
+}

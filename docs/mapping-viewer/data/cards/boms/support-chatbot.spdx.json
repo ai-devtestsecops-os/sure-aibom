@@ -1,0 +1,167 @@
+{
+ "@context": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld",
+ "@graph": [
+  {
+   "type": "CreationInfo",
+   "@id": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#creationinfo",
+   "specVersion": "3.0.1",
+   "created": "2026-11-05T00:00:00Z",
+   "createdBy": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#agent/sure-aibom"
+   ]
+  },
+  {
+   "type": "SpdxDocument",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#document",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#creationinfo",
+   "name": "support-chatbot",
+   "profileConformance": [
+    "core",
+    "software",
+    "ai",
+    "dataset",
+    "simpleLicensing",
+    "extension"
+   ],
+   "rootElement": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#app:support-chatbot:2.0"
+   ],
+   "element": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#agent/sure-aibom",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#org/Example%20Corp",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#app:support-chatbot:2.0",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#org/Example%20Labs",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#model:sure-llm-7b:1.2",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#license/Apache-2.0",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#pkg:pypi/fastapi@0.115.0",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#rel/hasDeclaredLicense/model:sure-llm-7b:1.2",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#rel/dependsOn/app:support-chatbot:2.0"
+   ]
+  },
+  {
+   "type": "SoftwareAgent",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#agent/sure-aibom",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#creationinfo",
+   "name": "sure-aibom"
+  },
+  {
+   "type": "Organization",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#org/Example%20Corp",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#creationinfo",
+   "name": "Example Corp"
+  },
+  {
+   "type": "software_Package",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#app:support-chatbot:2.0",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#creationinfo",
+   "name": "support-chatbot",
+   "description": "customer support chat assistant that talks with customers in natural language",
+   "software_packageVersion": "2.0",
+   "software_primaryPurpose": "application",
+   "suppliedBy": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#org/Example%20Corp",
+   "extension": [
+    {
+     "type": "extension_CdxPropertiesExtension",
+     "extension_cdxProperty": [
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "bom-ref",
+       "extension_cdxPropValue": "app:support-chatbot:2.0"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "Organization",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#org/Example%20Labs",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#creationinfo",
+   "name": "Example Labs"
+  },
+  {
+   "type": "ai_AIPackage",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#model:sure-llm-7b:1.2",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#creationinfo",
+   "name": "sure-llm-7b",
+   "software_packageVersion": "1.2",
+   "software_primaryPurpose": "model",
+   "externalRef": [
+    {
+     "type": "ExternalRef",
+     "externalRefType": "documentation",
+     "locator": [
+      "https://example.org/sure-llm-7b/model-card"
+     ]
+    }
+   ],
+   "suppliedBy": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#org/Example%20Labs",
+   "aibom_task": "text-generation",
+   "aibom_architectureFamily": "transformer",
+   "aibom_useCases": [
+    "customer support chat"
+   ],
+   "ai_limitation": "may state false facts with confidence",
+   "ai_informationAboutApplication": "16 GB GPU memory (int8)",
+   "extension": [
+    {
+     "type": "extension_CdxPropertiesExtension",
+     "extension_cdxProperty": [
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "bom-ref",
+       "extension_cdxPropValue": "model:sure-llm-7b:1.2"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "simplelicensing_LicenseExpression",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#license/Apache-2.0",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#creationinfo",
+   "simplelicensing_licenseExpression": "Apache-2.0"
+  },
+  {
+   "type": "software_Package",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#pkg:pypi/fastapi@0.115.0",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#creationinfo",
+   "name": "fastapi",
+   "software_packageVersion": "0.115.0",
+   "software_packageUrl": "pkg:pypi/fastapi@0.115.0",
+   "software_primaryPurpose": "framework",
+   "extension": [
+    {
+     "type": "extension_CdxPropertiesExtension",
+     "extension_cdxProperty": [
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "bom-ref",
+       "extension_cdxPropValue": "pkg:pypi/fastapi@0.115.0"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "Relationship",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#rel/hasDeclaredLicense/model:sure-llm-7b:1.2",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#creationinfo",
+   "from": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#model:sure-llm-7b:1.2",
+   "relationshipType": "hasDeclaredLicense",
+   "to": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#license/Apache-2.0"
+   ]
+  },
+  {
+   "type": "Relationship",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#rel/dependsOn/app:support-chatbot:2.0",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#creationinfo",
+   "from": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#app:support-chatbot:2.0",
+   "relationshipType": "dependsOn",
+   "to": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#model:sure-llm-7b:1.2",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000003#pkg:pypi/fastapi@0.115.0"
+   ]
+  }
+ ]
+}

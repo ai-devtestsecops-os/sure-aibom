@@ -1,10 +1,11 @@
 [
  {
   "file": "recruit-screening.cdx.json",
+  "format": "CycloneDX",
   "subject": "recruit-screening",
   "label": "고위험 AI 시스템 · 채용 심사",
-  "note": "채용 지원자를 평가하는 고위험 AI 시스템. 개인데이터 데이터셋에 원래 수집 목적이 빠져 있어 10조(2)(b) 가 부분 반영이다",
-  "size": 2575,
+  "note": "채용 지원자를 평가하는 고위험 AI 시스템. 개인데이터 데이터셋에 원래 수집 목적이 빠져 있어 10조(2)(b) 가 부분 반영이고, 10조(5) 는 사실은 있지만 처리 기록 증빙이 없어 부분 반영이다",
+  "size": 3373,
   "system_profile": {
    "risk_class": [
     "high_risk"
@@ -14,15 +15,16 @@
    ]
   },
   "engine_summary": {
-   "반영": 7,
-   "부분 반영": 25,
-   "미반영": 114,
+   "반영": 15,
+   "부분 반영": 26,
+   "미반영": 105,
    "비적용": 44,
    "검토 필요": 0
   }
  },
  {
   "file": "support-chatbot.cdx.json",
+  "format": "CycloneDX",
   "subject": "support-chatbot",
   "label": "투명성 의무 · 고객 상담 챗봇",
   "note": "사람과 대화하는 챗봇. 고위험이 아니라 고위험 조항은 비적용이고 투명성 의무(50조)만 걸린다",
@@ -46,10 +48,11 @@
  },
  {
   "file": "foundation-llm.cdx.json",
+  "format": "CycloneDX",
   "subject": "sure-llm-7b",
   "label": "범용 AI 모델 · 기반 LLM",
-  "note": "범용 AI 모델 제공자. 53조와 부속서 XI·XII 의 모델 문서 항목을 본다. 체계적 위험은 없어 55조는 비적용이다",
-  "size": 4752,
+  "note": "범용 AI 모델 제공자. 53조와 부속서 XI·XII 의 모델 문서 항목을 본다. 체계적 위험은 없어 55조는 비적용이다. declarations 의 학습 로그 증빙은 유효하고 출처 기록 증빙은 만료라 무효다",
+  "size": 7869,
   "system_profile": {
    "risk_class": [
     "minimal_risk",
@@ -60,9 +63,80 @@
    ]
   },
   "engine_summary": {
-   "반영": 31,
-   "부분 반영": 19,
-   "미반영": 27,
+   "반영": 33,
+   "부분 반영": 20,
+   "미반영": 24,
+   "비적용": 113,
+   "검토 필요": 0
+  }
+ },
+ {
+  "file": "recruit-screening.spdx.json",
+  "format": "SPDX",
+  "subject": "recruit-screening",
+  "label": "고위험 AI 시스템 · 채용 심사 (SPDX)",
+  "note": "위 채용 심사 BOM 의 SPDX 3.0.1 판. 같은 카드를 SPDX 매핑 프로파일로 판정해 CycloneDX 와 같은 결과가 나온다",
+  "size": 6845,
+  "system_profile": {
+   "risk_class": [
+    "high_risk"
+   ],
+   "role": [
+    "provider"
+   ]
+  },
+  "engine_summary": {
+   "반영": 15,
+   "부분 반영": 26,
+   "미반영": 105,
+   "비적용": 44,
+   "검토 필요": 0
+  }
+ },
+ {
+  "file": "support-chatbot.spdx.json",
+  "format": "SPDX",
+  "subject": "support-chatbot",
+  "label": "투명성 의무 · 고객 상담 챗봇 (SPDX)",
+  "note": "위 챗봇 BOM 의 SPDX 3.0.1 판",
+  "size": 5963,
+  "system_profile": {
+   "risk_class": [
+    "minimal_risk",
+    "limited_risk"
+   ],
+   "role": [
+    "provider"
+   ]
+  },
+  "engine_summary": {
+   "반영": 3,
+   "부분 반영": 8,
+   "미반영": 39,
+   "비적용": 140,
+   "검토 필요": 0
+  }
+ },
+ {
+  "file": "foundation-llm.spdx.json",
+  "format": "SPDX",
+  "subject": "sure-llm-7b",
+  "label": "범용 AI 모델 · 기반 LLM (SPDX)",
+  "note": "위 기반 LLM BOM 의 SPDX 3.0.1 판. 증빙은 hasEvidence·hasTest 관계로 잇고, SPDX 에 자리가 없는 declarations·표준 항목은 자리 없음이라 CycloneDX 보다 반영이 적다",
+  "size": 12521,
+  "system_profile": {
+   "risk_class": [
+    "minimal_risk",
+    "gpai"
+   ],
+   "role": [
+    "provider"
+   ]
+  },
+  "engine_summary": {
+   "반영": 27,
+   "부분 반영": 18,
+   "미반영": 32,
    "비적용": 113,
    "검토 필요": 0
   }

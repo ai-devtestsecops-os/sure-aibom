@@ -1,0 +1,204 @@
+{
+ "@context": "https://spdx.org/rdf/3.0.1/spdx-context.jsonld",
+ "@graph": [
+  {
+   "type": "CreationInfo",
+   "@id": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#creationinfo",
+   "specVersion": "3.0.1",
+   "created": "2026-10-23T00:00:00Z",
+   "createdBy": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#agent/sure-aibom"
+   ]
+  },
+  {
+   "type": "SpdxDocument",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#document",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#creationinfo",
+   "name": "recruit-screening",
+   "profileConformance": [
+    "core",
+    "software",
+    "ai",
+    "dataset",
+    "simpleLicensing",
+    "extension"
+   ],
+   "rootElement": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#app:recruit-screening"
+   ],
+   "element": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#agent/sure-aibom",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#app:recruit-screening",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#org/Example%20Corp",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#model:recruit-screening:1.0",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#org/JobPortal-A",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#dataset:ds-101",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#dataset:ds-102",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#rel/dependsOn/model:recruit-screening:1.0"
+   ]
+  },
+  {
+   "type": "SoftwareAgent",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#agent/sure-aibom",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#creationinfo",
+   "name": "sure-aibom"
+  },
+  {
+   "type": "software_Package",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#app:recruit-screening",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#creationinfo",
+   "name": "recruit-screening",
+   "software_primaryPurpose": "application",
+   "extension": [
+    {
+     "type": "extension_CdxPropertiesExtension",
+     "extension_cdxProperty": [
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "bom-ref",
+       "extension_cdxPropValue": "app:recruit-screening"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "Organization",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#org/Example%20Corp",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#creationinfo",
+   "name": "Example Corp"
+  },
+  {
+   "type": "ai_AIPackage",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#model:recruit-screening:1.0",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#creationinfo",
+   "name": "recruit-screening",
+   "software_packageVersion": "1.0",
+   "software_primaryPurpose": "model",
+   "externalRef": [
+    {
+     "type": "ExternalRef",
+     "externalRefType": "documentation",
+     "locator": [
+      "https://example.corp/recruit-screening/instructions-for-use-1.0.pdf"
+     ],
+     "comment": "instructions for use (deployer manual)"
+    }
+   ],
+   "suppliedBy": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#org/Example%20Corp",
+   "aibom_task": "classification",
+   "aibom_architectureFamily": "gradient-boosting",
+   "aibom_useCases": [
+    "screening job applications"
+   ],
+   "ai_informationAboutApplication": "CPU",
+   "ai_useSensitivePersonalInformation": "yes",
+   "extension": [
+    {
+     "type": "extension_CdxPropertiesExtension",
+     "extension_cdxProperty": [
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "bom-ref",
+       "extension_cdxPropValue": "model:recruit-screening:1.0"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "Organization",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#org/JobPortal-A",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#creationinfo",
+   "name": "JobPortal-A"
+  },
+  {
+   "type": "dataset_DatasetPackage",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#dataset:ds-101",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#creationinfo",
+   "name": "job-portal-applications",
+   "software_packageVersion": "2026-09",
+   "software_primaryPurpose": "data",
+   "suppliedBy": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#org/JobPortal-A",
+   "software_downloadLocation": "https://jobportal-a.example/export",
+   "dataset_datasetType": [
+    "other"
+   ],
+   "dataset_datasetSize": 48210,
+   "dataset_dataCollectionProcess": "job-portal export",
+   "dataset_hasSensitivePersonalInformation": "yes",
+   "extension": [
+    {
+     "type": "extension_CdxPropertiesExtension",
+     "extension_cdxProperty": [
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "bom-ref",
+       "extension_cdxPropValue": "dataset:ds-101"
+      },
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "data.name",
+       "extension_cdxPropValue": "job-portal-applications"
+      },
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "data.sensitiveData",
+       "extension_cdxPropValue": "name"
+      },
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "data.sensitiveData",
+       "extension_cdxPropValue": "date of birth"
+      },
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "data.sensitiveData",
+       "extension_cdxPropValue": "nationality"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "type": "dataset_DatasetPackage",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#dataset:ds-102",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#creationinfo",
+   "name": "job-skill-taxonomy",
+   "software_primaryPurpose": "data",
+   "dataset_datasetType": [
+    "noAssertion"
+   ],
+   "aibom_originalCollectionPurpose": "skill taxonomy compiled for public job classification statistics",
+   "extension": [
+    {
+     "type": "extension_CdxPropertiesExtension",
+     "extension_cdxProperty": [
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "bom-ref",
+       "extension_cdxPropValue": "dataset:ds-102"
+      },
+      {
+       "type": "extension_CdxPropertyEntry",
+       "extension_cdxPropName": "data.name",
+       "extension_cdxPropValue": "job-skill-taxonomy"
+      }
+     ]
+    }
+   ],
+   "dataset_hasSensitivePersonalInformation": "no"
+  },
+  {
+   "type": "Relationship",
+   "spdxId": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#rel/dependsOn/model:recruit-screening:1.0",
+   "creationInfo": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#creationinfo",
+   "from": "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#model:recruit-screening:1.0",
+   "relationshipType": "dependsOn",
+   "to": [
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#dataset:ds-101",
+    "urn:uuid:7f3c2d1e-0000-4000-8000-000000000001#dataset:ds-102"
+   ]
+  }
+ ]
+}

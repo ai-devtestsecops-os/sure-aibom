@@ -118,7 +118,7 @@
   "properties": [
    {
     "name": "aibom:example",
-    "value": "범용 AI 모델(기반 LLM)을 가정해 손으로 만든 작은 BOM. 모델 카드에 구조·학습·평가 정보가 있고 학습 데이터셋이 하나다. 에너지 사용량, 적대적 평가 참조, 표준 준수 선언은 비워 두어 부분 반영이 보이게 했다."
+    "value": "범용 AI 모델(기반 LLM)을 가정해 손으로 만든 작은 BOM. 모델 카드에 구조·학습·평가 정보가 있고 학습 데이터셋이 하나다. 에너지 사용량, 적대적 평가 참조, 표준 준수 선언은 비워 두어 부분 반영이 보이게 했다. 증빙: declarations 에 주장 셋과 증빙 셋이 있다. 학습 로그(aibom:evidence:log, 작성자·서명 있음)는 유효해 로그를 요구하는 부속서 XI 카드가 반영이고, 출처 기록(aibom:evidence:record)은 expires 가 지나 무효라 ISO/IEC 42001 A.7.5 는 사실은 있어도 부분 반영이며, 평가 보고서는 definitions.standards 의 요구사항 'Annex XI §2(1)' 에 attestations 로 직접 댄 입증이다."
    }
   ]
  },
@@ -206,14 +206,119 @@
  "definitions": {
   "standards": [
    {
-    "bom-ref": "std:iso42001",
-    "name": "ISO/IEC 42001:2023",
-    "version": "2023",
+    "bom-ref": "std:eu-ai-act",
+    "name": "EU AI Act",
+    "version": "Regulation (EU) 2024/1689",
     "requirements": [
      {
-      "bom-ref": "req:a.6.2.4",
-      "identifier": "A.6.2.4",
-      "title": "AI system verification and validation"
+      "bom-ref": "req:eu-ai-act-annex-xi-2-1",
+      "identifier": "Annex XI §2(1)",
+      "title": "Information for providers that integrate the model: evaluation results and methods"
+     }
+    ]
+   }
+  ]
+ },
+ "declarations": {
+  "evidence": [
+   {
+    "bom-ref": "ev:training-log",
+    "propertyName": "aibom:evidence:log",
+    "description": "training run log: loss curves, hyperparameters, data mix per step",
+    "data": [
+     {
+      "name": "train.log",
+      "contents": {
+       "url": "https://example.org/sure-llm-7b/runs/2026-03/train.log"
+      }
+     }
+    ],
+    "created": "2026-03-20T00:00:00Z",
+    "author": {
+     "name": "Example Labs MLOps",
+     "email": "mlops@example.org"
+    },
+    "signature": {
+     "algorithm": "ES256",
+     "keyId": "example-labs-mlops-2026",
+     "value": "(example signature)"
+    }
+   },
+   {
+    "bom-ref": "ev:provenance-record",
+    "propertyName": "aibom:evidence:record",
+    "description": "data provenance record for web-corpus-2026 (expired: must be renewed yearly)",
+    "data": [
+     {
+      "name": "provenance-2025.json",
+      "contents": {
+       "url": "https://example.org/web-corpus-2026/provenance-2025.json"
+      }
+     }
+    ],
+    "created": "2025-01-15T00:00:00Z",
+    "expires": "2026-01-15T00:00:00Z",
+    "author": {
+     "name": "Example Labs Data Team"
+    }
+   },
+   {
+    "bom-ref": "ev:eval-report",
+    "propertyName": "aibom:evidence:report",
+    "description": "evaluation report: MMLU, HellaSwag, internal red teaming",
+    "data": [
+     {
+      "name": "eval-report-1.2.pdf",
+      "contents": {
+       "url": "https://example.org/sure-llm-7b/eval-report-1.2.pdf"
+      }
+     }
+    ],
+    "created": "2026-10-01T00:00:00Z",
+    "author": {
+     "name": "Example Labs Evaluation"
+    }
+   }
+  ],
+  "claims": [
+   {
+    "bom-ref": "claim:training-logged",
+    "target": "model:sure-llm-7b:1.2",
+    "predicate": "training of sure-llm-7b 1.2 is logged and reproducible",
+    "evidence": [
+     "ev:training-log"
+    ]
+   },
+   {
+    "bom-ref": "claim:data-provenance",
+    "target": "model:sure-llm-7b:1.2",
+    "predicate": "provenance of the training data is recorded",
+    "evidence": [
+     "ev:provenance-record"
+    ]
+   },
+   {
+    "bom-ref": "claim:evaluated",
+    "target": "model:sure-llm-7b:1.2",
+    "predicate": "the model was evaluated on public benchmarks and red-teamed",
+    "evidence": [
+     "ev:eval-report"
+    ]
+   }
+  ],
+  "attestations": [
+   {
+    "summary": "self-attestation against EU AI Act Annex XI §2(1)",
+    "map": [
+     {
+      "requirement": "req:eu-ai-act-annex-xi-2-1",
+      "claims": [
+       "claim:evaluated"
+      ],
+      "conformance": {
+       "score": 1.0,
+       "rationale": "evaluation report covers metrics and methods"
+      }
      }
     ]
    }

@@ -13,7 +13,8 @@
     aibom_v0.6_properties.json      추가 필드를 --spec 1.7 로 낼 때의 properties 키 (정의서 생성 코드와 같은 규칙)
     cards/cards.json                ai-bom/cards 의 승인 카드 (호 단위, 190장. ISO/IEC 42001 은 원문·구절을 빼고 제목만). 규제 판정 화면이 조항의 원문과 사실을 보여 줄 때 쓴다
     cards/vocabulary.json, cards/profile.json   통제 어휘, 매핑 프로파일 (ai-bom/cards 그대로)
-    cards/boms/*.cdx.json, boms/index.json   예제 BOM 과 목록 (고위험·투명성 의무·범용 AI 모델 하나씩 손으로 만든 것, ai-bom/cards/judge/examples). 화면이 브라우저 안에서 판정하므로 BOM 자체를 두고,
+    cards/profile-spdx.json         SPDX 3.0.1 매핑 프로파일 (SPDX 문서를 판정할 때)
+    cards/boms/*.cdx.json, *.spdx.json, boms/index.json   예제 BOM 과 목록 (고위험·투명성 의무·범용 AI 모델 하나씩 손으로 만든 것과 그 SPDX 판, ai-bom/cards/judge/examples). 화면이 브라우저 안에서 판정하므로 BOM 자체를 두고,
                                     목록에 기본 시스템 프로파일(위험등급·역할)과 파이썬 엔진의 판정 요약을 적어 둔다
 추출기 초안과 승인 카드의 비교는 내부용이라 문서 사이트에 싣지 않는다.
 """
@@ -36,11 +37,18 @@ CARDS = os.path.join(AIBOM, "cards")
 # (파일, 기본 시스템 프로파일, 버튼 이름, 설명). 위험등급은 시스템 축(high_risk / minimal_risk)에 얹히는 것(limited_risk·gpai·gpai_systemic)을 더한 목록
 # 공개 사이트에 올리는 복사본에서는 설명 속성(aibom:example)의 내부용 문구를 바꾼다
 EXAMPLE_BOMS = (("recruit-screening.cdx.json", {"risk_class": ["high_risk"], "role": ["provider"]}, "고위험 AI 시스템 · 채용 심사",
-                 "채용 지원자를 평가하는 고위험 AI 시스템. 개인데이터 데이터셋에 원래 수집 목적이 빠져 있어 10조(2)(b) 가 부분 반영이다"),
+                 "채용 지원자를 평가하는 고위험 AI 시스템. 개인데이터 데이터셋에 원래 수집 목적이 빠져 있어 10조(2)(b) 가 부분 반영이고, 10조(5) 는 사실은 있지만 처리 기록 증빙이 없어 부분 반영이다"),
                 ("support-chatbot.cdx.json", {"risk_class": ["minimal_risk", "limited_risk"], "role": ["provider"]}, "투명성 의무 · 고객 상담 챗봇",
                  "사람과 대화하는 챗봇. 고위험이 아니라 고위험 조항은 비적용이고 투명성 의무(50조)만 걸린다"),
                 ("foundation-llm.cdx.json", {"risk_class": ["minimal_risk", "gpai"], "role": ["provider"]}, "범용 AI 모델 · 기반 LLM",
-                 "범용 AI 모델 제공자. 53조와 부속서 XI·XII 의 모델 문서 항목을 본다. 체계적 위험은 없어 55조는 비적용이다"))
+                 "범용 AI 모델 제공자. 53조와 부속서 XI·XII 의 모델 문서 항목을 본다. 체계적 위험은 없어 55조는 비적용이다. declarations 의 학습 로그 증빙은 유효하고 출처 기록 증빙은 만료라 무효다"),
+                # 같은 세 BOM 의 SPDX 3.0.1 판 (sure_aibom.spdx.convert 로 바꾼 뒤 증빙 관계를 손으로 더한 것). 같은 카드를 SPDX 프로파일로 판정한다
+                ("recruit-screening.spdx.json", {"risk_class": ["high_risk"], "role": ["provider"]}, "고위험 AI 시스템 · 채용 심사 (SPDX)",
+                 "위 채용 심사 BOM 의 SPDX 3.0.1 판. 같은 카드를 SPDX 매핑 프로파일로 판정해 CycloneDX 와 같은 결과가 나온다"),
+                ("support-chatbot.spdx.json", {"risk_class": ["minimal_risk", "limited_risk"], "role": ["provider"]}, "투명성 의무 · 고객 상담 챗봇 (SPDX)",
+                 "위 챗봇 BOM 의 SPDX 3.0.1 판"),
+                ("foundation-llm.spdx.json", {"risk_class": ["minimal_risk", "gpai"], "role": ["provider"]}, "범용 AI 모델 · 기반 LLM (SPDX)",
+                 "위 기반 LLM BOM 의 SPDX 3.0.1 판. 증빙은 hasEvidence·hasTest 관계로 잇고, SPDX 에 자리가 없는 declarations·표준 항목은 자리 없음이라 CycloneDX 보다 반영이 적다"))
 HAND_MADE = "채용 심사 AI 를 가정해 손으로 만든 작은 BOM"
 
 
@@ -125,6 +133,7 @@ def cards():
     with open(os.path.join(out, "vocabulary.json"), "w", encoding="utf-8") as fh:
         json.dump(voc, fh, ensure_ascii=False, indent=1)
     shutil.copy(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"), os.path.join(out, "profile.json"))
+    shutil.copy(os.path.join(CARDS, "profiles", "aibom-spdx.json"), os.path.join(out, "profile-spdx.json"))     # SPDX 문서를 판정할 때 쓰는 프로파일
     # 예제 BOM. 화면이 브라우저 안에서 판정하므로(cards.js 의 judgeBom) 판정 기록이 아니라 BOM 자체를 둔다. 시스템 프로파일은 화면의 기본값
     index = []
     boms = os.path.join(out, "boms"); os.makedirs(boms, exist_ok=True)
@@ -134,7 +143,7 @@ def cards():
     if os.path.isdir(old):
         shutil.rmtree(old)
     bom_paths = [(os.path.join(CARDS, "judge", "examples", n), system, label, note) for n, system, label, note in EXAMPLE_BOMS]
-    profile = J.load_profile(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"))
+    profiles = {fmt: J.load_profile(os.path.join(CARDS, "profiles", name)) for fmt, name in J.DEFAULT_PROFILES.items()}
     for path, system, label, note in bom_paths:
         name = os.path.basename(path)
         if not os.path.exists(path):
@@ -144,10 +153,17 @@ def cards():
         for prop in (bom.get("metadata") or {}).get("properties") or []:
             if prop.get("name") == "aibom:example":
                 prop["value"] = prop["value"].replace("특허 실시예를 흉내 낸 작은 BOM", HAND_MADE)
+        for e in bom.get("@graph") or []:                 # SPDX 판: 설명은 CdxPropertiesExtension 에 들어 있다
+            for x in e.get("extension") or []:
+                for prop in x.get("extension_cdxProperty") or []:
+                    if prop.get("extension_cdxPropName") == "aibom:example" and isinstance(prop.get("extension_cdxPropValue"), str):
+                        prop["extension_cdxPropValue"] = prop["extension_cdxPropValue"].replace("특허 실시예를 흉내 낸 작은 BOM", HAND_MADE)
         with open(os.path.join(boms, name), "w", encoding="utf-8") as fh:
             json.dump(bom, fh, ensure_ascii=False, indent=1)
-        record = J.judge(bom, shown, profile, system)      # 파이썬 엔진의 결과를 같이 적어 둔다 (화면과 맞는지 보는 기준)
-        index.append({"file": name, "subject": record["bom"]["subject"], **({"label": label} if label else {}), "note": note,
+        fmt = "SPDX" if J.is_spdx(bom) else "CycloneDX"
+        J.load_profile(os.path.join(CARDS, "profiles", J.DEFAULT_PROFILES[fmt]))        # 엔진의 전역(SPDX 클래스 상속, 조건 변환식)을 이 형식으로
+        record = J.judge(bom, shown, profiles[fmt], system)      # 파이썬 엔진의 결과를 같이 적어 둔다 (화면과 맞는지 보는 기준)
+        index.append({"file": name, "format": fmt, "subject": record["bom"]["subject"], **({"label": label} if label else {}), "note": note,
                       "size": os.path.getsize(os.path.join(boms, name)), "system_profile": system, "engine_summary": record["summary"]})
     with open(os.path.join(boms, "index.json"), "w", encoding="utf-8") as fh:
         json.dump(index, fh, ensure_ascii=False, indent=1)

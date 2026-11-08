@@ -5,14 +5,21 @@ const root = document.querySelector(".card-viewer");
 const BASE = root.dataset.base || "data/cards/";
 const REG_NAME = {EUAIA: "EU AI Act", NISTRMF: "NIST AI RMF", ISO42001: "ISO/IEC 42001"};
 const VERDICTS = ["반영", "부분 반영", "미반영", "검토 필요", "비적용"];
-const STATUS_KO = {present: "있음", partial: "부분 대응", missing: "비어 있음", gap: "자리 없음", not_required: "요구 안 됨", unknown: "판단 못 함"};
-const MARK_CLS = {present: "", partial: "partial", missing: "missing", gap: "missing", not_required: "muted", unknown: "muted"};      // 원문 구절의 색
+const STATUS_KO = {present: "있음", partial: "부분 대응", missing: "비어 있음", gap: "자리 없음", not_required: "요구 안 됨", unknown: "판단 못 함", optional: "해당 시 필요"};
+const OPTIONAL_REASON = "해당 시 필요한 사실(where applicable)인데 값이 없어 해당 여부를 BOM 으로 판단할 수 없음";
+const EV_STATUS_KO = {present: "있음", invalid: "무효", missing: "없음", unknown: "조회식 없음"};      // 증빙 종류 하나의 상태
+const EV_CLS = {present: "present", invalid: "missing", missing: "missing", unknown: "unknown"};
+const MARK_CLS = {present: "", partial: "partial", missing: "missing", gap: "missing", not_required: "muted", unknown: "muted", optional: "muted"};      // 원문 구절의 색
 const $ = (sel) => root.querySelector(sel);
 const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;"}[c]));
 const regOf = (id) => REG_NAME[id.split("-")[1]] || id.split("-")[1];
 const vclass = (v) => "v-" + v.replace(/\s/g, "");
 let cards = [], cardById = {}, vocab = {}, profile = {}, targets = {}, examples = [];
 let pending = new Set(), partial = {}, profileApproved = true;      // 승인 안 된 줄, 부분 대응 줄(개념 → 이유), 프로파일 승인 여부
+let evidenceSpec = {}, evidenceKinds = {};        // 프로파일의 증빙 조회식(evidence.kinds), 어휘의 증빙 종류(evidence_kinds)
+let truth = {}, classParents = {};                // 조건 변환식(줄의 truth), SPDX 클래스 → 조상 (SPDX 프로파일의 class_parents)
+const PROFILES = {};                              // 형식 → 읽어 둔 프로파일 (CycloneDX: profile.json, SPDX: profile-spdx.json). judgeBom 이 문서 형식에 맞는 것을 켠다
+const isSpdx = (bom) => Boolean(bom) && typeof bom === "object" && Array.isArray(bom["@graph"]);
 const KIND_KO = {system: "시스템", model: "모델", dataset: "데이터셋", software: "소프트웨어"};
 let currentBom = null, currentName = "", currentSize = 0;      // 지금 판정하는 BOM. 올린 것이든 예제든 브라우저 안에서 판정한다 (프로파일을 바꾸면 다시)
 let regSel = new Set(Object.keys(REG_NAME)), verdictSel = new Set(VERDICTS);   // 목록 거르기: 고른 규제들과 고른 판정들 (처음엔 모두 켜져 있고, 집계 칩을 누르면 끄고 켠다)
@@ -20,19 +27,32 @@ let regSel = new Set(Object.keys(REG_NAME)), verdictSel = new Set(VERDICTS);   /
 async function load(name) { const r = await fetch(BASE + name); if (!r.ok) throw new Error(name); return r.json(); }
 
 async function init() {
-  const [c, v, p, ex, src] = await Promise.all([load("cards.json"), load("vocabulary.json"), load("profile.json"), load("boms/index.json").catch(() => []), load("source.json").catch(() => ({}))]);
+  const [c, v, p, ps, ex, src] = await Promise.all([load("cards.json"), load("vocabulary.json"), load("profile.json"), load("profile-spdx.json").catch(() => null), load("boms/index.json").catch(() => []), load("source.json").catch(() => ({}))]);
   cards = c; cardById = Object.fromEntries(c.map((x) => [x.card_id, x])); vocab = Object.fromEntries(v.concepts.map((x) => [x.id, x])); examples = ex;
+  evidenceKinds = Object.fromEntries((v.evidence_kinds || []).map((x) => [x.id, x]));
   if (src.cards === "gold") { const n = document.createElement("p"); n.className = "cv-note"; n.textContent = "지금 판정에 쓰는 카드는 요구사항 표에서 변환한 정답 카드(cards/gold)입니다. 승인한 카드가 생기면 그것으로 바뀝니다."; root.prepend(n); }
-  targets = p.targets || {};                          // fact 의 target(대상 구성요소 종류)을 BOM 에서 찾는 법
-  profileApproved = p.status === "approved";
-  for (const line of p.lines) {                       // 개념별 줄: concept → {cdx: [...], spdx: [...]}
-    const e = (profile[line.concept] ||= {cdx: [], spdx: []});
-    for (const x of [line.cdx_path, ...(line.cdx_paths_more || [])]) if (x && !e.cdx.includes(x)) e.cdx.push(x);
-    for (const x of [line.spdx_path, ...(line.spdx_paths_more || [])]) if (x && !e.spdx.includes(x)) e.spdx.push(x);
-    if (line.status === "pending_review") pending.add(line.concept);
-    if (line.fit === "partial") partial[line.concept] = line.fit_note || "부분 대응 (경로의 대상 범위 또는 표현 형태가 요구와 다름)";
-  }
+  PROFILES.CycloneDX = buildProfile(p, "cdx_path", "cdx_paths_more");
+  if (ps) PROFILES.SPDX = buildProfile(ps, "spdx_path", "spdx_paths_more");
+  activateProfile("CycloneDX");
   initJudgment();
+}
+// 프로파일 파일 하나 → 판정이 쓰는 모양. 줄의 경로 열은 형식마다 다르다 (CycloneDX 는 cdx_path, SPDX 는 spdx_path)
+function buildProfile(p, key, more) {
+  const out = {paths: {}, pending: new Set(), partial: {}, truth: {}, targets: p.targets || {}, evidence: p.evidence || {}, approved: p.status === "approved", classParents: p.class_parents || {}, meta: {profile_id: p.profile_id, profile_version: p.profile_version, format: p.schema?.format || "CycloneDX"}};
+  for (const line of p.lines) {
+    const list = (out.paths[line.concept] ||= []);
+    for (const x of [line[key], ...(line[more] || [])]) if (x && !list.includes(x)) list.push(x);
+    if (line.status === "pending_review") out.pending.add(line.concept);
+    if (line.fit === "partial") out.partial[line.concept] = line.fit_note || "부분 대응 (경로의 대상 범위 또는 표현 형태가 요구와 다름)";
+    if (line.truth) out.truth[line.concept] = line.truth;
+  }
+  return out;
+}
+function activateProfile(fmt) {                       // judgeBom 이 문서 형식에 맞는 프로파일을 켠다 (judge.py 의 load_profile 자리)
+  const p = PROFILES[fmt]; if (!p) throw new Error(`${fmt} 프로파일이 없습니다`);
+  profile = Object.fromEntries(Object.entries(p.paths).map(([k, v]) => [k, {cdx: v}]));     // 아래 코드는 profile[k].cdx 를 "이 형식의 경로" 로 쓴다
+  pending = p.pending; partial = p.partial; truth = p.truth; targets = p.targets; evidenceSpec = p.evidence; profileApproved = p.approved; classParents = p.classParents;
+  return p;
 }
 
 // ---------- 공통 ----------
@@ -41,6 +61,7 @@ function regChecks(el, onChange) {                    // 규제 고르기: 체�
   el.querySelectorAll("input").forEach((b) => b.addEventListener("change", () => { if (b.checked) regSel.add(b.value); else regSel.delete(b.value); onChange(); }));
 }
 function label(concept) { return vocab[concept]?.label_ko || concept; }
+function evLabel(kind) { return evidenceKinds[kind]?.label_ko || kind; }
 
 // 원문에 구절을 칠한다. spans: [{text, cls, idx}] . 겹치면 긴 것부터 칠하고 나머지는 건너뛴다.
 function highlightText(text, spans) {
@@ -115,7 +136,8 @@ async function readFile(file) {
   try {
     const bom = JSON.parse(await file.text());
     if (!bom || typeof bom !== "object" || Array.isArray(bom)) throw new Error("JSON 객체가 아닙니다");
-    if (bom.bomFormat !== "CycloneDX") throw new Error("CycloneDX 문서가 아닙니다 (bomFormat 이 " + (bom.bomFormat ? `'${bom.bomFormat}'` : "없음") + ")");
+    if (bom.bomFormat !== "CycloneDX" && !isSpdx(bom)) throw new Error("CycloneDX 문서(bomFormat)도 SPDX 3.0.1 JSON-LD(@graph)도 아닙니다" + (bom.bomFormat ? ` (bomFormat 이 '${bom.bomFormat}')` : ""));
+    if (isSpdx(bom) && !PROFILES.SPDX) throw new Error("SPDX 프로파일이 없어 SPDX 문서는 판정할 수 없습니다");
     useBom(bom, file.name, file.size, null);
   } catch (err) {                                     // 결과 화면에서 떨어뜨린 파일이 잘못됐으면 올리기 화면으로 돌아가 알린다
     $("#cv-main").hidden = true; showBomView(false); $("#cv-upload").hidden = false;
@@ -245,17 +267,36 @@ function renderJudg(r) {
     ${text ? `<div class="cv-text">${highlightText(text, spans)}${ko ? `<span class="cv-trans">${esc(ko)}</span>` : ""}</div>
       <div class="cv-legend"><span class="cv-muted">칠한 구절 = 조항이 요구하는 사실</span><span><i></i>BOM 에 있음</span><span><i class="partial"></i>부분 대응</span><span><i class="missing"></i>비어 있거나 자리 없음</span><span><i class="muted"></i>요구 안 됨 · 판단 못 함</span></div>`
       : `<p class="cv-note">이 규제의 원문은 저작권 때문에 싣지 않습니다. 요구 사실과 필드만 보입니다.</p>`}
-    ${r.conditions ? `<h4>조건</h4><ul>${Object.entries(r.conditions).map(([k, c]) => `<li><code>${esc(k)}</code> ${esc(c.text)} → <b>${!c.evaluated ? "평가 못 함 (조건식 없음)" : c.result === null || c.result === undefined ? "모름 (판단할 정보 없음)" : c.result ? "참" : "거짓"}</b></li>`).join("")}</ul>` : ""}
+    ${r.conditions ? `<h4>조건</h4><ul>${Object.entries(r.conditions).map(([k, c]) => `<li><code>${esc(k)}</code>${c.scope === "card" ? ` <span class="cv-muted">카드 전체</span>` : ""} ${esc(c.text)} → <b>${!c.evaluated ? (c.note ? "설명만 (사실에 걸지 않음)" : "평가 못 함 (조건식 없음)") : c.result === null || c.result === undefined ? "모름 (판단할 정보 없음)" : c.result ? "참" : "거짓"}</b>${c.note ? `<br><span class="cv-muted">${esc(c.note)}</span>` : ""}</li>`).join("")}</ul>` : ""}
+    ${r.exceptions ? `<h4>예외</h4><ul>${Object.entries(r.exceptions).map(([k, e]) => `<li><code>${esc(k)}</code> ${esc(e.text)} → <b>${!e.evaluated ? "평가 못 함 (조건식 없음)" : e.result === null || e.result === undefined ? "모름 (판단할 정보 없음)" : e.result ? "해당 (비적용)" : "해당 없음"}</b>${e.note ? `<br><span class="cv-muted">${esc(e.note)}</span>` : ""}</li>`).join("")}</ul>` : ""}
     <h4>조항이 요구하는 사실 (${facts.length})</h4>
     <table class="cv-facts"><thead><tr><th>상태</th><th>요구 사실</th><th>BOM 필드 · 값이 있는 구성요소</th></tr></thead><tbody>
     ${facts.map((f, i) => { const found = [...new Set(Object.values(f.found_at || {}).flat())]; return `<tr data-idx="${i}"><td><span class="cv-chip ${f.status}">${STATUS_KO[f.status] || f.status}</span>
-      ${f.condition_evaluated === false ? `<br><span class="cv-muted">조건 미평가</span>` : f.condition ? `<br><span class="cv-muted">조건 ${esc(f.condition)}</span>` : ""}</td>
+      ${f.required === "optional" ? `<br><span class="cv-muted">해당 시</span>` : f.condition_evaluated === false ? `<br><span class="cv-muted">조건 미평가</span>` : f.condition ? `<br><span class="cv-muted">조건 ${esc(f.condition)}</span>` : ""}</td>
       <td>${esc(f.label || label(f.concept))}<br><code>${esc(f.concept)}</code>${f.target ? `<br><span class="cv-muted">대상 ${esc(KIND_KO[f.target] || f.target)}</span>` : ""}</td>
       <td>${(f.paths || []).map((p) => `<span class="cv-path">${esc(p)}</span>`).join(" ") || `<span class="cv-muted">${esc(f.reason || "")}</span>`}
       ${found.length ? `<br><span class="cv-muted">값 있음:</span> ${found.map((x) => `<code>${esc(x)}</code>`).join(" ")}` : ""}${targetDetail(f)}</td></tr>`; }).join("")}
     </tbody></table>
-    <p class="cv-note">"비어 있음" 과 "자리 없음" 이 누락이고, 비어 있음의 필드가 채울 자리입니다. "부분 대응" 은 값은 있지만 필드의 대상 범위나 표현 형태가 요구와 달라 부분 반영까지만 갑니다. 조건식(JSON Logic)이 있는 조항은 조건이 거짓이면 그 사실을 "요구 안 됨" 으로 빼고, 조건을 판단할 정보가 BOM 에 없으면(자리 자체가 없음) "판단 못 함" 이라 검토 필요입니다. 대상 구성요소가 정해진 사실은 그 종류의 구성요소마다 보고(조건도 구성요소마다), 값이 빠진 구성요소를 적습니다. 증빙 검사는 아직 없습니다.</p>`;
+    ${(r.evidence || []).length ? `<h4>조항이 요구하는 증빙 (${r.evidence.length})</h4>
+    <table class="cv-facts"><thead><tr><th>상태</th><th>증빙 종류</th><th>BOM 에서 찾은 증빙</th></tr></thead><tbody>
+    ${r.evidence.map((e) => `<tr><td><span class="cv-chip ${EV_CLS[e.status] || ""}">${EV_STATUS_KO[e.status] || e.status}</span></td>
+      <td>${esc(evLabel(e.kind))}<br><code>${esc(e.kind)}</code></td>
+      <td>${e.found?.length ? e.found.map(evidenceFound).join("<br>") : `<span class="cv-muted">${esc(e.reason || "")}</span>`}</td></tr>`).join("")}
+    </tbody></table>` : ""}
+    <p class="cv-note">"비어 있음" 과 "자리 없음" 이 누락이고, 비어 있음의 필드가 채울 자리입니다. "부분 대응" 은 값은 있지만 필드의 대상 범위나 표현 형태가 요구와 달라 부분 반영까지만 갑니다. 조건식(JSON Logic)이 있는 조항은 조건이 거짓이면 그 사실을 "요구 안 됨" 으로 빼고, 조건을 판단할 정보가 BOM 에 없으면(자리 자체가 없음) "판단 못 함" 이라 검토 필요입니다. 대상 구성요소가 정해진 사실은 그 종류의 구성요소마다 보고(조건도 구성요소마다), 값이 빠진 구성요소를 적습니다. "해당 시 필요" 는 where applicable 처럼 해당 여부를 BOM 으로 판단할 수 없는 사실이라, 값이 있으면 세고 없어도 누락으로 세지 않으며 그런 사실만 있는 조항은 검토 필요입니다. 카드 전체에 걸린 조건이 거짓이거나 예외에 해당하면 비적용입니다. 시스템 프로파일 칸(profile.…)을 보는 조건은 칸이 없으면 모름이라 검토 필요이고, 예외는 칸이 없으면 해당 없음입니다. 증빙은 사실 다음에 봅니다. 요구 사실이 다 있어도 증빙이 없거나 무효(만료)이면 부분 반영입니다. 증빙은 구성요소의 externalReferences(종류별 type), declarations 의 주장(claims)이 가리키는 evidence(propertyName aibom:evidence:…), 요구사항(definitions.standards)에 댄 attestations 에서 찾습니다.</p>`;
   wireMarks(d);
+}
+// 찾은 증빙 하나를 한 줄로
+function evidenceFound(f) {
+  const flag = (v) => v ? "있음" : "없음";
+  const bad = f.problems?.length ? ` <span class="cv-chip missing">${esc(f.problems.join(", "))}</span>` : "";
+  if (f.via === "externalReferences") return `<code>${esc(f.on)}</code> externalReferences <b>${esc(f.type)}</b> <span class="cv-path">${esc(f.url || "")}</span> <span class="cv-muted">해시 ${flag(f.hashes)}</span>${bad}`;
+  if (f.via === "externalRef") return `<code>${esc(f.on)}</code> externalRef <b>${esc(f.type)}</b> <span class="cv-path">${esc(f.url || "")}</span>${bad}`;
+  if (f.via === "relationship") return `<code>${esc(f.on)}</code> <b>${esc(f.type)}</b> → <code>${esc(f.ref || "")}</code> <span class="cv-muted">작성 ${f.created || "없음"} · 만료 ${f.expires || "없음"} · 작성자 ${flag(f.author)} · 해시 ${flag(f.hashes)}</span>${bad}`;
+  if (f.via === "affirmation") return `<code>$</code> declarations.affirmation <span class="cv-muted">서명자 ${(f.signatories || []).map(esc).join(", ") || "없음"} · 서명 ${flag(f.signature)}</span>${bad}`;
+  const parts = [`작성 ${f.created || "없음"}`, `만료 ${f.expires || "없음"}`, `작성자 ${flag(f.author)}`, `서명 ${flag(f.signature)}`];
+  if (f.requirement) parts.push(`요구사항 ${f.requirement} 에 댄 입증` + (f.conformance !== null && f.conformance !== undefined ? ` (준수도 ${f.conformance})` : ""));
+  return `<code>${esc(f.on)}</code> declarations <code>${esc(f.ref || "")}</code> <span class="cv-muted">${esc(f.property || "")} · ${parts.map(esc).join(" · ")}</span>${bad}`;
 }
 // 대상 구성요소가 정해진 fact: 구성요소별 조건과 빠진 구성요소
 function targetDetail(f) {
@@ -291,9 +332,8 @@ function applicability(card, system) {
   return ["applies", null];
 }
 function judgeBom(bom, name, system = {}) {
-  const comps = [];
-  if (bom.metadata?.component) comps.push(bom.metadata.component);
-  (function walk(items) { for (const c of items || []) { if (c.type === "machine-learning-model" || c.type === "data") comps.push(c); walk(c.components); } })(bom.components);
+  const spdx = isSpdx(bom);
+  activateProfile(spdx ? "SPDX" : "CycloneDX");
   const isEmpty = (v) => v === null || v === undefined || v === "" || (Array.isArray(v) && !v.length) || (typeof v === "object" && !Array.isArray(v) && !Object.keys(v).length);
   const get = (obj, keys) => {
     if (!keys.length) return isEmpty(obj) ? [] : [obj];
@@ -309,25 +349,59 @@ function judgeBom(bom, name, system = {}) {
     return "absent";
   };
   const tri = (states) => states.includes("value") ? true : states.includes("empty") ? false : null;
-  const lab = (c) => c["bom-ref"] || c.name || "?";
-  const allComps = [];
-  (function walk(items) { for (const c of items || []) { allComps.push(c); walk(c.components); } })(bom.components);
+  // ---- SPDX 3.0.1 JSON-LD (judge.py 의 spdx_* 함수). 요소의 클래스는 type 에서 접두사를 뗀 것이고 조상은 프로파일의 class_parents
+  const graph = spdx ? bom["@graph"].filter((e) => e && typeof e === "object") : [];
+  const byId = Object.fromEntries(graph.filter((e) => e.spdxId || e["@id"]).map((e) => [e.spdxId || e["@id"], e]));
+  const spdxClass = (e) => { const t = e.type || ""; return t.includes("_") ? t.slice(t.indexOf("_") + 1) : t; };
+  const spdxIs = (e, cls) => { const c = spdxClass(e); return c === cls || (classParents[c] || []).includes(cls); };
+  const artifactClass = (cls) => cls === "Artifact" || (classParents[cls] || []).includes("Artifact");
+  const roots = graph.filter((d) => spdxClass(d) === "SpdxDocument").flatMap((d) => (d.rootElement || []).map((r) => byId[r]).filter(Boolean));
+  const spdxLabel = (e) => { const sid = e.spdxId || e["@id"] || ""; return sid.includes("#") ? sid.slice(sid.indexOf("#") + 1) : (sid || e.name || "?"); };
+  const parseSpdx = (path) => { let want = null; if (path.endsWith(")") && path.includes(" (type:")) { const i = path.lastIndexOf(" (type:"); want = path.slice(i + 7, -1); path = path.slice(0, i); } const [cls, ...props] = path.split("."); return [cls, props, want]; };
+  const spdxValues = (start, props, want) => {               // [값들, 상태]. id 문자열은 요소로, '@관계[:클래스]' 는 나가는 Relationship 의 to 요소로
+    let objs = [start];
+    for (const k of props) {
+      const nxt = []; let seen = false;
+      if (k.startsWith("@")) {
+        const [rel, wantCls] = k.slice(1).split(":"); const ids = new Set(objs.filter((o) => o && typeof o === "object" && o.spdxId).map((o) => o.spdxId));
+        for (const r of graph) if (spdxClass(r) === "Relationship" && ids.has(r.from)) { seen = true; if (r.relationshipType === rel) for (const t of r.to || []) { const e = byId[t] ?? t; if (!wantCls || (e && typeof e === "object" && spdxIs(e, wantCls))) nxt.push(e); } }
+        if (!seen) return [[], "absent"]; objs = nxt; continue;
+      }
+      for (let o of objs) {
+        if (typeof o === "string" && o in byId) o = byId[o];
+        if (o && typeof o === "object" && k in o) { seen = true; const v = o[k]; let items = Array.isArray(v) ? v : [v]; if (want && k === "externalRef") items = items.filter((x) => x && typeof x === "object" && x.externalRefType === want); nxt.push(...items); }
+      }
+      if (!seen) return [[], "absent"]; objs = nxt;
+    }
+    const vals = objs.filter((o) => !isEmpty(o)); return [vals, vals.length ? "value" : "empty"];
+  };
+  // ---- 검사 대상 구성요소: CycloneDX 는 metadata.component 와 모델·데이터셋, SPDX 는 루트 요소와 AIPackage·DatasetPackage
+  const comps = [];
+  if (spdx) { comps.push(...roots); for (const e of graph) if (!comps.includes(e) && (spdxIs(e, "AIPackage") || spdxIs(e, "DatasetPackage"))) comps.push(e); }
+  else { if (bom.metadata?.component) comps.push(bom.metadata.component); (function walk(items) { for (const c of items || []) { if (c.type === "machine-learning-model" || c.type === "data") comps.push(c); walk(c.components); } })(bom.components); }
+  const lab = (c) => spdx ? spdxLabel(c) : (c["bom-ref"] || c.name || "?");
+  const allComps = spdx ? graph.filter((e) => spdxIs(e, "Artifact") && !roots.includes(e)) : [];
+  if (!spdx) (function walk(items) { for (const c of items || []) { allComps.push(c); walk(c.components); } })(bom.components);
   const compsOfKind = (kind) => {
     const spec = targets[kind]; if (!spec) throw new Error(`프로파일 targets 에 '${kind}' 가 없다`);
+    if (spdx) { if (spec.root) return roots.slice(); const purposes = spec.purposes || []; return allComps.filter((e) => (spec.classes || []).some((c) => spdxIs(e, c)) && !(spec.exclude_classes || []).some((x) => spdxIs(e, x)) && (!purposes.length || purposes.includes(e.software_primaryPurpose))); }
     if (spec.root) return get(bom, spec.root.split(".")).filter((v) => v && typeof v === "object");
     return allComps.filter((c) => (spec.component_types || []).includes(c.type));
   };
+  const DOC_ROOTS = ["components", "services", "dependencies", "formulation", "declarations", "definitions", "metadata", "compositions"];
   const resolve = (path) => {
+    if (spdx) { const [cls, props, want] = parseSpdx(path); if (artifactClass(cls)) return comps.filter((c) => spdxIs(c, cls) && spdxValues(c, props, want)[0].length).map(lab); return graph.some((e) => spdxIs(e, cls) && spdxValues(e, props, want)[0].length) ? ["$"] : []; }
     if (path.startsWith("component.externalReferences.url (type:")) { const t = path.split("type:")[1].replace(/\)$/, ""); return comps.filter((c) => (c.externalReferences || []).some((e) => e.type === t && e.url)).map(lab); }
     const [rootKey, ...rest] = path.split(".");
     if (rootKey === "component") return comps.filter((c) => get(c, rest).length).map(lab);
     if (rootKey === "componentData") return comps.filter((c) => c.type === "data" && get(c.data, rest).length).map(lab);
     if (rootKey === "releaseNotes") return comps.filter((c) => get(c, ["releaseNotes", ...rest]).length).map(lab);
-    if (["components", "services", "dependencies", "formulation", "declarations", "definitions", "metadata", "compositions"].includes(rootKey)) return get(bom, [rootKey, ...rest]).length ? ["$"] : [];
+    if (DOC_ROOTS.includes(rootKey)) return get(bom, [rootKey, ...rest]).length ? ["$"] : [];
     return [];
   };
   // 구성요소 하나에 그 경로의 값이 있나 (value / empty / absent). 구성요소에 달리지 않는 경로(declarations 등)는 문서에서 본다
   const probeComp = (c, path) => {
+    if (spdx) { const [cls, props, want] = parseSpdx(path); if (!artifactClass(cls)) return resolve(path).length ? "value" : "absent"; if (!spdxIs(c, cls)) return "absent"; return spdxValues(c, props, want)[1]; }
     if (path.startsWith("component.externalReferences.url (type:")) { const t = path.split("type:")[1].replace(/\)$/, ""); const refs = c.externalReferences; if (refs === undefined || refs === null) return "absent"; return refs.some((e) => e.type === t && e.url) ? "value" : "empty"; }
     const [rootKey, ...rest] = path.split(".");
     if (rootKey === "component") return probe(c, rest);
@@ -337,13 +411,32 @@ function judgeBom(bom, name, system = {}) {
     return resolve(path).length ? "value" : "absent";
   };
   const onComp = (c, path) => probeComp(c, path) === "value";
-  // 조건식 변수(개념 id): 문서 단위 참·거짓·모름. target 이 있는 fact 는 구성요소 하나에서 본다
-  const stateInBom = (k) => tri(comps.flatMap((c) => (profile[k]?.cdx || []).map((p) => probeComp(c, p))));
-  const logic = (expr, varOf = stateInBom) => {
+  // 구성요소 하나에 있는 경로의 값들 (조건 변환식·val 용. judge.py 의 component_values)
+  const componentValues = (c, path) => {
+    if (spdx) { const [cls, props, want] = parseSpdx(path); if (!artifactClass(cls)) return graph.filter((e) => spdxIs(e, cls)).flatMap((e) => spdxValues(e, props, want)[0]); return spdxIs(c, cls) ? spdxValues(c, props, want)[0] : []; }
+    if (path.startsWith("component.externalReferences.url (type:")) { const t = path.split("type:")[1].replace(/\)$/, ""); return (c.externalReferences || []).filter((e) => e.type === t && e.url).map((e) => e.url); }
+    const [rootKey, ...rest] = path.split(".");
+    if (rootKey === "component") return get(c, rest);
+    if (rootKey === "componentData") return c.type === "data" ? get(c.data, rest) : [];
+    if (rootKey === "releaseNotes") return get(c, ["releaseNotes", ...rest]);
+    return DOC_ROOTS.includes(rootKey) ? get(bom, [rootKey, ...rest]) : [];
+  };
+  // 조건식 변수(개념 id): 참·거짓·모름. 프로파일 줄에 truth(조건 변환식)가 있으면 값으로(yes/no), 없으면 값의 유무로. target 이 있는 fact 는 구성요소 하나에서 본다
+  // profile. 변수는 시스템 프로파일의 칸 (조건에서는 없으면 모름, 예외에서는 없으면 거짓). val 은 경로의 첫 값 (judge.py 의 first_value)
+  const PROFILE = "profile.";
+  const profileVar = (k, dflt = null) => { const key = k.slice(PROFILE.length); return system && typeof system === "object" && key in system ? system[key] : dflt; };
+  const truthState = (values, rule) => { const vals = values.map(String); if (vals.some((v) => (rule.true || []).includes(v))) return true; if (vals.some((v) => (rule.false || []).includes(v))) return false; return null; };
+  const varState = (k, cs) => { const paths = (profile[k]?.cdx || []).slice().sort(); const rule = truth[k]; if (rule) return truthState(cs.flatMap((c) => paths.flatMap((p) => componentValues(c, p))), rule); return tri(cs.flatMap((c) => paths.map((p) => probeComp(c, p)))); };
+  const stateInBom = (k, dflt = null) => k.startsWith(PROFILE) ? profileVar(k, dflt) : varState(k, comps);
+  const valueOf = (cs) => (k) => { if (k.startsWith(PROFILE)) return profileVar(k); for (const p of (profile[k]?.cdx || []).slice().sort()) for (const c of cs) { const vals = componentValues(c, p); if (vals.length) return vals[0]; } return null; };
+  const valueInBom = valueOf(comps);
+  const logic = (expr, varOf = stateInBom, valOf = valueInBom) => {
     if (expr === null || typeof expr !== "object" || Array.isArray(expr)) return expr;
     const [op, raw] = Object.entries(expr)[0]; const args = Array.isArray(raw) ? raw : [raw];
     if (op === "var") return varOf(args[0]);
-    const v = args.map((a) => logic(a, varOf)), unk = v.some((x) => x === null || x === undefined);
+    if (op === "val") return valOf ? valOf(args[0]) : null;
+    if (op === "missing") return args.every((a) => varOf(a) !== true);      // 변수가 전부 참이 아니면 참 (모름도 없음으로)
+    const v = args.map((a) => logic(a, varOf, valOf)), unk = v.some((x) => x === null || x === undefined);
     switch (op) {
       case "==": return unk ? null : v[0] === v[1]; case "!=": return unk ? null : v[0] !== v[1]; case "!": return unk ? null : !v[0];
       case "and": return v.some((x) => x === false) ? false : unk ? null : true;
@@ -354,14 +447,89 @@ function judgeBom(bom, name, system = {}) {
       default: throw new Error("조건식 연산자를 모른다: " + op);
     }
   };
+  // 증빙 (judge.py 의 find_evidence / judge_evidence). 카드의 evidence[] 종류마다 프로파일 evidence.kinds 의 조회식으로 찾는다
+  const now = Date.now();
+  const past = (ts) => { if (!ts || typeof ts !== "string") return null; const t = Date.parse(ts); return Number.isNaN(t) ? null : t < now; };
+  const idsOf = (c) => new Set([c.card_id, c.source?.clause_id, c.source?.parent_clause_id].filter(Boolean));
+  const declared = (e, via, on, extra = {}) => { const expired = past(e.expires) === true, a = e.author;
+    return {via, on, ref: e["bom-ref"], property: e.propertyName, created: e.created ?? null, expires: e.expires ?? null, author: a && typeof a === "object" ? Boolean(a.name || a.email) : Boolean(a),
+            signature: Boolean(e.signature), data: (e.data || []).length, valid: !expired, problems: expired ? [`만료 (${e.expires})`] : [], ...extra}; };
+  const findEvidence = (c, spec) => {
+    let cs = comps;
+    if (spec.target) { const kc = compsOfKind(spec.target); cs = kc.filter((x) => comps.includes(x)); if (!cs.length) cs = kc; }     // 특정 종류의 구성요소에만 (DATASHEET 는 데이터셋)
+    const found = [];
+    if (spdx) {                                                // SPDX: 요소의 externalRef 와 요소에서 나가는 Relationship 의 to 요소
+      const ids = new Set(cs.map((x) => x.spdxId).filter(Boolean)), rtypes = new Set(spec.external_ref_types || []), reltypes = new Set(spec.relationship_types || []);
+      for (const x of cs) for (const e of x.externalRef || []) if (e && typeof e === "object" && rtypes.has(e.externalRefType)) { const loc = e.locator || []; found.push({via: "externalRef", on: spdxLabel(x), type: e.externalRefType, url: loc[0] ?? null, hashes: false, valid: loc.length > 0, problems: loc.length ? [] : ["locator 없음"]}); }
+      for (const r of graph) {
+        if (spdxClass(r) !== "Relationship" || !reltypes.has(r.relationshipType) || !ids.has(r.from)) continue;
+        for (const to of r.to || []) {
+          const e = byId[to]; if (!e) continue;
+          const ci = typeof e.creationInfo === "string" ? (byId[e.creationInfo] || {}) : (e.creationInfo || {});
+          const expired = past(e.validUntilTime) === true;
+          found.push({via: "relationship", on: spdxLabel(byId[r.from] || {}), type: r.relationshipType, ref: spdxLabel(e), created: ci.created ?? null, expires: e.validUntilTime ?? null, author: Boolean(ci.createdBy && ci.createdBy.length), signature: false, hashes: Boolean(e.verifiedUsing && e.verifiedUsing.length), valid: !expired, problems: expired ? [`만료 (${e.validUntilTime})`] : []});
+        }
+      }
+      return found;
+    }
+    const refs = new Set(cs.map((x) => x["bom-ref"]).filter(Boolean)), types = new Set(spec.external_reference_types || []);
+    for (const x of cs) for (const e of x.externalReferences || []) if (types.has(e.type)) found.push({via: "externalReferences", on: lab(x), type: e.type, url: e.url, hashes: Boolean(e.hashes), valid: Boolean(e.url), problems: e.url ? [] : ["url 없음"]});
+    const decl = bom.declarations || {}, evByRef = Object.fromEntries((decl.evidence || []).filter((e) => e && typeof e === "object" && e["bom-ref"]).map((e) => [e["bom-ref"], e]));
+    const claims = (decl.claims || []).filter((x) => x && typeof x === "object");
+    for (const cl of claims) { if (!refs.has(cl.target)) continue; for (const ref of cl.evidence || []) { const e = evByRef[ref]; if (e && spec.property && e.propertyName === spec.property) found.push(declared(e, "declarations", cl.target, {claim: cl["bom-ref"]})); } }
+    const wanted = idsOf(c), reqs = {};
+    for (const s of bom.definitions?.standards || []) for (const rq of s.requirements || []) if (rq && typeof rq === "object" && rq["bom-ref"]) reqs[rq["bom-ref"]] = rq;
+    const claimsByRef = Object.fromEntries(claims.filter((x) => x["bom-ref"]).map((x) => [x["bom-ref"], x])), seen = new Set(found.map((f) => f.ref).filter(Boolean));
+    for (const att of decl.attestations || []) for (const m of att.map || []) {
+      const rq = reqs[m.requirement]; if (!rq || !wanted.has(rq.identifier)) continue;
+      for (const cref of m.claims || []) { const cl = claimsByRef[cref] || {}; for (const ref of cl.evidence || []) { const e = evByRef[ref]; if (e && !seen.has(ref)) { seen.add(ref); found.push(declared(e, "attestations", cl.target || "$", {requirement: rq.identifier, conformance: m.conformance?.score ?? null})); } } }
+    }
+    const aff = decl.affirmation || {};
+    if (spec.affirmation && aff.statement) { const sg = (aff.signatories || []).filter((s) => s && typeof s === "object"); found.push({via: "affirmation", on: "$", signatories: sg.map((s) => s.name).slice(0, 10), signature: sg.some((s) => s.signature), valid: true, problems: []}); }
+    return found;
+  };
+  const judgeEvidence = (c) => (c.evidence || []).map((ev) => {
+    const spec = (evidenceSpec.kinds || {})[ev.concept], entry = {kind: ev.concept, label: ev.label};
+    if (!spec) return {...entry, status: "unknown", found: [], reason: "프로파일에 이 증빙 종류의 조회식이 없음"};
+    const found = findEvidence(c, spec), valid = found.filter((f) => f.valid), status = valid.length ? "present" : found.length ? "invalid" : "missing";
+    const out = {...entry, status, found: found.slice(0, 10)};
+    if (status === "invalid") out.reason = "찾은 증빙이 전부 무효: " + found.slice(0, 10).map((f) => `${f.ref || f.url || f.via} ${f.problems.join(", ")}`).join("; ");
+    else if (status === "missing") { const where = []; if (spec.external_reference_types?.length) where.push(`externalReferences type ${spec.external_reference_types.join("/")}`); if (spec.property) where.push(`declarations.claims → evidence (propertyName ${spec.property})`); if (spec.external_ref_types?.length) where.push(`externalRef externalRefType ${spec.external_ref_types.join("/")}`); if (spec.relationship_types?.length) where.push(`Relationship ${spec.relationship_types.join("/")} 의 to 요소`); out.reason = "증빙 없음. 둘 자리: " + where.join(" 또는 "); }
+    return out;
+  });
+  // 카드 단위 조건(scope card)과 예외 (judge.py 의 evaluate_gates): 조건이 거짓이면 비적용, 모름이면 검토 필요. 예외가 참이면 비적용, 모름이면 검토 필요
+  const evaluateGates = (c) => {
+    const conditions = {}, exceptions = {}, notApplies = [], unknown = [];
+    for (const cond of c.conditions || []) {
+      const rec = {text: cond.text, scope: cond.scope || "fact", evaluated: Boolean(cond.expr), result: null};
+      if (cond.note) rec.note = cond.note;
+      if (cond.expr) {
+        try { rec.result = logic(cond.expr); } catch (e) { rec.error = e.message; }
+        if (cond.scope === "card") {
+          if (rec.result === false) notApplies.push(`조건 ${cond.id} 에 해당하지 않음: ${cond.text}`);
+          else if (rec.result === null || rec.result === undefined) unknown.push(`조건 ${cond.id} 을 판단할 정보가 없음: ${cond.text}` + (rec.error ? ` (${rec.error})` : ""));
+        }
+      }
+      conditions[cond.id] = rec;
+    }
+    (c.exceptions || []).forEach((ex, i) => {
+      const eid = ex.id || `E${i + 1}`, rec = {text: ex.text, evaluated: Boolean(ex.expr), result: null};
+      if (ex.note) rec.note = ex.note;
+      if (ex.expr) {
+        try { rec.result = logic(ex.expr, (k) => stateInBom(k, false)); } catch (e) { rec.error = e.message; }
+        if (rec.result === true) notApplies.push(`예외 ${eid} 에 해당: ${ex.text}`);
+        else if (rec.result === null || rec.result === undefined) unknown.push(`예외 ${eid} 을 판단할 정보가 없음: ${ex.text}` + (rec.error ? ` (${rec.error})` : ""));
+      }
+      exceptions[eid] = rec;
+    });
+    return {conditions, exceptions, notApplies: notApplies.join("; ") || null, gateUnknown: unknown.join("; ") || null};
+  };
   const results = cards.map((c) => {
     const [applies, whyApplies] = applicability(c, system);
     if (applies === "not_applies") return {card_id: c.card_id, verdict: "비적용", reason: whyApplies, facts: []};
-    const conditions = {};
-    for (const cond of c.conditions || []) {
-      if (cond.expr) { try { conditions[cond.id] = {text: cond.text, evaluated: true, result: logic(cond.expr)}; } catch (e) { conditions[cond.id] = {text: cond.text, evaluated: true, result: null, error: e.message}; } }
-      else conditions[cond.id] = {text: cond.text, evaluated: false, result: null};
-    }
+    const {conditions, exceptions, notApplies, gateUnknown} = evaluateGates(c);
+    const extra = {...(Object.keys(conditions).length ? {conditions} : {}), ...(Object.keys(exceptions).length ? {exceptions} : {})};
+    if (notApplies) return {card_id: c.card_id, verdict: "비적용", reason: notApplies, facts: [], ...extra};
     const byId = Object.fromEntries((c.conditions || []).map((x) => [x.id, x]));
     const onTargets = (f, paths, entry) => {            // judge.py 의 judge_on_targets
       const kind = f.target, kcomps = compsOfKind(kind);
@@ -370,7 +538,7 @@ function judgeBom(bom, name, system = {}) {
         const expr = byId[f.condition]?.expr;
         entry.condition = f.condition; entry.condition_evaluated = expr !== undefined && expr !== null;
         if (entry.condition_evaluated) {
-          const vals = kcomps.map((x) => { try { return [x, logic(expr, (k) => tri((profile[k]?.cdx || []).map((p) => probeComp(x, p))))]; } catch (e) { return [x, null]; } });
+          const vals = kcomps.map((x) => { try { return [x, logic(expr, (k) => k.startsWith(PROFILE) ? profileVar(k) : varState(k, [x]), valueOf([x]))]; } catch (e) { return [x, null]; } });
           entry.condition_on = Object.fromEntries(vals.map(([x, v]) => [lab(x), v]));
           const unknown = vals.filter(([, v]) => v === null || v === undefined).map(([x]) => x);
           if (unknown.length) return {...entry, status: "unknown", paths, reason: `조건 ${f.condition} 을 판단할 정보가 없는 ${KIND_KO[kind]} 구성요소: ${unknown.slice(0, 10).map(lab).join(", ")} (${byId[f.condition]?.text})`};
@@ -385,6 +553,7 @@ function judgeBom(bom, name, system = {}) {
       const have = required.filter((x) => paths.some((p) => onComp(x, p))), missing = required.filter((x) => !have.includes(x));
       const found = {}; for (const p of paths) { const refs = have.filter((x) => onComp(x, p)).map(lab).slice(0, 10); if (refs.length) found[p] = refs; }
       const status = missing.length ? "missing" : partial[f.concept] ? "partial" : "present";
+      if (missing.length && f.required === "optional") return {...entry, status: "optional", paths, found_at: found, missing_on: missing.map(lab).slice(0, 10), missing_count: missing.length, reason: OPTIONAL_REASON};   // 해당 시 필요: 누락이 아니라 판단 보류
       const out = {...entry, status, paths, found_at: found};
       if (missing.length) Object.assign(out, {missing_on: missing.map(lab).slice(0, 10), missing_count: missing.length, reason: `요구되는 ${KIND_KO[kind]} 구성요소 ${required.length}개 중 ${missing.length}개에 값이 없음`});
       else if (status === "partial") out.reason = partial[f.concept];
@@ -403,22 +572,34 @@ function judgeBom(bom, name, system = {}) {
       if (pending.has(f.concept)) return {...entry, status: "unknown", paths, reason: "매핑이 승인되지 않음 (프로파일 줄이 pending_review)"};
       if (!paths.length) return {...entry, status: "gap", paths: [], reason: "프로파일에 경로 없음 (스키마에 자리 없음)"};
       const found = {}; for (const p of paths) { const refs = resolve(p); if (refs.length) found[p] = refs.slice(0, 5); }
-      const status = !Object.keys(found).length ? "missing" : partial[f.concept] ? "partial" : "present";
-      return {...entry, status, paths, found_at: found, ...(status === "partial" ? {reason: partial[f.concept]} : {})};
+      const hit = Object.keys(found).length > 0;
+      const status = !hit && f.required === "optional" ? "optional" : !hit ? "missing" : partial[f.concept] ? "partial" : "present";
+      return {...entry, status, paths, found_at: found, ...(status === "partial" ? {reason: partial[f.concept]} : status === "optional" ? {reason: OPTIONAL_REASON} : {})};
     });
-    const required = facts.filter((f) => f.status !== "not_required"), unknown = required.filter((f) => f.status === "unknown");
+    const evidence = judgeEvidence(c), evUnknown = evidence.filter((e) => e.status === "unknown"), evLacking = evidence.filter((e) => e.status === "missing" || e.status === "invalid");   // 증빙은 사실 다음
+    const required = facts.filter((f) => f.status !== "not_required" && f.status !== "optional"), unknown = required.filter((f) => f.status === "unknown");
+    const optionalAbsent = facts.filter((f) => f.status === "optional");
     let verdict, reason;
     if (applies === "unknown") { verdict = "검토 필요"; reason = whyApplies; }
+    else if (gateUnknown) { verdict = "검토 필요"; reason = gateUnknown; }
     else if (!profileApproved) { verdict = "검토 필요"; reason = "매핑 프로파일이 승인되지 않음"; }
     else if (unknown.length) { verdict = "검토 필요"; reason = unknown.map((f) => `${f.concept}: ${f.reason}`).join("; "); }
+    else if (evUnknown.length) { verdict = "검토 필요"; reason = evUnknown.map((e) => `증빙 ${e.kind}: ${e.reason}`).join("; "); }
+    else if (!required.length && optionalAbsent.length) { verdict = "검토 필요"; reason = "해당 시 필요한 사실만 있는데 값이 없어 해당 여부를 판단할 수 없음: " + optionalAbsent.map((f) => f.concept).join(", "); }
     else if (!required.length) { verdict = "반영"; reason = "요구되는 사실이 없음 (조건이 모두 거짓)"; }
-    else if (required.every((f) => f.status === "present")) verdict = "반영";
+    else if (required.every((f) => f.status === "present")) {
+      if (evLacking.length) { verdict = "부분 반영"; reason = "사실은 다 있으나 증빙이 " + evLacking.map((e) => `${e.kind} ${e.status === "invalid" ? "무효" : "없음"}`).join(", "); }   // 특허: 항목은 있으나 증빙 검증에 실패
+      else verdict = "반영";
+    }
     else if (required.every((f) => f.status === "missing" || f.status === "gap")) verdict = "미반영";
     else verdict = "부분 반영";
-    return {card_id: c.card_id, verdict, ...(reason ? {reason} : {}), facts, ...(Object.keys(conditions).length ? {conditions} : {})};
+    return {card_id: c.card_id, verdict, ...(reason ? {reason} : {}), facts, ...extra, ...(evidence.length ? {evidence} : {})};
   });
   const summary = Object.fromEntries(VERDICTS.map((v) => [v, results.filter((r) => r.verdict === v).length]));
-  return {bom: {bomFormat: bom.bomFormat, specVersion: bom.specVersion, serialNumber: bom.serialNumber, subject: bom.metadata?.component?.name || name}, system_profile: system, summary, cards: results};
+  const sdoc = spdx ? (graph.find((e) => spdxClass(e) === "SpdxDocument") || {}) : null;
+  const info = spdx ? {bomFormat: "SPDX", specVersion: (typeof sdoc.creationInfo === "string" ? byId[sdoc.creationInfo] : sdoc.creationInfo)?.specVersion ?? null, serialNumber: (sdoc.spdxId || "").split("#")[0] || null, subject: roots[0]?.name || sdoc.name || name}
+    : {bomFormat: bom.bomFormat, specVersion: bom.specVersion, serialNumber: bom.serialNumber, subject: bom.metadata?.component?.name || name};
+  return {bom: info, system_profile: system, summary, cards: results};
 }
 
 init().catch((err) => { root.innerHTML = `<p class="cv-muted">데이터를 읽지 못했습니다: ${esc(err.message)}</p>`; });
