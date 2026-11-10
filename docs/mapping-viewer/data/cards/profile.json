@@ -435,12 +435,12 @@
     {
       "concept": "DATASETS",
       "cdx_path": "component.modelCard.modelParameters.datasets",
-      "spdx_path": "Relationship.relationshipType",
+      "spdx_path": "AIPackage.@trainedOn",
       "spec": "1.7",
       "coverage": "관계",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 5장이 씀)",
+      "note": "요구사항 표에서 (카드 5장이 씀) | SPDX 보정: 표의 Relationship.relationshipType(어떤 관계든 있으면 참)은 느슨해 모델에서 데이터셋으로 가는 관계로 좁혔다 (sure-aibom 은 모델 카드 datasets 를 dependsOn 으로, 학습 사실이 있으면 trainedOn 으로 낸다)",
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
@@ -462,6 +462,10 @@
           "card_id": "RC-NISTRMF-MEASURE-2.1",
           "card_version": 1
         }
+      ],
+      "spdx_paths_more": [
+        "AIPackage.@testedOn",
+        "AIPackage.@dependsOn:DatasetPackage"
       ]
     },
     {
@@ -651,28 +655,32 @@
     {
       "concept": "PEDIGREE",
       "cdx_path": "component.pedigree",
-      "spdx_path": "Relationship",
+      "spdx_path": "Package.@descendantOf",
       "spec": "1.7",
       "coverage": "관계",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)",
+      "note": "요구사항 표에서 (카드 1장이 씀) | SPDX 보정: 표의 Relationship(관계가 있으면 참)을 계보 관계로 좁혔다",
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-a",
           "card_version": 2
         }
+      ],
+      "spdx_paths_more": [
+        "Package.@ancestorOf",
+        "Package.@hasVariant"
       ]
     },
     {
       "concept": "DEPENDENCIES",
       "cdx_path": "dependencies",
-      "spdx_path": "Relationship",
+      "spdx_path": "Package.@dependsOn",
       "spec": "1.7",
       "coverage": "관계",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 2장이 씀)",
+      "note": "요구사항 표에서 (카드 2장이 씀) | SPDX 보정: 표의 Relationship 을 dependsOn 으로 좁혔다",
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-c",
@@ -682,7 +690,8 @@
           "card_id": "RC-EUAIA-Annex-XI-2-3",
           "card_version": 1
         }
-      ]
+      ],
+      "spdx_paths_more": []
     },
     {
       "concept": "WORKFLOWS_TASKS",
@@ -1091,7 +1100,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 2장이 씀)",
+      "note": "요구사항 표에서 (카드 2장이 씀) | SPDX 보정: 표에는 자리 없음이었으나 SPDX 는 라이선스를 관계(hasDeclaredLicense → LicenseExpression)로 적는다",
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-1-1-b",
@@ -1109,6 +1118,10 @@
           "card_id": "RC-EUAIA-Annex-XII-1-h",
           "card_version": 2
         }
+      ],
+      "spdx_path": "Package.@hasDeclaredLicense",
+      "spdx_paths_more": [
+        "Package.@hasConcludedLicense"
       ]
     },
     {
@@ -2909,34 +2922,38 @@
     {
       "concept": "FORMULATION_COMPONENTS",
       "cdx_path": "formulation.components",
-      "spdx_path": "Relationship.relationshipType",
+      "spdx_path": "Build.@hasInput",
       "spec": "1.7",
       "coverage": "관계",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)",
+      "note": "요구사항 표에서 (카드 1장이 씀) | SPDX 보정: 표의 Relationship.relationshipType 을 Build 의 입력·도구 관계로 좁혔다",
       "used_by": [
         {
           "card_id": "RC-ISO42001-A.4.4",
           "card_version": 1
         }
+      ],
+      "spdx_paths_more": [
+        "Build.@usesTool"
       ]
     },
     {
       "concept": "FORMULATION_SERVICES",
       "cdx_path": "formulation.services",
-      "spdx_path": "Relationship.relationshipType",
+      "spdx_path": null,
       "spec": "1.7",
       "coverage": "관계",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀)",
+      "note": "요구사항 표에서 (카드 1장이 씀) | SPDX 보정: SPDX 에는 서비스 클래스가 없다 (표의 Relationship.relationshipType 은 느슨해 뺐다)",
       "used_by": [
         {
           "card_id": "RC-ISO42001-A.4.4",
           "card_version": 1
         }
-      ]
+      ],
+      "spdx_paths_more": []
     },
     {
       "concept": "METADATA_MANUFACTURER",

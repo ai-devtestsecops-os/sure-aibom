@@ -5213,7 +5213,7 @@
    },
    {
     "concept": "TRAINING_TIME",
-    "label": "모델 훈련 연산자원",
+    "label": "훈련 시간",
     "clause": "(d)",
     "highlight": "훈련 시간",
     "highlight_en": "training time",
@@ -7173,7 +7173,7 @@
    },
    {
     "concept": "KNOWN_GAPS_MITIGATION_STRATEGY",
-    "label": "데이터 공백·결함",
+    "label": "데이터 공백·결함 해결 방법",
     "clause": "(h)",
     "highlight": "그러한 공백과 결함을 해결할 수 있는 방법",
     "highlight_en": "how those gaps and shortcomings can be addressed",

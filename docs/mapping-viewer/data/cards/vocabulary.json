@@ -660,7 +660,7 @@
   },
   {
    "id": "KNOWN_GAPS_MITIGATION_STRATEGY",
-   "label_ko": "데이터 공백·결함",
+   "label_ko": "데이터 공백·결함 해결 방법",
    "aliases": [],
    "gap": false,
    "synonyms": [
@@ -1219,7 +1219,7 @@
   },
   {
    "id": "TRAINING_TIME",
-   "label_ko": "모델 훈련 연산자원",
+   "label_ko": "훈련 시간",
    "aliases": [],
    "gap": false,
    "synonyms": [
