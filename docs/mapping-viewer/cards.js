@@ -312,9 +312,13 @@ function targetDetail(f) {
 // fact 에 target 이 있으면 프로파일의 targets 로 그 종류의 구성요소를 찾아 하나씩 본다 (조건도 구성요소마다).
 // 조건 변수는 값이 있으면 참, 자리는 있는데 비면 거짓, 자리 자체가 없으면 모름(null)이고, 모름이면 그 사실은 unknown 이라 카드가 검토 필요다.
 // 카드가 이 시스템에 적용되나 (judge.py 의 applicability): "applies" / "not_applies" / "unknown". 카드의 risk_class 가 any 면 위험등급을 안 보고,
-// 주체가 organisation(NIST·ISO)이나 operator(제공자·배포자·수입자·유통자를 묶는 말)면 역할을 안 본다. 보는 칸이 프로파일에 없으면 unknown (검토 필요).
+// 주체(obligation.actor)는 역할 목록이라 시스템의 역할과 하나라도 겹치면 맞다 (4조 "Providers and deployers" 는 제공자든 배포자든).
+// 주체가 organisation(NIST·ISO)이면 역할을 안 본다. 예전 카드의 문자열 하나와 operator(모든 운영자 = 다섯 역할 전부)도 목록으로 읽는다.
+// 보는 칸이 프로파일에 없으면 unknown (검토 필요).
+const EU_ROLES = ["provider", "deployer", "importer", "distributor", "authorised_representative"];
+const actorsOf = (card) => [...new Set(asList(card.obligation?.actor).flatMap((a) => a === "operator" ? EU_ROLES : a === "any" ? ["organisation"] : [a]))];
 function applicability(card, system) {
-  const wanted = new Set(card.applicability?.risk_class || ["any"]), actor = card.obligation?.actor || "organisation";
+  const wanted = new Set(card.applicability?.risk_class || ["any"]), actors = actorsOf(card).length ? actorsOf(card) : ["organisation"];
   const missing = [], mismatch = [];
   if (!wanted.has("any")) {
     const have = new Set(Array.isArray(system.risk_class) ? system.risk_class : system.risk_class ? [system.risk_class] : []);
@@ -322,10 +326,10 @@ function applicability(card, system) {
     if (!have.size) missing.push("위험등급(risk_class)");
     else if (![...wanted].some((x) => have.has(x))) mismatch.push(`카드의 위험등급 ${[...wanted].sort().join(", ")} 과 시스템의 ${[...have].sort().join(", ")} 이 안 맞음`);
   }
-  if (actor !== "organisation" && actor !== "operator") {      // 역할은 목록 (제공자이면서 배포자일 수 있다)
+  if (!actors.includes("organisation")) {      // 시스템의 역할도 목록 (제공자이면서 배포자일 수 있다)
     const roles = Array.isArray(system.role) ? system.role : system.role ? [system.role] : [];
     if (!roles.length) missing.push("역할(role)");
-    else if (!roles.includes(actor)) mismatch.push(`카드의 주체 ${actor} 가 시스템의 역할 ${[...roles].sort().join(", ")} 에 없음`);
+    else if (!actors.some((a) => roles.includes(a))) mismatch.push(`카드의 주체 ${actors.join(", ")} 가운데 시스템의 역할 ${[...roles].sort().join(", ")} 에 있는 것이 없음`);
   }
   if (mismatch.length) return ["not_applies", mismatch.join("; ")];
   if (missing.length) return ["unknown", `시스템 프로파일에 ${missing.join("·")} 이 없어 적용 여부를 알 수 없음`];

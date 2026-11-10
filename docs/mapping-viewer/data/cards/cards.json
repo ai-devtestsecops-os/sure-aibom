@@ -26,7 +26,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -93,7 +95,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -151,7 +155,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -210,7 +216,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -259,7 +267,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -308,7 +318,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -357,7 +369,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -420,7 +434,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -487,7 +503,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -613,7 +631,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -680,7 +700,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -801,7 +823,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -859,7 +883,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -913,7 +939,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -998,7 +1026,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -1046,7 +1076,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "INFORMATION",
    "object_scope": "bom",
@@ -1154,7 +1186,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -1225,7 +1259,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "RISK_MANAGEMENT_SYSTEM",
    "object_scope": "bom",
@@ -1272,7 +1308,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -1327,7 +1365,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "STANDARDS",
    "object_scope": "bom",
@@ -1387,7 +1427,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "DECLARATION_OF_CONFORMITY",
    "object_scope": "bom",
@@ -1439,7 +1481,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -1510,7 +1554,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -1581,7 +1627,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -1642,7 +1690,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "STANDARDS",
    "object_scope": "bom",
@@ -1689,7 +1739,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "NOTIFIED_BODY",
    "object_scope": "bom",
@@ -1754,7 +1806,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -1806,7 +1860,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -1853,7 +1909,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AUTHORITY",
    "object_scope": "bom",
@@ -1900,7 +1958,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "DECLARATION_OF_CONFORMITY",
    "object_scope": "bom",
@@ -1952,7 +2012,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "PROVIDE",
    "object": "INSTRUCTIONS_FOR_USE",
    "object_scope": "bom",
@@ -2004,7 +2066,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "INFORMATION",
    "object_scope": "bom",
@@ -2051,7 +2115,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -2104,7 +2170,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -2167,7 +2235,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -2230,7 +2300,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "INFORMATION",
    "object_scope": "bom",
@@ -2306,7 +2378,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -2353,7 +2427,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "CERTIFICATE",
    "object_scope": "bom",
@@ -2418,7 +2494,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "CERTIFICATE",
    "object_scope": "bom",
@@ -2475,7 +2553,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -2522,7 +2602,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -2575,7 +2657,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -2638,7 +2722,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -2685,7 +2771,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -2732,7 +2820,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -2787,7 +2877,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -2834,7 +2926,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AUTHORITY",
    "object_scope": "bom",
@@ -2881,7 +2975,9 @@
    ]
   },
   "obligation": {
-   "actor": "deployer",
+   "actor": [
+    "deployer"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -2928,7 +3024,9 @@
    ]
   },
   "obligation": {
-   "actor": "deployer",
+   "actor": [
+    "deployer"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -2975,7 +3073,9 @@
    ]
   },
   "obligation": {
-   "actor": "deployer",
+   "actor": [
+    "deployer"
+   ],
    "action": "DOCUMENT",
    "object": "IMPACT_ASSESSMENT",
    "object_scope": "bom",
@@ -3022,7 +3122,9 @@
    ]
   },
   "obligation": {
-   "actor": "deployer",
+   "actor": [
+    "deployer"
+   ],
    "action": "DOCUMENT",
    "object": "DATASET",
    "object_scope": "bom",
@@ -3075,7 +3177,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -3133,7 +3237,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -3182,7 +3288,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -3240,7 +3348,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -3307,7 +3417,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -3365,7 +3477,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -3414,7 +3528,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -3472,7 +3588,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -3553,7 +3671,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -3661,7 +3781,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -3728,7 +3850,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -3781,7 +3905,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "SPECIFY",
    "object": "TESTING",
    "object_scope": "bom",
@@ -3865,7 +3991,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "TESTING",
    "object_scope": "bom",
@@ -3925,7 +4053,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -3978,7 +4108,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -4036,7 +4168,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -4085,7 +4219,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -4143,7 +4279,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -4201,7 +4339,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -4270,7 +4410,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -4337,7 +4479,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -4395,7 +4539,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -4444,7 +4590,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -4507,7 +4655,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -4574,7 +4724,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -4651,7 +4803,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DESIGN",
    "object": "DATASET",
    "object_scope": "bom",
@@ -4700,7 +4854,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DESIGN",
    "object": "DATASET",
    "object_scope": "bom",
@@ -4774,7 +4930,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DESIGN",
    "object": "DATASET",
    "object_scope": "bom",
@@ -4832,7 +4990,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DESIGN",
    "object": "DATASET",
    "object_scope": "bom",
@@ -4881,7 +5041,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DESIGN",
    "object": "DATASET",
    "object_scope": "bom",
@@ -4957,7 +5119,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DESIGN",
    "object": "DATASET",
    "object_scope": "bom",
@@ -5006,7 +5170,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DESIGN",
    "object": "DATASET",
    "object_scope": "bom",
@@ -5055,7 +5221,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DESIGN",
    "object": "DATASET",
    "object_scope": "bom",
@@ -5112,7 +5280,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DESIGN",
    "object": "DATASET",
    "object_scope": "bom",
@@ -5204,7 +5374,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DESIGN",
    "object": "DATASET",
    "object_scope": "bom",
@@ -5257,7 +5429,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "ENSURE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -5310,7 +5484,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "ENSURE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -5375,7 +5551,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -5432,7 +5610,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -5489,7 +5669,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "ENABLE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -5545,7 +5727,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "ENABLE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -5602,7 +5786,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "PROVIDE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -5659,7 +5845,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DESIGN",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -5706,7 +5894,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "PROVIDE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -5759,7 +5949,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "SPECIFY",
    "object": "INSTRUCTIONS_FOR_USE",
    "object_scope": "bom",
@@ -5836,7 +6028,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "SPECIFY",
    "object": "INSTRUCTIONS_FOR_USE",
    "object_scope": "bom",
@@ -6001,7 +6195,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "SPECIFY",
    "object": "INSTRUCTIONS_FOR_USE",
    "object_scope": "bom",
@@ -6060,7 +6256,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "SPECIFY",
    "object": "INSTRUCTIONS_FOR_USE",
    "object_scope": "bom",
@@ -6114,7 +6312,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "SPECIFY",
    "object": "INSTRUCTIONS_FOR_USE",
    "object_scope": "bom",
@@ -6177,7 +6377,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "SPECIFY",
    "object": "INSTRUCTIONS_FOR_USE",
    "object_scope": "bom",
@@ -6239,7 +6441,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DESIGN",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -6287,7 +6491,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "PROVIDE",
    "object": "HUMAN_OVERSIGHT",
    "object_scope": "bom",
@@ -6336,7 +6542,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "PROVIDE",
    "object": "HUMAN_OVERSIGHT",
    "object_scope": "bom",
@@ -6385,7 +6593,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "PROVIDE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -6439,7 +6649,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "PROVIDE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -6493,7 +6705,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "PROVIDE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -6547,7 +6761,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "PROVIDE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -6600,7 +6816,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "ENSURE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -6660,7 +6878,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "PERFORMANCE",
    "object_scope": "bom",
@@ -6715,7 +6935,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "ENSURE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -6762,7 +6984,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DESIGN",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -6831,7 +7055,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -6889,7 +7115,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -6943,7 +7171,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -7000,7 +7230,9 @@
    ]
   },
   "obligation": {
-   "actor": "importer",
+   "actor": [
+    "importer"
+   ],
    "action": "DECLARE",
    "object": "REGISTRATION",
    "object_scope": "bom",
@@ -7057,7 +7289,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "COMPLY",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -7108,7 +7342,9 @@
    ]
   },
   "obligation": {
-   "actor": "deployer",
+   "actor": [
+    "deployer"
+   ],
    "action": "ENSURE",
    "object": "DATASET",
    "object_scope": "bom",
@@ -7177,7 +7413,9 @@
    ]
   },
   "obligation": {
-   "actor": "deployer",
+   "actor": [
+    "deployer"
+   ],
    "action": "PERFORM",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -7230,7 +7468,9 @@
    ]
   },
   "obligation": {
-   "actor": "deployer",
+   "actor": [
+    "deployer"
+   ],
    "action": "PERFORM",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -7287,7 +7527,9 @@
    ]
   },
   "obligation": {
-   "actor": "deployer",
+   "actor": [
+    "deployer"
+   ],
    "action": "PERFORM",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -7348,7 +7590,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DECLARE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -7416,7 +7660,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "DECLARATION_OF_CONFORMITY",
    "object_scope": "bom",
@@ -7468,7 +7714,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "PROVIDE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -7520,7 +7768,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "PROVIDE",
    "object": "CE_MARKING",
    "object_scope": "bom",
@@ -7572,7 +7822,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "ENSURE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -7637,7 +7889,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "ENSURE",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -7698,7 +7952,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "SPECIFY",
    "object": "MODEL",
    "object_scope": "bom",
@@ -7779,7 +8035,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "SPECIFY",
    "object": "MODEL",
    "object_scope": "bom",
@@ -7828,7 +8086,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "SPECIFY",
    "object": "MODEL",
    "object_scope": "bom",
@@ -7876,7 +8136,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DECLARE",
    "object": "MODEL",
    "object_scope": "bom",
@@ -7953,7 +8215,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -8029,7 +8293,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -8087,7 +8353,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -8135,7 +8403,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DECLARE",
    "object": "MODEL",
    "object_scope": "bom",
@@ -8211,7 +8481,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -8264,7 +8536,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "COMPLY",
    "object": "RISK_MANAGEMENT_SYSTEM",
    "object_scope": "bom",
@@ -8322,7 +8596,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "COMPLY",
    "object": "RISK_MANAGEMENT_SYSTEM",
    "object_scope": "bom",
@@ -8371,7 +8647,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "COMPLY",
    "object": "RISK_MANAGEMENT_SYSTEM",
    "object_scope": "bom",
@@ -8420,7 +8698,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "COMPLY",
    "object": "RISK_MANAGEMENT_SYSTEM",
    "object_scope": "bom",
@@ -8469,7 +8749,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "ASSESS",
    "object": "RISK_MANAGEMENT_SYSTEM",
    "object_scope": "bom",
@@ -8518,7 +8800,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "ASSESS",
    "object": "RISK_MANAGEMENT_SYSTEM",
    "object_scope": "bom",
@@ -8575,7 +8859,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "ASSESS",
    "object": "RISK_MANAGEMENT_SYSTEM",
    "object_scope": "bom",
@@ -8631,7 +8917,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "TEST",
    "object": "TESTING",
    "object_scope": "bom",
@@ -8699,7 +8987,9 @@
    ]
   },
   "obligation": {
-   "actor": "provider",
+   "actor": [
+    "provider"
+   ],
    "action": "ENSURE",
    "object": "RISK_MANAGEMENT_SYSTEM",
    "object_scope": "bom",
@@ -8757,7 +9047,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "IDENTIFY",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -8806,7 +9098,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -8849,7 +9143,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -8898,7 +9194,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -8947,7 +9245,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -8990,7 +9290,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "ASSESS",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -9045,7 +9347,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "ASSESS",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -9088,7 +9392,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "SPECIFY",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -9131,7 +9437,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -9174,7 +9482,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "SPECIFY",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -9235,7 +9545,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "SPECIFY",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -9283,7 +9595,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "SPECIFY",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -9335,7 +9649,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "SPECIFY",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -9378,7 +9694,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "SPECIFY",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -9439,7 +9757,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "SPECIFY",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -9487,7 +9807,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "SPECIFY",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -9530,7 +9852,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "SPECIFY",
    "object": "INFORMATION",
    "object_scope": "bom",
@@ -9575,7 +9899,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -9627,7 +9953,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -9690,7 +10018,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -9745,7 +10075,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "RESOURCES",
    "object_scope": "bom",
@@ -9792,7 +10124,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -9911,7 +10245,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -9963,7 +10299,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "REQUIREMENTS",
    "object_scope": "bom",
@@ -10010,7 +10348,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -10065,7 +10405,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "INFORMATION",
    "object_scope": "bom",
@@ -10125,7 +10467,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -10196,7 +10540,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -10243,7 +10589,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -10290,7 +10638,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -10337,7 +10687,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -10389,7 +10741,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -10441,7 +10795,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -10488,7 +10844,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -10559,7 +10917,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -10606,7 +10966,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -10669,7 +11031,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -10716,7 +11080,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -10803,7 +11169,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -10871,7 +11239,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -10955,7 +11325,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -11010,7 +11382,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",
@@ -11057,7 +11431,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "MODEL",
    "object_scope": "bom",
@@ -11128,7 +11504,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "AI_SYSTEM",
    "object_scope": "bom",
@@ -11175,7 +11553,9 @@
    ]
   },
   "obligation": {
-   "actor": "organisation",
+   "actor": [
+    "organisation"
+   ],
    "action": "DOCUMENT",
    "object": "TECHNICAL_DOCUMENTATION",
    "object_scope": "bom",

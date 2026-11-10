@@ -61,6 +61,7 @@ EU AI Act 조항은 시스템이 고위험인지, 투명성 의무나 범용 AI 
               <label><input type="checkbox" name="cv-role" value="deployer"> 배포자</label>
               <label><input type="checkbox" name="cv-role" value="importer"> 수입자</label>
               <label><input type="checkbox" name="cv-role" value="distributor"> 유통자</label>
+              <label><input type="checkbox" name="cv-role" value="authorised_representative"> 수권대리인</label>
             </div>
           </div>
         </div>
@@ -71,7 +72,7 @@ EU AI Act 조항은 시스템이 고위험인지, 투명성 의무나 범용 AI 
             <dt>투명성 의무</dt><dd>사람과 직접 상호작용하거나, 합성 콘텐츠를 만들거나, 감정 인식·생체 분류·딥페이크에 쓰는 시스템에 고위험 여부와 상관없이 더해지는 의무. <span class="cv-ref">50조</span></dd>
             <dt>범용 AI 모델</dt><dd>큰 데이터로 학습해 넓은 범위의 과업을 할 수 있고 여러 시스템에 통합될 수 있는 모델. <span class="cv-ref">3조(63)</span></dd>
             <dt>체계적 위험</dt><dd>범용 AI 모델 가운데 학습 연산량이 10²⁵ FLOPs 를 넘거나 위원회가 지정한 모델에 있다고 보는 위험. <span class="cv-ref">3조(65), 51조</span></dd>
-            <dt>역할</dt><dd>제공자는 개발해 시장에 내놓거나 자기 이름으로 서비스를 개시하는 조직, 배포자는 자기 권한으로 사용하는 조직, 수입자는 제3국 제공자의 시스템을 EU 시장에 들여오는 조직, 유통자는 공급망에서 시장에 공급하는 조직. 직접 만들어 자기 조직에서 쓰면 제공자이면서 배포자. <span class="cv-ref">3조(3)~(7)</span></dd>
+            <dt>역할</dt><dd>제공자는 개발해 시장에 내놓거나 자기 이름으로 서비스를 개시하는 조직, 배포자는 자기 권한으로 사용하는 조직, 수입자는 제3국 제공자의 시스템을 EU 시장에 들여오는 조직, 유통자는 공급망에서 시장에 공급하는 조직, 수권대리인은 EU 밖의 제공자에게서 서면 위임을 받아 EU 안에서 그 의무를 대신하는 조직. 직접 만들어 자기 조직에서 쓰면 제공자이면서 배포자. 조항이 여러 역할에 걸리면(4조 "Providers and deployers") 고른 역할 가운데 하나라도 겹칠 때 적용. <span class="cv-ref">3조(3)~(7)</span></dd>
           </dl>
         </details>
       </div>
