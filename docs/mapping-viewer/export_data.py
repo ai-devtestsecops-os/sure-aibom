@@ -36,18 +36,18 @@ CARDS = os.path.join(AIBOM, "cards")
 # 규제 판정 화면의 예제 BOM: 고위험 시스템, 투명성 의무만 걸리는 시스템, 범용 AI 모델 하나씩 손으로 만든 작은 BOM (ai-bom/cards/judge/examples).
 # (파일, 기본 시스템 프로파일, 버튼 이름, 설명). 위험등급은 시스템 축(high_risk / minimal_risk)에 얹히는 것(limited_risk·gpai·gpai_systemic)을 더한 목록
 # 공개 사이트에 올리는 복사본에서는 설명 속성(aibom:example)의 내부용 문구를 바꾼다
-EXAMPLE_BOMS = (("recruit-screening.cdx.json", {"risk_class": ["high_risk"], "role": ["provider"]}, "고위험 AI 시스템 · 채용 심사",
+EXAMPLE_BOMS = (("recruit-screening.cdx.json", {"risk_class": ["high_risk"], "role": ["provider"], "annex_iii_area": "employment", "annex_i_product": False, "common_specifications_applied": True, "provider_outside_eu": False, "assistive_editing_only": False, "exemptions": []}, "고위험 AI 시스템 · 채용 심사",
                  "채용 지원자를 평가하는 고위험 AI 시스템. 개인데이터 데이터셋에 원래 수집 목적이 빠져 있어 10조(2)(b) 가 부분 반영이고, 10조(5) 는 사실은 있지만 처리 기록 증빙이 없어 부분 반영이다"),
-                ("support-chatbot.cdx.json", {"risk_class": ["minimal_risk", "limited_risk"], "role": ["provider"]}, "투명성 의무 · 고객 상담 챗봇",
+                ("support-chatbot.cdx.json", {"risk_class": ["minimal_risk", "limited_risk"], "role": ["provider"], "annex_i_product": False, "common_specifications_applied": True, "provider_outside_eu": False, "assistive_editing_only": False, "exemptions": []}, "투명성 의무 · 고객 상담 챗봇",
                  "사람과 대화하는 챗봇. 고위험이 아니라 고위험 조항은 비적용이고 투명성 의무(50조)만 걸린다"),
-                ("foundation-llm.cdx.json", {"risk_class": ["minimal_risk", "gpai"], "role": ["provider"]}, "범용 AI 모델 · 기반 LLM",
+                ("foundation-llm.cdx.json", {"risk_class": ["minimal_risk", "gpai"], "role": ["provider"], "annex_i_product": False, "common_specifications_applied": True, "provider_outside_eu": False, "assistive_editing_only": False, "exemptions": []}, "범용 AI 모델 · 기반 LLM",
                  "범용 AI 모델 제공자. 53조와 부속서 XI·XII 의 모델 문서 항목을 본다. 체계적 위험은 없어 55조는 비적용이다. declarations 의 학습 로그 증빙은 유효하고 출처 기록 증빙은 만료라 무효다"),
                 # 같은 세 BOM 의 SPDX 3.0.1 판 (sure_aibom.spdx.convert 로 바꾼 뒤 증빙 관계를 손으로 더한 것). 같은 카드를 SPDX 프로파일로 판정한다
-                ("recruit-screening.spdx.json", {"risk_class": ["high_risk"], "role": ["provider"]}, "고위험 AI 시스템 · 채용 심사 (SPDX)",
+                ("recruit-screening.spdx.json", {"risk_class": ["high_risk"], "role": ["provider"], "annex_iii_area": "employment", "annex_i_product": False, "common_specifications_applied": True, "provider_outside_eu": False, "assistive_editing_only": False, "exemptions": []}, "고위험 AI 시스템 · 채용 심사 (SPDX)",
                  "위 채용 심사 BOM 의 SPDX 3.0.1 판. 같은 카드를 SPDX 매핑 프로파일로 판정해 CycloneDX 와 같은 결과가 나온다"),
-                ("support-chatbot.spdx.json", {"risk_class": ["minimal_risk", "limited_risk"], "role": ["provider"]}, "투명성 의무 · 고객 상담 챗봇 (SPDX)",
+                ("support-chatbot.spdx.json", {"risk_class": ["minimal_risk", "limited_risk"], "role": ["provider"], "annex_i_product": False, "common_specifications_applied": True, "provider_outside_eu": False, "assistive_editing_only": False, "exemptions": []}, "투명성 의무 · 고객 상담 챗봇 (SPDX)",
                  "위 챗봇 BOM 의 SPDX 3.0.1 판"),
-                ("foundation-llm.spdx.json", {"risk_class": ["minimal_risk", "gpai"], "role": ["provider"]}, "범용 AI 모델 · 기반 LLM (SPDX)",
+                ("foundation-llm.spdx.json", {"risk_class": ["minimal_risk", "gpai"], "role": ["provider"], "annex_i_product": False, "common_specifications_applied": True, "provider_outside_eu": False, "assistive_editing_only": False, "exemptions": []}, "범용 AI 모델 · 기반 LLM (SPDX)",
                  "위 기반 LLM BOM 의 SPDX 3.0.1 판. 증빙은 hasEvidence·hasTest 관계로 잇고, SPDX 에 자리가 없는 declarations·표준 항목은 자리 없음이라 CycloneDX 보다 반영이 적다"))
 HAND_MADE = "채용 심사 AI 를 가정해 손으로 만든 작은 BOM"
 

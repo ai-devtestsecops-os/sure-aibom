@@ -12,14 +12,20 @@
    ],
    "role": [
     "provider"
-   ]
+   ],
+   "annex_iii_area": "employment",
+   "annex_i_product": false,
+   "common_specifications_applied": true,
+   "provider_outside_eu": false,
+   "assistive_editing_only": false,
+   "exemptions": []
   },
   "engine_summary": {
-   "반영": 15,
-   "부분 반영": 26,
-   "미반영": 105,
-   "비적용": 44,
-   "검토 필요": 0
+   "반영": 18,
+   "부분 반영": 24,
+   "미반영": 98,
+   "비적용": 46,
+   "검토 필요": 4
   }
  },
  {
@@ -36,13 +42,18 @@
    ],
    "role": [
     "provider"
-   ]
+   ],
+   "annex_i_product": false,
+   "common_specifications_applied": true,
+   "provider_outside_eu": false,
+   "assistive_editing_only": false,
+   "exemptions": []
   },
   "engine_summary": {
    "반영": 3,
    "부분 반영": 8,
-   "미반영": 39,
-   "비적용": 140,
+   "미반영": 38,
+   "비적용": 141,
    "검토 필요": 0
   }
  },
@@ -60,13 +71,18 @@
    ],
    "role": [
     "provider"
-   ]
+   ],
+   "annex_i_product": false,
+   "common_specifications_applied": true,
+   "provider_outside_eu": false,
+   "assistive_editing_only": false,
+   "exemptions": []
   },
   "engine_summary": {
-   "반영": 33,
-   "부분 반영": 20,
+   "반영": 34,
+   "부분 반영": 18,
    "미반영": 24,
-   "비적용": 113,
+   "비적용": 114,
    "검토 필요": 0
   }
  },
@@ -83,14 +99,20 @@
    ],
    "role": [
     "provider"
-   ]
+   ],
+   "annex_iii_area": "employment",
+   "annex_i_product": false,
+   "common_specifications_applied": true,
+   "provider_outside_eu": false,
+   "assistive_editing_only": false,
+   "exemptions": []
   },
   "engine_summary": {
-   "반영": 15,
-   "부분 반영": 26,
-   "미반영": 105,
-   "비적용": 44,
-   "검토 필요": 0
+   "반영": 18,
+   "부분 반영": 24,
+   "미반영": 97,
+   "비적용": 46,
+   "검토 필요": 5
   }
  },
  {
@@ -107,13 +129,18 @@
    ],
    "role": [
     "provider"
-   ]
+   ],
+   "annex_i_product": false,
+   "common_specifications_applied": true,
+   "provider_outside_eu": false,
+   "assistive_editing_only": false,
+   "exemptions": []
   },
   "engine_summary": {
    "반영": 3,
    "부분 반영": 8,
-   "미반영": 39,
-   "비적용": 140,
+   "미반영": 38,
+   "비적용": 141,
    "검토 필요": 0
   }
  },
@@ -131,13 +158,18 @@
    ],
    "role": [
     "provider"
-   ]
+   ],
+   "annex_i_product": false,
+   "common_specifications_applied": true,
+   "provider_outside_eu": false,
+   "assistive_editing_only": false,
+   "exemptions": []
   },
   "engine_summary": {
-   "반영": 27,
-   "부분 반영": 18,
-   "미반영": 32,
-   "비적용": 113,
+   "반영": 28,
+   "부분 반영": 17,
+   "미반영": 31,
+   "비적용": 114,
    "검토 필요": 0
   }
  }

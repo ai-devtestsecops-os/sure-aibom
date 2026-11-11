@@ -71,6 +71,13 @@
 .card-viewer .cv-checks {display: flex; flex-wrap: wrap; gap: .3rem .7rem; min-height: 1.9rem; align-items: center;}
 .card-viewer .cv-checks label {display: inline-flex; align-items: center; gap: .3rem; cursor: pointer; white-space: nowrap; color: var(--text);}
 .card-viewer .cv-checks input {margin: 0; accent-color: var(--accent);}
+.card-viewer .cv-checks select {font: inherit; font-size: .9em; padding: .2rem .4rem; border: 1px solid var(--border); border-radius: 4px; background: var(--bg); color: var(--text);}
+/* 상황 칸: 줄마다 예 · 아니오 · 모름 (모름이면 그 칸을 보는 조건은 판단 못 함, 예외는 해당 없음) */
+.card-viewer .cv-tri {display: flex; flex-direction: column; gap: .25rem;}
+.card-viewer .cv-tri-row {display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .7rem;}
+.card-viewer .cv-tri-row > span {min-width: 12rem; color: var(--text);}
+.card-viewer .cv-tri-row label {display: inline-flex; align-items: center; gap: .3rem; cursor: pointer; white-space: nowrap; color: var(--text);}
+.card-viewer .cv-tri-row input {margin: 0; accent-color: var(--accent);}
 .card-viewer .cv-hint {display: inline-flex; align-items: center; gap: .25rem; font-weight: 400; font-size: .68rem; color: var(--gap-fg); margin-left: .35rem;}
 .card-viewer .cv-hint[hidden] {display: none;}
 

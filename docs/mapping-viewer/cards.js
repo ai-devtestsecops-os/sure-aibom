@@ -34,6 +34,8 @@ async function init() {
   PROFILES.CycloneDX = buildProfile(p, "cdx_path", "cdx_paths_more");
   if (ps) PROFILES.SPDX = buildProfile(ps, "spdx_path", "spdx_paths_more");
   activateProfile("CycloneDX");
+  systemKeys = (p.system_profile || {}).keys || {};
+  buildProfileInputs();
   initJudgment();
 }
 // 프로파일 파일 하나 → 판정이 쓰는 모양. 줄의 경로 열은 형식마다 다르다 (CycloneDX 는 cdx_path, SPDX 는 spdx_path)
@@ -129,6 +131,7 @@ function initJudgment() {
     if (b.checked) for (const x of systemBoxes()) if (x !== b) x.checked = false;
   });
   for (const el of [...systemBoxes(), ...extraBoxes(), ...roleBoxes()]) el.addEventListener("change", () => { if (currentBom) rejudge(); });
+  for (const el of root.querySelectorAll("#cv-area, #cv-flags, #cv-exemptions")) el.addEventListener("change", () => { if (currentBom) rejudge(); });   // 분야 · 상황 · 예외 주장 (칸은 buildProfileInputs 가 만든다)
 }
 function rejudge() { const system = systemProfile(); updateProfileAlert(system); showRecord(judgeBom(currentBom, currentName, system)); }
 function syncProfilePanel() { $("#cv-eu").hidden = !regSel.has("EUAIA"); }   // 적용 조건은 EU AI Act 에만 있다
@@ -175,10 +178,43 @@ const systemBoxes = () => [...root.querySelectorAll("input[name=cv-system]")];  
 const roleBoxes = () => [...root.querySelectorAll("input[name=cv-role]")];
 const extraBoxes = () => [...root.querySelectorAll("input[name=cv-extra]")];
 const asList = (v) => Array.isArray(v) ? v : v ? [v] : [];
+// 시스템 프로파일의 나머지 칸 (조건식 · 예외가 profile.<칸> 으로 보는 것): 부속서 III 분야(annex_iii_area), 참·거짓 칸들(상황), 주장하는 예외 목록(exemptions).
+// 칸의 정의는 프로파일의 system_profile.keys 에서 오고, 예외 주장의 후보는 카드의 예외식("<조항 id>" in profile.exemptions)에서 모은다.
+// 상황 칸은 예 · 아니오 · 모름이다. 모름은 칸을 비우는 것이라 그 칸을 보는 조건은 판단 못 함(검토 필요), 예외는 해당 없음이 된다
+let systemKeys = {};
+const AREA_KO = {biometrics: "생체인식", critical_infrastructure: "핵심 기반시설", education: "교육 · 직업훈련", employment: "고용 · 근로자 관리",
+                 essential_services: "필수 서비스", law_enforcement: "법 집행", migration_asylum_border: "이민 · 망명 · 국경", justice_democracy: "사법 · 민주적 절차"};
+const FLAG_KO = {annex_i_product: "부속서 I 제품 관련 고위험 시스템", common_specifications_applied: "공통 규격(41조)을 따름", deployer_controls_input_data: "배포자가 입력 데이터를 통제",
+                 provider_outside_eu: "EU 밖에 설립된 제공자", assistive_editing_only: "편집 보조 기능만 하는 시스템"};
+const flagKeys = () => Object.entries(systemKeys).filter(([, d]) => d.type === "boolean" && d.status === "active").map(([k]) => k);
+function exemptionIds() {
+  const ids = new Map();
+  const walk = (x, card, text) => {
+    if (!x || typeof x !== "object") return;
+    if (Array.isArray(x)) { x.forEach((v) => walk(v, card, text)); return; }
+    const [op, raw] = Object.entries(x)[0] || [], args = Array.isArray(raw) ? raw : [raw];
+    if (op === "in" && typeof args[0] === "string" && JSON.stringify(args[1]) === '{"var":"profile.exemptions"}') ids.set(args[0], {card, text});
+    else args.forEach((v) => walk(v, card, text));
+  };
+  for (const c of cards) for (const e of c.exceptions || []) if (e.expr) walk(e.expr, c, e.text);
+  return [...ids.entries()].sort((a, b) => a[0].localeCompare(b[0], undefined, {numeric: true}));
+}
+function buildProfileInputs() {
+  const area = systemKeys.annex_iii_area, areas = area && area.status === "active" ? area.values || [] : [];
+  $("#cv-area").innerHTML = `<option value="">고르지 않음</option>` + areas.map((v) => `<option value="${esc(v)}">${esc(AREA_KO[v] || v)}</option>`).join("");
+  $("#cv-flags").innerHTML = flagKeys().map((k) => `<div class="cv-tri-row" title="${esc(systemKeys[k].description || "")}"><span>${esc(FLAG_KO[k] || k)}</span>${[["true", "예"], ["false", "아니오"], ["", "모름"]].map(([v, l]) => `<label><input type="radio" name="cv-flag-${k}" value="${v}"${v === "" ? " checked" : ""}> ${l}</label>`).join("")}</div>`).join("")
+    || `<span class="cv-muted">없음</span>`;
+  $("#cv-exemptions").innerHTML = exemptionIds().map(([id, {card, text}]) => `<label title="${esc(text || "")}"><input type="checkbox" name="cv-exempt" value="${esc(id)}"> ${esc(id)} ${esc(topicOf(card))}</label>`).join("")
+    || `<span class="cv-muted">없음 (예외식이 있는 카드가 없다)</span>`;
+}
 function systemProfile() {
   const sys = systemBoxes().find((b) => b.checked)?.value || "", extras = extraBoxes().filter((b) => b.checked).map((b) => b.value);
   const roles = roleBoxes().filter((b) => b.checked).map((b) => b.value);
-  return {...(sys ? {risk_class: [sys, ...extras]} : {}), ...(roles.length ? {role: roles} : {})};
+  const out = {...(sys ? {risk_class: [sys, ...extras]} : {}), ...(roles.length ? {role: roles} : {})};
+  const area = $("#cv-area")?.value; if (area) out.annex_iii_area = area;
+  for (const k of flagKeys()) { const v = root.querySelector(`input[name=cv-flag-${k}]:checked`)?.value; if (v === "true") out[k] = true; else if (v === "false") out[k] = false; }
+  const ex = [...root.querySelectorAll("input[name=cv-exempt]:checked")].map((b) => b.value); if (ex.length) out.exemptions = ex;
+  return out;
 }
 function applyProfileInputs(system) {
   const rc = asList(system.risk_class), roles = asList(system.role);
@@ -186,6 +222,9 @@ function applyProfileInputs(system) {
   for (const b of systemBoxes()) b.checked = b.value === sys;
   for (const b of extraBoxes()) b.checked = rc.includes(b.value) || (b.value === "gpai" && rc.includes("gpai_systemic"));
   for (const b of roleBoxes()) b.checked = roles.includes(b.value);
+  const area = $("#cv-area"); if (area) area.value = system.annex_iii_area || "";
+  for (const k of flagKeys()) { const v = system[k]; for (const b of root.querySelectorAll(`input[name=cv-flag-${k}]`)) b.checked = b.value === (v === true ? "true" : v === false ? "false" : ""); }
+  const ex = asList(system.exemptions); for (const b of root.querySelectorAll("input[name=cv-exempt]")) b.checked = ex.includes(b.value);
 }
 function updateProfileAlert(system) {                // 비운 칸의 라벨 옆에 빨간 글씨로, 그 칸을 보는 조항이 검토 필요가 된다고 알린다
   $("#cv-hint-system").hidden = Boolean(system.risk_class);

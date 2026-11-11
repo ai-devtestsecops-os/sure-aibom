@@ -433,7 +433,7 @@
     }
   },
   "system_profile": {
-    "_comment": "시스템 프로파일(특허 2층)의 칸. 판정 엔진의 --system 과 문서 사이트의 적용 조건 화면이 주는 값이다. status active 는 지금 카드의 적용대상·조건이 보는 칸, planned 는 조건식·예외 초안(approvals/2026-11-06-conditions-exceptions.json)이 쓰지만 화면에는 아직 없는 칸. 조건에서는 칸이 없으면 모름(검토 필요), 예외에서는 거짓(해당 없음)",
+    "_comment": "시스템 프로파일(특허 2층)의 칸. 판정 엔진의 --system 과 문서 사이트의 적용 조건 화면이 주는 값이다. risk_class·role 은 카드의 적용대상이 보는 칸이고, 나머지는 조건식·예외(approvals/2026-11-06-conditions-exceptions.json 으로 넣은 것)가 profile.<칸> 변수로 보는 칸이다. 조건에서는 칸이 없으면 모름(검토 필요), 예외에서는 거짓(해당 없음)",
     "keys": {
       "risk_class": {
         "type": "list",
@@ -461,22 +461,22 @@
       },
       "annex_i_product": {
         "type": "boolean",
-        "status": "planned",
+        "status": "active",
         "description": "부속서 I §A 의 EU 조화 법령 제품에 관련된 고위험 시스템인가 (11조(2) 단일 기술문서)"
       },
       "common_specifications_applied": {
         "type": "boolean",
-        "status": "planned",
+        "status": "active",
         "description": "41조의 공통 규격을 따르는가 (41조(5))"
       },
       "deployer_controls_input_data": {
         "type": "boolean",
-        "status": "planned",
+        "status": "active",
         "description": "배포자가 입력 데이터를 통제하는가 (26조(4))"
       },
       "provider_outside_eu": {
         "type": "boolean",
-        "status": "planned",
+        "status": "active",
         "description": "EU 밖에 설립된 제공자인가 (22조 수권대리인. 부속서 V(2)·VIII, 13조(3)(a))"
       },
       "annex_iii_area": {
@@ -491,17 +491,17 @@
           "migration_asylum_border",
           "justice_democracy"
         ],
-        "status": "planned",
+        "status": "active",
         "description": "부속서 III 의 분야 (14조(5), 27조(1) 예외)"
       },
       "assistive_editing_only": {
         "type": "boolean",
-        "status": "planned",
+        "status": "active",
         "description": "표준 편집 보조 기능만 하거나 입력을 실질적으로 바꾸지 않는 시스템인가 (50조(2) 예외)"
       },
       "exemptions": {
         "type": "list",
-        "status": "planned",
+        "status": "active",
         "description": "조직이 주장하는 예외의 조항 id 목록 (예: Article 50(1)). 법적 판단이 드는 예외는 이 목록으로만 적용된다"
       }
     }
@@ -2152,7 +2152,7 @@
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
-      "note": "요구사항 표에서 (카드 1장이 씀). 경로 고침 2026-11-06: 표의 공유 자료형 경로(inputOutputMLParameters.maxSize)는 엔진이 못 풀어 모델 카드의 inputs·outputs 경로로 (정적 검증이 잡음)",
+      "note": "요구사항 표에서 (카드 1장이 씀)",
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XII-2-b",
