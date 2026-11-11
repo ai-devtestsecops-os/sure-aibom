@@ -1465,6 +1465,7 @@
       "spdx_path": "AIPackage.aibom_useCases",
       "coverage": "필드",
       "fit": "partial",
+      "mismatch": "scope",
       "fit_note": "대상 범위 불일치: 규제(13조(3), 부속서 IV·VIII·IX)는 AI 시스템의 의도된 목적을 묻는데 useCases 는 모델 카드(모델 수준)의 필드다. 값이 있어도 부분 반영까지만 (2026-11-05)",
       "status": "linked",
       "confidence": 1,
