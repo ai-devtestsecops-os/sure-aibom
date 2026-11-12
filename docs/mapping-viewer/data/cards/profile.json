@@ -235,7 +235,7 @@
       }
     }
   },
-  "_comment": "승인된 매핑 프로파일. 개념(통제 어휘) → 스키마 경로. 사람이 만든 요구사항 표에서 왔으므로 승인된 것으로 본다. 개념 하나에 경로가 여럿이면 첫 것이 cdx_path, 나머지는 cdx_paths_more. 카드별 줄은 gold/profile.json 에 있다. targets 는 카드 fact 의 target(시스템·모델·데이터셋·소프트웨어)을 이 스키마에서 찾는 법이다. 소프트웨어는 시스템 자신(metadata.component)을 빼고 구성요소 목록에서 type 이 소프트웨어인 것이다 (device·file 은 뺌).",
+  "_comment": "승인된 매핑 프로파일. 개념(통제 어휘) → 스키마 경로. 두 형식(v0.6)의 줄은 정답지(엑셀 요구사항 표 + gold/overrides/profile.json) 기준 결정 파일(gold/build_mapping_decisions.py 가 만든 approvals/<날짜>-gold-mapping.json)로 등록했고, 그 뒤 고침은 매핑 승인 화면의 결정 파일로 쌓인다. 개념 하나에 경로가 여럿이면 첫 것이 cdx_path, 나머지는 cdx_paths_more. 카드별 줄(엑셀 표)은 gold/profile.json 에 있다. targets 는 카드 fact 의 확인 단위(시스템·모델·데이터셋·소프트웨어)를 이 스키마에서 찾는 법이다. 소프트웨어는 시스템 자신(metadata.component)을 빼고 구성요소 목록에서 type 이 소프트웨어인 것이다 (device·file 은 뺌).",
   "lines": [
     {
       "concept": "HYPERPARAMETERS",
@@ -246,6 +246,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.hyperparameters",
+            "SPDX 경로: AIPackage.ai_hyperparameter",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
@@ -266,6 +278,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.trainingTechniques",
+            "SPDX 경로: AIPackage.ai_informationAboutTraining",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
@@ -298,6 +322,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 5장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.collectionProcess",
+            "SPDX 경로: DatasetPackage.dataset_dataCollectionProcess",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
@@ -333,6 +369,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 5장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.preprocessing",
+            "SPDX 경로: DatasetPackage.dataset_dataPreprocessing, AIPackage.ai_modelDataPreprocessing",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
@@ -365,6 +413,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 3장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.size",
+            "SPDX 경로: DatasetPackage.dataset_datasetSize",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
@@ -389,6 +449,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 3장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.modality",
+            "SPDX 경로: DatasetPackage.dataset_datasetType",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보에 없음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
@@ -413,6 +485,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.architectureFamily",
+            "SPDX 경로: AIPackage.aibom_architectureFamily",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
@@ -436,11 +520,27 @@
       "concept": "DATASETS",
       "cdx_path": "component.modelCard.modelParameters.datasets",
       "spdx_path": "AIPackage.@trainedOn",
+      "spdx_paths_more": [
+        "AIPackage.@testedOn",
+        "AIPackage.@dependsOn:DatasetPackage"
+      ],
       "spec": "1.7",
       "coverage": "관계",
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 5장이 씀) | SPDX 보정: 표의 Relationship.relationshipType(어떤 관계든 있으면 참)은 느슨해 모델에서 데이터셋으로 가는 관계로 좁혔다 (sure-aibom 은 모델 카드 datasets 를 dependsOn 으로, 학습 사실이 있으면 trainedOn 으로 낸다)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.datasets",
+            "SPDX 경로: AIPackage.@trainedOn, AIPackage.@testedOn, AIPackage.@dependsOn:DatasetPackage",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보에 없음. 엑셀 표의 경로(SPDX Relationship.relationshipType)를 고친 것"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
@@ -462,10 +562,6 @@
           "card_id": "RC-NISTRMF-MEASURE-2.1",
           "card_version": 1
         }
-      ],
-      "spdx_paths_more": [
-        "AIPackage.@testedOn",
-        "AIPackage.@dependsOn:DatasetPackage"
       ]
     },
     {
@@ -477,6 +573,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.modelArchitecture",
+            "SPDX 경로: AIPackage.aibom_modelArchitecture",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
@@ -505,6 +613,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.outputs",
+            "SPDX 경로: AIPackage.aibom_outputs",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
@@ -533,6 +653,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 12장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.quantitativeAnalysis.performanceMetrics.type",
+            "SPDX 경로: AIPackage.ai_metric.key",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 4위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
@@ -597,6 +729,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 12장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.quantitativeAnalysis.performanceMetrics.value",
+            "SPDX 경로: AIPackage.ai_metric.value",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
@@ -656,20 +800,32 @@
       "concept": "PEDIGREE",
       "cdx_path": "component.pedigree",
       "spdx_path": "Package.@descendantOf",
+      "spdx_paths_more": [
+        "Package.@ancestorOf",
+        "Package.@hasVariant"
+      ],
       "spec": "1.7",
       "coverage": "관계",
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀) | SPDX 보정: 표의 Relationship(관계가 있으면 참)을 계보 관계로 좁혔다",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.pedigree",
+            "SPDX 경로: Package.@descendantOf, Package.@ancestorOf, Package.@hasVariant",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 4위. 엑셀 표의 경로(SPDX Relationship)를 고친 것"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-a",
           "card_version": 1
         }
-      ],
-      "spdx_paths_more": [
-        "Package.@ancestorOf",
-        "Package.@hasVariant"
       ]
     },
     {
@@ -681,6 +837,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀) | SPDX 보정: 표의 Relationship 을 dependsOn 으로 좁혔다",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: dependencies",
+            "SPDX 경로: Package.@dependsOn",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 5위. 엑셀 표의 경로(SPDX Relationship)를 고친 것"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-c",
@@ -690,8 +858,7 @@
           "card_id": "RC-EUAIA-Annex-XI-2-3",
           "card_version": 1
         }
-      ],
-      "spdx_paths_more": []
+      ]
     },
     {
       "concept": "WORKFLOWS_TASKS",
@@ -702,6 +869,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: formulation.workflows.tasks",
+            "SPDX 경로: Build",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 5위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-a",
@@ -728,6 +907,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 3장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.designChoices, componentData.designChoices",
+            "SPDX 경로: AIPackage.aibom_designChoices, DatasetPackage.aibom_designChoices",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
@@ -748,6 +939,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.modelCard.modelParameters.trainingCompute 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-c",
@@ -760,6 +961,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 10장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.modelCard.considerations.environmentalConsiderations.energyConsumptions.energyProviders.description 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-g",
@@ -816,6 +1027,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.modelCard.considerations.environmentalConsiderations.energyConsumptions.energyProviders.description 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-f",
@@ -832,6 +1053,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.externalReferences.url (type:log) 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-g",
@@ -844,6 +1075,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 5장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-h",
@@ -879,6 +1120,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 12장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.externalReferences.url (type:documentation)",
+            "SPDX 경로: Package.externalRef.locator (type:documentation), File.externalRef.locator (type:documentation)",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-h",
@@ -939,6 +1192,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.environmentalConsiderations.energyConsumptions",
+            "SPDX 경로: AIPackage.ai_energyConsumption",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-e",
@@ -962,6 +1227,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 7장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: components",
+            "SPDX 경로: Package, File",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 4위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-c",
@@ -1002,6 +1279,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.knownBias.detectionMethod",
+            "SPDX 경로: DatasetPackage.aibom_knownBiasDetectionMethod",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-c",
@@ -1018,6 +1307,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.trainingCompute",
+            "SPDX 경로: AIPackage.aibom_trainingCompute",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-c",
@@ -1038,6 +1339,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.trainingTime",
+            "SPDX 경로: AIPackage.aibom_trainingTime",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-d",
@@ -1054,6 +1367,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.optimizationTarget",
+            "SPDX 경로: AIPackage.aibom_optimizationTarget",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
@@ -1074,6 +1399,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 3장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.technicalRequirements",
+            "SPDX 경로: AIPackage.ai_informationAboutApplication",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-b",
@@ -1096,11 +1433,27 @@
     {
       "concept": "COMPONENT_LICENSES",
       "cdx_path": "component.licenses",
+      "spdx_path": "Package.@hasDeclaredLicense",
+      "spdx_paths_more": [
+        "Package.@hasConcludedLicense"
+      ],
       "spec": "1.7",
       "coverage": "필드",
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀) | SPDX 보정: 표에는 자리 없음이었으나 SPDX 는 라이선스를 관계(hasDeclaredLicense → LicenseExpression)로 적는다",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.licenses",
+            "SPDX 경로: Package.@hasDeclaredLicense, Package.@hasConcludedLicense",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위. 엑셀 표의 경로(SPDX 없음)를 고친 것"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-1-1-b",
@@ -1118,10 +1471,6 @@
           "card_id": "RC-EUAIA-Annex-XII-1-h",
           "card_version": 1
         }
-      ],
-      "spdx_path": "Package.@hasDeclaredLicense",
-      "spdx_paths_more": [
-        "Package.@hasConcludedLicense"
       ]
     },
     {
@@ -1133,6 +1482,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 6장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.inputs",
+            "SPDX 경로: AIPackage.aibom_inputs",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 3위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-3",
@@ -1169,6 +1530,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 3장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.task",
+            "SPDX 경로: AIPackage.aibom_task",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 5위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-1-1-a",
@@ -1196,6 +1569,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: releaseNotes.timestamp",
+            "SPDX 경로: Package.releaseTime, File.releaseTime",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-1-1-c",
@@ -1216,6 +1601,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.parameterCount",
+            "SPDX 경로: AIPackage.aibom_parameterCount",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-1-1-d",
@@ -1232,6 +1629,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 3장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 service.version 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-c",
@@ -1258,11 +1665,24 @@
       "spec": "v0.6",
       "coverage": "필드",
       "status": "linked",
+      "confidence": 1,
       "fit": "partial",
       "mismatch": "scope",
       "fit_note": "대상 범위 불일치: 규제(13조(3), 부속서 IV·VIII·IX)는 AI 시스템의 의도된 목적을 묻는데 useCases 는 모델 카드(모델 수준)의 필드다. 값이 있어도 부분 반영까지만 (2026-11-05)",
-      "confidence": 1,
       "note": "요구사항 표에서 (카드 9장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.useCases",
+            "SPDX 경로: AIPackage.aibom_useCases",
+            "요구 일치: 범위 다름 (대상 범위 불일치: 규제(13조(3), 부속서 IV·VIII·IX)는 AI 시스템의 의도된 목적을 묻는데 useCases 는 모델 카드(모델 수준)의 필드다. 값이 있어도 부분 반영까지만 (2026-11-05))",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-a",
@@ -1314,6 +1734,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 7장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.supplier",
+            "SPDX 경로: Package.suppliedBy, File.suppliedBy",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-a",
@@ -1354,6 +1786,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.version",
+            "SPDX 경로: Package.software_packageVersion",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 4위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-a",
@@ -1374,6 +1818,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 6장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.explainabilityMethods",
+            "SPDX 경로: AIPackage.ai_modelExplainability",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-e",
@@ -1410,6 +1866,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.ethicalConsiderations.name",
+            "SPDX 경로: AIPackage.aibom_ethicalConsiderations",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 4위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-3",
@@ -1438,6 +1906,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 7장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.technicalLimitations",
+            "SPDX 경로: AIPackage.ai_limitation",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-3",
@@ -1478,6 +1958,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.quantitativeAnalysis.performanceMetrics.slice",
+            "SPDX 경로: AIPackage.aibom_metricSlice",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-3",
@@ -1494,6 +1986,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 5장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 metadata.lifecycles.Custom Phase.description 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-12-1",
@@ -1522,6 +2024,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 metadata.lifecycles.Custom Phase.name 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-13-3-e",
@@ -1541,6 +2053,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.externalReferences.url (type:adversary-model)",
+            "SPDX 경로: Package.externalRef.locator (type:securityAdversaryModel), File.externalRef.locator (type:securityAdversaryModel)",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-2-2",
@@ -1561,6 +2085,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.quantitativeAnalysis.performanceMetrics.decisionThreshold",
+            "SPDX 경로: AIPackage.ai_metricDecisionThreshold",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-9-8",
@@ -1577,6 +2113,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.contents.availability",
+            "SPDX 경로: DatasetPackage.dataset_datasetAvailability",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-e",
@@ -1593,6 +2141,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.updateMechanism",
+            "SPDX 경로: DatasetPackage.dataset_datasetUpdateMechanism",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-c",
@@ -1609,6 +2169,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 3장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.knownBias.name",
+            "SPDX 경로: DatasetPackage.dataset_knownBias",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-f",
@@ -1632,6 +2204,17 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 15장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: declarations.claims",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 5위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-4",
@@ -1703,6 +2286,17 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 15장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: declarations.evidence",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-4",
@@ -1775,6 +2369,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.knownBias.mitigationStrategy",
+            "SPDX 경로: DatasetPackage.aibom_knownBiasMitigationStrategy",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-g",
@@ -1794,6 +2400,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.knownGaps.name, componentData.knownGaps",
+            "SPDX 경로: DatasetPackage.aibom_knownGaps",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-h",
@@ -1814,6 +2432,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.knownGaps.mitigationStrategy",
+            "SPDX 경로: DatasetPackage.aibom_knownGapsMitigationStrategy",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-h",
@@ -1830,6 +2460,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.originalCollectionPurpose",
+            "SPDX 경로: DatasetPackage.aibom_originalCollectionPurpose",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-b",
@@ -1846,6 +2488,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.representationAssumptions",
+            "SPDX 경로: DatasetPackage.aibom_representationAssumptions",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-d",
@@ -1862,6 +2516,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.safetyRiskAssessment",
+            "SPDX 경로: AIPackage.ai_safetyRiskAssessment",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MEASURE-2.6",
@@ -1874,6 +2540,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.modelCard.quantitativeAnalysis.performanceMetrics 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MEASURE-2.6",
@@ -1886,6 +2562,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 3장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-9-5",
@@ -1908,6 +2594,7 @@
       "spec": "v0.6",
       "coverage": "필드",
       "status": "linked",
+      "confidence": 1,
       "truth": {
         "true": [
           "yes"
@@ -1919,8 +2606,20 @@
           "unknown"
         ]
       },
-      "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.sensitivePersonalInformation",
+            "SPDX 경로: AIPackage.ai_useSensitivePersonalInformation",
+            "조건 변환식 변경: 없음 → \"{\"true\": [\"yes\"], \"false\": [\"no\"], \"unknown\": [\"unknown\"]}\"",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-5",
@@ -1937,6 +2636,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.anonymizationMethods",
+            "SPDX 경로: DatasetPackage.dataset_anonymizationMethodUsed",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-5-b",
@@ -1953,6 +2664,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.sensitiveData",
+            "SPDX 경로: DatasetPackage.dataset_hasSensitivePersonalInformation",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-5",
@@ -1965,6 +2688,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 componentData.designChoices 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MAP-2.3",
@@ -1987,20 +2720,22 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.modelParameters.inputs.maxSize, component.modelCard.modelParameters.outputs.maxSize",
+            "SPDX 경로: AIPackage.aibom_inputMaxSize, AIPackage.aibom_outputMaxSize",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보에 없음. 엑셀 표의 경로(CycloneDX inputOutputMLParameters.maxSize)를 고친 것"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XII-2-b",
           "card_version": 1
-        }
-      ],
-      "history": [
-        {
-          "at": "2026-11-06",
-          "action": "revise",
-          "changes": [
-            "CycloneDX 경로 변경: inputOutputMLParameters.maxSize → 모델 카드의 inputs · outputs 경로",
-            "이유: 표의 공유 자료형 경로(inputOutputMLParameters.maxSize)는 엔진이 못 풀어 모델 카드의 inputs·outputs 경로로 (정적 검증이 잡음)"
-          ]
         }
       ]
     },
@@ -2013,6 +2748,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.noise",
+            "SPDX 경로: DatasetPackage.dataset_datasetNoise",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-3",
@@ -2029,6 +2776,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.statistics",
+            "SPDX 경로: DatasetPackage.aibom_statistics",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-3",
@@ -2045,6 +2804,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.intendedUse",
+            "SPDX 경로: DatasetPackage.dataset_intendedUse",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-4",
@@ -2061,6 +2832,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData.provenance",
+            "SPDX 경로: DatasetPackage.software_sourceInfo",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
@@ -2088,6 +2871,17 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "SPDX 경로: Package.externalRef.locator (type:privacyAssessment)",
+            "이유: 정답지: CycloneDX 에는 자리가 없고 SPDX 에만 있음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MEASURE-2.10",
@@ -2103,6 +2897,17 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "SPDX 경로: Package.validUntilTime",
+            "이유: 정답지: CycloneDX 에는 자리가 없고 SPDX 에만 있음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-8",
@@ -2122,6 +2927,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.externalReferences.url (type:certification-report)",
+            "SPDX 경로: Package.externalRef.locator (type:certificationReport), File.externalRef.locator (type:certificationReport)",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-V-7",
@@ -2153,6 +2970,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.cpe",
+            "SPDX 경로: Package.externalIdentifier.identifier, File.externalIdentifier.identifier",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보에 없음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IX-3",
@@ -2184,6 +3013,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 3장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.name",
+            "SPDX 경로: Package.name, File.name",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보에 없음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-V-1",
@@ -2212,6 +3053,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.purl",
+            "SPDX 경로: Package.software_packageUrl, Package.externalIdentifier.identifier, File.externalIdentifier.identifier",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IX-3",
@@ -2243,6 +3096,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.description",
+            "SPDX 경로: Package.description, File.description",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IX-3",
@@ -2266,6 +3131,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.type",
+            "SPDX 경로: Package.software_primaryPurpose, File.software_primaryPurpose",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-V-1",
@@ -2282,6 +3159,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 3장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.ethicalConsiderations.mitigationStrategy",
+            "SPDX 경로: AIPackage.aibom_ethicalConsiderationsMitigationStrategy",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 3위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-55-1-b",
@@ -2313,6 +3202,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.externalReferences.url (type:attestation)",
+            "SPDX 경로: Package.externalRef.locator (type:secureSoftwareAttestation), File.externalRef.locator (type:secureSoftwareAttestation)",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-8",
@@ -2337,6 +3238,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-16-h",
@@ -2353,6 +3264,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 declarations 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-V-7",
@@ -2376,6 +3297,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.externalReferences.url (type:pentest-report)",
+            "SPDX 경로: Package.externalRef.locator (type:securityPenTestReport), File.externalRef.locator (type:securityPenTestReport)",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MEASURE-2.7",
@@ -2388,6 +3321,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 3장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 declarations.assessors.thirdParty 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-15-4",
@@ -2415,6 +3358,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 13장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.externalReferences.url (type:risk-assessment)",
+            "SPDX 경로: Package.externalRef.locator (type:riskAssessment), File.externalRef.locator (type:riskAssessment)",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-5",
@@ -2490,6 +3445,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.externalReferences.url (type:threat-model)",
+            "SPDX 경로: Package.externalRef.locator (type:securityThreatModel), File.externalRef.locator (type:securityThreatModel)",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-15-5",
@@ -2509,6 +3476,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.externalReferences.url (type:website)",
+            "SPDX 경로: Package.externalRef.locator (type:altWebPage), File.externalRef.locator (type:altWebPage)",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-13",
@@ -2529,6 +3508,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.fairnessAssessments.benefits",
+            "SPDX 경로: AIPackage.aibom_fairnessAssessmentBenefits",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-ISO42001-A.5.4",
@@ -2549,6 +3540,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.fairnessAssessments.groupAtRisk",
+            "SPDX 경로: AIPackage.aibom_fairnessAssessments",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-27-1-c",
@@ -2577,6 +3580,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 3장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.fairnessAssessments.harms",
+            "SPDX 경로: AIPackage.aibom_fairnessAssessmentHarms",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-9-9",
@@ -2601,6 +3616,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.users",
+            "SPDX 경로: AIPackage.aibom_users",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MAP-1.1",
@@ -2613,6 +3640,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 componentData.representationAssumptions 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MAP-1.1",
@@ -2625,6 +3662,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.isExternal 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MAP-1.1",
@@ -2637,6 +3684,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.modelCard.considerations.users 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MAP-1.1",
@@ -2649,6 +3706,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 definitions.patents.Patent 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MAP-1.1",
@@ -2661,6 +3728,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.modelCard.considerations.environmentalConsiderations 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MAP-1.1",
@@ -2677,6 +3754,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 3장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: formulation.workflows.tasks.resourceReferences",
+            "SPDX 경로: Build.creationInfo.createdUsing",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보에 없음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-2-1",
@@ -2697,6 +3786,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.modelCard.modelParameters.approach 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MAP-2.1",
@@ -2712,6 +3811,17 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 5장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: definitions.standards.requirements",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-2-1",
@@ -2744,6 +3854,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.modelCard.considerations.limitationIdentificationMethods",
+            "SPDX 경로: AIPackage.aibom_limitationIdentificationMethods",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 1위와 같음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-2-1",
@@ -2759,6 +3881,17 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: formulation",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MEASURE-2.3",
@@ -2771,6 +3904,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.modelCard.considerations.safetyRiskAssessment 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MEASURE-2.3",
@@ -2786,6 +3929,17 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.pedigree.commits",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-6",
@@ -2802,6 +3956,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: component.pedigree.notes",
+            "SPDX 경로: Relationship.comment",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-6",
@@ -2818,6 +3984,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: componentData",
+            "SPDX 경로: DatasetPackage",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보에 없음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-ISO42001-A.4.3",
@@ -2833,6 +4011,17 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: services",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 3위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-ISO42001-A.4.2",
@@ -2852,6 +4041,17 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: declarations.attestations.map",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보에 없음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-ISO42001-A.6.2.4",
@@ -2868,6 +4068,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.modelCard.quantitativeAnalysis.performanceMetrics.decisionThreshold 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MANAGE-1.1",
@@ -2880,6 +4090,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 declarations.attestations.map.requirement 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-7",
@@ -2911,6 +4131,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: definitions.standards.name",
+            "SPDX 경로: Artifact.standardName, AIPackage.ai_standardCompliance",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 2위"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-7",
@@ -2934,37 +4166,58 @@
       "concept": "FORMULATION_COMPONENTS",
       "cdx_path": "formulation.components",
       "spdx_path": "Build.@hasInput",
+      "spdx_paths_more": [
+        "Build.@usesTool"
+      ],
       "spec": "1.7",
       "coverage": "관계",
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀) | SPDX 보정: 표의 Relationship.relationshipType 을 Build 의 입력·도구 관계로 좁혔다",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: formulation.components",
+            "SPDX 경로: Build.@hasInput, Build.@usesTool",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보에 없음. 엑셀 표의 경로(SPDX Relationship.relationshipType)를 고친 것"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-ISO42001-A.4.4",
           "card_version": 1
         }
-      ],
-      "spdx_paths_more": [
-        "Build.@usesTool"
       ]
     },
     {
       "concept": "FORMULATION_SERVICES",
       "cdx_path": "formulation.services",
-      "spdx_path": null,
       "spec": "1.7",
       "coverage": "관계",
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀) | SPDX 보정: SPDX 에는 서비스 클래스가 없다 (표의 Relationship.relationshipType 은 느슨해 뺐다)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: formulation.services",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보 5위. 엑셀 표의 경로(SPDX Relationship.relationshipType)를 고친 것"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-ISO42001-A.4.4",
           "card_version": 1
         }
-      ],
-      "spdx_paths_more": []
+      ]
     },
     {
       "concept": "METADATA_MANUFACTURER",
@@ -2975,6 +4228,18 @@
       "status": "linked",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 있음",
+            "CycloneDX 경로: metadata.manufacturer",
+            "SPDX 경로: Sbom.creationInfo.createdBy",
+            "이유: 정답지(엑셀 요구사항 표)의 경로. 생성기 후보에 없음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-VIII-C-1",
@@ -2987,6 +4252,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.modelCard.considerations.ethicalConsiderations.name 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-V-2",
@@ -3011,6 +4286,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 4장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 service 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-10",
@@ -3035,6 +4320,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.evidence.occurrences.line 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MEASURE-4.3",
@@ -3047,6 +4342,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MEASURE-1.1",
@@ -3059,6 +4364,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MEASURE-4.2",
@@ -3071,6 +4386,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 declarations.attestations.map.confidence.rationale 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-VIII-B-6",
@@ -3087,6 +4412,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.modelCard.modelParameters.hyperparameters.value 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MAP-1.4",
@@ -3099,6 +4434,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 component.modelCard.considerations.fairnessAssessments.benefits 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-NISTRMF-MAP-3.1",
@@ -3115,6 +4460,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 1장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 declarations.assessors.thirdParty 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-25-4",
@@ -3127,6 +4482,16 @@
       "status": "gap",
       "confidence": 1,
       "note": "요구사항 표에서 (카드 2장이 씀)",
+      "history": [
+        {
+          "at": "2026-11-12",
+          "action": "register",
+          "changes": [
+            "자리: 없음",
+            "이유: 정답지: 두 형식 모두 자리 없음 (생성기는 inputOutputMLParameters.format 를 냈음)"
+          ]
+        }
+      ],
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-50-1",
