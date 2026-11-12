@@ -15,12 +15,13 @@ const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({"&": "&amp;", "<"
 const regOf = (id) => REG_NAME[id.split("-")[1]] || id.split("-")[1];
 const vclass = (v) => "v-" + v.replace(/\s/g, "");
 let cards = [], cardById = {}, vocab = {}, profile = {}, targets = {}, examples = [];
-let pending = new Set(), partial = {}, profileApproved = true;      // 승인 안 된 줄, 부분 대응 줄(개념 → 이유), 프로파일 승인 여부
+let pending = new Set(), partial = {}, profileApproved = true, unitOverride = {};   // unitOverride: 프로파일 줄이 정한 확인 단위 (개념 → 단위)      // 승인 안 된 줄, 부분 대응 줄(개념 → 이유), 프로파일 승인 여부
 let evidenceSpec = {}, evidenceKinds = {};        // 프로파일의 증빙 조회식(evidence.kinds), 어휘의 증빙 종류(evidence_kinds)
 let truth = {}, classParents = {};                // 조건 변환식(줄의 truth), SPDX 클래스 → 조상 (SPDX 프로파일의 class_parents)
 const PROFILES = {};                              // 형식 → 읽어 둔 프로파일 (CycloneDX: profile.json, SPDX: profile-spdx.json). judgeBom 이 문서 형식에 맞는 것을 켠다
 const isSpdx = (bom) => Boolean(bom) && typeof bom === "object" && Array.isArray(bom["@graph"]);
 const KIND_KO = {system: "시스템", model: "모델", dataset: "데이터셋", software: "소프트웨어"};
+const UNIT_KO = {document: "문서", component: "구성요소", ...KIND_KO};      // 확인 단위 (judge.py 의 UNIT_KO)
 let currentBom = null, currentName = "", currentSize = 0;      // 지금 판정하는 BOM. 올린 것이든 예제든 브라우저 안에서 판정한다 (프로파일을 바꾸면 다시)
 let regSel = new Set(Object.keys(REG_NAME)), verdictSel = new Set(VERDICTS);   // 목록 거르기: 고른 규제들과 고른 판정들 (처음엔 모두 켜져 있고, 집계 칩을 누르면 끄고 켠다)
 
@@ -40,20 +41,21 @@ async function init() {
 }
 // 프로파일 파일 하나 → 판정이 쓰는 모양. 줄의 경로 열은 형식마다 다르다 (CycloneDX 는 cdx_path, SPDX 는 spdx_path)
 function buildProfile(p, key, more) {
-  const out = {paths: {}, pending: new Set(), partial: {}, truth: {}, targets: p.targets || {}, evidence: p.evidence || {}, approved: p.status === "approved", classParents: p.class_parents || {}, meta: {profile_id: p.profile_id, profile_version: p.profile_version, format: p.schema?.format || "CycloneDX"}};
+  const out = {paths: {}, pending: new Set(), partial: {}, truth: {}, unitOverride: {}, targets: p.targets || {}, evidence: p.evidence || {}, approved: p.status === "approved", classParents: p.class_parents || {}, meta: {profile_id: p.profile_id, profile_version: p.profile_version, format: p.schema?.format || "CycloneDX"}};
   for (const line of p.lines) {
     const list = (out.paths[line.concept] ||= []);
     for (const x of [line[key], ...(line[more] || [])]) if (x && !list.includes(x)) list.push(x);
     if (line.status === "pending_review") out.pending.add(line.concept);
     if (line.fit === "partial") out.partial[line.concept] = line.fit_note || "부분 대응 (경로의 대상 범위 또는 표현 형태가 요구와 다름)";
     if (line.truth) out.truth[line.concept] = line.truth;
+    if (line.target) out.unitOverride[line.concept] = line.target;
   }
   return out;
 }
 function activateProfile(fmt) {                       // judgeBom 이 문서 형식에 맞는 프로파일을 켠다 (judge.py 의 load_profile 자리)
   const p = PROFILES[fmt]; if (!p) throw new Error(`${fmt} 프로파일이 없습니다`);
   profile = Object.fromEntries(Object.entries(p.paths).map(([k, v]) => [k, {cdx: v}]));     // 아래 코드는 profile[k].cdx 를 "이 형식의 경로" 로 쓴다
-  pending = p.pending; partial = p.partial; truth = p.truth; targets = p.targets; evidenceSpec = p.evidence; profileApproved = p.approved; classParents = p.classParents;
+  pending = p.pending; partial = p.partial; truth = p.truth; targets = p.targets; unitOverride = p.unitOverride; evidenceSpec = p.evidence; profileApproved = p.approved; classParents = p.classParents;
   return p;
 }
 
@@ -312,7 +314,7 @@ function renderJudg(r) {
     <table class="cv-facts"><thead><tr><th>상태</th><th>요구 사실</th><th>BOM 필드 · 값이 있는 구성요소</th></tr></thead><tbody>
     ${facts.map((f, i) => { const found = [...new Set(Object.values(f.found_at || {}).flat())]; return `<tr data-idx="${i}"><td><span class="cv-chip ${f.status}">${STATUS_KO[f.status] || f.status}</span>
       ${f.required === "optional" ? `<br><span class="cv-muted">해당 시</span>` : f.condition_evaluated === false ? `<br><span class="cv-muted">조건 미평가</span>` : f.condition ? `<br><span class="cv-muted">조건 ${esc(f.condition)}</span>` : ""}</td>
-      <td>${esc(f.label || label(f.concept))}<br><code>${esc(f.concept)}</code>${f.target ? `<br><span class="cv-muted">대상 ${esc(KIND_KO[f.target] || f.target)}</span>` : ""}</td>
+      <td>${esc(f.label || label(f.concept))}<br><code>${esc(f.concept)}</code>${f.unit && f.unit !== "document" ? `<br><span class="cv-muted">단위 ${esc(f.unit.split(" · ").map((u) => UNIT_KO[u] || u).join(" · "))}</span>` : ""}</td>
       <td>${(f.paths || []).map((p) => `<span class="cv-path">${esc(p)}</span>`).join(" ") || `<span class="cv-muted">${esc(f.reason || "")}</span>`}
       ${found.length ? `<br><span class="cv-muted">값 있음:</span> ${found.map((x) => `<code>${esc(x)}</code>`).join(" ")}` : ""}${targetDetail(f)}</td></tr>`; }).join("")}
     </tbody></table>
@@ -322,7 +324,7 @@ function renderJudg(r) {
       <td>${esc(evLabel(e.kind))}<br><code>${esc(e.kind)}</code></td>
       <td>${e.found?.length ? e.found.map(evidenceFound).join("<br>") : `<span class="cv-muted">${esc(e.reason || "")}</span>`}</td></tr>`).join("")}
     </tbody></table>` : ""}
-    <p class="cv-note">"비어 있음" 과 "자리 없음" 이 누락이고, 비어 있음의 필드가 채울 자리입니다. "부분 대응" 은 값은 있지만 필드의 대상 범위나 표현 형태가 요구와 달라 부분 반영까지만 갑니다. 조건식(JSON Logic)이 있는 조항은 조건이 거짓이면 그 사실을 "요구 안 됨" 으로 빼고, 조건을 판단할 정보가 BOM 에 없으면(자리 자체가 없음) "판단 못 함" 이라 검토 필요입니다. 대상 구성요소가 정해진 사실은 그 종류의 구성요소마다 보고(조건도 구성요소마다), 값이 빠진 구성요소를 적습니다. "해당 시 필요" 는 where applicable 처럼 해당 여부를 BOM 으로 판단할 수 없는 사실이라, 값이 있으면 세고 없어도 누락으로 세지 않으며 그런 사실만 있는 조항은 검토 필요입니다. 카드 전체에 걸린 조건이 거짓이거나 예외에 해당하면 비적용입니다. 시스템 프로파일 칸(profile.…)을 보는 조건은 칸이 없으면 모름이라 검토 필요이고, 예외는 칸이 없으면 해당 없음입니다. 증빙은 사실 다음에 봅니다. 요구 사실이 다 있어도 증빙이 없거나 무효(만료)이면 부분 반영입니다. 증빙은 구성요소의 externalReferences(종류별 type), declarations 의 주장(claims)이 가리키는 evidence(propertyName aibom:evidence:…), 요구사항(definitions.standards)에 댄 attestations 에서 찾습니다.</p>`;
+    <p class="cv-note">"비어 있음" 과 "자리 없음" 이 누락이고, 비어 있음의 필드가 채울 자리입니다. "부분 대응" 은 값은 있지만 필드의 대상 범위나 표현 형태가 요구와 달라 부분 반영까지만 갑니다. 조건식(JSON Logic)이 있는 조항은 조건이 거짓이면 그 사실을 "요구 안 됨" 으로 빼고, 조건을 판단할 정보가 BOM 에 없으면(자리 자체가 없음) "판단 못 함" 이라 검토 필요입니다. 사실은 프로파일 경로가 속한 단위(데이터셋 · 모델 · 구성요소 · 문서)마다 전부 확인하고(조건도 단위마다), 값이 빠진 구성요소를 적습니다. "해당 시 필요" 는 where applicable 처럼 해당 여부를 BOM 으로 판단할 수 없는 사실이라, 값이 있으면 세고 없어도 누락으로 세지 않으며 그런 사실만 있는 조항은 검토 필요입니다. 카드 전체에 걸린 조건이 거짓이거나 예외에 해당하면 비적용입니다. 시스템 프로파일 칸(profile.…)을 보는 조건은 칸이 없으면 모름이라 검토 필요이고, 예외는 칸이 없으면 해당 없음입니다. 증빙은 사실 다음에 봅니다. 요구 사실이 다 있어도 증빙이 없거나 무효(만료)이면 부분 반영입니다. 증빙은 구성요소의 externalReferences(종류별 type), declarations 의 주장(claims)이 가리키는 evidence(propertyName aibom:evidence:…), 요구사항(definitions.standards)에 댄 attestations 에서 찾습니다.</p>`;
   wireMarks(d);
 }
 // 찾은 증빙 하나를 한 줄로
@@ -337,9 +339,9 @@ function evidenceFound(f) {
   if (f.requirement) parts.push(`요구사항 ${f.requirement} 에 댄 입증` + (f.conformance !== null && f.conformance !== undefined ? ` (준수도 ${f.conformance})` : ""));
   return `<code>${esc(f.on)}</code> declarations <code>${esc(f.ref || "")}</code> <span class="cv-muted">${esc(f.property || "")} · ${parts.map(esc).join(" · ")}</span>${bad}`;
 }
-// 대상 구성요소가 정해진 fact: 구성요소별 조건과 빠진 구성요소
+// 단위가 구성요소인 fact: 구성요소별 조건과 빠진 구성요소
 function targetDetail(f) {
-  if (!f.target) return "";
+  if (!f.unit || f.unit === "document") return "";
   const out = [];
   if (f.condition_on) out.push(`조건 ${esc(f.condition)}: ` + Object.entries(f.condition_on).map(([k, v]) => `<code>${esc(k)}</code> ${v === true ? "참" : v === false ? "거짓" : "평가 못 함"}`).join(", "));
   if (f.missing_on?.length) out.push(`빠진 구성요소${f.missing_count > f.missing_on.length ? ` (${f.missing_count}개 중 ${f.missing_on.length}개)` : ""}: ` + f.missing_on.map((x) => `<code>${esc(x)}</code>`).join(" "));
@@ -427,9 +429,10 @@ function judgeBom(bom, name, system = {}) {
   if (!spdx) (function walk(items) { for (const c of items || []) { allComps.push(c); walk(c.components); } })(bom.components);
   const compsOfKind = (kind) => {
     const spec = targets[kind]; if (!spec) throw new Error(`프로파일 targets 에 '${kind}' 가 없다`);
-    if (spdx) { if (spec.root) return roots.slice(); const purposes = spec.purposes || []; return allComps.filter((e) => (spec.classes || []).some((c) => spdxIs(e, c)) && !(spec.exclude_classes || []).some((x) => spdxIs(e, x)) && (!purposes.length || purposes.includes(e.software_primaryPurpose))); }
+    if (spdx) { if (spec.root) return roots.slice(); const purposes = spec.purposes || []; return [...roots, ...allComps].filter((e) => (spec.classes || []).some((c) => spdxIs(e, c)) && !(spec.exclude_classes || []).some((x) => spdxIs(e, x)) && (!purposes.length || purposes.includes(e.software_primaryPurpose))); }
     if (spec.root) return get(bom, spec.root.split(".")).filter((v) => v && typeof v === "object");
-    return allComps.filter((c) => (spec.component_types || []).includes(c.type));
+    const meta = bom.metadata?.component;                 // 시스템 자신이 그 종류면 같이 센다 (모델이 주체인 BOM)
+    return [...(meta && typeof meta === "object" ? [meta] : []), ...allComps].filter((c) => (spec.component_types || []).includes(c.type));
   };
   const DOC_ROOTS = ["components", "services", "dependencies", "formulation", "declarations", "definitions", "metadata", "compositions"];
   const resolve = (path) => {
@@ -464,7 +467,7 @@ function judgeBom(bom, name, system = {}) {
     if (rootKey === "releaseNotes") return get(c, ["releaseNotes", ...rest]);
     return DOC_ROOTS.includes(rootKey) ? get(bom, [rootKey, ...rest]) : [];
   };
-  // 조건식 변수(개념 id): 참·거짓·모름. 프로파일 줄에 truth(조건 변환식)가 있으면 값으로(yes/no), 없으면 값의 유무로. target 이 있는 fact 는 구성요소 하나에서 본다
+  // 조건식 변수(개념 id): 참·거짓·모름. 프로파일 줄에 truth(조건 변환식)가 있으면 값으로(yes/no), 없으면 값의 유무로. 단위가 구성요소인 fact 는 구성요소 하나에서 본다
   // profile. 변수는 시스템 프로파일의 칸 (조건에서는 없으면 모름, 예외에서는 없으면 거짓). val 은 경로의 첫 값 (judge.py 의 first_value)
   const PROFILE = "profile.";
   const profileVar = (k, dflt = null) => { const key = k.slice(PROFILE.length); return system && typeof system === "object" && key in system ? system[key] : dflt; };
@@ -574,51 +577,60 @@ function judgeBom(bom, name, system = {}) {
     const extra = {...(Object.keys(conditions).length ? {conditions} : {}), ...(Object.keys(exceptions).length ? {exceptions} : {})};
     if (notApplies) return {card_id: c.card_id, verdict: "비적용", reason: notApplies, facts: [], ...extra};
     const byId = Object.fromEntries((c.conditions || []).map((x) => [x.id, x]));
-    const onTargets = (f, paths, entry) => {            // judge.py 의 judge_on_targets
-      const kind = f.target, kcomps = compsOfKind(kind);
-      entry.target = kind; let required = kcomps;
-      if (f.required === "conditional") {
-        const expr = byId[f.condition]?.expr;
-        entry.condition = f.condition; entry.condition_evaluated = expr !== undefined && expr !== null;
-        if (entry.condition_evaluated) {
-          const vals = kcomps.map((x) => { try { return [x, logic(expr, (k) => k.startsWith(PROFILE) ? profileVar(k) : varState(k, [x]), valueOf([x]))]; } catch (e) { return [x, null]; } });
-          entry.condition_on = Object.fromEntries(vals.map(([x, v]) => [lab(x), v]));
-          const unknown = vals.filter(([, v]) => v === null || v === undefined).map(([x]) => x);
-          if (unknown.length) return {...entry, status: "unknown", paths, reason: `조건 ${f.condition} 을 판단할 정보가 없는 ${KIND_KO[kind]} 구성요소: ${unknown.slice(0, 10).map(lab).join(", ")} (${byId[f.condition]?.text})`};
-          required = vals.filter(([, v]) => v === true).map(([x]) => x);
-          if (!required.length) return {...entry, status: "not_required", paths, reason: `조건 ${f.condition} 이 참인 ${KIND_KO[kind]} 구성요소가 없음: ${byId[f.condition]?.text}`};
-        }
-      }
+    // 확인 단위 (judge.py 의 unit_of_path · judge_fact): 경로가 속한 단위마다 전부 확인한다. CycloneDX 는 componentData → 데이터셋, component.modelCard → 모델,
+    // 그 밖의 경로 → 문서(검사 대상 구성요소 어디에든 하나라도). SPDX 는 DatasetPackage · AIPackage · 나머지. 프로파일 줄의 target 이 있으면 그것. 조건 변수가 다른 단위에 있으면 문서 단위로 본다
+    const unitOf = (path) => {
+      const base = path.split(" (type:")[0];
+      if (spdx) { const cls = base.split(".")[0]; if (cls === "DatasetPackage") return "dataset"; if (cls === "AIPackage") return "model"; return "document"; }
+      const [rootKey, ...rest] = base.split(".");
+      if (rootKey === "componentData") return "dataset";
+      if (rootKey === "component") return rest[0] === "modelCard" ? "model" : "document";
+      return "document";
+    };
+    const unitComps = (unit) => unit === "document" ? [null] : unit === "component" ? comps : compsOfKind(unit);
+    const onUnit = (unit, x, p) => unit === "document" ? resolve(p).length > 0 : onComp(x, p);
+    const ulab = (unit, x) => unit === "document" ? "$" : lab(x);
+    const judgeFact = (f, paths, entry) => {
+      const override = unitOverride[f.concept], unitPaths = {};
+      for (const p of paths) (unitPaths[override || unitOf(p)] ||= []).push(p);
+      entry.unit = Object.keys(unitPaths).join(" · ") || override || "document";
+      const cid = f.required === "conditional" ? f.condition : null, cond = cid ? (byId[cid] || {}) : {}, expr = cid ? cond.expr : undefined, hasExpr = expr !== undefined && expr !== null;
+      if (cid) { entry.condition = cid; entry.condition_evaluated = hasExpr; }
       if (pending.has(f.concept)) return {...entry, status: "unknown", paths, reason: "매핑이 승인되지 않음 (프로파일 줄이 pending_review)"};
-      if (!paths.length) return {...entry, status: "gap", paths: [], reason: "프로파일에 경로 없음 (스키마에 자리 없음)"};
+      if (!paths.length) {
+        if (hasExpr && conditions[cid]?.result === false) return {...entry, status: "not_required", paths: [], reason: `조건 ${cid} 이 거짓이라 요구되지 않음: ${cond.text}`};
+        return {...entry, status: "gap", paths: [], reason: "프로파일에 경로 없음 (스키마에 자리 없음)"};
+      }
+      const groups = Object.entries(unitPaths).map(([u, ps]) => { const cs = unitComps(u); return u === "system" && !cs.length ? ["document", ps, [null]] : [u, ps, cs]; }).filter(([, , cs]) => cs.length);   // 루트 구성요소가 없는 BOM: 시스템 단위는 문서 단위로
+      if (!groups.length) return {...entry, status: "missing", paths, found_at: {}, checked: 0, reason: "BOM 에 " + Object.keys(unitPaths).map((u) => UNIT_KO[u] || u).join(" · ") + " 구성요소가 없음"};
+      const required = [], condOn = {}, unknown = [];
+      for (const [u, ps, cs] of groups) for (const x of cs) {
+        if (hasExpr) {
+          let v;
+          if (u === "document") v = conditions[cid]?.result;                     // 문서 단위: 카드 단위로 평가한 조건 결과
+          else { const same = (k) => !(profile[k]?.cdx || []).length || (profile[k].cdx || []).every((p) => unitOf(p) === u), scope = (k) => same(k) ? [x] : comps;
+                 try { v = logic(expr, (k) => k.startsWith(PROFILE) ? profileVar(k) : varState(k, scope(k)), (k) => k.startsWith(PROFILE) ? profileVar(k) : valueOf(scope(k))(k)); } catch (e) { v = null; } }
+          condOn[ulab(u, x)] = v;
+          if (v === null || v === undefined) { unknown.push(ulab(u, x)); continue; }
+          if (!v) continue;
+        }
+        required.push([u, x, ps]);
+      }
+      if (hasExpr) entry.condition_on = condOn;
+      if (unknown.length) return {...entry, status: "unknown", paths, reason: `조건 ${cid} 을 판단할 정보가 BOM 에 없음: ${cond.text}` + (unknown.length === 1 && unknown[0] === "$" ? "" : ` (구성요소 ${unknown.slice(0, 10).join(", ")})`)};
+      if (hasExpr && !required.length) return {...entry, status: "not_required", paths, reason: `조건 ${cid} 이 거짓이라 요구되지 않음: ${cond.text}`};
+      const have = [], missing = [], found = {};
+      for (const [u, x, ps] of required) { const hits = ps.filter((p) => onUnit(u, x, p)); (hits.length ? have : missing).push([u, x]); for (const p of hits) (found[p] ||= []).push(ulab(u, x)); }
+      for (const p of Object.keys(found)) found[p] = found[p].slice(0, 10);
       entry.checked = required.length;
-      if (!required.length) return {...entry, status: "missing", paths, found_at: {}, reason: `BOM 에 ${KIND_KO[kind]} 구성요소가 없음`};
-      const have = required.filter((x) => paths.some((p) => onComp(x, p))), missing = required.filter((x) => !have.includes(x));
-      const found = {}; for (const p of paths) { const refs = have.filter((x) => onComp(x, p)).map(lab).slice(0, 10); if (refs.length) found[p] = refs; }
       const status = missing.length ? "missing" : partial[f.concept] ? "partial" : "present";
-      if (missing.length && f.required === "optional") return {...entry, status: "optional", paths, found_at: found, missing_on: missing.map(lab).slice(0, 10), missing_count: missing.length, reason: OPTIONAL_REASON};   // 해당 시 필요: 누락이 아니라 판단 보류
+      if (missing.length && f.required === "optional") return {...entry, status: "optional", paths, found_at: found, missing_on: missing.map(([u, x]) => ulab(u, x)).slice(0, 10), missing_count: missing.length, reason: OPTIONAL_REASON};   // 해당 시 필요: 누락이 아니라 판단 보류
       const out = {...entry, status, paths, found_at: found};
-      if (missing.length) Object.assign(out, {missing_on: missing.map(lab).slice(0, 10), missing_count: missing.length, reason: `요구되는 ${KIND_KO[kind]} 구성요소 ${required.length}개 중 ${missing.length}개에 값이 없음`});
+      if (missing.length) { const units = [...new Set(required.map(([u]) => UNIT_KO[u] || u))].join(" · "); Object.assign(out, {missing_on: missing.map(([u, x]) => ulab(u, x)).slice(0, 10), missing_count: missing.length, reason: required.length > 1 || missing[0][0] !== "document" ? `요구되는 ${units} ${required.length}개 중 ${missing.length}개에 값이 없음` : "값이 없음"}); }
       else if (status === "partial") out.reason = partial[f.concept];
       return out;
     };
-    const facts = c.facts.map((f) => {
-      const paths = profile[f.concept]?.cdx || [];
-      const entry = {concept: f.concept, label: label(f.concept), required: f.required};
-      if (f.target) return onTargets(f, paths, entry);
-      if (f.required === "conditional") {
-        const cond = conditions[f.condition] || {};
-        entry.condition = f.condition; entry.condition_evaluated = !!cond.evaluated;
-        if (cond.evaluated && (cond.result === null || cond.result === undefined)) return {...entry, status: "unknown", paths, reason: `조건 ${f.condition} 을 판단할 정보가 BOM 에 없음: ${cond.text}` + (cond.error ? ` (${cond.error})` : "")};
-        if (cond.result === false) return {...entry, status: "not_required", paths, reason: `조건 ${f.condition} 이 거짓이라 요구되지 않음: ${cond.text}`};
-      }
-      if (pending.has(f.concept)) return {...entry, status: "unknown", paths, reason: "매핑이 승인되지 않음 (프로파일 줄이 pending_review)"};
-      if (!paths.length) return {...entry, status: "gap", paths: [], reason: "프로파일에 경로 없음 (스키마에 자리 없음)"};
-      const found = {}; for (const p of paths) { const refs = resolve(p); if (refs.length) found[p] = refs.slice(0, 5); }
-      const hit = Object.keys(found).length > 0;
-      const status = !hit && f.required === "optional" ? "optional" : !hit ? "missing" : partial[f.concept] ? "partial" : "present";
-      return {...entry, status, paths, found_at: found, ...(status === "partial" ? {reason: partial[f.concept]} : status === "optional" ? {reason: OPTIONAL_REASON} : {})};
-    });
+    const facts = c.facts.map((f) => judgeFact(f, profile[f.concept]?.cdx || [], {concept: f.concept, label: label(f.concept), required: f.required}));
     const evidence = judgeEvidence(c), evUnknown = evidence.filter((e) => e.status === "unknown"), evLacking = evidence.filter((e) => e.status === "missing" || e.status === "invalid");   // 증빙은 사실 다음
     const required = facts.filter((f) => f.status !== "not_required" && f.status !== "optional"), unknown = required.filter((f) => f.status === "unknown");
     const optionalAbsent = facts.filter((f) => f.status === "optional");

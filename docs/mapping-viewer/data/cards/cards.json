@@ -4,6 +4,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.69,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -65,7 +69,8 @@
     "highlight": "의도된 목적",
     "highlight_en": "its intended purpose",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.4
    },
    {
     "concept": "COMPONENT_SUPPLIER",
@@ -74,7 +79,8 @@
     "highlight": "제공자의 명칭",
     "highlight_en": "the name of the provider",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.83
    },
    {
     "concept": "COMPONENT_VERSION",
@@ -83,7 +89,8 @@
     "highlight": "시스템의 버전",
     "highlight_en": "the version of the system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -121,6 +128,10 @@
   "card_version": 3,
   "status": "approved",
   "confidence": 0.69,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -182,19 +193,22 @@
     "highlight": "하드웨어나 소프트웨어(다른 인공지능시스템을 포함)와 상호작용하는 방식",
     "highlight_en": "how the AI system interacts with, or can be used to interact with, hardware or software, including with other AI systems",
     "required": "optional",
-    "value_kind": "free_text"
+    "value_kind": "free_text",
+    "confidence": 0.75
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    },
    {
     "id": "C3",
     "text": "where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -241,6 +255,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.69,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -302,8 +320,8 @@
     "highlight": "관련 소프트웨어나 펌웨어의 버전",
     "highlight_en": "the versions of relevant software or firmware",
     "required": "always",
-    "target": "software",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
@@ -312,7 +330,8 @@
     "gap_highlight": "버전 업데이트와 관련된 요건",
     "gap_highlight_en": "any requirements related to version updates",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -350,6 +369,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.69,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -411,7 +434,8 @@
     "gap_highlight": "인공지능시스템이 시장에 출시되거나 서비스가 제공되는 모든 형태에 대한 설명",
     "gap_highlight_en": "the description of all the forms in which the AI system is placed on the market or put into service",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -449,6 +473,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.69,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -510,7 +538,8 @@
     "highlight": "작동하도록 의도된 하드웨어에 대한 설명",
     "highlight_en": "the description of the hardware on which the AI system is intended to run",
     "required": "always",
-    "value_kind": "free_text"
+    "value_kind": "free_text",
+    "confidence": 0.71
    }
   ],
   "conditions": [],
@@ -548,6 +577,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.69,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -609,7 +642,8 @@
     "gap_highlight": "(g) 배포자에게 제공되는 사용자 인터페이스",
     "gap_highlight_en": "a basic description of the user-interface provided to the deployer",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.5
    }
   ],
   "conditions": [],
@@ -647,6 +681,10 @@
   "card_version": 3,
   "status": "approved",
   "confidence": 0.69,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -708,26 +746,30 @@
     "highlight": "배포자를 위한 사용설명서",
     "highlight_en": "instructions for use for the deployer",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where applicable",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    },
    {
     "id": "C3",
     "text": "where applicable",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "INSTRUCTIONS_FOR_USE",
-    "label": "instructions for use"
+    "label": "instructions for use",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -771,6 +813,10 @@
   "card_version": 3,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -832,7 +878,8 @@
     "highlight": "제3자가 제공한 사전훈련된 시스템이나 도구의 사용",
     "highlight_en": "recourse to pre-trained systems or tools provided by third parties",
     "required": "optional",
-    "value_kind": "relationship"
+    "value_kind": "relationship",
+    "confidence": 0.67
    },
    {
     "concept": "WORKFLOWS_TASKS",
@@ -841,19 +888,22 @@
     "highlight": "인공지능시스템 개발을 위해 수행된 방법과 절차",
     "highlight_en": "the methods and steps performed for the development of the AI system",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where relevant",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    },
    {
     "id": "C2",
     "text": "where relevant",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -904,6 +954,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -965,7 +1019,8 @@
     "highlight": "여러 파라미터의 관련성",
     "highlight_en": "the relevance of the different parameters",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "ARCHITECTURE_FAMILY",
@@ -974,7 +1029,8 @@
     "highlight": "인공지능시스템 및 알고리즘의 일반적 논리",
     "highlight_en": "the general logic of the AI system and of the algorithms",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "MODEL_ARCHITECTURE",
@@ -983,7 +1039,8 @@
     "highlight": "인공지능시스템 및 알고리즘의 일반적 논리",
     "highlight_en": "the general logic of the AI system and of the algorithms",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "OUTPUTS",
@@ -992,7 +1049,8 @@
     "highlight": "시스템의 예상 산출물",
     "highlight_en": "the expected output",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
@@ -1001,7 +1059,8 @@
     "highlight": "산출물 품질에 대한 설명",
     "highlight_en": "output quality of the system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -1010,7 +1069,8 @@
     "highlight": "산출물 품질에 대한 설명",
     "highlight_en": "output quality of the system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "DESIGN_CHOICES",
@@ -1019,7 +1079,8 @@
     "gap_highlight": "그 근거와 가정을 포함한 주요 설계상의 선택 | 주요 분류 선택",
     "gap_highlight_en": "the key design choices including the rationale and assumptions made | the main classification choices",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "DESIGN_CHOICES",
@@ -1028,7 +1089,8 @@
     "gap_highlight": "채택된 기술적 해결책에 관하여 이루어진 발생 가능한 절충에 대한 결정",
     "gap_highlight_en": "the decisions about any possible trade-off made regarding the technical solutions adopted",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "OPTIMIZATION_TARGET",
@@ -1037,7 +1099,8 @@
     "highlight": "시스템이 최적화하도록 설계된 대상",
     "highlight_en": "what the system is designed to optimise for",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -1045,7 +1108,8 @@
   "evidence": [
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -1083,6 +1147,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -1144,7 +1212,8 @@
     "highlight": "소프트웨어 구성요소가 서로 어떻게 구축되거나 연계되어 전체 처리과정에 통합되는지를 설명하는 시스템 구조에 대한 설명",
     "highlight_en": "the description of the system architecture explaining how software components build on or feed into each other and integrate into the overall processing",
     "required": "always",
-    "value_kind": "relationship"
+    "value_kind": "relationship",
+    "confidence": 0.75
    },
    {
     "concept": "SYSTEM_DEV_TEST_COMPUTE",
@@ -1153,7 +1222,8 @@
     "gap_highlight": "인공지능시스템의 개발, 훈련, 시험 및 검증에 사용된 연산자원",
     "gap_highlight_en": "the computational resources used to develop, train, test and validate the AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "TRAINING_COMPUTE",
@@ -1162,7 +1232,8 @@
     "highlight": "개발, 훈련, 시험 및 검증에 사용된 연산자원",
     "highlight_en": "computational resources used to develop, train",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -1203,6 +1274,10 @@
   "card_version": 3,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -1265,7 +1340,8 @@
     "highlight_en": "the training methodologies and techniques",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "COLLECTION_PROCESS",
@@ -1275,7 +1351,8 @@
     "highlight_en": "how the data was obtained and selected",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PREPROCESSING",
@@ -1285,7 +1362,8 @@
     "highlight_en": "labelling procedures | data cleaning methodologies",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "SIZE",
@@ -1295,7 +1373,8 @@
     "highlight_en": "scope and main characteristics",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "MODALITY",
@@ -1305,7 +1384,8 @@
     "highlight_en": "a general description of these data sets",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "DATASETS",
@@ -1314,7 +1394,8 @@
     "highlight": "사용된 훈련 데이터 세트",
     "highlight_en": "the training data sets used",
     "required": "always",
-    "value_kind": "relationship"
+    "value_kind": "relationship",
+    "confidence": 0.75
    },
    {
     "concept": "PROVENANCE",
@@ -1324,7 +1405,8 @@
     "highlight_en": "provenance",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.83
    }
   ],
   "conditions": [
@@ -1333,23 +1415,27 @@
     "text": "where relevant",
     "expr": {
      "var": "DATASETS"
-    }
+    },
+    "confidence": 1.0
    },
    {
     "id": "C2",
     "text": "where relevant",
-    "note": "C1 으로 건다"
+    "note": "C1 으로 건다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "DATASHEET",
-    "label": "datasheet"
+    "label": "datasheet",
+    "confidence": 0.7
    },
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -1402,6 +1488,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -1463,7 +1553,8 @@
     "gap_highlight": "인적 감독조치에 대한 평가",
     "gap_highlight_en": "assessment of the human oversight measures needed",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.83
    },
    {
     "concept": "EXPLAINABILITY_METHODS",
@@ -1472,7 +1563,8 @@
     "highlight": "산출물의 해석을 촉진하는 데 필요한 기술적 조치",
     "highlight_en": "the technical measures needed to facilitate the interpretation of the outputs of AI systems by the deployers",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -1513,6 +1605,10 @@
   "card_version": 3,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -1574,14 +1670,16 @@
     "gap_highlight": "미리 정해진 변경사항에 대한 상세한 설명",
     "gap_highlight_en": "a detailed description of pre-determined changes to the AI system and its performance",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C3",
     "text": "where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -1630,6 +1728,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -1691,7 +1793,8 @@
     "highlight": "측정하기 위해 사용된 지표",
     "highlight_en": "metrics used to measure accuracy, robustness and compliance",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -1700,7 +1803,8 @@
     "highlight": "측정하기 위해 사용된 지표",
     "highlight_en": "metrics used to measure accuracy, robustness and compliance",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "WORKFLOWS_TASKS",
@@ -1709,7 +1813,8 @@
     "highlight": "사용된 검증 및 시험 절차",
     "highlight_en": "the validation and testing procedures used",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "TEST_LOG_REPORT_REF",
@@ -1718,7 +1823,8 @@
     "gap_highlight": "시험 로그 및 모든 시험 보고서",
     "gap_highlight_en": "test logs and all test reports",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -1726,11 +1832,13 @@
   "evidence": [
    {
     "concept": "REPORT",
-    "label": "report"
+    "label": "report",
+    "confidence": 0.4
    },
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -1768,6 +1876,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -1829,7 +1941,8 @@
     "gap_highlight": "마련된 사이버보안조치",
     "gap_highlight_en": "cybersecurity measures put in place",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -1870,6 +1983,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -1929,7 +2046,8 @@
     "highlight": "산출물의 해석을 촉진하기 위해 마련된 기술적 조치",
     "highlight_en": "the technical measures put in place to facilitate the interpretation of the outputs of AI systems",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "ETHICAL_CONSIDERATIONS_NAME",
@@ -1937,7 +2055,8 @@
     "highlight": "예견 가능한 의도되지 아니한 결과 및 건강·안전·기본권·차별에 대한 위험의 원천",
     "highlight_en": "the foreseeable unintended outcomes and sources of risks to health and safety, fundamental rights and discrimination",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "TECHNICAL_LIMITATIONS",
@@ -1945,7 +2064,8 @@
     "highlight": "성능상의 역량과 한계",
     "highlight_en": "its capabilities and limitations in performance",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "INPUTS",
@@ -1953,7 +2073,8 @@
     "highlight": "입력데이터에 관한 사양",
     "highlight_en": "specifications on input data",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PERFORMANCE_METRICS_SLICE",
@@ -1961,7 +2082,8 @@
     "highlight": "특정 개인이나 집단에 대한 정확성의 정도",
     "highlight_en": "the degrees of accuracy for specific persons or groups of persons",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
@@ -1969,7 +2091,8 @@
     "highlight": "특정 개인이나 집단에 대한 정확성의 정도 | 기대되는 전반적인 정확성 수준",
     "highlight_en": "the degrees of accuracy for specific persons or groups of persons | the overall expected level of accuracy",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -1977,7 +2100,8 @@
     "highlight": "특정 개인이나 집단에 대한 정확성의 정도 | 기대되는 전반적인 정확성 수준",
     "highlight_en": "the degrees of accuracy for specific persons or groups of persons | the overall expected level of accuracy",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "HUMAN_OVERSIGHT_MEASURES",
@@ -1985,14 +2109,16 @@
     "gap_highlight": "제14조에 따라 필요한 인적 감독조치",
     "gap_highlight_en": "the human oversight measures needed in accordance with Article 14",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.83
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "as appropriate",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -2025,6 +2151,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.71,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -2084,7 +2214,8 @@
     "highlight": "성능지표의 적절성",
     "highlight_en": "the appropriateness of the performance metrics",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -2092,7 +2223,8 @@
     "highlight": "성능지표의 적절성",
     "highlight_en": "the appropriateness of the performance metrics",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "DECLARATIONS_CLAIMS",
@@ -2100,7 +2232,8 @@
     "highlight": "성능지표의 적절성에 대한 설명",
     "highlight_en": "A description of the appropriateness of the performance metrics",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.67
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
@@ -2108,7 +2241,8 @@
     "highlight": "성능지표의 적절성에 대한 설명",
     "highlight_en": "A description of the appropriateness of the performance metrics",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -2131,6 +2265,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -2190,7 +2328,8 @@
     "highlight": "위험관리시스템에 대한 상세한 설명",
     "highlight_en": "A detailed description of the risk management system",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -2210,6 +2349,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -2269,7 +2412,8 @@
     "highlight": "관련 변경사항",
     "highlight_en": "relevant changes made by the provider to the system through its lifecycle",
     "required": "always",
-    "value_kind": "relationship"
+    "value_kind": "relationship",
+    "confidence": 0.67
    },
    {
     "concept": "PEDIGREE_NOTES",
@@ -2277,7 +2421,8 @@
     "highlight": "관련 변경사항",
     "highlight_en": "relevant changes made by the provider to the system through its lifecycle",
     "required": "always",
-    "value_kind": "relationship"
+    "value_kind": "relationship",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -2299,6 +2444,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.79,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -2359,7 +2508,8 @@
     "highlight_en": "A list of the harmonised standards applied | a list of other relevant standards and technical specifications applied",
     "required": "conditional",
     "condition": "C2",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.83
    },
    {
     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
@@ -2368,7 +2518,8 @@
     "gap_highlight_en": "the solutions adopted to meet the requirements",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [
@@ -2379,7 +2530,8 @@
      "missing": [
       "STANDARDS_NAME"
      ]
-    }
+    },
+    "confidence": 1.0
    },
    {
     "id": "C2",
@@ -2388,7 +2540,8 @@
      "missing": [
       "ALTERNATIVE_COMPLIANCE_MEANS"
      ]
-    }
+    },
+    "confidence": 1.0
    }
   ],
   "exceptions": [],
@@ -2418,6 +2571,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.83,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -2477,7 +2634,8 @@
     "highlight": "EU 적합성 선언서의 사본",
     "highlight_en": "A copy of the EU declaration of conformity",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.83
    }
   ],
   "conditions": [],
@@ -2485,7 +2643,8 @@
   "evidence": [
    {
     "concept": "DECLARATION",
-    "label": "declaration"
+    "label": "declaration",
+    "confidence": 0.7
    }
   ],
   "history": [
@@ -2502,6 +2661,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -2561,7 +2724,8 @@
     "highlight": "시스템의 식별에 필요한 그 밖의 정보",
     "highlight_en": "other information necessary for the identification of the system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "COMPONENT_DESCRIPTION",
@@ -2569,7 +2733,8 @@
     "highlight": "간략한 설명",
     "highlight_en": "A brief description of the AI system",
     "required": "always",
-    "value_kind": "free_text"
+    "value_kind": "free_text",
+    "confidence": 0.67
    },
    {
     "concept": "USE_CASES",
@@ -2577,7 +2742,8 @@
     "highlight": "의도된 목적",
     "highlight_en": "its intended purpose",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.4
    },
    {
     "concept": "COMPONENT_PURL",
@@ -2585,7 +2751,8 @@
     "highlight": "시스템의 식별에 필요한 그 밖의 정보",
     "highlight_en": "other information necessary for the identification of the system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -2608,6 +2775,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.74,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -2667,7 +2838,8 @@
     "highlight": "식별과 추적을 가능하게 하는 그 밖의 명확한 참조사항",
     "highlight_en": "any additional unambiguous reference allowing the identification and traceability of the AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "COMPONENT_NAME",
@@ -2675,7 +2847,8 @@
     "highlight": "명칭",
     "highlight_en": "AI system name",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "COMPONENT_PURL",
@@ -2683,7 +2856,8 @@
     "highlight": "식별과 추적을 가능하게 하는 그 밖의 명확한 참조사항",
     "highlight_en": "any additional unambiguous reference allowing the identification and traceability of the AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "COMPONENT_TYPE",
@@ -2691,7 +2865,8 @@
     "highlight": "유형",
     "highlight_en": "type",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 1.0
    }
   ],
   "conditions": [],
@@ -2714,6 +2889,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.5,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -2773,7 +2952,8 @@
     "highlight": "명칭과 주소",
     "highlight_en": "The name and address of the provider",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "AUTHORISED_REPRESENTATIVE",
@@ -2782,7 +2962,8 @@
     "gap_highlight_en": "their authorised representative",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.71
    }
   ],
   "conditions": [
@@ -2796,7 +2977,8 @@
       },
       true
      ]
-    }
+    },
+    "confidence": 1.0
    }
   ],
   "exceptions": [],
@@ -2828,6 +3010,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.83,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -2887,7 +3073,8 @@
     "highlight": "조화표준 또는 그 밖의 공통기술규격",
     "highlight_en": "any relevant harmonised standards used or any other common specification",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.83
    }
   ],
   "conditions": [],
@@ -2907,6 +3094,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.74,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -2966,7 +3157,8 @@
     "highlight": "인증기관의 명칭과 식별번호 | 발급된 인증서의 식별",
     "highlight_en": "the name and identification number of the notified body | identification of the certificate issued",
     "required": "optional",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.8
    },
    {
     "concept": "CONFORMITY_ASSESSMENT_DECLARATION",
@@ -2974,21 +3166,24 @@
     "gap_highlight": "수행된 적합성평가절차에 대한 설명",
     "gap_highlight_en": "a description of the conformity assessment procedure performed",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "Where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "CERTIFICATE",
-    "label": "certificate"
+    "label": "certificate",
+    "confidence": 0.7
    }
   ],
   "history": [
@@ -3014,6 +3209,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -3073,7 +3272,8 @@
     "gap_highlight": "발급 장소와 일자 | 서명한 자의 성명과 직위",
     "gap_highlight_en": "The place and date of issue of the declaration | the name and function of the person who signed it",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -3081,7 +3281,8 @@
   "evidence": [
    {
     "concept": "DECLARATION",
-    "label": "declaration"
+    "label": "declaration",
+    "confidence": 0.7
    }
   ],
   "history": [
@@ -3101,6 +3302,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.57,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -3160,7 +3365,8 @@
     "highlight": "제공자의 명칭, 주소 및 연락처",
     "highlight_en": "The name, address and contact details of the provider",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    }
   ],
   "conditions": [],
@@ -3183,6 +3389,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -3242,7 +3452,8 @@
     "gap_highlight": "회원국",
     "gap_highlight_en": "Any Member States in which the AI system has been placed on the market, put into service or made available in the Union",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -3262,6 +3473,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.83,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -3321,7 +3536,8 @@
     "highlight": "EU 적합성 선언서의 사본",
     "highlight_en": "A copy of the EU declaration of conformity",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.83
    }
   ],
   "conditions": [],
@@ -3329,7 +3545,8 @@
   "evidence": [
    {
     "concept": "DECLARATION",
-    "label": "declaration"
+    "label": "declaration",
+    "confidence": 0.7
    }
   ],
   "history": [
@@ -3346,6 +3563,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -3405,7 +3626,8 @@
     "highlight": "전자 사용설명서",
     "highlight_en": "Electronic instructions for use",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -3413,7 +3635,8 @@
   "evidence": [
    {
     "concept": "INSTRUCTIONS_FOR_USE",
-    "label": "instructions for use"
+    "label": "instructions for use",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -3430,6 +3653,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -3489,7 +3716,8 @@
     "highlight": "추가 정보를 위한 URL",
     "highlight_en": "A URL for additional information",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -3509,6 +3737,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -3569,7 +3801,8 @@
     "gap_highlight_en": "The name, address and contact details of the authorised representative",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [
@@ -3583,7 +3816,8 @@
       },
       true
      ]
-    }
+    },
+    "confidence": 1.0
    }
   ],
   "exceptions": [],
@@ -3614,6 +3848,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.78,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -3673,7 +3911,8 @@
     "highlight": "식별과 추적을 가능하게 하는 그 밖의 명확한 참조사항",
     "highlight_en": "any additional unambiguous reference allowing the identification and traceability of the AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "COMPONENT_NAME",
@@ -3681,7 +3920,8 @@
     "highlight": "거래명칭",
     "highlight_en": "The AI system trade name",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "COMPONENT_PURL",
@@ -3689,7 +3929,8 @@
     "highlight": "식별과 추적을 가능하게 하는 그 밖의 명확한 참조사항",
     "highlight_en": "any additional unambiguous reference allowing the identification and traceability of the AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    }
   ],
   "conditions": [],
@@ -3711,6 +3952,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.55,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -3770,7 +4015,8 @@
     "highlight": "기능에 대한 설명",
     "highlight_en": "functions supported through this AI system",
     "required": "always",
-    "value_kind": "free_text"
+    "value_kind": "free_text",
+    "confidence": 0.67
    },
    {
     "concept": "USE_CASES",
@@ -3778,7 +4024,8 @@
     "highlight": "의도된 목적",
     "highlight_en": "the intended purpose of the AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.5
    },
    {
     "concept": "COMPONENTS",
@@ -3786,7 +4033,8 @@
     "highlight": "구성요소",
     "highlight_en": "components",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 1.0
    }
   ],
   "conditions": [],
@@ -3808,6 +4056,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -3867,7 +4119,8 @@
     "highlight": "그 작동 논리에 대한 기본적이고 간결한 설명",
     "highlight_en": "its operating logic",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "DATASETS",
@@ -3875,7 +4128,8 @@
     "highlight": "시스템이 사용하는 정보",
     "highlight_en": "the information used by the system",
     "required": "always",
-    "value_kind": "relationship"
+    "value_kind": "relationship",
+    "confidence": 0.67
    },
    {
     "concept": "INPUTS",
@@ -3883,7 +4137,8 @@
     "highlight": "입력값",
     "highlight_en": "inputs",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 1.0
    },
    {
     "concept": "MODEL_ARCHITECTURE",
@@ -3891,7 +4146,8 @@
     "highlight": "그 작동 논리에 대한 기본적이고 간결한 설명",
     "highlight_en": "its operating logic",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -3899,7 +4155,8 @@
   "evidence": [
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -3919,6 +4176,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -3978,7 +4239,8 @@
     "gap_highlight": "상태",
     "gap_highlight_en": "The status of the AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -3998,6 +4260,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.74,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -4057,7 +4323,8 @@
     "highlight": "만료일",
     "highlight_en": "expiry date of the certificate",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "CERTIFICATION_REPORT_REF",
@@ -4065,21 +4332,24 @@
     "highlight": "인증서의 유형·번호·만료일 | 그 인증기관의 명칭 또는 식별번호",
     "highlight_en": "The type, number and expiry date of the certificate issued by the notified body | the name or identification number of that notified body",
     "required": "optional",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.8
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "CERTIFICATE",
-    "label": "certificate"
+    "label": "certificate",
+    "confidence": 0.7
    }
   ],
   "history": [
@@ -4108,6 +4378,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.8,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -4167,21 +4441,24 @@
     "highlight": "인증서의 스캔 사본",
     "highlight_en": "A scanned copy of the certificate",
     "required": "optional",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.8
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "CERTIFICATE",
-    "label": "certificate"
+    "label": "certificate",
+    "confidence": 0.7
    }
   ],
   "history": [
@@ -4207,6 +4484,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.57,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -4266,7 +4547,8 @@
     "highlight": "제공자의 명칭, 주소 및 연락처",
     "highlight_en": "The name, address and contact details of the provider",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    }
   ],
   "conditions": [],
@@ -4289,6 +4571,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -4349,7 +4635,8 @@
     "gap_highlight_en": "The name, address and contact details of the authorised representative",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [
@@ -4363,7 +4650,8 @@
       },
       true
      ]
-    }
+    },
+    "confidence": 1.0
    }
   ],
   "exceptions": [],
@@ -4394,6 +4682,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.78,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -4453,7 +4745,8 @@
     "highlight": "식별과 추적을 가능하게 하는 그 밖의 명확한 참조사항",
     "highlight_en": "any additional unambiguous reference allowing the identification and traceability of the AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "COMPONENT_NAME",
@@ -4461,7 +4754,8 @@
     "highlight": "거래명칭",
     "highlight_en": "The AI system trade name",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "COMPONENT_PURL",
@@ -4469,7 +4763,8 @@
     "highlight": "식별과 추적을 가능하게 하는 그 밖의 명확한 참조사항",
     "highlight_en": "any additional unambiguous reference allowing the identification and traceability of the AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    }
   ],
   "conditions": [],
@@ -4491,6 +4786,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.43,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -4550,7 +4849,8 @@
     "highlight": "의도된 목적",
     "highlight_en": "the intended purpose of the AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.5
    }
   ],
   "conditions": [],
@@ -4570,6 +4870,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -4629,7 +4933,8 @@
     "gap_highlight": "제6조(3)에 따른 조건",
     "gap_highlight_en": "The condition or conditions under Article 6(3)",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -4649,6 +4954,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.58,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -4708,7 +5017,8 @@
     "highlight": "근거에 대한 간략한 요약",
     "highlight_en": "A short summary of the grounds on which the AI system is considered to be not-high-risk",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    },
    {
     "concept": "HIGH_RISK_CLASSIFICATION_RATIONALE",
@@ -4716,7 +5026,8 @@
     "gap_highlight": "고위험이 아니라고 간주되는 근거",
     "gap_highlight_en": "the grounds on which the AI system is considered to be not-high-risk",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -4738,6 +5049,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -4797,7 +5112,8 @@
     "gap_highlight": "상태",
     "gap_highlight_en": "The status of the AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -4817,6 +5133,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -4876,7 +5196,8 @@
     "gap_highlight": "회원국",
     "gap_highlight_en": "Any Member States in which the AI system has been placed on the market, put into service or made available in the Union",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -4896,6 +5217,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.5,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -4955,7 +5280,8 @@
     "highlight": "배포자의 명칭, 주소 및 연락처",
     "highlight_en": "The name, address and contact details of the deployer",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -4978,6 +5304,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -5037,7 +5367,8 @@
     "highlight": "인공지능시스템 항목의 URL",
     "highlight_en": "The URL of the entry of the AI system in the EU database",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -5065,6 +5396,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.83,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -5124,7 +5459,8 @@
     "highlight": "기본권영향평가 결과의 요약",
     "highlight_en": "A summary of the findings of the fundamental rights impact assessment",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.83
    }
   ],
   "conditions": [],
@@ -5152,6 +5488,10 @@
   "card_version": 3,
   "status": "approved",
   "confidence": 0.83,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -5211,14 +5551,16 @@
     "highlight": "개인정보 영향평가의 요약",
     "highlight_en": "A summary of the data protection impact assessment",
     "required": "optional",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.83
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -5254,6 +5596,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.72,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -5315,7 +5661,8 @@
     "highlight": "통합될 수 있는 인공지능시스템의 유형과 성격",
     "highlight_en": "the type and nature of AI systems in which it can be integrated",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "TASK",
@@ -5324,7 +5671,8 @@
     "highlight": "수행하도록 의도된 작업",
     "highlight_en": "the tasks that the model is intended to perform",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    }
   ],
   "conditions": [],
@@ -5353,6 +5701,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.72,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -5414,7 +5766,8 @@
     "highlight": "적용 가능한 허용사용정책",
     "highlight_en": "the acceptable use policies applicable",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -5443,6 +5796,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.72,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -5504,7 +5861,8 @@
     "highlight": "출시일",
     "highlight_en": "the date of release",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
@@ -5513,7 +5871,8 @@
     "gap_highlight": "배포방법",
     "gap_highlight_en": "methods of distribution",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -5542,6 +5901,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.72,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -5603,7 +5966,8 @@
     "highlight": "구조",
     "highlight_en": "the architecture",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "MODEL_ARCHITECTURE",
@@ -5612,7 +5976,8 @@
     "highlight": "구조",
     "highlight_en": "the architecture",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PARAMETER_COUNT",
@@ -5621,7 +5986,8 @@
     "highlight": "파라미터 수",
     "highlight_en": "number of parameters",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -5650,6 +6016,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.72,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -5711,7 +6081,8 @@
     "highlight": "입력",
     "highlight_en": "inputs",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "OUTPUTS",
@@ -5720,7 +6091,8 @@
     "highlight": "산출물",
     "highlight_en": "outputs",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.64
    }
   ],
   "conditions": [],
@@ -5749,6 +6121,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.72,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -5810,7 +6186,8 @@
     "highlight": "라이선스",
     "highlight_en": "the licence",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -5839,6 +6216,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -5900,7 +6281,8 @@
     "highlight": "사용설명서",
     "highlight_en": "instructions of use",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    },
    {
     "concept": "COMPONENTS",
@@ -5909,7 +6291,8 @@
     "highlight": "인프라, 도구",
     "highlight_en": "infrastructure, tools",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -5938,6 +6321,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -5999,7 +6386,8 @@
     "highlight": "여러 파라미터의 관련성",
     "highlight_en": "the relevance of the different parameters",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "TRAINING_TECHNIQUES",
@@ -6008,7 +6396,8 @@
     "highlight": "훈련방법론과 기법",
     "highlight_en": "training methodologies and techniques",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "DESIGN_CHOICES",
@@ -6017,7 +6406,8 @@
     "highlight": "그 근거와 가정을 포함한 주요 설계상의 선택",
     "highlight_en": "the key design choices including the rationale and assumptions made",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "OPTIMIZATION_TARGET",
@@ -6026,7 +6416,8 @@
     "highlight": "모델이 최적화하도록 설계된 대상",
     "highlight_en": "what the model is designed to optimise for",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -6034,7 +6425,8 @@
   "evidence": [
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -6060,6 +6452,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -6122,7 +6518,8 @@
     "highlight_en": "how the data was obtained and selected",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PREPROCESSING",
@@ -6132,7 +6529,8 @@
     "highlight_en": "curation methodologies",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "SIZE",
@@ -6142,7 +6540,8 @@
     "highlight_en": "the number of data points",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "MODALITY",
@@ -6152,7 +6551,8 @@
     "highlight_en": "the type",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "KNOWN_BIAS_DETECTION_METHOD",
@@ -6162,7 +6562,8 @@
     "highlight_en": "methods to detect identifiable biases",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "PROVENANCE",
@@ -6172,7 +6573,8 @@
     "highlight_en": "provenance of data",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.83
    }
   ],
   "conditions": [
@@ -6181,19 +6583,22 @@
     "text": "where applicable",
     "expr": {
      "var": "DATASETS"
-    }
+    },
+    "confidence": 1.0
    },
    {
     "id": "C2",
     "text": "where applicable",
-    "note": "C1 으로 건다"
+    "note": "C1 으로 건다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -6234,6 +6639,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -6295,7 +6704,8 @@
     "highlight": "훈련과 관련된 그 밖의 관련 세부사항",
     "highlight_en": "other relevant details related to the training",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "TRAINING_COMPUTE",
@@ -6304,7 +6714,8 @@
     "highlight": "모델을 훈련시키는 데 사용된 연산자원",
     "highlight_en": "the computational resources used to train the model",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "TRAINING_TIME",
@@ -6313,7 +6724,8 @@
     "highlight": "훈련 시간",
     "highlight_en": "training time",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -6342,6 +6754,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -6403,14 +6819,16 @@
     "highlight": "에너지 소비량",
     "highlight_en": "energy consumption of the model",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C3",
     "text": "where the energy consumption of the model is unknown",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -6446,6 +6864,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.65,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -6505,7 +6927,8 @@
     "highlight": "평가결과",
     "highlight_en": "evaluation results",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -6513,7 +6936,8 @@
     "highlight": "평가결과",
     "highlight_en": "evaluation results",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "STANDARDS_REQUIREMENTS",
@@ -6521,7 +6945,8 @@
     "highlight": "평가기준",
     "highlight_en": "evaluation criteria",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "TASKS_RESOURCE_REFERENCES",
@@ -6529,7 +6954,8 @@
     "highlight": "평가프로토콜 및 도구",
     "highlight_en": "evaluation protocols and tools",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "LIMITATION_IDENTIFICATION_METHODS",
@@ -6537,7 +6963,8 @@
     "highlight": "한계 식별방법론",
     "highlight_en": "the methodology on the identification of limitations",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -6545,7 +6972,8 @@
   "evidence": [
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -6564,6 +6992,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.71,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -6623,7 +7055,8 @@
     "highlight": "정렬(alignment) 및 미세조정(fine-tuning)을 포함한 모델 적응",
     "highlight_en": "model adaptations, including alignment and fine-tuning",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "ADVERSARY_MODEL_REF",
@@ -6631,14 +7064,16 @@
     "highlight": "적대적 시험",
     "highlight_en": "adversarial testing",
     "required": "optional",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.75
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "Where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -6667,6 +7102,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -6726,14 +7165,16 @@
     "highlight": "시스템 구조",
     "highlight_en": "the system architecture explaining how software components build or feed into each other and integrate into the overall processing",
     "required": "optional",
-    "value_kind": "relationship"
+    "value_kind": "relationship",
+    "confidence": 0.75
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "Where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -6761,6 +7202,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -6822,7 +7267,8 @@
     "highlight": "수행하도록 의도된 작업",
     "highlight_en": "the tasks that the model is intended to perform",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "USE_CASES",
@@ -6831,7 +7277,8 @@
     "highlight": "통합될 수 있는 인공지능시스템의 유형과 성격",
     "highlight_en": "the type and nature of AI systems into which it can be integrated",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -6871,6 +7318,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -6932,7 +7383,8 @@
     "highlight": "적용 가능한 허용사용정책",
     "highlight_en": "the acceptable use policies applicable",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -6972,6 +7424,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -7033,7 +7489,8 @@
     "highlight": "출시일",
     "highlight_en": "the date of release",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "DEPLOYMENT_FORM_UPDATE_REQUIREMENTS",
@@ -7042,7 +7499,8 @@
     "gap_highlight": "배포방법",
     "gap_highlight_en": "methods of distribution",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -7082,6 +7540,10 @@
   "card_version": 3,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -7143,19 +7605,22 @@
     "highlight": "하드웨어나 소프트웨어와 상호작용하는 방식",
     "highlight_en": "how the model interacts, or can be used to interact, with hardware or software",
     "required": "optional",
-    "value_kind": "free_text"
+    "value_kind": "free_text",
+    "confidence": 0.71
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    },
    {
     "id": "C2",
     "text": "where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -7204,6 +7669,10 @@
   "card_version": 3,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -7266,8 +7735,8 @@
     "highlight_en": "relevant software related to the use of the general-purpose AI model",
     "required": "conditional",
     "condition": "C1",
-    "target": "software",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "COMPONENT_VERSION",
@@ -7277,8 +7746,8 @@
     "highlight_en": "the versions",
     "required": "conditional",
     "condition": "C1",
-    "target": "software",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.6
    }
   ],
   "conditions": [
@@ -7287,12 +7756,14 @@
     "text": "where applicable",
     "expr": {
      "var": "COMPONENTS"
-    }
+    },
+    "confidence": 1.0
    },
    {
     "id": "C2",
     "text": "where applicable",
-    "note": "C1 으로 건다"
+    "note": "C1 으로 건다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -7342,6 +7813,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -7403,7 +7878,8 @@
     "highlight": "구조",
     "highlight_en": "the architecture",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "MODEL_ARCHITECTURE",
@@ -7412,7 +7888,8 @@
     "highlight": "구조",
     "highlight_en": "the architecture",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PARAMETER_COUNT",
@@ -7421,7 +7898,8 @@
     "highlight": "파라미터 수",
     "highlight_en": "number of parameters",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -7461,6 +7939,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -7522,7 +8004,8 @@
     "highlight": "입력",
     "highlight_en": "inputs",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "OUTPUTS",
@@ -7531,7 +8014,8 @@
     "highlight": "산출물",
     "highlight_en": "outputs",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.64
    }
   ],
   "conditions": [],
@@ -7571,6 +8055,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -7632,7 +8120,8 @@
     "highlight": "모델에 대한 라이선스",
     "highlight_en": "the licence for the model",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -7672,6 +8161,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -7733,7 +8226,8 @@
     "highlight": "사용설명서",
     "highlight_en": "instructions for use",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    },
    {
     "concept": "COMPONENTS",
@@ -7742,7 +8236,8 @@
     "highlight": "인프라, 도구",
     "highlight_en": "infrastructure, tools",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -7750,7 +8245,8 @@
   "evidence": [
    {
     "concept": "INSTRUCTIONS_FOR_USE",
-    "label": "instructions for use"
+    "label": "instructions for use",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -7776,6 +8272,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -7837,7 +8337,8 @@
     "highlight": "입력",
     "highlight_en": "inputs",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "OUTPUTS",
@@ -7846,7 +8347,8 @@
     "highlight": "산출물",
     "highlight_en": "outputs",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.64
    },
    {
     "concept": "INPUT_OUTPUT_ML_PARAMETERS_MAX_SIZE",
@@ -7855,7 +8357,8 @@
     "highlight": "그 최대 크기",
     "highlight_en": "their maximum size (e.g. context window length, etc.)",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -7884,6 +8387,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -7946,7 +8453,8 @@
     "highlight_en": "curation methodologies",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "MODALITY",
@@ -7956,7 +8464,8 @@
     "highlight_en": "the type",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PROVENANCE",
@@ -7966,7 +8475,8 @@
     "highlight_en": "provenance of data",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.83
    }
   ],
   "conditions": [
@@ -7975,14 +8485,16 @@
     "text": "where applicable",
     "expr": {
      "var": "DATASETS"
-    }
+    },
+    "confidence": 1.0
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -8019,6 +8531,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -8080,7 +8596,8 @@
     "highlight": "관련 설계상의 선택",
     "highlight_en": "the relevant design choices",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    }
   ],
   "conditions": [],
@@ -8118,6 +8635,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -8179,7 +8700,8 @@
     "highlight": "데이터 수집 절차 및 데이터의 출처",
     "highlight_en": "data collection processes and the origin of data",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "ORIGINAL_COLLECTION_PURPOSE",
@@ -8189,8 +8711,8 @@
     "highlight_en": "the original purpose of the data collection",
     "required": "conditional",
     "condition": "C1",
-    "target": "dataset",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
@@ -8204,7 +8726,8 @@
       },
       true
      ]
-    }
+    },
+    "confidence": 1.0
    }
   ],
   "exceptions": [],
@@ -8242,6 +8765,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -8303,7 +8830,8 @@
     "highlight": "관련 데이터 준비·처리 작업",
     "highlight_en": "relevant data-preparation processing operations, such as annotation, labelling, cleaning, updating, enrichment and aggregation",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "UPDATE_MECHANISM",
@@ -8312,7 +8840,8 @@
     "highlight": "갱신",
     "highlight_en": "updating",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -8350,6 +8879,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -8411,7 +8944,8 @@
     "highlight": "가정의 설정",
     "highlight_en": "the formulation of assumptions",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -8449,6 +8983,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -8510,7 +9048,8 @@
     "highlight": "가용성",
     "highlight_en": "availability",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.5
    },
    {
     "concept": "SIZE",
@@ -8519,7 +9058,8 @@
     "highlight": "양",
     "highlight_en": "quantity",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "DECLARATIONS_CLAIMS",
@@ -8528,7 +9068,8 @@
     "highlight": "적합성",
     "highlight_en": "suitability",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 1.0
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
@@ -8537,7 +9078,8 @@
     "highlight": "적합성",
     "highlight_en": "suitability",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 1.0
    }
   ],
   "conditions": [],
@@ -8575,6 +9117,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -8636,7 +9182,8 @@
     "highlight": "편향의 발생 가능성에 대한 검토",
     "highlight_en": "examination in view of possible biases",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -8674,6 +9221,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -8735,7 +9286,8 @@
     "highlight": "예방 및 완화하기 위한 적절한 조치",
     "highlight_en": "appropriate measures to detect, prevent and mitigate possible biases",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -8773,6 +9325,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -8834,7 +9390,8 @@
     "highlight": "데이터 공백 또는 결함의 식별",
     "highlight_en": "the identification of relevant data gaps or shortcomings",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "KNOWN_GAPS_MITIGATION_STRATEGY",
@@ -8843,7 +9400,8 @@
     "highlight": "그러한 공백과 결함을 해결할 수 있는 방법",
     "highlight_en": "how those gaps and shortcomings can be addressed",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -8881,6 +9439,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.69,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -8940,7 +9502,8 @@
     "highlight": "가능한 한 오류가 없고",
     "highlight_en": "free of errors",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "KNOWN_BIAS_NAME",
@@ -8948,7 +9511,8 @@
     "highlight": "충분히 대표성을 가지며",
     "highlight_en": "sufficiently representative",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "DECLARATIONS_CLAIMS",
@@ -8956,7 +9520,8 @@
     "highlight": "관련성이 있고",
     "highlight_en": "relevant",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 1.0
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
@@ -8964,7 +9529,8 @@
     "highlight": "관련성이 있고",
     "highlight_en": "relevant",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 1.0
    },
    {
     "concept": "KNOWN_GAPS",
@@ -8972,7 +9538,8 @@
     "highlight": "의도된 목적에 비추어 완전하여야",
     "highlight_en": "complete in view of the intended purpose",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "STATISTICS",
@@ -8980,14 +9547,16 @@
     "highlight": "적절한 통계적 특성",
     "highlight_en": "the appropriate statistical properties",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -9018,6 +9587,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -9077,14 +9650,16 @@
     "highlight": "특정 지리적·상황적·행동적 또는 기능적 환경에 특유한 특성",
     "highlight_en": "the characteristics or elements that are particular to the specific geographical, contextual, behavioural or functional setting",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "to the extent required by the intended purpose",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -9111,6 +9686,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -9172,7 +9751,8 @@
     "highlight": "기술적 제한 및 가명처리를 포함한 최신 보안·프라이버시 보호조치",
     "highlight_en": "state-of-the-art security and privacy-preserving measures, including pseudonymisation",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
@@ -9187,7 +9767,8 @@
       "yes"
      ]
     },
-    "scope": "card"
+    "scope": "card",
+    "confidence": 1.0
    }
   ],
   "exceptions": [],
@@ -9221,6 +9802,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -9280,7 +9865,8 @@
     "highlight": "특별한 범주의 개인데이터를 예외적으로 처리할 수 있다",
     "highlight_en": "may exceptionally process special categories of personal data",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "SENSITIVE_DATA",
@@ -9288,7 +9874,8 @@
     "highlight": "특별한 범주의 개인데이터를 예외적으로 처리할 수 있다",
     "highlight_en": "may exceptionally process special categories of personal data",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
@@ -9303,14 +9890,16 @@
       "yes"
      ]
     },
-    "scope": "card"
+    "scope": "card",
+    "confidence": 1.0
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "RECORD",
-    "label": "record"
+    "label": "record",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -9342,6 +9931,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.83,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -9401,21 +9994,24 @@
     "highlight": "기술문서",
     "highlight_en": "The technical documentation of a high-risk AI system",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.83
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "Where an SME",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "TECHNICAL_DOCUMENTATION",
-    "label": "technical documentation"
+    "label": "technical documentation",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -9440,6 +10036,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.83,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -9499,7 +10099,8 @@
     "highlight": "단일한 기술문서",
     "highlight_en": "a single set of technical documentation",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.83
    }
   ],
   "conditions": [
@@ -9514,14 +10115,16 @@
       true
      ]
     },
-    "scope": "card"
+    "scope": "card",
+    "confidence": 1.0
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "TECHNICAL_DOCUMENTATION",
-    "label": "technical documentation"
+    "label": "technical documentation",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -9546,6 +10149,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -9605,7 +10212,8 @@
     "gap_highlight": "이벤트(로그)의 자동 기록",
     "gap_highlight_en": "the automatic recording of events (logs)",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -9613,11 +10221,13 @@
   "evidence": [
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    },
    {
     "concept": "RECORD",
-    "label": "record"
+    "label": "record",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -9634,6 +10244,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -9693,7 +10307,8 @@
     "gap_highlight": "로깅 기능",
     "gap_highlight_en": "logging capabilities",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -9701,11 +10316,13 @@
   "evidence": [
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    },
    {
     "concept": "RECORD",
-    "label": "record"
+    "label": "record",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -9729,6 +10346,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -9790,7 +10411,8 @@
     "gap_highlight": "시스템의 각 사용 기간의 기록",
     "gap_highlight_en": "recording of the period of each use of the system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -9798,11 +10420,13 @@
   "evidence": [
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    },
    {
     "concept": "RECORD",
-    "label": "record"
+    "label": "record",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -9826,6 +10450,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -9885,7 +10513,8 @@
     "highlight": "충분히 투명하게",
     "highlight_en": "sufficiently transparent",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -9907,6 +10536,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.6,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -9966,7 +10599,8 @@
     "highlight": "사용설명서",
     "highlight_en": "instructions for use",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -9974,7 +10608,8 @@
   "evidence": [
    {
     "concept": "INSTRUCTIONS_FOR_USE",
-    "label": "instructions for use"
+    "label": "instructions for use",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -9993,6 +10628,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.66,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -10054,7 +10693,8 @@
     "highlight": "제공자 및, 해당하는 경우, 그 수권대리인의 신원과 연락처",
     "highlight_en": "the identity and the contact details of the provider and, where applicable, of its authorised representative",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "AUTHORISED_REPRESENTATIVE",
@@ -10064,7 +10704,8 @@
     "gap_highlight_en": "its authorised representative",
     "required": "conditional",
     "condition": "C1",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.71
    }
   ],
   "conditions": [
@@ -10078,24 +10719,28 @@
       },
       true
      ]
-    }
+    },
+    "confidence": 1.0
    },
    {
     "id": "C2",
     "text": "where applicable",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    },
    {
     "id": "C5",
     "text": "where applicable",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "INSTRUCTIONS_FOR_USE",
-    "label": "instructions for use"
+    "label": "instructions for use",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -10137,6 +10782,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.66,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -10207,7 +10856,8 @@
     "highlight": "산출물을 설명하는 데 관련된 정보를 제공하기 위한 고위험 인공지능시스템의 기술적 역량 및 특성 | 배포자가 고위험 인공지능시스템의 산출물을 해석하고 이를 적절하게 사용할 수 있도록 하는 정보",
     "highlight_en": "the technical capabilities and characteristics of the high-risk AI system to provide information that is relevant to explain its output | information to enable deployers to interpret the output of the high-risk AI system and use it appropriately",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.78
    },
    {
     "concept": "ETHICAL_CONSIDERATIONS_NAME",
@@ -10216,7 +10866,8 @@
     "highlight": "건강 및 안전 또는 기본권에 대한 위험으로 이어질 수 있는 알려진·예견 가능한 상황",
     "highlight_en": "any known or foreseeable circumstance, related to the use of the high-risk AI system in accordance with its intended purpose or under conditions of reasonably foreseeable misuse, which may lead to risks to the health and safety or fundamental rights",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "TECHNICAL_LIMITATIONS",
@@ -10225,7 +10876,8 @@
     "highlight": "한계 | 그 기대되는 정확성·견고성·사이버보안 수준에 영향을 미칠 수 있는 알려진·예견 가능한 상황",
     "highlight_en": "limitations of performance | any known and foreseeable circumstances that may have an impact on that expected level of accuracy, robustness and cybersecurity",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "USE_CASES",
@@ -10234,7 +10886,8 @@
     "highlight": "(i) 그 의도된 목적",
     "highlight_en": "its intended purpose",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.4
    },
    {
     "concept": "INPUTS",
@@ -10243,7 +10896,8 @@
     "highlight": "입력데이터의 사양",
     "highlight_en": "specifications for the input data",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PERFORMANCE_METRICS_SLICE",
@@ -10252,7 +10906,8 @@
     "highlight": "특정 개인 또는 집단에 관한 성능",
     "highlight_en": "its performance regarding specific persons or groups of persons",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
@@ -10261,7 +10916,8 @@
     "highlight": "정확성·견고성·사이버보안의 수준(그 지표를 포함)",
     "highlight_en": "the level of accuracy, including its metrics, robustness and cybersecurity",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
@@ -10270,7 +10926,8 @@
     "highlight": "특정 개인 또는 집단에 관한 성능",
     "highlight_en": "its performance regarding specific persons or groups of persons",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -10279,7 +10936,8 @@
     "highlight": "정확성·견고성·사이버보안의 수준(그 지표를 포함)",
     "highlight_en": "the level of accuracy, including its metrics, robustness and cybersecurity",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -10288,7 +10946,8 @@
     "highlight": "특정 개인 또는 집단에 관한 성능",
     "highlight_en": "its performance regarding specific persons or groups of persons",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "DATASETS",
@@ -10297,41 +10956,48 @@
     "highlight": "사용된 훈련·검증·시험 데이터 세트",
     "highlight_en": "the training, validation and testing data sets used",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    },
    {
     "id": "C2",
     "text": "where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    },
    {
     "id": "C3",
     "text": "when appropriate",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    },
    {
     "id": "C4",
     "text": "when appropriate",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    },
    {
     "id": "C5",
     "text": "where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "INSTRUCTIONS_FOR_USE",
-    "label": "instructions for use"
+    "label": "instructions for use",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -10379,6 +11045,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.66,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -10440,21 +11110,24 @@
     "gap_highlight": "최초 적합성평가 시점에 제공자가 미리 정한, 고위험 인공지능시스템 및 그 성능에 대한 변경사항",
     "gap_highlight_en": "the changes to the high-risk AI system and its performance which have been pre-determined by the provider at the moment of the initial conformity assessment",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C6",
     "text": "if any",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "INSTRUCTIONS_FOR_USE",
-    "label": "instructions for use"
+    "label": "instructions for use",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -10495,6 +11168,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.66,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -10556,7 +11233,8 @@
     "gap_highlight": "제14조에서 정하는 인적 감독조치",
     "gap_highlight_en": "the human oversight measures referred to in Article 14",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.83
    }
   ],
   "conditions": [],
@@ -10564,7 +11242,8 @@
   "evidence": [
    {
     "concept": "INSTRUCTIONS_FOR_USE",
-    "label": "instructions for use"
+    "label": "instructions for use",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -10596,6 +11275,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.66,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -10657,7 +11340,8 @@
     "highlight": "필요한 연산·하드웨어 자원",
     "highlight_en": "the computational and hardware resources needed",
     "required": "always",
-    "value_kind": "free_text"
+    "value_kind": "free_text",
+    "confidence": 0.71
    },
    {
     "concept": "EXPECTED_LIFETIME_MAINTENANCE",
@@ -10666,7 +11350,8 @@
     "gap_highlight": "예상 수명 및 필요한 유지관리조치(그 주기를 포함)",
     "gap_highlight_en": "the expected lifetime of the high-risk AI system and any necessary maintenance and care measures, including their frequency",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -10674,7 +11359,8 @@
   "evidence": [
    {
     "concept": "INSTRUCTIONS_FOR_USE",
-    "label": "instructions for use"
+    "label": "instructions for use",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -10706,6 +11392,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.66,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -10767,25 +11457,29 @@
     "gap_highlight": "배포자가 제12조에 따라 로그를 적절하게 수집·저장·해석할 수 있도록 하는, 고위험 인공지능시스템에 포함된 메커니즘에 대한 설명",
     "gap_highlight_en": "a description of the mechanisms included within the high-risk AI system that allows deployers to properly collect, store and interpret the logs",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C7",
     "text": "where relevant",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "INSTRUCTIONS_FOR_USE",
-    "label": "instructions for use"
+    "label": "instructions for use",
+    "confidence": 0.8
    },
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -10826,6 +11520,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -10885,7 +11583,8 @@
     "gap_highlight": "적절한 인간-기계 인터페이스 도구를 포함한 방식으로 설계·개발",
     "gap_highlight_en": "designed and developed in such a way, including with appropriate human-machine interface tools",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -10905,6 +11604,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -10966,7 +11669,8 @@
     "gap_highlight": "고위험 인공지능시스템에 식별하여 내장한 조치",
     "gap_highlight_en": "measures identified and built, when technically feasible, into the high-risk AI system by the provider",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -10993,6 +11697,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -11054,7 +11762,8 @@
     "gap_highlight": "배포자가 이행하기에 적절한 조치",
     "gap_highlight_en": "measures identified by the provider before placing the high-risk AI system on the market or putting it into service and that are appropriate to be implemented by the deployer",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -11081,6 +11790,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -11142,14 +11855,16 @@
     "highlight": "관련 역량과 한계",
     "highlight_en": "the relevant capacities and limitations of the high-risk AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "as appropriate",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -11185,6 +11900,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -11246,14 +11965,16 @@
     "highlight": "산출물을 올바르게 해석",
     "highlight_en": "to correctly interpret the high-risk AI system’s output",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "as appropriate",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -11289,6 +12010,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -11350,14 +12075,16 @@
     "gap_highlight": "산출물을 무시, 무효화 또는 반전시킬 것",
     "gap_highlight_en": "disregard, override or reverse the output of the high-risk AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "as appropriate",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -11393,6 +12120,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.68,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -11454,14 +12185,16 @@
     "gap_highlight": "작동에 개입하거나 시스템을 중단시킬 것",
     "gap_highlight_en": "to intervene in the operation of the high-risk AI system or interrupt the system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "as appropriate",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -11497,6 +12230,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -11556,19 +12293,22 @@
     "gap_highlight": "최소 2명의 자연인",
     "gap_highlight_en": "at least two natural persons",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "unless that identification has been separately verified and confirmed by at least two natural persons with the necessary competence",
-    "note": "예외 E1 또는 의무 본문의 일부. 사실에 걸지 않는다"
+    "note": "예외 E1 또는 의무 본문의 일부. 사실에 걸지 않는다",
+    "confidence": 0.7
    },
    {
     "id": "C2",
     "text": "where Union or national law considers the application of this requirement to be disproportionate",
-    "note": "예외 E1 또는 의무 본문의 일부. 사실에 걸지 않는다"
+    "note": "예외 E1 또는 의무 본문의 일부. 사실에 걸지 않는다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [
@@ -11597,7 +12337,8 @@
        ]
       }
      ]
-    }
+    },
+    "confidence": 1.0
    }
   ],
   "evidence": [],
@@ -11627,6 +12368,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -11686,7 +12431,8 @@
     "highlight": "정확성 수준 및 관련 정확성 지표",
     "highlight_en": "The levels of accuracy and the relevant accuracy metrics",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -11694,7 +12440,8 @@
     "highlight": "정확성 수준 및 관련 정확성 지표",
     "highlight_en": "The levels of accuracy and the relevant accuracy metrics",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -11717,6 +12464,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -11776,7 +12527,8 @@
     "gap_highlight": "백업 또는 안전장애 계획 | 피드백 루프",
     "gap_highlight_en": "backup or fail-safe plans | feedback loops",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -11798,6 +12550,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.62,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -11857,7 +12613,8 @@
     "highlight": "시스템의 취약점을 악용하여 | 데이터 포이즈닝 | 모델 포이즈닝 | 적대적 사례 또는 모델 회피",
     "highlight_en": "exploiting system vulnerabilities | data poisoning | model poisoning | adversarial examples or model evasion",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    },
    {
     "concept": "RESILIENCE_FAILSAFE_MEASURES",
@@ -11865,7 +12622,8 @@
     "gap_highlight": "회복력을 가져야 한다",
     "gap_highlight_en": "shall be resilient against attempts by unauthorised third parties",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "APPLIED_CONTROLS",
@@ -11873,14 +12631,16 @@
     "gap_highlight": "방지, 탐지, 대응, 해결 및 통제하기 위한 조치",
     "gap_highlight_en": "measures to prevent, detect, respond to, resolve and control for attacks",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where appropriate",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -11910,6 +12670,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.61,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -11971,19 +12735,22 @@
     "highlight": "명칭 | 등록된 상호 또는 등록된 상표 | 연락 가능한 주소",
     "highlight_en": "their name | registered trade name or registered trade mark | the address at which they can be contacted",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where that is not possible",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    },
    {
     "id": "C2",
     "text": "where that is not possible",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -12021,6 +12788,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.61,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -12082,7 +12853,8 @@
     "highlight": "EU 적합성 선언서를 작성할 것",
     "highlight_en": "draw up an EU declaration of conformity",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.83
    }
   ],
   "conditions": [],
@@ -12090,7 +12862,8 @@
   "evidence": [
    {
     "concept": "DECLARATION",
-    "label": "declaration"
+    "label": "declaration",
+    "confidence": 0.7
    }
   ],
   "history": [
@@ -12117,6 +12890,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.61,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -12178,19 +12955,22 @@
     "gap_highlight": "CE 마킹을 부착할 것",
     "gap_highlight_en": "affix the CE marking to the high-risk AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where that is not possible",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    },
    {
     "id": "C2",
     "text": "where that is not possible",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -12228,6 +13008,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -12287,21 +13071,24 @@
     "highlight": "자신의 명칭, 등록된 상호 또는 등록된 상표와 연락 가능한 주소",
     "highlight_en": "their name, registered trade name or registered trade mark, and the address at which they can be contacted",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where applicable",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
   "evidence": [
    {
     "concept": "DOCUMENT",
-    "label": "documentation"
+    "label": "documentation",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -12328,6 +13115,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.64,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -12387,7 +13178,8 @@
     "gap_highlight": "필요한 정보, 역량, 기술적 접근 및 그 밖의 지원",
     "gap_highlight_en": "the necessary information, capabilities, technical access and other assistance",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -12402,7 +13194,8 @@
        "var": "profile.exemptions"
       }
      ]
-    }
+    },
+    "confidence": 1.0
    }
   ],
   "evidence": [],
@@ -12432,6 +13225,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -12491,7 +13288,8 @@
     "highlight": "충분히 대표성",
     "highlight_en": "sufficiently representative",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "DECLARATIONS_CLAIMS",
@@ -12499,7 +13297,8 @@
     "highlight": "관련성이 있고",
     "highlight_en": "input data is relevant",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.5
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
@@ -12507,7 +13306,8 @@
     "highlight": "관련성이 있고",
     "highlight_en": "input data is relevant",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 0.5
    }
   ],
   "conditions": [
@@ -12522,7 +13322,8 @@
       true
      ]
     },
-    "scope": "card"
+    "scope": "card",
+    "confidence": 1.0
    }
   ],
   "exceptions": [],
@@ -12553,6 +13354,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.61,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -12614,7 +13419,8 @@
     "highlight": "영향을 받을 가능성이 있는 자연인과 집단의 범주",
     "highlight_en": "the categories of natural persons and groups likely to be affected by its use in the specific context",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -12629,7 +13435,8 @@
       },
       "critical_infrastructure"
      ]
-    }
+    },
+    "confidence": 1.0
    }
   ],
   "evidence": [],
@@ -12668,6 +13475,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.61,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -12729,7 +13540,8 @@
     "gap_highlight": "인적 감독 조치의 이행에 대한 설명",
     "gap_highlight_en": "a description of the implementation of human oversight measures",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.83
    }
   ],
   "conditions": [],
@@ -12744,13 +13556,15 @@
       },
       "critical_infrastructure"
      ]
-    }
+    },
+    "confidence": 1.0
    }
   ],
   "evidence": [
    {
     "concept": "INSTRUCTIONS_FOR_USE",
-    "label": "instructions for use"
+    "label": "instructions for use",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -12788,6 +13602,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.61,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -12847,14 +13665,16 @@
     "highlight": "기본권에 대한 영향평가를 수행",
     "highlight_en": "perform an assessment of the impact on fundamental rights",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "in the case of the materialisation of those risks",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [
@@ -12868,13 +13688,15 @@
       },
       "critical_infrastructure"
      ]
-    }
+    },
+    "confidence": 1.0
    }
   ],
   "evidence": [
    {
     "concept": "INSTRUCTIONS_FOR_USE",
-    "label": "instructions for use"
+    "label": "instructions for use",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -12913,6 +13735,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.58,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -12972,7 +13798,8 @@
     "highlight": "적어도 그와 동등한 수준으로 충족한다는 것을 정당하게 소명",
     "highlight_en": "duly justify that they have adopted technical solutions that meet the requirements",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.67
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
@@ -12980,7 +13807,8 @@
     "highlight": "적어도 그와 동등한 수준으로 충족한다는 것을 정당하게 소명",
     "highlight_en": "duly justify that they have adopted technical solutions that meet the requirements",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 0.67
    },
    {
     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
@@ -12988,7 +13816,8 @@
     "gap_highlight": "채택한 기술적 해결책",
     "gap_highlight_en": "technical solutions that meet the requirements referred to in Section 2 of this Chapter",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [
@@ -13003,7 +13832,8 @@
       false
      ]
     },
-    "scope": "card"
+    "scope": "card",
+    "confidence": 1.0
    }
   ],
   "exceptions": [],
@@ -13035,6 +13865,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.83,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -13094,7 +13928,8 @@
     "highlight": "EU 적합성 선언서를 작성",
     "highlight_en": "draw up a written machine readable, physical or electronically signed EU declaration of conformity",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.83
    }
   ],
   "conditions": [],
@@ -13102,7 +13937,8 @@
   "evidence": [
    {
     "concept": "DECLARATION",
-    "label": "declaration"
+    "label": "declaration",
+    "confidence": 0.7
    }
   ],
   "history": [
@@ -13119,6 +13955,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -13178,14 +14018,16 @@
     "gap_highlight": "디지털 CE 마킹을 사용",
     "gap_highlight_en": "a digital CE marking shall be used",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "if it can easily be accessed via the interface from which that system is accessed or via an easily accessible machine-readable code or other electronic means",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -13212,6 +14054,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.53,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -13271,14 +14117,16 @@
     "highlight": "인증기관의 식별번호",
     "highlight_en": "the identification number of the notified body",
     "required": "optional",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.8
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "Where applicable",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -13311,6 +14159,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -13370,19 +14222,22 @@
     "gap_highlight": "인지할 수 있는 방식으로 설계·개발",
     "gap_highlight_en": "designed and developed in such a way that the natural persons concerned are informed that they are interacting with an AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "unless this is obvious from the point of view of a natural person who is reasonably well-informed",
-    "note": "예외 E1 또는 의무 본문의 일부. 사실에 걸지 않는다"
+    "note": "예외 E1 또는 의무 본문의 일부. 사실에 걸지 않는다",
+    "confidence": 0.7
    },
    {
     "id": "C2",
     "text": "unless those systems are available for the public to report a criminal offence",
-    "note": "예외 E1 또는 의무 본문의 일부. 사실에 걸지 않는다"
+    "note": "예외 E1 또는 의무 본문의 일부. 사실에 걸지 않는다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [
@@ -13396,13 +14251,15 @@
        "var": "profile.exemptions"
       }
      ]
-    }
+    },
+    "confidence": 1.0
    }
   ],
   "evidence": [
    {
     "concept": "REPORT",
-    "label": "report"
+    "label": "report",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -13431,6 +14288,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -13490,19 +14351,22 @@
     "gap_highlight": "기계판독 가능한 형식으로 표시되고 인위적으로 생성되거나 조작된 것으로 탐지 가능하도록",
     "gap_highlight_en": "marked in a machine-readable format and detectable as artificially generated or manipulated",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "to the extent the AI systems perform an assistive function for standard editing or do not substantially alter the input data provided by the deployer or the semantics thereof",
-    "note": "예외 E1 또는 의무 본문의 일부. 사실에 걸지 않는다"
+    "note": "예외 E1 또는 의무 본문의 일부. 사실에 걸지 않는다",
+    "confidence": 0.7
    },
    {
     "id": "C2",
     "text": "where authorised by law to detect",
-    "note": "예외 E1 또는 의무 본문의 일부. 사실에 걸지 않는다"
+    "note": "예외 E1 또는 의무 본문의 일부. 사실에 걸지 않는다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [
@@ -13528,7 +14392,8 @@
        ]
       }
      ]
-    }
+    },
+    "confidence": 1.0
    }
   ],
   "evidence": [],
@@ -13558,6 +14423,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -13619,7 +14488,8 @@
     "highlight": "훈련·시험 과정",
     "highlight_en": "its training and testing process",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "DOCUMENTATION_REF",
@@ -13628,7 +14498,8 @@
     "highlight": "모델의 기술문서를 작성",
     "highlight_en": "draw up and keep up-to-date the technical documentation of the model",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.83
    },
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
@@ -13637,7 +14508,8 @@
     "highlight": "평가 결과",
     "highlight_en": "the results of its evaluation",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -13646,7 +14518,8 @@
     "highlight": "평가 결과",
     "highlight_en": "the results of its evaluation",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -13654,7 +14527,8 @@
   "evidence": [
    {
     "concept": "TECHNICAL_DOCUMENTATION",
-    "label": "technical documentation"
+    "label": "technical documentation",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -13681,6 +14555,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -13742,7 +14620,8 @@
     "highlight": "범용 인공지능모델의 역량과 한계",
     "highlight_en": "the capabilities and limitations of the general-purpose AI model",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    }
   ],
   "conditions": [],
@@ -13772,6 +14651,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.7,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -13833,7 +14716,8 @@
     "highlight": "훈련에 사용된 콘텐츠에 관한 충분히 상세한 요약",
     "highlight_en": "a sufficiently detailed summary about the content used for training of the general-purpose AI model",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -13863,6 +14747,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.78,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -13922,7 +14810,8 @@
     "highlight": "증명하여야 한다",
     "highlight_en": "shall demonstrate alternative adequate means of compliance",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.75
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
@@ -13930,7 +14819,8 @@
     "highlight": "증명하여야 한다",
     "highlight_en": "shall demonstrate alternative adequate means of compliance",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 0.75
    },
    {
     "concept": "STANDARDS_NAME",
@@ -13938,7 +14828,8 @@
     "highlight": "제56조에서 말하는 관행규범",
     "highlight_en": "codes of practice within the meaning of Article 56",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.83
    },
    {
     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
@@ -13946,14 +14837,16 @@
     "gap_highlight": "대체적이고 적절한 준수 수단",
     "gap_highlight_en": "alternative adequate means of compliance",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "to the extent that those standards cover those obligations",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -13982,6 +14875,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.66,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -14043,7 +14940,8 @@
     "highlight": "적대적 시험",
     "highlight_en": "adversarial testing of the model",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.75
    },
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
@@ -14052,7 +14950,8 @@
     "highlight": "모델 평가를 수행할 것",
     "highlight_en": "perform model evaluation in accordance with standardised protocols and tools",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -14061,7 +14960,8 @@
     "highlight": "모델 평가를 수행할 것",
     "highlight_en": "perform model evaluation in accordance with standardised protocols and tools",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "TASKS_RESOURCE_REFERENCES",
@@ -14070,7 +14970,8 @@
     "highlight": "표준화된 프로토콜과 도구",
     "highlight_en": "standardised protocols and tools",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -14108,6 +15009,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.66,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -14169,7 +15074,8 @@
     "highlight": "완화할 것",
     "highlight_en": "assess and mitigate possible systemic risks",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "ETHICAL_CONSIDERATIONS_NAME",
@@ -14178,7 +15084,8 @@
     "highlight": "시스템적 위험(그 원인을 포함)을 평가",
     "highlight_en": "assess and mitigate possible systemic risks at Union level, including their sources",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -14216,6 +15123,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.66,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -14277,7 +15188,8 @@
     "gap_highlight": "적절한 수준의 사이버보안 보호를 보장할 것",
     "gap_highlight_en": "ensure an adequate level of cybersecurity protection",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -14315,6 +15227,10 @@
   "card_version": 3,
   "status": "approved",
   "confidence": 0.71,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -14374,7 +15290,8 @@
     "highlight": "증명하여야 한다",
     "highlight_en": "shall demonstrate alternative adequate means of compliance",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.75
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
@@ -14382,7 +15299,8 @@
     "highlight": "증명하여야 한다",
     "highlight_en": "shall demonstrate alternative adequate means of compliance",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 0.75
    },
    {
     "concept": "STANDARDS_NAME",
@@ -14390,7 +15308,8 @@
     "highlight": "제56조에서 말하는 관행규범",
     "highlight_en": "codes of practice within the meaning of Article 56",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.83
    },
    {
     "concept": "ALTERNATIVE_COMPLIANCE_MEANS",
@@ -14398,14 +15317,16 @@
     "gap_highlight": "대체적이고 적절한 준수 수단",
     "gap_highlight_en": "alternative adequate means of compliance",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "to the extent that those standards cover those obligations",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -14443,6 +15364,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 1.0
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -14502,7 +15427,8 @@
     "highlight": "자신의 평가를 문서화",
     "highlight_en": "document its assessment",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -14510,7 +15436,8 @@
   "evidence": [
    {
     "concept": "DOCUMENT",
-    "label": "documentation"
+    "label": "documentation",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -14529,6 +15456,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -14590,7 +15521,8 @@
     "highlight": "위험의 식별과 분석",
     "highlight_en": "the identification and analysis of the known and the reasonably foreseeable risks",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    },
    {
     "concept": "ETHICAL_CONSIDERATIONS_NAME",
@@ -14599,7 +15531,8 @@
     "highlight": "위험의 식별과 분석",
     "highlight_en": "the identification and analysis of the known and the reasonably foreseeable risks",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -14629,6 +15562,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -14690,7 +15627,8 @@
     "highlight": "위험의 추정 및 평가",
     "highlight_en": "the estimation and evaluation of the risks",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -14720,6 +15658,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -14781,7 +15723,8 @@
     "highlight": "그 밖의 위험에 대한 평가",
     "highlight_en": "the evaluation of other risks possibly arising",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -14811,6 +15754,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -14872,7 +15819,8 @@
     "highlight": "위험관리조치의 채택",
     "highlight_en": "the adoption of appropriate and targeted risk management measures",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -14902,6 +15850,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.63,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -14963,7 +15915,8 @@
     "highlight": "위험의 제거 또는 감소",
     "highlight_en": "elimination or reduction of risks",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -14993,6 +15946,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.63,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -15054,19 +16011,22 @@
     "highlight": "완화·통제조치의 시행",
     "highlight_en": "implementation of adequate mitigation and control measures",
     "required": "optional",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where appropriate",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    },
    {
     "id": "C2",
     "text": "where appropriate",
-    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다"
+    "note": "해당 시 필요(optional) 사실로 둔다. 식은 없다",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -15105,6 +16065,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.63,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -15164,19 +16128,22 @@
     "gap_highlight": "잔여위험",
     "gap_highlight_en": "residual risk",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "where appropriate",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    },
    {
     "id": "C2",
     "text": "where appropriate",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -15214,6 +16181,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.71,
+  "field_confidence": {
+   "actor": 0.5,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -15273,7 +16244,8 @@
     "highlight": "확률적 임계값",
     "highlight_en": "probabilistic thresholds",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
@@ -15281,7 +16253,8 @@
     "highlight": "사전에 정의된 지표",
     "highlight_en": "prior defined metrics",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -15289,14 +16262,16 @@
     "highlight": "사전에 정의된 지표",
     "highlight_en": "prior defined metrics",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "as appropriate",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -15325,6 +16300,10 @@
   "card_version": 2,
   "status": "approved",
   "confidence": 0.65,
+  "field_confidence": {
+   "actor": 0.9,
+   "risk_class": 0.9
+  },
   "regulation": {
    "id": "EU-2024-1689",
    "title": "Regulation (EU) 2024/1689 (EU AI Act)",
@@ -15384,7 +16363,8 @@
     "highlight": "18세 미만의 자 | 그 밖의 취약계층",
     "highlight_en": "persons under the age of 18 | other vulnerable groups",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "HARMS",
@@ -15392,14 +16372,16 @@
     "highlight": "부정적 영향을 미칠 가능성",
     "highlight_en": "likely to have an adverse impact",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
     "text": "as appropriate",
-    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)"
+    "note": "사실에 걸리지 않는 수식어. 식 없이 설명만 둔다 (판정 변화 없음)",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -15429,6 +16411,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -15461,13 +16447,15 @@
     "concept": "COMPONENTS",
     "label": "구성요소 목록",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "SERVICES",
     "label": "서비스 목록",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -15490,6 +16478,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -15522,7 +16514,8 @@
     "concept": "COMPONENT_DATA",
     "label": "데이터 컴포넌트",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -15543,6 +16536,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -15575,13 +16572,15 @@
     "concept": "FORMULATION_COMPONENTS",
     "label": "형성: 일시적 구성요소",
     "required": "always",
-    "value_kind": "relationship"
+    "value_kind": "relationship",
+    "confidence": 0.67
    },
    {
     "concept": "FORMULATION_SERVICES",
     "label": "형성: 일시적 서비스",
     "required": "always",
-    "value_kind": "relationship"
+    "value_kind": "relationship",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -15604,6 +16603,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.54,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -15636,13 +16639,15 @@
     "concept": "COMPONENTS",
     "label": "구성요소 목록",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "SERVICES",
     "label": "서비스 목록",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -15666,6 +16671,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.83,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -15698,7 +16707,8 @@
     "concept": "RISK_ASSESSMENT_REF",
     "label": "외부참조: 위험평가",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.83
    }
   ],
   "conditions": [],
@@ -15719,6 +16729,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -15751,19 +16765,22 @@
     "concept": "BENEFITS",
     "label": "집단에 대한 이익",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "GROUP_AT_RISK",
     "label": "위험에 놓인 집단",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "HARMS",
     "label": "집단에 대한 피해",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -15787,6 +16804,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -15819,7 +16840,8 @@
     "concept": "RISK_ASSESSMENT_REF",
     "label": "외부참조: 위험평가",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -15840,6 +16862,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -15872,7 +16898,8 @@
     "concept": "STANDARDS_REQUIREMENTS",
     "label": "표준 요구사항 정의",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -15893,6 +16920,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.0,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -15925,7 +16956,8 @@
     "concept": "DOCUMENTATION_REF",
     "label": "외부참조: 문서",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.5
    }
   ],
   "conditions": [],
@@ -15948,6 +16980,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -15980,25 +17016,29 @@
     "concept": "ATTESTATIONS_MAP",
     "label": "요구사항↔주장 연결",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.67
    },
    {
     "concept": "DECLARATIONS_CLAIMS",
     "label": "주장",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.67
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
     "label": "증거",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 0.67
    },
    {
     "concept": "STANDARDS_REQUIREMENTS",
     "label": "표준 요구사항 정의",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -16022,6 +17062,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.83,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -16054,7 +17098,8 @@
     "concept": "DOCUMENTATION_REF",
     "label": "외부참조: 문서",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.83
    }
   ],
   "conditions": [],
@@ -16062,7 +17107,8 @@
   "evidence": [
    {
     "concept": "TECHNICAL_DOCUMENTATION",
-    "label": "technical documentation"
+    "label": "technical documentation",
+    "confidence": 0.8
    }
   ],
   "history": [
@@ -16080,6 +17126,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -16112,7 +17162,8 @@
     "concept": "LOGGING_MECHANISM",
     "label": "로깅 메커니즘",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -16120,11 +17171,13 @@
   "evidence": [
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    },
    {
     "concept": "RECORD",
-    "label": "record"
+    "label": "record",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -16142,6 +17195,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -16174,7 +17231,8 @@
     "concept": "COLLECTION_PROCESS",
     "label": "데이터 수집 절차",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -16195,6 +17253,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -16227,25 +17289,29 @@
     "concept": "ATTESTATIONS_MAP",
     "label": "요구사항↔주장 연결",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.67
    },
    {
     "concept": "DECLARATIONS_CLAIMS",
     "label": "주장",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.67
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
     "label": "증거",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 0.67
    },
    {
     "concept": "STANDARDS_REQUIREMENTS",
     "label": "표준 요구사항 정의",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -16269,6 +17335,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -16301,7 +17371,8 @@
     "concept": "PROVENANCE",
     "label": "패키지 출처 정보",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.83
    }
   ],
   "conditions": [],
@@ -16309,7 +17380,8 @@
   "evidence": [
    {
     "concept": "RECORD",
-    "label": "record"
+    "label": "record",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -16327,6 +17399,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.75,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -16359,7 +17435,8 @@
     "concept": "PREPROCESSING",
     "label": "데이터 전처리",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -16380,6 +17457,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "ISO-IEC-42001",
    "title": "ISO/IEC 42001:2023 AI management system",
@@ -16412,7 +17493,8 @@
     "concept": "DOCUMENTATION_REF",
     "label": "외부참조: 문서",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -16433,6 +17515,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -16492,7 +17578,8 @@
     "highlight": "위험과 잠재적 영향",
     "highlight_en": "the risks and potential impacts of the AI technology",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -16500,7 +17587,8 @@
   "evidence": [
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -16517,6 +17605,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -16576,7 +17668,8 @@
     "highlight": "의도된 목적과 명시된 목표를 달성하는지",
     "highlight_en": "whether the AI system achieves its intended purposes and stated objectives",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.67
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
@@ -16584,7 +17677,8 @@
     "highlight": "의도된 목적과 명시된 목표를 달성하는지",
     "highlight_en": "whether the AI system achieves its intended purposes and stated objectives",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 0.67
    },
    {
     "concept": "GO_NO_GO_DECISION",
@@ -16592,7 +17686,8 @@
     "gap_highlight": "개발·배포를 진행해야 하는지",
     "gap_highlight_en": "whether its development or deployment should proceed",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -16614,6 +17709,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.58,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -16673,7 +17772,8 @@
     "highlight": "부정적 잔여 위험",
     "highlight_en": "Negative residual risks",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    },
    {
     "concept": "RESIDUAL_RISK_ACCEPTANCE",
@@ -16681,7 +17781,8 @@
     "gap_highlight": "모든 미완화 위험의 합",
     "gap_highlight_en": "the sum of all unmitigated risks",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [],
@@ -16703,6 +17804,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -16762,7 +17867,8 @@
     "gap_highlight": "위험 통제가 적용·문서화된다",
     "gap_highlight_en": "risk controls are applied and documented",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -16782,6 +17888,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.66,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -16841,7 +17951,8 @@
     "highlight": "한계",
     "highlight_en": "related limitations",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "USE_CASES",
@@ -16849,7 +17960,8 @@
     "highlight": "의도된 목적 | 잠재적으로 유익한 용도",
     "highlight_en": "Intended purposes | potentially beneficial uses",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.5
    },
    {
     "concept": "USERS",
@@ -16857,7 +17969,8 @@
     "highlight": "사용자의 특정 집합·유형",
     "highlight_en": "the specific set or types of users",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
@@ -16865,7 +17978,8 @@
     "highlight": "TEVV(시험·평가·검증·확인) 및 시스템 지표",
     "highlight_en": "related TEVV and system metrics",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -16873,7 +17987,8 @@
     "highlight": "TEVV(시험·평가·검증·확인) 및 시스템 지표",
     "highlight_en": "related TEVV and system metrics",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "USE_RISK_ASSUMPTIONS",
@@ -16881,7 +17996,8 @@
     "gap_highlight": "목적·용도·위험에 관한 가정",
     "gap_highlight_en": "assumptions and related limitations about AI system purposes, uses, and risks",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "EXPECTED_DEPLOYMENT_ENVIRONMENT",
@@ -16889,7 +18005,8 @@
     "gap_highlight": "AI 시스템이 배포될 예상 환경",
     "gap_highlight_en": "prospective settings in which the AI system will be deployed",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "USER_EXPECTATIONS",
@@ -16897,7 +18014,8 @@
     "gap_highlight": "그 기대",
     "gap_highlight_en": "their expectations",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "APPLICABLE_LAWS_NORMS",
@@ -16905,7 +18023,8 @@
     "gap_highlight": "맥락별 법률·규범·기대",
     "gap_highlight_en": "contextspecific laws, norms and expectations",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "SOCIETAL_ENVIRONMENTAL_IMPACT",
@@ -16913,7 +18032,8 @@
     "gap_highlight": "시스템 사용이 개인·커뮤니티·조직·사회·지구에 미치는 잠재적 긍정·부정 영향",
     "gap_highlight_en": "potential positive and negative impacts of system uses to individuals, communities, organizations, society, and the planet",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -16935,6 +18055,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -16994,13 +18118,15 @@
     "gap_highlight": "사업적 사용 맥락",
     "gap_highlight_en": "context of business use",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [
    {
     "id": "C1",
-    "text": "in the case of assessing existing AI systems – re-evaluated"
+    "text": "in the case of assessing existing AI systems – re-evaluated",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -17019,6 +18145,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.5,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -17078,7 +18208,8 @@
     "highlight": "시스템 요구사항",
     "highlight_en": "System requirements",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.6
    }
   ],
   "conditions": [],
@@ -17098,6 +18229,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.74,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -17157,7 +18292,8 @@
     "highlight": "구체적 과업",
     "highlight_en": "The specific tasks",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.8
    },
    {
     "concept": "TASK_IMPLEMENTATION_FAMILY",
@@ -17165,7 +18301,8 @@
     "gap_highlight": "과업을 구현하는 데 사용되는 방법",
     "gap_highlight_en": "methods used to implement the tasks",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -17185,6 +18322,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.58,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -17244,7 +18385,8 @@
     "highlight": "지식 한계",
     "highlight_en": "knowledge limits",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.5
    },
    {
     "concept": "HUMAN_OVERSIGHT_MEASURES",
@@ -17252,7 +18394,8 @@
     "gap_highlight": "시스템 출력이 인간에 의해 어떻게 활용·감독될 수 있는지",
     "gap_highlight_en": "how system output may be utilized and overseen by humans",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -17260,7 +18403,8 @@
   "evidence": [
    {
     "concept": "DOCUMENT",
-    "label": "documentation"
+    "label": "documentation",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -17277,6 +18421,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.64,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -17336,7 +18484,8 @@
     "highlight": "데이터 수집·선택",
     "highlight_en": "data collection and selection",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "DECLARATIONS_CLAIMS",
@@ -17344,7 +18493,8 @@
     "highlight": "시스템 신뢰성",
     "highlight_en": "system trustworthiness",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.4
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
@@ -17352,7 +18502,8 @@
     "highlight": "시스템 신뢰성",
     "highlight_en": "system trustworthiness",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 0.4
    },
    {
     "concept": "VERIFICATION_METHODOLOGY",
@@ -17360,7 +18511,8 @@
     "gap_highlight": "실험 설계 | 구성 타당성 검증",
     "gap_highlight_en": "experimental design | construct validation",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -17384,6 +18536,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.62,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -17443,7 +18599,8 @@
     "gap_highlight": "의도된 AI 시스템 기능·성능의 잠재적 이점",
     "gap_highlight_en": "Potential benefits of intended AI system functionality and performance",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -17465,6 +18622,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.58,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -17524,7 +18685,8 @@
     "gap_highlight": "잠재적 비용 | 비금전적 비용",
     "gap_highlight_en": "Potential costs | non-monetary costs",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -17546,6 +18708,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -17605,7 +18771,8 @@
     "highlight": "목표 적용 범위",
     "highlight_en": "Targeted application scope",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -17625,6 +18792,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -17684,7 +18855,8 @@
     "gap_highlight": "내부 위험 통제",
     "gap_highlight_en": "Internal risk controls for components of the AI system",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -17692,7 +18864,8 @@
   "evidence": [
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -17709,6 +18882,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.54,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -17768,7 +18945,8 @@
     "highlight": "영향(잠재적 유익·유해 모두)의 발생 가능성과 규모",
     "highlight_en": "Likelihood and magnitude of each identified impact (both potentially beneficial and harmful)",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -17776,7 +18954,8 @@
   "evidence": [
    {
     "concept": "REPORT",
-    "label": "report"
+    "label": "report",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -17795,6 +18974,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.71,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -17854,7 +19037,8 @@
     "gap_highlight": "측정되지 않거나 측정할 수 없는 위험 또는 신뢰성 특성",
     "gap_highlight_en": "The risks or trustworthiness characteristics that will not – or cannot – be measured",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -17876,6 +19060,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.71,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -17935,7 +19123,8 @@
     "highlight": "시험 세트",
     "highlight_en": "Test sets",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.6
    },
    {
     "concept": "PERFORMANCE_METRICS_TYPE",
@@ -17943,7 +19132,8 @@
     "highlight": "지표",
     "highlight_en": "metrics",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -17951,7 +19141,8 @@
     "highlight": "지표",
     "highlight_en": "metrics",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    },
    {
     "concept": "TASKS_RESOURCE_REFERENCES",
@@ -17959,7 +19150,8 @@
     "highlight": "도구",
     "highlight_en": "the tools used during TEVV",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -17982,6 +19174,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -18041,7 +19237,8 @@
     "highlight": "프라이버시 위험",
     "highlight_en": "Privacy risk of the AI system",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -18061,6 +19258,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -18120,7 +19321,8 @@
     "highlight": "공정성·편향",
     "highlight_en": "Fairness and bias",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "GROUP_AT_RISK",
@@ -18128,7 +19330,8 @@
     "highlight": "공정성·편향",
     "highlight_en": "Fairness and bias",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "HARMS",
@@ -18136,7 +19339,8 @@
     "highlight": "공정성·편향",
     "highlight_en": "Fairness and bias",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -18159,6 +19363,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -18218,7 +19426,8 @@
     "highlight": "환경 영향·지속가능성",
     "highlight_en": "Environmental impact and sustainability",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -18238,6 +19447,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.71,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -18297,7 +19510,8 @@
     "highlight": "AI 시스템 성능 | 정성적·정량적으로 측정",
     "highlight_en": "AI system performance | measured qualitatively or quantitatively",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "PERFORMANCE_METRICS_VALUE",
@@ -18305,7 +19519,8 @@
     "highlight": "AI 시스템 성능 | 정성적·정량적으로 측정",
     "highlight_en": "AI system performance | measured qualitatively or quantitatively",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "DECLARATIONS_CLAIMS",
@@ -18313,7 +19528,8 @@
     "highlight": "AI 시스템 성능 | 보증 기준 | 입증된다",
     "highlight_en": "AI system performance | assurance criteria | demonstrated",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.8
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
@@ -18321,7 +19537,8 @@
     "highlight": "AI 시스템 성능 | 보증 기준 | 입증된다",
     "highlight_en": "AI system performance | assurance criteria | demonstrated",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 0.8
    },
    {
     "concept": "FORMULATION",
@@ -18329,7 +19546,8 @@
     "highlight": "배포 환경과 유사한 조건",
     "highlight_en": "conditions similar to deployment setting(s)",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "ASSURANCE_CRITERIA_RESULT",
@@ -18337,7 +19555,8 @@
     "gap_highlight": "보증 기준이 정성적·정량적으로 측정",
     "gap_highlight_en": "assurance criteria are measured qualitatively or quantitatively",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -18360,6 +19579,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.74,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -18419,7 +19642,8 @@
     "highlight": "일반화 가능성의 한계",
     "highlight_en": "Limitations of the generalizability",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "DECLARATIONS_CLAIMS",
@@ -18427,7 +19651,8 @@
     "highlight": "타당하고 신뢰할 수 있음이 입증된다",
     "highlight_en": "demonstrated to be valid and reliable",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.8
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
@@ -18435,7 +19660,8 @@
     "highlight": "타당하고 신뢰할 수 있음이 입증된다",
     "highlight_en": "demonstrated to be valid and reliable",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 0.8
    }
   ],
   "conditions": [],
@@ -18443,7 +19669,8 @@
   "evidence": [
    {
     "concept": "LOG",
-    "label": "log"
+    "label": "log",
+    "confidence": 0.4
    }
   ],
   "history": [
@@ -18462,6 +19689,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.65,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -18521,7 +19752,8 @@
     "highlight": "안전 위험",
     "highlight_en": "safety risks",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.5
    },
    {
     "concept": "DECLARATIONS_CLAIMS",
@@ -18529,7 +19761,8 @@
     "highlight": "안전함이 입증되고 | 안전하게 실패할 수 있음이 입증된다",
     "highlight_en": "demonstrated to be safe | it can fail safely",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 0.8
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
@@ -18537,7 +19770,8 @@
     "highlight": "안전함이 입증되고 | 안전하게 실패할 수 있음이 입증된다",
     "highlight_en": "demonstrated to be safe | it can fail safely",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 0.8
    },
    {
     "concept": "OPERATIONAL_KPI",
@@ -18545,7 +19779,8 @@
     "gap_highlight": "안전 지표는 시스템 신뢰성·견고성, 실시간 모니터링, AI 시스템 장애에 대한 대응 시간을 반영한다",
     "gap_highlight_en": "Safety metrics reflect system reliability and robustness, real-time monitoring, and response times for AI system failures",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "RESIDUAL_RISK_ACCEPTANCE",
@@ -18553,13 +19788,15 @@
     "gap_highlight": "잔여 부정 위험이 위험 허용 수준을 초과하지 않으며",
     "gap_highlight_en": "its residual negative risk does not exceed the risk tolerance",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.75
    }
   ],
   "conditions": [
    {
     "id": "C1",
-    "text": "if made to operate beyond its knowledge limits"
+    "text": "if made to operate beyond its knowledge limits",
+    "confidence": 0.7
    }
   ],
   "exceptions": [],
@@ -18582,6 +19819,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -18641,7 +19882,8 @@
     "highlight": "보안",
     "highlight_en": "AI system security",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    },
    {
     "concept": "RESILIENCE_FAILSAFE_MEASURES",
@@ -18649,7 +19891,8 @@
     "gap_highlight": "복원력",
     "gap_highlight_en": "resilience",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -18669,6 +19912,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -18728,7 +19975,8 @@
     "highlight": "투명성·책무성과 관련된 위험",
     "highlight_en": "Risks associated with transparency and accountability",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -18748,6 +19996,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -18807,7 +20059,8 @@
     "highlight": "설명",
     "highlight_en": "explained",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    },
    {
     "concept": "DOCUMENTATION_REF",
@@ -18815,7 +20068,8 @@
     "highlight": "문서화",
     "highlight_en": "documented",
     "required": "always",
-    "value_kind": "reference"
+    "value_kind": "reference",
+    "confidence": 1.0
    },
    {
     "concept": "DECLARATIONS_CLAIMS",
@@ -18823,7 +20077,8 @@
     "highlight": "검증",
     "highlight_en": "validated",
     "required": "always",
-    "value_kind": "claim"
+    "value_kind": "claim",
+    "confidence": 1.0
    },
    {
     "concept": "DECLARATIONS_EVIDENCE",
@@ -18831,7 +20086,8 @@
     "highlight": "검증",
     "highlight_en": "validated",
     "required": "always",
-    "value_kind": "evidence"
+    "value_kind": "evidence",
+    "confidence": 1.0
    }
   ],
   "conditions": [],
@@ -18855,6 +20111,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -18914,7 +20174,8 @@
     "gap_highlight": "AI 시스템 신뢰성에 관한 측정 결과",
     "gap_highlight_en": "Measurement results regarding AI system trustworthiness",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],
@@ -18934,6 +20195,10 @@
   "card_version": 1,
   "status": "approved",
   "confidence": 0.67,
+  "field_confidence": {
+   "actor": 1.0,
+   "risk_class": 0.5
+  },
   "regulation": {
    "id": "NIST-AI-100-1",
    "title": "NIST AI Risk Management Framework (AI RMF 1.0)",
@@ -18993,7 +20258,8 @@
     "gap_highlight": "측정 가능한 성능 개선 또는 저하",
     "gap_highlight_en": "Measurable performance improvements or declines",
     "required": "always",
-    "value_kind": "value"
+    "value_kind": "value",
+    "confidence": 0.67
    }
   ],
   "conditions": [],

@@ -5,7 +5,7 @@
   "subject": "recruit-screening",
   "label": "고위험 AI 시스템 · 채용 심사",
   "note": "채용 지원자를 평가하는 고위험 AI 시스템. 개인데이터 데이터셋에 원래 수집 목적이 빠져 있어 10조(2)(b) 가 부분 반영이고, 10조(5) 는 사실은 있지만 처리 기록 증빙이 없어 부분 반영이다",
-  "size": 3373,
+  "size": 3488,
   "system_profile": {
    "risk_class": [
     "high_risk"
@@ -79,8 +79,8 @@
    "exemptions": []
   },
   "engine_summary": {
-   "반영": 34,
-   "부분 반영": 18,
+   "반영": 33,
+   "부분 반영": 19,
    "미반영": 24,
    "비적용": 114,
    "검토 필요": 0
@@ -92,7 +92,7 @@
   "subject": "recruit-screening",
   "label": "고위험 AI 시스템 · 채용 심사 (SPDX)",
   "note": "위 채용 심사 BOM 의 SPDX 3.0.1 판. 같은 카드를 SPDX 매핑 프로파일로 판정해 CycloneDX 와 같은 결과가 나온다",
-  "size": 6845,
+  "size": 6970,
   "system_profile": {
    "risk_class": [
     "high_risk"
@@ -166,9 +166,9 @@
    "exemptions": []
   },
   "engine_summary": {
-   "반영": 28,
-   "부분 반영": 17,
-   "미반영": 31,
+   "반영": 24,
+   "부분 반영": 20,
+   "미반영": 32,
    "비적용": 114,
    "검토 필요": 0
   }

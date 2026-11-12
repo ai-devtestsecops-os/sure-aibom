@@ -98,7 +98,8 @@
      "type": "dataset",
      "name": "job-skill-taxonomy",
      "sensitiveData": [],
-     "originalCollectionPurpose": "skill taxonomy compiled for public job classification statistics"
+     "originalCollectionPurpose": "skill taxonomy compiled for public job classification statistics",
+     "collectionProcess": "Public job-posting corpus scraped from company career pages (2024-2025), deduplicated"
     }
    ]
   }

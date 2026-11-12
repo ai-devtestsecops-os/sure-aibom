@@ -187,7 +187,8 @@
      ]
     }
    ],
-   "dataset_hasSensitivePersonalInformation": "no"
+   "dataset_hasSensitivePersonalInformation": "no",
+   "dataset_dataCollectionProcess": "Public job-posting corpus scraped from company career pages (2024-2025), deduplicated"
   },
   {
    "type": "Relationship",
