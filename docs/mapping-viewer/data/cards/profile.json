@@ -249,7 +249,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-b",
@@ -269,7 +269,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-b",
@@ -281,7 +281,7 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-2-2",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-53-1-a",
@@ -301,15 +301,15 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-10-2-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-ISO42001-A.7.3",
@@ -336,19 +336,19 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-2-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-10-2-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-ISO42001-A.7.6",
@@ -368,15 +368,15 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-10-2-e",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -392,15 +392,15 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-2-c",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -416,7 +416,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-6",
@@ -428,7 +428,7 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-f",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -444,7 +444,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-6",
@@ -452,7 +452,7 @@
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-53-1-d",
@@ -480,7 +480,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-6",
@@ -492,7 +492,7 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-f",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -508,7 +508,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-1-1-e",
@@ -516,7 +516,7 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-g",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-2-b",
@@ -536,15 +536,15 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-IV-2-g",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-IV-3",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-IV-4",
@@ -556,7 +556,7 @@
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-15-3",
@@ -568,11 +568,11 @@
         },
         {
           "card_id": "RC-EUAIA-Article-55-1-a",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-9-8",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-NISTRMF-MAP-1.1",
@@ -600,15 +600,15 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-IV-2-g",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-IV-3",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-IV-4",
@@ -620,7 +620,7 @@
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-15-3",
@@ -632,11 +632,11 @@
         },
         {
           "card_id": "RC-EUAIA-Article-55-1-a",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-9-8",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-NISTRMF-MAP-1.1",
@@ -664,7 +664,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-a",
-          "card_version": 3
+          "card_version": 1
         }
       ],
       "spdx_paths_more": [
@@ -684,11 +684,11 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-2-3",
-          "card_version": 2
+          "card_version": 1
         }
       ],
       "spdx_paths_more": []
@@ -705,11 +705,11 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-a",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-IV-2-g",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -731,7 +731,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-b",
@@ -739,7 +739,7 @@
         },
         {
           "card_id": "RC-EUAIA-Article-10-2-a",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -751,7 +751,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-c",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -763,15 +763,15 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-g",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-IV-2-e",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-IV-3",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-d",
@@ -791,19 +791,19 @@
         },
         {
           "card_id": "RC-EUAIA-Article-14-4-d",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-14-4-e",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-14-5",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-27-1-e",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-NISTRMF-MAP-2.2",
@@ -819,11 +819,11 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-f",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-c",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -835,7 +835,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-g",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -847,15 +847,15 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-h",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-15-5",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-55-1-d",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-NISTRMF-MANAGE-3.1",
@@ -882,7 +882,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-h",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-12",
@@ -898,11 +898,11 @@
         },
         {
           "card_id": "RC-EUAIA-Article-11-1",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-11-2",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-13-2",
@@ -942,7 +942,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-e",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-NISTRMF-MEASURE-2.12",
@@ -965,7 +965,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-5",
@@ -977,7 +977,7 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-e",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-2-a",
@@ -1005,7 +1005,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-c",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1021,7 +1021,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-d",
@@ -1057,7 +1057,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-b",
@@ -1077,15 +1077,15 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-b",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-IV-1-e",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-d",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-e",
@@ -1112,11 +1112,11 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-h",
-          "card_version": 2
+          "card_version": 1
         }
       ],
       "spdx_path": "Package.@hasDeclaredLicense",
@@ -1136,7 +1136,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-3",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-6",
@@ -1148,7 +1148,7 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-g",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-2-b",
@@ -1156,7 +1156,7 @@
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-b",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1176,7 +1176,7 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-a",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-NISTRMF-MAP-2.1",
@@ -1203,7 +1203,7 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-c",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1223,7 +1223,7 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-f",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1235,11 +1235,11 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-IV-1-d",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-1-1-c",
@@ -1247,7 +1247,7 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-c",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1266,7 +1266,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-a",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-IX-3",
@@ -1286,11 +1286,11 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-a",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-NISTRMF-MAP-1.1",
@@ -1317,11 +1317,11 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-a",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-V-2",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-1",
@@ -1333,15 +1333,15 @@
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-a",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-16-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-23-3",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1357,11 +1357,11 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-1-a",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-1-e",
-          "card_version": 3
+          "card_version": 1
         }
       ]
     },
@@ -1377,11 +1377,11 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-e",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-IV-3",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-13-1",
@@ -1389,11 +1389,11 @@
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-14-4-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-NISTRMF-MEASURE-2.9",
@@ -1413,15 +1413,15 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-3",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-55-1-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-9-2-a",
@@ -1441,15 +1441,15 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-3",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-14-4-a",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-53-1-b",
@@ -1481,11 +1481,11 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-3",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-b",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1509,7 +1509,7 @@
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-f",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-ISO42001-A.6.2.8",
@@ -1544,11 +1544,11 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-XI-2-2",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-55-1-a",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1564,7 +1564,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-9-8",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1580,7 +1580,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-e",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1596,7 +1596,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-c",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1612,15 +1612,15 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-f",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-10-3",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-26-4",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1639,27 +1639,27 @@
         },
         {
           "card_id": "RC-EUAIA-Article-10-2-e",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-10-3",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-26-4",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-41-5",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-53-4",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-55-2",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-ISO42001-A.6.2.4",
@@ -1710,27 +1710,27 @@
         },
         {
           "card_id": "RC-EUAIA-Article-10-2-e",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-10-3",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-26-4",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-41-5",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-53-4",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-55-2",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-ISO42001-A.6.2.4",
@@ -1778,7 +1778,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-g",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1797,11 +1797,11 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-h",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-10-3",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1817,7 +1817,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-h",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1833,7 +1833,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-b",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1849,7 +1849,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-2-d",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1889,7 +1889,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-9-5",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-NISTRMF-MANAGE-1.4",
@@ -1924,7 +1924,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-5",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1940,7 +1940,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-5-b",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -1956,7 +1956,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-5",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -2016,7 +2016,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-3",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -2032,7 +2032,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-3",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -2048,7 +2048,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-10-4",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -2064,15 +2064,15 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-2-d",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XI-1-2-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-XII-2-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-ISO42001-A.7.5",
@@ -2106,7 +2106,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-8",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -2125,19 +2125,19 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-V-7",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-8",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-9",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-48-4",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -2285,7 +2285,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-55-1-b",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-9-2-d",
@@ -2297,7 +2297,7 @@
         },
         {
           "card_id": "RC-EUAIA-Article-9-5-b",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -2340,11 +2340,11 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-16-h",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-48-2",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -2356,7 +2356,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-V-7",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-V-8",
@@ -2395,7 +2395,7 @@
         },
         {
           "card_id": "RC-EUAIA-Article-15-5",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-NISTRMF-MEASURE-2.7",
@@ -2426,15 +2426,15 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-C-4",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-C-5",
-          "card_version": 3
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-27-1",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-6-4",
@@ -2493,7 +2493,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-15-5",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -2516,7 +2516,7 @@
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-C-3",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -2552,11 +2552,11 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-27-1-c",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-9-9",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-ISO42001-A.5.4",
@@ -2580,7 +2580,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-9-9",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-ISO42001-A.5.4",
@@ -2684,7 +2684,7 @@
         },
         {
           "card_id": "RC-EUAIA-Article-55-1-a",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-NISTRMF-MEASURE-2.1",
@@ -2883,19 +2883,19 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-7",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-41-5",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-53-4",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-55-2",
-          "card_version": 3
+          "card_version": 1
         }
       ]
     },
@@ -2914,7 +2914,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-IV-7",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-V-6",
@@ -2922,11 +2922,11 @@
         },
         {
           "card_id": "RC-EUAIA-Article-53-4",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-55-2",
-          "card_version": 3
+          "card_version": 1
         }
       ]
     },
@@ -2990,19 +2990,19 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Annex-V-2",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-A-3",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Annex-VIII-B-3",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-13-3-a",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -3118,7 +3118,7 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-25-4",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     },
@@ -3130,11 +3130,11 @@
       "used_by": [
         {
           "card_id": "RC-EUAIA-Article-50-1",
-          "card_version": 2
+          "card_version": 1
         },
         {
           "card_id": "RC-EUAIA-Article-50-2",
-          "card_version": 2
+          "card_version": 1
         }
       ]
     }
