@@ -27,7 +27,7 @@ import os
 import re
 from pathlib import Path
 
-from .dataset import SKIP_DIRS, _inside, _notebook_code, _relative
+from ..utils.files import SKIP_DIRS, inside, notebook_code, relative
 from .enrich import hub_model_id
 
 # (제공사, 서비스 이름, 파이썬 모듈, JS 패키지). 모듈은 그 이름이거나 그 아래 하위 모듈이면 맞는다 (openai.types)
@@ -100,9 +100,9 @@ def sdk_imports(root: Path, log=print) -> dict[str, list[str]]:
             if suffix not in PYTHON_SUFFIXES and suffix not in JS_SUFFIXES:
                 continue
             path = here / filename
-            if not _inside(path, root_resolved):
+            if not inside(path, root_resolved):
                 continue
-            rel = _relative(path, root)
+            rel = relative(path, root)
             providers = _python_providers(path, rel, log) if suffix in PYTHON_SUFFIXES else _js_providers(path)
             for provider in providers:
                 found.setdefault(provider, []).append(rel)
@@ -113,7 +113,7 @@ def _python_providers(path: Path, rel: str, log) -> set[str]:
     """파이썬 소스나 노트북 하나가 import 하는 SDK 의 제공사. 파싱이 안 되면 건너뛰고 알린다."""
     try:
         text = path.read_text(encoding="utf-8", errors="replace")
-        tree = ast.parse(_notebook_code(text) if path.suffix.lower() == ".ipynb" else text)
+        tree = ast.parse(notebook_code(text) if path.suffix.lower() == ".ipynb" else text)
     except (SyntaxError, ValueError, OSError, KeyError, TypeError) as e:
         log(f"[service] {rel}: skipped, cannot parse ({e.__class__.__name__})")
         return set()

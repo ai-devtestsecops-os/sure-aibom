@@ -17,12 +17,12 @@ from pathlib import Path
 
 import pytest
 
-import sure_aibom.dataset as ds
-import sure_aibom.enrich as en
+import sure_aibom.external.hub as hub
+import sure_aibom.engine.enrich as en
 import fieldtrace
-from sure_aibom.runners._proc import RunnerError
-from sure_aibom.spdx import convert
-from sure_aibom.validate import validate_cdx, validate_spdx
+from sure_aibom.external._proc import RunnerError
+from sure_aibom.engine.spdx import convert
+from sure_aibom.engine.validate import validate_cdx, validate_spdx
 from test_image import docker_tar
 
 FIELDS = Path(__file__).parent / "data" / "fields"
@@ -77,12 +77,11 @@ def scans(tmp_path_factory) -> dict:
     with pytest.MonkeyPatch.context() as mp:
         mp.setattr(en, "skip_reason", lambda: None)
         mp.setattr(en, "run_aibom_generator", recorded_owasp)
-        mp.setattr(en, "hf_reachable", lambda: True)                       # 허브 모델 응답은 M-BOM 보강이 받는다
-        mp.setattr(ds, "hf_reachable", lambda: True)
-        mp.setattr(ds, "fetch_model_info", lambda hf_id, log=print: recorded("model", hf_id))
-        mp.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))
-        mp.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: recorded("size", hf_id))
-        mp.setattr(ds, "fetch_dataset_statistics", lambda hf_id, config, split, log=print: recorded("statistics", hf_id, config, split))
+        mp.setattr(hub, "hf_reachable", lambda: True)                       # 허브 모델 응답은 M-BOM 보강이 받는다
+        mp.setattr(hub, "fetch_model_info", lambda hf_id, log=print: recorded("model", hf_id))
+        mp.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))
+        mp.setattr(hub, "fetch_dataset_size", lambda hf_id, log=print: recorded("size", hf_id))
+        mp.setattr(hub, "fetch_dataset_statistics", lambda hf_id, config, split, log=print: recorded("statistics", hf_id, config, split))
         for name, target, spec in (("directory", PROJECT, "v0.6"), ("image", tar, "v0.6"), ("directory-1.7", PROJECT, "1.7")):
             err = io.StringIO()
             with contextlib.redirect_stderr(err):

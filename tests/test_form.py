@@ -7,8 +7,8 @@ from pathlib import Path
 import pytest
 
 from sure_aibom.cli import main
-from sure_aibom.form import apply
-from sure_aibom.validate import validate_cdx
+from sure_aibom.engine.form import apply
+from sure_aibom.engine.validate import validate_cdx
 
 SAMPLE = Path(__file__).parent / "data" / "merged_sample.cdx.json"
 BERT = "pkg:huggingface/google-bert/bert-base-uncased"
@@ -379,7 +379,7 @@ def test_report_logs_the_missing_fields_of_each_component():
 
 # -- 도구 properties 지우기 ----------------------------------------------------------
 def test_drop_tool_properties_keeps_only_aibom_keys_everywhere():
-    from sure_aibom.form import drop_tool_properties
+    from sure_aibom.engine.form import drop_tool_properties
     doc = {"metadata": {"component": {"name": "r", "properties": [{"name": "syft:image:labels:x", "value": "1"}]}},
            "components": [{"name": "m", "properties": [{"name": "cdx:ai:kind", "value": "model"}, {"name": "aibom:dataset:size", "value": "3"}],
                            "licenses": [{"license": {"id": "MIT", "properties": [{"name": "cdx:license:category", "value": "Permissive"}]}}],

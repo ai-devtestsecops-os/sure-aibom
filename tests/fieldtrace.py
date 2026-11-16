@@ -25,9 +25,9 @@ from collections import defaultdict
 from pathlib import PurePosixPath
 
 import sure_aibom.cli as cli
-from sure_aibom.enrich import LOCAL_MODEL_FILES, LOCAL_MODEL_SUFFIXES
-from sure_aibom.form import HYPERPARAMETER_BY_PROPERTY, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX
-from sure_aibom.merge import _walk_components, identity
+from sure_aibom.engine.enrich import LOCAL_MODEL_FILES, LOCAL_MODEL_SUFFIXES
+from sure_aibom.engine.form import HYPERPARAMETER_BY_PROPERTY, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX
+from sure_aibom.engine.merge import _walk_components, identity
 
 MARK = "\x00mark"
 SYFT, CDXGEN, OWASP, CLI = "syft", "cdxgen", "OWASP aibom-generator", "sure-aibom"
@@ -323,8 +323,8 @@ def spdx_site_sources(doc: dict, tracker: Tracker) -> dict[str, set[tuple[str, s
     값과 맞춰 도구를 잇는다: 같은 값, 열거값 대응(direct-download → directDownload 등), 이어 붙인 문자열은 풀어서. 못 찾으면
     변환기(sure-aibom)다. 공급자·작성자·라이선스 요소는 그것을 가리키는 컴포넌트로, 관계는 종류마다 CycloneDX 의 관계·계보·라이선스
     값으로, 루트의 builtTime 은 syft 가 읽은 이미지 라벨로 잇는다."""
-    from sure_aibom.facts import normalize_time
-    from sure_aibom.spdx import AVAILABILITY, EXTERNAL_REF_TYPE, HASH_ALGORITHM, PRESENCE, PURPOSE_BY_TYPE, convert
+    from sure_aibom.engine.facts import normalize_time
+    from sure_aibom.engine.spdx import AVAILABILITY, EXTERNAL_REF_TYPE, HASH_ALGORITHM, PRESENCE, PURPOSE_BY_TYPE, convert
 
     clean = copy.deepcopy(doc)
     for c in clean.get("components") or []:

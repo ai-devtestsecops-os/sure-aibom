@@ -5,8 +5,8 @@ from pathlib import Path
 
 import pytest
 
-import sure_aibom.runners.cdxgen as cdxgen
-import sure_aibom.runners.syft as syft
+import sure_aibom.external.cdxgen as cdxgen
+import sure_aibom.external.syft as syft
 
 
 def props(**kv) -> list[dict]:

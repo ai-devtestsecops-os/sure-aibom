@@ -102,7 +102,7 @@ def apply(doc: dict, form: str = "properties", log=print, report: dict | None = 
 def drop_tool_properties(doc: dict) -> dict:
     """문서 어디에 있든 properties 목록에서 aibom:* 가 아닌 항목을 지운다. 비어 버린 목록과, 그래서 비어 버린 객체(properties 만
     있던 environmentalConsiderations 등)는 없앤다. 원래 비어 있던 것은 그대로 둔다.
-    도구가 낸 properties 가운데 믿을 만한 것은 앞 단계에서 정규 필드나 규제 필드로 옮겼다 (runners/syft.py · runners/cdxgen.py
+    도구가 낸 properties 가운데 믿을 만한 것은 앞 단계에서 정규 필드나 규제 필드로 옮겼다 (external/syft.py · external/cdxgen.py
     · merge.py · form). 나머지는 값과 뜻을 sure-aibom 이 관리하지 않으므로 내보내지 않는다."""
     def walk(node) -> bool:
         """node 가 이번에 지워서 빈 객체가 되었으면 True."""

@@ -5,9 +5,9 @@ import json
 
 import pytest
 
-from sure_aibom.facts import Facts
-from sure_aibom.spdx import convert
-from sure_aibom.validate import detect_format, schema_for, validate_doc, validate_spdx
+from sure_aibom.engine.facts import Facts
+from sure_aibom.engine.spdx import convert
+from sure_aibom.engine.validate import detect_format, schema_for, validate_doc, validate_spdx
 
 NS = "urn:uuid:3b1f6c2e-8a4d-4c1e-9f7a-0d2b5e6a7c91"
 ROOT, BERT, REVIEWS, LOCAL, LIB, FILE, OS_REF = ("container:/acme-app:1.4.0@", "pkg:huggingface/acme/acme-bert", "pkg:huggingface/datasets/acme/reviews",

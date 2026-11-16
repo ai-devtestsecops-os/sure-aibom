@@ -10,18 +10,19 @@ import tempfile
 from pathlib import Path
 
 from . import NAME, __version__
-from .dataset import discover as discover_datasets, is_dataset, missing_revisions, split_data_args
-from .enrich import enrich
-from .facts import Facts
-from .merge import merge
-from .model import discover as discover_models
-from .service import discover as discover_services
-from .form import apply as regulate, drop_tool_properties
-from .image import extract as extract_image, is_archive, pull as pull_image
-from .runners import run_cdxgen, run_syft
-from .runners._proc import RunnerError
-from .spdx import convert as convert_spdx
-from .validate import SPECS, detect_format, schema_for, validate_doc
+from .engine.ai_services import discover as discover_services
+from .engine.dataset import discover as discover_datasets, is_dataset, missing_revisions, split_data_args
+from .engine.enrich import enrich
+from .engine.facts import Facts
+from .engine.form import apply as regulate, drop_tool_properties
+from .engine.image import extract as extract_image, is_archive
+from .engine.merge import merge
+from .engine.model import discover as discover_models
+from .engine.spdx import convert as convert_spdx
+from .engine.validate import SPECS, detect_format, schema_for, validate_doc
+from .external import run_cdxgen, run_syft
+from .external._proc import RunnerError
+from .external.image_pull import pull as pull_image
 
 EXIT_TOOL = 2      # 실행 오류 (잘못된 인자·입력, 도구 없음·실패)
 EXIT_INVALID = 3   # 스키마 불일치 (1 은 파이썬이 처리 못 한 예외로 죽을 때 내므로 비워 둔다)
@@ -164,7 +165,7 @@ def _scan(args: argparse.Namespace, workdir: Path) -> int:
     except RunnerError as e:
         _failed("Generating S-BOM (syft)", "syft", e, failed)
 
-    # 이미지는 syft 만 그대로 읽는다. M-BOM·D-BOM 단계는 이미지를 푼 디렉터리에 대해 돌린다 (image.py 참고).
+    # 이미지는 syft 만 그대로 읽는다. M-BOM·D-BOM 단계는 이미지를 푼 디렉터리에 대해 돌린다 (engine/image.py 참고).
     scan_dir: str | None = args.target
     image_name: str | None = None
     if not Path(args.target).is_dir():

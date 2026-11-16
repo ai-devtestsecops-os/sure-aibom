@@ -4,7 +4,7 @@ cdxgen 은 대상이 이미지면 컨테이너 모드로 바뀌어 프로젝트 
 M-BOM·D-BOM 단계(cdxgen -t ai, model.py, dataset.py)는 이미지를 푼 디렉터리에 대해 돌린다. syft 는 이미지를 그대로 스캔한다.
 
     이미지 .tar (docker save, crane pull)        바로 푼다. 데몬도 네트워크도 필요 없다
-    이미지 이름 (alpine:3.20, ghcr.io/org/img)   docker, podman, crane 순으로 PATH 에 있는 것으로 .tar 를 받은 뒤 푼다
+    이미지 이름 (alpine:3.20, ghcr.io/org/img)   external/image_pull.py 가 .tar 로 받은 뒤 푼다
 
 tar 의 안쪽 모양은 둘이다. docker save·crane 의 manifest.json (Config, Layers) 과 OCI 레이아웃 (index.json, blobs/).
 레이어는 순서대로 겹쳐 쓰고 화이트아웃(.wh.<이름>, .wh..wh..opq)은 아래 레이어의 것을 지운다. 항목마다 tarfile 의
@@ -14,16 +14,14 @@ from __future__ import annotations
 
 import json
 import os
-import platform
 import shutil
 import tarfile
 from pathlib import Path
 
-from .runners._proc import RunnerError, run
+from ..external._proc import RunnerError
+from ..utils.arch import host_arch
 
 ARCHIVE_SUFFIXES = (".tar", ".tar.gz", ".tgz")
-PULL_TOOLS = ("docker", "podman", "crane")           # syft 와 같은 순서: 데몬 → 레지스트리
-ARCH_BY_MACHINE = {"x86_64": "amd64", "amd64": "amd64", "aarch64": "arm64", "arm64": "arm64"}
 WHITEOUT = ".wh."
 OPAQUE = ".wh..wh..opq"
 INDEX_MEDIA_TYPES = {"application/vnd.oci.image.index.v1+json", "application/vnd.docker.distribution.manifest.list.v2+json"}
@@ -33,48 +31,6 @@ ZSTD_MAGIC = b"\x28\xb5\x2f\xfd"
 
 def is_archive(target: str) -> bool:
     return target.lower().endswith(ARCHIVE_SUFFIXES)
-
-
-def host_arch() -> str:
-    machine = platform.machine().lower()
-    return ARCH_BY_MACHINE.get(machine, machine)
-
-
-# ── 이름 → .tar ───────────────────────────────────────────────────────────────
-
-def pull(ref: str, workdir: Path) -> tuple[Path, str]:
-    """이미지 이름을 workdir/image.tar 로 받는다. (tar 경로, 쓴 도구). docker·podman 은 데몬에 있는 이미지를 save 하고
-    없으면 pull 한 뒤 save 한다. crane 은 레지스트리에서 이 머신의 플랫폼으로 받는다. 하나가 실패하면 다음 것을 쓴다."""
-    tools = [t for t in PULL_TOOLS if shutil.which(t)]
-    if not tools:
-        raise RunnerError(f"docker, podman or crane is needed to fetch {ref} (or pass the image as a .tar)")
-    tar_path = workdir / "image.tar"
-    errors: list[str] = []
-    for tool in tools:
-        try:
-            _pull_with(tool, ref, tar_path)
-            return tar_path, tool
-        except RunnerError as e:
-            errors.append(f"{tool}: {e}")
-    raise RunnerError("\n".join([f"could not fetch {ref}", *errors]))
-
-
-def _pull_with(tool: str, ref: str, tar_path: Path) -> None:
-    if tool == "crane":
-        _check(run(["crane", "pull", "--platform", f"linux/{host_arch()}", ref, str(tar_path)]), "crane pull")
-    else:
-        save = [tool, "image", "save", "-o", str(tar_path), ref]
-        if run(save).returncode != 0:                        # 데몬에 없으면 받아서 다시
-            _check(run([tool, "pull", ref]), f"{tool} pull")
-            _check(run(save), f"{tool} image save")
-    if not tar_path.exists() or tar_path.stat().st_size == 0:
-        raise RunnerError(f"{tool} produced no tar")
-
-
-def _check(proc, what: str) -> None:
-    if proc.returncode != 0:
-        lines = (proc.stderr or proc.stdout or "").strip().splitlines()
-        raise RunnerError(f"{what} exited with {proc.returncode}" + (f": {lines[-1].strip()}" if lines else ""))
 
 
 # ── .tar → 디렉터리 ───────────────────────────────────────────────────────────

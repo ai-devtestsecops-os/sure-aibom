@@ -65,17 +65,16 @@ from collections import Counter
 from statistics import fmean, median, stdev
 from pathlib import Path, PurePosixPath
 from typing import Iterable
-from urllib.error import HTTPError, URLError
-from urllib.parse import quote
-from urllib.request import Request, urlopen
 
 import yaml
 
-from .enrich import hf_reachable, hub_model_id
+from ..external import hub
+from ..utils.files import SKIP_DIRS, inside, notebook_code, relative
+from ..utils.licenses import card_licenses
+from .enrich import hub_model_id
 from .facts import Facts
 from .merge import fill_missing
 from .form import INTERNAL_PREFIX
-from .licenses import card_licenses
 from .model import MODEL_TYPE, _inside_file
 
 DATA_TYPE = "data"
@@ -92,8 +91,6 @@ _HF_REVISION = re.compile(r"^[^\s@]+$")          # 브랜치·태그·커밋 해
 CARD_NAME = "readme.md"                          # 로컬 모델 폴더의 모델 카드 (대소문자 무시)
 CARD_MAX_BYTES = 8 * 1024 ** 2                   # 모델 카드를 통째로 읽는 상한
 _FRONT_MATTER = re.compile(r"\A﻿?---[ \t]*\r?\n(.*?)\r?\n---[ \t]*(?:\r?\n|\Z)", re.DOTALL)   # README 맨 앞의 YAML 헤더
-
-SKIP_DIRS = frozenset({"node_modules", ".git", "venv", ".venv", "site-packages", "dist-packages", "__pycache__"})
 
 # 확장자 → 모달리티. --data 로 지목한 경로 안에서 이 확장자의 파일이 데이터다.
 MODALITY_BY_EXTENSION: dict[str, str] = {
@@ -141,9 +138,6 @@ JSON_PARSE_LIMIT = 64 * 1024 ** 2               # json 배열 길이를 세려�
 CSV_FIELD_LIMIT = 2 ** 31 - 1                   # csv 모듈 기본값 131072 는 문서 하나가 한 칸인 NLP 표에 모자란다
 # 파일 하나를 읽다 나는 예외 — 크기·해시만 적고 계속 간다
 _READ_ERRORS = (OSError, ValueError, UnicodeDecodeError, zipfile.BadZipFile, csv.Error, SyntaxError, TypeError, AttributeError)
-FETCH_TIMEOUT = 15.0
-
-DATASETS_SERVER = "https://datasets-server.huggingface.co"
 STATISTIC_KEYS = ("min", "max", "mean", "median", "std")      # datasets-server 가 숫자형 열에 주는 통계. v0.6 의 예시(mean, median, range …)와 같은 계열
 MEASURE_BY_COLUMN_TYPE = {"string_text": "length", "list": "length", "image": "width", "audio": "duration"}   # 숫자가 아닌 열은 무엇의 통계인지
 LABEL_COLUMN_TYPES = frozenset({"class_label", "string_label", "bool"})
@@ -205,7 +199,7 @@ def discover(merged: dict, target: str, log=print, report: dict | None = None, d
     hub_models = [(c, model_id) for c in components if (model_id := hub_model_id(c))]
     reachable = True
     if hub_models or by_hf_id:
-        reachable = hf_reachable() if hub_reachable is None else hub_reachable
+        reachable = hub.hf_reachable() if hub_reachable is None else hub_reachable
         if not reachable:
             n, m = len(by_hf_id), len(hub_models)
             skipped = [f"{n} dataset{'s keep' if n != 1 else ' keeps'} name and purl only"] if n else []
@@ -265,11 +259,11 @@ def missing_revisions(given: dict[str, str | None]) -> list[tuple[str, str]]:
     scan 이 도구를 돌리기 전에 불러 입력 실수로 멈춘다. 저장소가 없거나 비공개라 401 이거나 허브에 닿지 않으면 판단하지 않는다
     (스캔은 이름과 리비전을 남기고 경고한다)."""
     pinned = sorted((hf_id, revision) for hf_id, revision in given.items() if revision)
-    if not pinned or not hf_reachable():
+    if not pinned or not hub.hf_reachable():
         return []
     out: list[tuple[str, str]] = []
     for hf_id, revision in pinned:
-        error = fetch_revision_error(hf_id, revision)
+        error = hub.fetch_revision_error(hf_id, revision)
         if error and error[0] == 404:
             out.append((hub_data_arg(hf_id, revision), error[1]))
     return out
@@ -339,10 +333,10 @@ def _scan_sources(root: Path, log) -> dict[str, list[tuple[str, str | None]]]:
             if not filename.endswith((".py", ".ipynb")):
                 continue
             path = here / filename
-            if not _inside(path, root_resolved):
-                log(f"[dataset] {_relative(path, root)}: skipped, symlink points outside the target")
+            if not inside(path, root_resolved):
+                log(f"[dataset] {relative(path, root)}: skipped, symlink points outside the target")
                 continue
-            loc = _relative(path, root)
+            loc = relative(path, root)
             for hf_id, revision in _parse_python(path, log):
                 hf_ids.setdefault(hf_id, []).append((loc, revision))
     return hf_ids
@@ -362,20 +356,12 @@ def _code_revisions(code_calls: dict[str, list[tuple[str, str | None]]], log) ->
     return out
 
 
-def _inside(path: Path, root_resolved: Path) -> bool:
-    """심볼릭 링크를 따라간 실제 위치가 root 안인가."""
-    try:
-        return path.resolve().is_relative_to(root_resolved)
-    except OSError:
-        return False
-
-
 def _parse_python(path: Path, log) -> list[tuple[str, str | None]]:
     """소스 하나(.py 또는 .ipynb)에서 load_dataset 으로 부른 (HF 데이터셋 id, revision= 문자열 또는 None) 들. 파싱이 안 되면 건너뛰고 알린다.
     첫 인자가 로컬 빌더(csv, json …)이거나 경로·파일 이름이면 허브 id 가 아니라 넘긴다. revision 이 변수면 None 이다."""
     try:
         text = path.read_text(encoding="utf-8", errors="replace")
-        tree = ast.parse(_notebook_code(text) if path.suffix == ".ipynb" else text)
+        tree = ast.parse(notebook_code(text) if path.suffix == ".ipynb" else text)
     except (SyntaxError, ValueError, OSError, KeyError, TypeError) as e:
         log(f"[dataset] {path.name}: skipped, cannot parse ({e.__class__.__name__})")
         return []
@@ -391,23 +377,6 @@ def _parse_python(path: Path, log) -> list[tuple[str, str | None]]:
     return calls
 
 
-def _notebook_code(text: str) -> str:
-    """노트북(.ipynb)의 코드 셀을 이어 붙인 파이썬 소스. `%magic`·`!shell` 줄은 파이썬이 아니라 뺀다."""
-    cells = json.loads(text)["cells"]
-    lines: list[str] = []
-    for cell in cells:
-        if not isinstance(cell, dict) or cell.get("cell_type") != "code":
-            continue
-        source = cell.get("source") or []
-        for line in (source if isinstance(source, list) else source.splitlines(True)):
-            if not isinstance(line, str):
-                continue
-            lines.append("\n" if line.lstrip().startswith(("%", "!")) else line)
-        if lines and not lines[-1].endswith("\n"):
-            lines.append("\n")
-    return "".join(lines)
-
-
 # ── 허브 모델 카드 ────────────────────────────────────────────────────────────
 
 def _datasets_from_model_cards(merged: dict, hub_models: list[tuple[dict, str]], by_hf_id: dict[str, dict], log,
@@ -416,7 +385,7 @@ def _datasets_from_model_cards(merged: dict, hub_models: list[tuple[dict, str]],
     (M-BOM 보강이 받아 둔 Hub API 응답)에서 읽고, infos 가 없으면 여기서 받는다. 모델 카드를 못 읽었거나 데이터셋이 없는
     모델은 손대지 않는다."""
     for model, model_id in hub_models:
-        info = infos.get(model_id) if infos is not None else fetch_model_info(model_id, log)
+        info = infos.get(model_id) if infos is not None else hub.fetch_model_info(model_id, log)
         card = (info or {}).get("cardData")
         ids = model_card_dataset_ids(card, model_id, log)
         if ids:
@@ -434,7 +403,7 @@ def _datasets_from_local_model_cards(merged: dict, root: Path, by_hf_id: dict[st
         return
     for model in [c for c in merged["components"] if c.get("type") == MODEL_TYPE]:
         for path in _card_files(model, root, root_resolved):
-            rel = _relative(path, root)
+            rel = relative(path, root)
             card = read_card_header(path, rel, log)
             ids = model_card_dataset_ids(card, rel, log)
             if not ids:
@@ -980,11 +949,11 @@ def _data_files(base: Path, log) -> list[tuple[Path, str]]:
             if filename.startswith(".") or _extension(filename) not in DATA_EXTENSIONS or _NON_DATA_NAME.match(filename):
                 continue
             path = here / filename
-            if not _inside(path, base):
-                log(f"[dataset] {_relative(path, base)}: skipped, symlink points outside the data path")
+            if not inside(path, base):
+                log(f"[dataset] {relative(path, base)}: skipped, symlink points outside the data path")
                 continue
             if path.is_file():
-                found.append((path, _relative(path, base)))
+                found.append((path, relative(path, base)))
     return sorted(found, key=lambda item: item[1])
 
 
@@ -1191,76 +1160,6 @@ def _number(v) -> str:
 
 # ── Hugging Face 허브 ────────────────────────────────────────────────────────
 
-def hf_endpoint() -> str:
-    return (os.environ.get("HF_ENDPOINT") or "https://huggingface.co").rstrip("/")
-
-
-def datasets_server() -> str:
-    return (os.environ.get("HF_DATASETS_SERVER") or DATASETS_SERVER).rstrip("/")
-
-
-def _hub_request(url: str) -> Request:
-    req = Request(url, headers={"User-Agent": "sure-aibom", "Accept": "application/json"})
-    if os.environ.get("HF_TOKEN"):
-        req.add_header("Authorization", f"Bearer {os.environ['HF_TOKEN']}")
-    return req
-
-
-def _get_json(url: str, hf_id: str, what: str, log) -> dict | None:
-    try:
-        with urlopen(_hub_request(url), timeout=FETCH_TIMEOUT) as resp:
-            info = json.load(resp)
-    except HTTPError as e:
-        log(f"[dataset] {hf_id}: {what} returned {e.code}")
-        return None
-    except (URLError, OSError, ValueError) as e:
-        log(f"[dataset] {hf_id}: {what} request failed ({e.__class__.__name__})")
-        return None
-    return info if isinstance(info, dict) else None
-
-
-def fetch_dataset_info(hf_id: str, log=print, revision: str | None = None) -> dict | None:
-    """GET {HF_ENDPOINT}/api/datasets/<id>, 리비전을 주면 /api/datasets/<id>/revision/<리비전> (응답의 sha 는 그 리비전의 전체 커밋 해시).
-    실패하면 None 을 돌려주고 알린다. 테스트는 이 함수를 바꿔 끼운다."""
-    url = f"{hf_endpoint()}/api/datasets/{quote(hf_id, safe='/')}"
-    if revision:
-        return _get_json(f"{url}/revision/{quote(revision, safe='')}", hf_id, f"Hub API at revision {revision}", log)
-    return _get_json(url, hf_id, "Hub API", log)
-
-
-def fetch_revision_error(hf_id: str, revision: str) -> tuple[int, str] | None:
-    """GET {HF_ENDPOINT}/api/datasets/<id>/revision/<리비전> 이 HTTP 오류로 끝나면 (상태 번호, 허브의 오류 문구).
-    성공했거나 허브에 닿지 않았으면 None. 테스트는 이 함수를 바꿔 끼운다."""
-    url = f"{hf_endpoint()}/api/datasets/{quote(hf_id, safe='/')}/revision/{quote(revision, safe='')}"
-    try:
-        with urlopen(_hub_request(url), timeout=FETCH_TIMEOUT):
-            return None
-    except HTTPError as e:
-        try:
-            message = json.loads(e.read() or b"{}").get("error")
-        except (ValueError, AttributeError, OSError):
-            message = None
-        return e.code, message if isinstance(message, str) and message else f"HTTP {e.code}"
-    except (URLError, OSError, ValueError):
-        return None
-
-
-def fetch_model_info(hf_id: str, log=print) -> dict | None:
-    """GET {HF_ENDPOINT}/api/models/<id>. 모델 카드(cardData)의 데이터셋을 읽으려고 부른다. 실패하면 None. 테스트는 이 함수를 바꿔 끼운다."""
-    return _get_json(f"{hf_endpoint()}/api/models/{quote(hf_id, safe='/')}", hf_id, "Hub API (model)", log)
-
-
-def fetch_dataset_size(hf_id: str, log=print) -> dict | None:
-    """GET datasets-server /size?dataset=<id>. 바이트 크기와 config·split 목록."""
-    return _get_json(f"{datasets_server()}/size?dataset={quote(hf_id, safe='/')}", hf_id, "datasets-server /size", log)
-
-
-def fetch_dataset_statistics(hf_id: str, config: str, split: str, log=print) -> dict | None:
-    """GET datasets-server /statistics?dataset=<id>&config=&split=. 열마다 통계."""
-    url = f"{datasets_server()}/statistics?dataset={quote(hf_id, safe='/')}&config={quote(config, safe='')}&split={quote(split, safe='')}"
-    return _get_json(url, hf_id, f"datasets-server /statistics {config}/{split}", log)
-
-
 def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | None = None,
                    revisions: dict[str, str] | None = None, given: Iterable[str] = ()) -> list[str]:
     """허브 응답으로 채우고, 같은 데이터셋을 다른 id 로 부른 컴포넌트는 정식 id 의 컴포넌트 하나로 모은다.
@@ -1277,9 +1176,9 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | 
     for hf_id in sorted(by_hf_id):
         revision = revisions.get(hf_id)
         if revision:
-            info = fetch_dataset_info(hf_id, log, revision=revision)
+            info = hub.fetch_dataset_info(hf_id, log, revision=revision)
         else:
-            info = info_by_canonical.get(hf_id) or fetch_dataset_info(hf_id, log)   # 앞선 조회가 정식 id 로 알려 준 것은 다시 묻지 않는다
+            info = info_by_canonical.get(hf_id) or hub.fetch_dataset_info(hf_id, log)   # 앞선 조회가 정식 id 로 알려 준 것은 다시 묻지 않는다
         canonical = canonical_id(hf_id, info)
         if info and revision:
             if pinned.get(canonical, revision) != revision:
@@ -1314,7 +1213,7 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | 
                 log(f"[dataset] {canonical}: revision {revision} is not the latest, datasets-server size and statistics skipped")
                 size, statistics = None, []
             else:
-                size = fetch_dataset_size(canonical, log)
+                size = hub.fetch_dataset_size(canonical, log)
                 statistics = _fetch_statistics(canonical, info, size, log)
             apply_hub_info(comp, canonical, info, size, statistics)
             if facts is not None:
@@ -1324,7 +1223,7 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | 
 
 def _is_latest(hf_id: str, info: dict, log) -> bool:
     """리비전을 지정해 받은 응답이 지금 기본 브랜치의 최신 커밋과 같은가. 최신을 받지 못하면 아니라고 본다."""
-    latest = fetch_dataset_info(hf_id, log)
+    latest = hub.fetch_dataset_info(hf_id, log)
     return bool(latest) and isinstance(info.get("sha"), str) and latest.get("sha") == info["sha"]
 
 
@@ -1336,7 +1235,7 @@ def _fetch_statistics(hf_id: str, info: dict, size: dict | None, log) -> list[tu
         pairs = pairs[:STATISTICS_REQUEST_LIMIT]
     out: list[tuple[str, str, dict]] = []
     for config, split in pairs:
-        resp = fetch_dataset_statistics(hf_id, config, split, log)
+        resp = hub.fetch_dataset_statistics(hf_id, config, split, log)
         if resp and isinstance(resp.get("statistics"), list):
             if resp.get("partial"):
                 log(f"[dataset] {hf_id}: {config}/{split} statistics are partial")
@@ -1627,15 +1526,6 @@ def _depend(merged: dict, ref: str, targets: list[str], first: bool = False) -> 
 
 
 # ── 잡다한 것 ────────────────────────────────────────────────────────────────
-
-def _relative(path: Path, root: Path) -> str:
-    """대상 루트 기준 상대 경로. 링크를 따라가지 않으므로 대상 안의 이름이 그대로 나오고, 머신 경로는 나오지 않는다."""
-    try:
-        rel = path.relative_to(root)
-    except ValueError:
-        rel = path.resolve().relative_to(root.resolve())
-    return rel.as_posix() or "."
-
 
 def _extension(name: str) -> str:
     return name.rsplit(".", 1)[-1].lower() if "." in name else ""

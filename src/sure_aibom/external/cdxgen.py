@@ -21,7 +21,7 @@ import re
 from pathlib import Path, PurePosixPath
 from urllib.parse import quote, unquote
 
-from ..licenses import license_entry
+from ..utils.licenses import license_entry
 from ._proc import RunnerError, load_json_file, run
 
 SPEC_VERSION = "1.7"

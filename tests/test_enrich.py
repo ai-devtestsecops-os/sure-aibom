@@ -8,12 +8,12 @@ from pathlib import Path
 
 import pytest
 
-import sure_aibom.dataset as ds
-import sure_aibom.enrich as en
-from sure_aibom.enrich import OWASP_SOURCES, apply_model_info, enrich, hf_id_of, hub_model_id, performance_metrics, skip_reason
-from sure_aibom.facts import Facts
-from sure_aibom.form import apply
-from sure_aibom.runners._proc import RunnerError
+import sure_aibom.engine.enrich as en
+import sure_aibom.external.hub as hub_api          # 이름 hub 는 아래의 Hub API 응답 fixture 가 쓴다
+from sure_aibom.engine.enrich import OWASP_SOURCES, apply_model_info, enrich, hf_id_of, hub_model_id, performance_metrics, skip_reason
+from sure_aibom.engine.facts import Facts
+from sure_aibom.engine.form import apply
+from sure_aibom.external._proc import RunnerError
 
 OWASP = Path(__file__).parent / "data" / "owasp" / "bert-base-uncased.cdx.json"
 HUB = Path(__file__).parent / "data" / "hf_api" / "hf_model_google-bert_bert-base-uncased.json"
@@ -40,7 +40,7 @@ def hub() -> dict:
 @pytest.fixture(autouse=True)
 def reachable(monkeypatch):
     monkeypatch.setattr(en, "skip_reason", lambda: None)
-    monkeypatch.setattr(en, "hf_reachable", lambda: False)        # Hub API 응답은 시험마다 model_infos 로 준다. 안 주면 허브에 닿지 않는다
+    monkeypatch.setattr(hub_api, "hf_reachable", lambda: False)        # Hub API 응답은 시험마다 model_infos 로 준다. 안 주면 허브에 닿지 않는다
 
 
 def bert_component(**extra) -> dict:
@@ -111,7 +111,7 @@ def test_nothing_to_enrich_is_left_alone(monkeypatch):
 def test_offline_skips_without_running_anything(monkeypatch):
     """허브에 닿지 않으면 Hub API 모델 응답을 받지 않고, OWASP 도 건너뛴다."""
     monkeypatch.setattr(en, "skip_reason", lambda: "huggingface.co unreachable")
-    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: pytest.fail("offline 인데 모델 응답을 받았다"))
+    monkeypatch.setattr(hub_api, "fetch_model_info", lambda hf_id, log=print: pytest.fail("offline 인데 모델 응답을 받았다"))
     stub(monkeypatch, RunnerError("불려서는 안 된다"))
     logs: list[str] = []
     doc = doc_of(bert_component())
@@ -124,7 +124,7 @@ def test_offline_skips_without_running_anything(monkeypatch):
 
 
 def test_skip_reason_checks_the_clone_before_the_network(tmp_path, monkeypatch):
-    monkeypatch.setattr(en, "hf_reachable", lambda: pytest.fail("클론이 틀렸는데 네트워크를 봤다"))
+    monkeypatch.setattr(hub_api, "hf_reachable", lambda: pytest.fail("클론이 틀렸는데 네트워크를 봤다"))
     monkeypatch.delenv("AIBOM_GENERATOR_DIR", raising=False)
     assert skip_reason() == "AIBOM_GENERATOR_DIR not set"
     monkeypatch.setenv("AIBOM_GENERATOR_DIR", str(tmp_path / "nope"))
@@ -133,9 +133,9 @@ def test_skip_reason_checks_the_clone_before_the_network(tmp_path, monkeypatch):
     assert skip_reason() == f"AIBOM_GENERATOR_DIR is not an aibom-generator clone (no src/cli.py): {tmp_path}"
     (tmp_path / "src").mkdir()
     (tmp_path / "src" / "cli.py").write_text("", encoding="utf-8")
-    monkeypatch.setattr(en, "hf_reachable", lambda: False)
+    monkeypatch.setattr(hub_api, "hf_reachable", lambda: False)
     assert skip_reason() == "huggingface.co unreachable"
-    monkeypatch.setattr(en, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub_api, "hf_reachable", lambda: True)
     assert skip_reason() is None
 
 
@@ -156,7 +156,7 @@ def test_report_carries_the_first_line_of_each_failure(monkeypatch, owasp):
 
 
 def test_a_missing_working_directory_is_not_reported_as_a_missing_program():
-    from sure_aibom.runners._proc import run
+    from sure_aibom.external._proc import run
     with pytest.raises(RunnerError, match="working directory not found: /nonexistent"):
         run(["python", "-c", "0"], cwd="/nonexistent")
 
@@ -275,8 +275,8 @@ def test_hub_model_responses_are_fetched_once_and_handed_to_the_d_bom(monkeypatc
     """model_infos 를 주지 않으면 허브에 닿는지 보고 허브 모델마다 Hub API 응답을 한 번 받아 채운다. 받은 응답은 report 에 남겨
     뒤의 D-BOM 이 모델 카드의 데이터셋을 읽을 때 다시 쓴다."""
     calls: list[str] = []
-    monkeypatch.setattr(en, "hf_reachable", lambda: True)
-    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: calls.append(hf_id) or copy.deepcopy(hub))
+    monkeypatch.setattr(hub_api, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub_api, "fetch_model_info", lambda hf_id, log=print: calls.append(hf_id) or copy.deepcopy(hub))
     monkeypatch.setattr(en, "skip_reason", lambda: "not under test")
     report: dict = {}
     comp = enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None, report=report)["components"][0]
@@ -365,7 +365,7 @@ def test_enriched_values_become_v06_fields(monkeypatch, owasp, hub, form):
 # -- 실제 실행 (AIBOM_GENERATOR_DIR 과 네트워크가 있을 때만) ----------------------------------
 @pytest.mark.skipif(skip_reason() is not None, reason=skip_reason() or "")
 def test_live_generator_returns_the_same_property_names():
-    from sure_aibom.runners.aibom_generator import run_aibom_generator
+    from sure_aibom.external.aibom_generator import run_aibom_generator
     import tempfile
     doc = run_aibom_generator(HF_ID, Path(tempfile.mkdtemp()))
     src = next(c for c in doc["components"] if c["type"] == "machine-learning-model")

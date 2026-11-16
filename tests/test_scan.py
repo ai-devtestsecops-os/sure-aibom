@@ -15,8 +15,8 @@ from pathlib import Path
 
 import pytest
 
-import sure_aibom.dataset as ds
-from sure_aibom.runners._proc import RunnerError
+import sure_aibom.external.hub as hub
+from sure_aibom.external._proc import RunnerError
 from sure_aibom.cli import main
 
 FIXTURE = Path(__file__).parent / "data" / "project"
@@ -62,15 +62,14 @@ def recorded_owasp(hf_id: str, workdir) -> dict:
 
 @pytest.fixture(autouse=True)
 def offline(monkeypatch):
-    monkeypatch.setattr("sure_aibom.enrich.skip_reason", lambda: None)                                     # 보강은 녹화본으로 돌린다
-    monkeypatch.setattr("sure_aibom.enrich.run_aibom_generator", recorded_owasp)
-    monkeypatch.setattr("sure_aibom.enrich.hf_reachable", lambda: True)                                   # 허브 모델 응답은 M-BOM 보강이 받는다
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
-    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: recorded("model", hf_id))
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))
-    monkeypatch.setattr(ds, "fetch_revision_error", lambda hf_id, revision: None)                          # --data 리비전은 있는 것으로 친다
-    monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: recorded("size", hf_id))
-    monkeypatch.setattr(ds, "fetch_dataset_statistics",
+    monkeypatch.setattr("sure_aibom.engine.enrich.skip_reason", lambda: None)                                     # 보강은 녹화본으로 돌린다
+    monkeypatch.setattr("sure_aibom.engine.enrich.run_aibom_generator", recorded_owasp)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)                                                 # 허브 모델 응답은 M-BOM 보강이 받는다
+    monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id, log=print: recorded("model", hf_id))
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))
+    monkeypatch.setattr(hub, "fetch_revision_error", lambda hf_id, revision: None)                          # --data 리비전은 있는 것으로 친다
+    monkeypatch.setattr(hub, "fetch_dataset_size", lambda hf_id, log=print: recorded("size", hf_id))
+    monkeypatch.setattr(hub, "fetch_dataset_statistics",
                         lambda hf_id, config, split, log=print: recorded("statistics", hf_id, config, split))
 
 
@@ -289,7 +288,7 @@ def test_scanning_twice_is_byte_identical_apart_from_serial_and_timestamp(tmp_pa
 
 def test_directory_without_datasets_gets_no_data_components(tmp_path, monkeypatch):
     """데이터 파일도 데이터셋 참조도 없는 디렉터리: 데이터 컴포넌트가 없고 허브를 보지 않는다 (이전 버전과 같은 문서)."""
-    monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("조회할 것이 없는데 네트워크를 봤다"))
+    monkeypatch.setattr(hub, "hf_reachable", lambda: pytest.fail("조회할 것이 없는데 네트워크를 봤다"))
     target = tmp_path / "plain"
     target.mkdir()
     for name in ("requirements.txt", "Modelfile"):
@@ -347,7 +346,7 @@ def test_an_image_target_is_unpacked_and_the_unpacked_directory_is_scanned(tmp_p
 
 def test_an_image_that_cannot_be_unpacked_skips_the_m_bom_and_exits_2(tmp_path, monkeypatch, capsys):
     import sure_aibom.cli as cli
-    from sure_aibom.runners._proc import RunnerError
+    from sure_aibom.external._proc import RunnerError
     monkeypatch.setattr(cli, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7",
         "components": [{"bom-ref": "a", "type": "library", "name": "a", "version": "1", "purl": "pkg:pypi/a@1"}]})
     monkeypatch.setattr(cli, "run_cdxgen", lambda target, workdir: pytest.fail("이미지를 못 풀었는데 cdxgen 을 돌렸다"))
@@ -398,7 +397,7 @@ def test_a_missing_path_target_is_an_error_not_an_image(tmp_path, capsys):
 def test_one_failing_tool_still_writes_the_bom_but_exits_2(tmp_path, monkeypatch, capsys):
     """syft·cdxgen 중 하나가 실패하면 만든 만큼은 쓰고, CI 가 모자란 BOM 을 성공으로 넘기지 않도록 2 로 끝낸다."""
     import sure_aibom.cli as cli
-    from sure_aibom.runners._proc import RunnerError
+    from sure_aibom.external._proc import RunnerError
 
     def broken(target, workdir):
         raise RunnerError("syft exited with 1\nfirst detail\nlast detail")
@@ -434,7 +433,7 @@ def test_hub_datasets_in_data_join_the_ones_in_code_and_a_failed_lookup_is_a_war
     import sure_aibom.cli as cli
     monkeypatch.setattr(cli, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
     monkeypatch.setattr(cli, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print, revision=None: recorded("dataset", hf_id))
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print, revision=None: recorded("dataset", hf_id))
     doc = scan(FIXTURE, tmp_path / "b.json", "--data", "hf://datasets/stanfordnlp/imdb@e6281661", "--data", "hf://datasets/acme/missing")
     imdb = next(c for c in doc["components"] if c["bom-ref"] == IMDB_REF)              # src/train.py 의 load_dataset 과 합쳐져 하나
     assert imdb["version"] == "e6281661ce1c48d982bc483cf8a173c1bbeb5d31" and imdb["evidence"]["occurrences"] == [{"location": "src/train.py"}]

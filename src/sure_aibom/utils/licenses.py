@@ -5,23 +5,20 @@ Hugging Face 카드는 목록에 없는 라이선스를 `license: other` 와 lic
 from __future__ import annotations
 
 import json
-
-from .validate import SCHEMA_DIR
-
-_SPDX_IDS: dict[str, str] | None = None
+from importlib.resources import files
 
 
-def spdx_ids() -> dict[str, str]:
-    """소문자 id → 스키마의 표기 (apache-2.0 → Apache-2.0)."""
-    global _SPDX_IDS
-    if _SPDX_IDS is None:
-        with (SCHEMA_DIR / "spdx.schema.json").open(encoding="utf-8") as fh:
-            _SPDX_IDS = {i.lower(): i for i in json.load(fh).get("enum") or []}
-    return _SPDX_IDS
+def _load_spdx_ids() -> dict[str, str]:
+    """소문자 id → 스키마의 표기 (apache-2.0 → Apache-2.0). 패키지 안 schemas/spdx.schema.json 의 enum 이다."""
+    with (files("sure_aibom") / "schemas" / "spdx.schema.json").open(encoding="utf-8") as fh:
+        return {i.lower(): i for i in json.load(fh).get("enum") or []}
+
+
+SPDX_IDS = _load_spdx_ids()          # 모듈을 읽을 때 한 번 만들고 바꾸지 않는 상수
 
 
 def license_entry(value: str, url: str | None = None) -> dict:
-    canonical = spdx_ids().get(value.strip().lower())
+    canonical = SPDX_IDS.get(value.strip().lower())
     entry: dict = {"id": canonical} if canonical else {"name": value.strip()}
     if url:
         entry["url"] = url

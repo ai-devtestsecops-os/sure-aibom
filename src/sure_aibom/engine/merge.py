@@ -31,7 +31,7 @@ from typing import Iterable
 from urllib.parse import unquote, urlsplit
 
 from .facts import Facts
-from .licenses import license_entry
+from ..utils.licenses import license_entry
 
 SPEC_VERSION = "1.7"
 ROOT_TYPE_BY_KIND = {"directory": "application", "image": "container"}
@@ -280,5 +280,5 @@ def merge(docs: list[dict], root: tuple[str, str] | None = None, facts: Facts | 
 
 
 def _version() -> str:
-    from . import __version__
+    from .. import __version__
     return __version__

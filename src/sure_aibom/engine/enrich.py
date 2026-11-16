@@ -33,20 +33,17 @@ from __future__ import annotations
 import copy
 import os
 import re
-import socket
 from pathlib import Path, PurePosixPath
 from typing import Iterable
-from urllib.parse import urlparse
 
+from ..external import hub, run_aibom_generator
+from ..external._proc import RunnerError
+from ..utils.licenses import card_licenses
 from .facts import Facts
 from .form import HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON, INTERNAL_MODEL_PREFIX
-from .licenses import card_licenses
-from .runners import run_aibom_generator
-from .runners._proc import RunnerError
 
 _HF_PURL = re.compile(r"^pkg:huggingface/(?P<ns>[^/@]+)/(?P<name>[^/@]+)(?:@[^?#]+)?")
 _HF_ID = re.compile(r"^[A-Za-z0-9][\w.-]*(?:/[A-Za-z0-9][\w.-]*)?$")
-HUB = "https://huggingface.co"
 LOCAL_MODEL_FILES = frozenset({"readme.md", "config.json", "adapter_config.json", "modelfile"})
 LOCAL_MODEL_SUFFIXES = (".gguf", ".safetensors")
 # OWASP 출력에서 가져오는 규제 필드 원본 (form 이 읽는 키 가운데 OWASP 가 내는 것)
@@ -84,20 +81,9 @@ def hub_model_id(component: dict) -> str | None:
     return hf_id
 
 
-def hf_reachable(timeout: float = 3.0) -> bool:
-    """huggingface.co(또는 HF_ENDPOINT 의 호스트) 443 포트에 TCP 로 닿는지만 본다."""
-    host = urlparse(os.environ.get("HF_ENDPOINT") or HUB).hostname or "huggingface.co"
-    try:
-        with socket.create_connection((host, 443), timeout=timeout):
-            return True
-    except OSError:
-        return False
-
-
 def fetch_model_infos(hf_ids: Iterable[str], log=print) -> dict[str, dict | None]:
     """허브 모델 id 마다 GET /api/models/<id> 응답 (실패면 None)."""
-    from .dataset import fetch_model_info          # dataset 이 이 모듈의 hub_model_id · hf_reachable 을 가져다 쓰므로 여기서 부른다
-    return {hf_id: fetch_model_info(hf_id, log) for hf_id in hf_ids}
+    return {hf_id: hub.fetch_model_info(hf_id, log) for hf_id in hf_ids}
 
 
 def skip_reason() -> str | None:
@@ -109,7 +95,7 @@ def skip_reason() -> str | None:
         return f"AIBOM_GENERATOR_DIR not found: {repo}"
     if not (Path(repo) / "src" / "cli.py").is_file():
         return f"AIBOM_GENERATOR_DIR is not an aibom-generator clone (no src/cli.py): {repo}"
-    if not hf_reachable():
+    if not hub.hf_reachable():
         return "huggingface.co unreachable"
     return None
 
@@ -132,7 +118,7 @@ def enrich(merged: dict, workdir: Path, log=print, report: dict | None = None, m
         return merged
 
     if model_infos is None:
-        report["hub_reachable"] = hf_reachable()
+        report["hub_reachable"] = hub.hf_reachable()
         if report["hub_reachable"]:
             model_infos = fetch_model_infos(targets, log)
     if model_infos is None:
@@ -225,7 +211,7 @@ def apply_model_info(comp: dict, hf_id: str, info: dict) -> None:
             comp["description"] = " ".join(text.split())
     if not comp.get("supplier") and isinstance(info.get("author"), str) and info["author"]:
         comp["supplier"] = {"name": info["author"]}
-    refs = [{"type": "distribution", "url": f"{HUB}/{hf_id}"}]
+    refs = [{"type": "distribution", "url": f"{hub.HUB}/{hf_id}"}]
     refs += [{"type": "documentation", "url": f"https://arxiv.org/abs/{t[len('arxiv:'):]}"}
              for t in _as_list(info.get("tags")) if isinstance(t, str) and t.startswith("arxiv:") and t[len("arxiv:"):]]
     existing = {(r.get("type"), r.get("url")) for r in comp.get("externalReferences") or []}

@@ -12,13 +12,14 @@ from pathlib import Path
 
 import pytest
 
-import sure_aibom.dataset as ds
-from sure_aibom.enrich import skip_reason
-from sure_aibom.facts import Facts
-from sure_aibom.merge import merge
-from sure_aibom.form import INTERNAL_PREFIX, apply
-from sure_aibom.licenses import card_licenses, license_entry
-from sure_aibom.validate import validate_cdx
+import sure_aibom.external.hub as hub
+import sure_aibom.engine.dataset as ds
+from sure_aibom.engine.enrich import skip_reason
+from sure_aibom.engine.facts import Facts
+from sure_aibom.engine.merge import merge
+from sure_aibom.engine.form import INTERNAL_PREFIX, apply
+from sure_aibom.utils.licenses import card_licenses, license_entry
+from sure_aibom.engine.validate import validate_cdx
 
 IMDB_FIXTURE = Path(__file__).parent / "data" / "hf_api" / "hf_dataset_stanfordnlp_imdb.json"
 IMDB = "stanfordnlp/imdb"
@@ -45,34 +46,34 @@ def imdb_statistics(config: str, split: str) -> dict | None:
         return None
 
 
-REAL_FETCH_SIZE, REAL_FETCH_STATISTICS = ds.fetch_dataset_size, ds.fetch_dataset_statistics     # 실제 허브를 치는 테스트가 되돌려 쓴다
+REAL_FETCH_SIZE, REAL_FETCH_STATISTICS = hub.fetch_dataset_size, hub.fetch_dataset_statistics     # 실제 허브를 치는 테스트가 되돌려 쓴다
 
 
 @pytest.fixture(autouse=True)
 def no_datasets_server(monkeypatch):
     """datasets-server 조회는 기본으로 실패(None)로 친다. 필요한 테스트가 다시 끼운다."""
-    monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: None)
-    monkeypatch.setattr(ds, "fetch_dataset_statistics", lambda hf_id, config, split, log=print: None)
+    monkeypatch.setattr(hub, "fetch_dataset_size", lambda hf_id, log=print: None)
+    monkeypatch.setattr(hub, "fetch_dataset_statistics", lambda hf_id, config, split, log=print: None)
 
 
 @pytest.fixture(autouse=True)
 def no_model_cards(monkeypatch):
     """허브 모델 카드 조회도 기본으로 실패(None)로 친다. 모델 카드의 데이터셋을 보는 테스트가 다시 끼운다."""
-    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: None)
+    monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id, log=print: None)
 
 
 @pytest.fixture
 def online(monkeypatch, imdb):
     """허브에 닿는 것으로 치고, imdb 만 픽스처(허브 정보 · /size · split 별 /statistics)로 답한다. 다른 id 는 None (조회 실패)."""
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
     calls: list[str] = []
 
     def fetch(hf_id, log=print):
         calls.append(hf_id)
         return copy.deepcopy(imdb) if hf_id == IMDB else None
-    monkeypatch.setattr(ds, "fetch_dataset_info", fetch)
-    monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: imdb_size() if hf_id == IMDB else None)
-    monkeypatch.setattr(ds, "fetch_dataset_statistics",
+    monkeypatch.setattr(hub, "fetch_dataset_info", fetch)
+    monkeypatch.setattr(hub, "fetch_dataset_size", lambda hf_id, log=print: imdb_size() if hf_id == IMDB else None)
+    monkeypatch.setattr(hub, "fetch_dataset_statistics",
                         lambda hf_id, config, split, log=print: imdb_statistics(config, split) if hf_id == IMDB else None)
     return calls
 
@@ -494,7 +495,7 @@ def test_media_header_parsers(tmp_path, make, fmt, expected):
 
 def test_data_files_in_the_target_are_not_read_without_a_data_path(tmp_path, monkeypatch):
     """로컬 데이터는 --data 로 지목한 곳에서만 읽는다. 확장자만 보고 추측하면 아이콘 같은 것도 데이터셋이 된다."""
-    monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("조회할 것이 없는데 네트워크를 봤다"))
+    monkeypatch.setattr(hub, "hf_reachable", lambda: pytest.fail("조회할 것이 없는데 네트워크를 봤다"))
     write(tmp_path, "data/train.csv", "a\n1\n")
     write(tmp_path, "static/icon.png", "x")
     write(tmp_path, "app.py", 'import pandas as pd\npd.read_csv("data/train.csv")\n')       # 코드가 읽어도 넣지 않는다
@@ -582,8 +583,8 @@ def test_hub_facts_variants():
 def test_existing_cdxgen_component_is_enriched_in_place_not_duplicated(tmp_path, monkeypatch, imdb):
     write(tmp_path, "train.py", 'load_dataset("bookcorpus")\n')
     doc = doc_of(cdxgen_bookcorpus())
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: {**copy.deepcopy(imdb), "id": "bookcorpus", "sha": "abc"} if hf_id == "bookcorpus" else None)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: {**copy.deepcopy(imdb), "id": "bookcorpus", "sha": "abc"} if hf_id == "bookcorpus" else None)
     deps_before = copy.deepcopy(doc["dependencies"])
     out = ds.discover(doc, str(tmp_path), log=lambda m: None)
     found = datasets(out)
@@ -641,9 +642,9 @@ def test_canonical_id_takes_a_well_formed_hub_id_only(info_id):
 def test_same_dataset_under_two_ids_becomes_one_component_and_one_hub_call(tmp_path, monkeypatch, imdb):
     """README 의 bookcorpus 와 코드의 bookcorpus/bookcorpus. 허브는 둘 다 bookcorpus/bookcorpus 라 답한다."""
     write(tmp_path, "train.py", 'load_dataset("bookcorpus/bookcorpus")\n')
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
     calls: list[str] = []
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: calls.append(hf_id) or bookcorpus_hub(imdb))
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: calls.append(hf_id) or bookcorpus_hub(imdb))
     logs: list[str] = []
     out = ds.discover(readme_doc(), str(tmp_path), log=logs.append)
     found = datasets(out)
@@ -665,8 +666,8 @@ def test_same_dataset_under_two_ids_becomes_one_component_and_one_hub_call(tmp_p
 
 
 def test_readme_only_component_is_renamed_to_the_hub_id_and_refs_follow(tmp_path, monkeypatch, imdb):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: bookcorpus_hub(imdb))
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: bookcorpus_hub(imdb))
     logs: list[str] = []
     facts = Facts()
     out = ds.discover(readme_doc(), str(tmp_path), log=logs.append, facts=facts)
@@ -686,9 +687,9 @@ def test_readme_only_component_is_renamed_to_the_hub_id_and_refs_follow(tmp_path
 
 
 def test_old_hub_name_in_code_is_renamed_and_two_spellings_collapse(tmp_path, monkeypatch, imdb):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
     calls: list[str] = []
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: calls.append(hf_id) or copy.deepcopy(imdb))
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: calls.append(hf_id) or copy.deepcopy(imdb))
     write(tmp_path, "a.py", 'load_dataset("imdb")\n')
     write(tmp_path, "b.py", 'load_dataset("stanfordnlp/imdb")\n')
     out = ds.discover(doc_of(), str(tmp_path), log=lambda m: None)
@@ -702,8 +703,8 @@ def test_old_hub_name_in_code_is_renamed_and_two_spellings_collapse(tmp_path, mo
 
 
 def test_alias_whose_lookup_fails_stays_a_separate_component(tmp_path, monkeypatch, imdb):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: copy.deepcopy(imdb) if hf_id == IMDB else None)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: copy.deepcopy(imdb) if hf_id == IMDB else None)
     write(tmp_path, "a.py", 'load_dataset("imdb")\nload_dataset("stanfordnlp/imdb")\n')
     found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))
     assert set(found) == {IMDB_REF, "pkg:huggingface/datasets/imdb"}                     # 같은 것인지 알 길이 없으니 둔다
@@ -730,7 +731,7 @@ def test_hub_model_card_datasets_become_components_linked_from_the_model(tmp_pat
     다시 쓰고, 모델카드에는 ref 로 적고 모델이 dependsOn 한다. 루트에는 잇지 않는다. 허브 id 꼴이 아닌 이름은 건너뛰고 알린다."""
     calls: list[str] = []
     info = model_info(["bookcorpus", IMDB], [{"name": "GLUE SST2", "type": "glue"}, {"name": "x", "type": "./eval.csv"}, {"name": "imdb", "type": IMDB}])
-    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: calls.append(hf_id) or copy.deepcopy(info))
+    monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id, log=print: calls.append(hf_id) or copy.deepcopy(info))
     logs: list[str] = []
     facts = Facts()
     out = ds.discover(doc_of(hub_bert(), cdxgen_bookcorpus()), str(tmp_path), log=logs.append, facts=facts)
@@ -752,8 +753,8 @@ def test_hub_model_card_datasets_become_components_linked_from_the_model(tmp_pat
 def test_model_infos_from_the_m_bom_step_are_read_without_asking_the_hub_again(tmp_path, monkeypatch, online):
     """M-BOM 보강이 받아 둔 응답(model_infos)과 허브에 닿는지 본 결과(hub_reachable)를 주면, 모델 카드를 다시 받지 않고
     허브 연결도 다시 보지 않는다. 데이터셋 조회는 그대로 한다."""
-    monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("M-BOM 보강이 본 결과가 있는데 허브 연결을 다시 봤다"))
-    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: pytest.fail("M-BOM 보강이 받은 응답이 있는데 다시 받았다"))
+    monkeypatch.setattr(hub, "hf_reachable", lambda: pytest.fail("M-BOM 보강이 본 결과가 있는데 허브 연결을 다시 봤다"))
+    monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id, log=print: pytest.fail("M-BOM 보강이 받은 응답이 있는데 다시 받았다"))
     out = ds.discover(doc_of(hub_bert()), str(tmp_path), log=lambda m: None,
                       model_infos={"google-bert/bert-base-uncased": model_info([IMDB])}, hub_reachable=True)
     bert = next(c for c in out["components"] if c["bom-ref"] == BERT_REF)
@@ -768,7 +769,7 @@ def test_name_only_entries_become_refs_and_a_model_card_that_cannot_be_read_chan
         {"type": "dataset", "name": "glue", "contents": {"url": "https://huggingface.co/datasets/glue"}}, {"type": "dataset", "name": "kept"}]}})
     other = {"bom-ref": "pkg:huggingface/acme/other", "type": "machine-learning-model", "name": "other", "purl": "pkg:huggingface/acme/other",
              "modelCard": {"modelParameters": {"datasets": [{"type": "dataset", "name": "x"}]}}}
-    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: model_info(["glue"]) if hf_id == "google-bert/bert-base-uncased" else None)
+    monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id, log=print: model_info(["glue"]) if hf_id == "google-bert/bert-base-uncased" else None)
     doc = doc_of(named, other)
     before = json.dumps(next(c for c in doc["components"] if c["name"] == "other"))
     out = ds.discover(doc, str(tmp_path), log=lambda m: None)
@@ -780,9 +781,9 @@ def test_name_only_entries_become_refs_and_a_model_card_that_cannot_be_read_chan
 def test_offline_reads_no_model_card_and_says_so_once(tmp_path, monkeypatch):
     """허브에 닿는지는 한 번만 보고, 닿지 않으면 모델 카드도 데이터셋도 묻지 않는다. 알림도 한 줄이다."""
     checks: list[bool] = []
-    monkeypatch.setattr(ds, "hf_reachable", lambda: checks.append(True) or False)
-    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: pytest.fail("offline 인데 모델 카드를 읽었다"))
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: pytest.fail("offline 인데 데이터셋을 조회했다"))
+    monkeypatch.setattr(hub, "hf_reachable", lambda: checks.append(True) or False)
+    monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id, log=print: pytest.fail("offline 인데 모델 카드를 읽었다"))
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: pytest.fail("offline 인데 데이터셋을 조회했다"))
     logs: list[str] = []
     report: dict = {}
     doc = doc_of(hub_bert(), cdxgen_bookcorpus())
@@ -885,7 +886,7 @@ def test_local_model_card_datasets_become_components_linked_from_the_model(tmp_p
     ("---\nmodel-index: [닫히지 않음\n---\n", "ParserError"),
 ])
 def test_a_local_model_card_without_a_usable_header_changes_nothing(tmp_path, monkeypatch, readme, error):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("물을 것이 없는데 네트워크를 봤다"))
+    monkeypatch.setattr(hub, "hf_reachable", lambda: pytest.fail("물을 것이 없는데 네트워크를 봤다"))
     doc = doc_of(local_model(tmp_path, readme, [{"type": "dataset", "name": "GLUE SST2"}]))
     before = json.dumps(doc)
     logs: list[str] = []
@@ -903,7 +904,7 @@ def test_statistics_requests_follow_dataset_info_then_size_and_are_capped(monkey
     def fetch(hf_id, config, split, log=print):
         calls.append((config, split))
         return {"statistics": [], "partial": config == "c3"} if config != "c5" else None
-    monkeypatch.setattr(ds, "fetch_dataset_statistics", fetch)
+    monkeypatch.setattr(hub, "fetch_dataset_statistics", fetch)
     many = {"id": "a/b", "cardData": {"dataset_info": [{"config_name": f"c{i}", "splits": [{"name": "train"}, {"name": "test"}]} for i in range(8)]}}
     logs: list[str] = []
     got = ds._fetch_statistics("a/b", many, None, logs.append)
@@ -974,8 +975,8 @@ def test_local_statistics_prefix_only_when_a_directory_has_several_files(tmp_pat
 
 
 def test_offline_keeps_name_and_purl_and_logs_once(tmp_path, monkeypatch):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: False)
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: pytest.fail("offline 인데 조회했다"))
+    monkeypatch.setattr(hub, "hf_reachable", lambda: False)
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: pytest.fail("offline 인데 조회했다"))
     write(tmp_path, "train.py", 'load_dataset("stanfordnlp/imdb")\nload_dataset("imdb")\n')
     logs: list[str] = []
     out = ds.discover(doc_of(), str(tmp_path), log=logs.append)
@@ -989,8 +990,8 @@ def test_offline_keeps_name_and_purl_and_logs_once(tmp_path, monkeypatch):
 
 
 def test_fetch_failure_is_logged_and_component_kept(tmp_path, monkeypatch):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: None)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: None)
     write(tmp_path, "train.py", 'load_dataset("nobody/nothing")\n')
     found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))
     assert set(found) == {"pkg:huggingface/datasets/nobody/nothing"} and "properties" not in found["pkg:huggingface/datasets/nobody/nothing"]
@@ -1041,16 +1042,16 @@ def test_hub_dataset_given_with_data_is_built_like_one_found_in_code(tmp_path, o
 
 
 def test_a_given_revision_is_looked_up_at_that_revision_and_becomes_the_version(tmp_path, monkeypatch, imdb):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
     old = {**copy.deepcopy(imdb), "sha": OLD_IMDB_SHA, "lastModified": "2022-11-18T20:09:16.000Z"}
     calls: list[tuple[str, str | None]] = []
 
     def fetch(hf_id, log=print, revision=None):
         calls.append((hf_id, revision))
         return copy.deepcopy(old if revision else imdb)
-    monkeypatch.setattr(ds, "fetch_dataset_info", fetch)
-    monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: pytest.fail("최신이 아닌 리비전인데 /size 를 물었다"))
-    monkeypatch.setattr(ds, "fetch_dataset_statistics", lambda *a, **k: pytest.fail("최신이 아닌 리비전인데 /statistics 를 물었다"))
+    monkeypatch.setattr(hub, "fetch_dataset_info", fetch)
+    monkeypatch.setattr(hub, "fetch_dataset_size", lambda hf_id, log=print: pytest.fail("최신이 아닌 리비전인데 /size 를 물었다"))
+    monkeypatch.setattr(hub, "fetch_dataset_statistics", lambda *a, **k: pytest.fail("최신이 아닌 리비전인데 /statistics 를 물었다"))
     logs: list[str] = []
     facts = Facts()
     out = ds.discover(doc_of(), str(tmp_path), log=logs.append, data_paths=["hf://datasets/stanfordnlp/imdb@94a9845c"], facts=facts)
@@ -1062,22 +1063,22 @@ def test_a_given_revision_is_looked_up_at_that_revision_and_becomes_the_version(
 
 
 def test_a_given_revision_that_is_the_latest_still_gets_datasets_server_statistics(tmp_path, monkeypatch, imdb, online):
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print, revision=None: copy.deepcopy(imdb) if hf_id == IMDB else None)
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print, revision=None: copy.deepcopy(imdb) if hf_id == IMDB else None)
     comp = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb@main"]))[IMDB_REF]
     assert comp["version"] == imdb["sha"] and any(k.startswith("statistics:") for k in internal(comp))
 
 
 def test_offline_keeps_the_given_revision_as_the_version(tmp_path, monkeypatch):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: False)
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda *a, **k: pytest.fail("offline 인데 조회했다"))
+    monkeypatch.setattr(hub, "hf_reachable", lambda: False)
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda *a, **k: pytest.fail("offline 인데 조회했다"))
     found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None,
                                  data_paths=["hf://datasets/stanfordnlp/imdb@e6281661", "hf://datasets/acme/eval-set"]))
     assert found[IMDB_REF]["version"] == "e6281661" and "version" not in found["pkg:huggingface/datasets/acme/eval-set"]
 
 
 def test_a_given_dataset_the_hub_cannot_look_up_is_kept_and_reported(tmp_path, monkeypatch):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print, revision=None: None)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print, revision=None: None)
     write(tmp_path, "train.py", 'load_dataset("nobody/nothing")\n')
     report: dict = {}
     found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, report=report,
@@ -1088,15 +1089,15 @@ def test_a_given_dataset_the_hub_cannot_look_up_is_kept_and_reported(tmp_path, m
 
 
 def test_a_revision_in_code_is_looked_up_at_that_revision(tmp_path, monkeypatch, imdb):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
     old = {**copy.deepcopy(imdb), "sha": OLD_IMDB_SHA}
     calls: list[tuple[str, str | None]] = []
 
     def fetch(hf_id, log=print, revision=None):
         calls.append((hf_id, revision))
         return copy.deepcopy(old if revision else imdb)
-    monkeypatch.setattr(ds, "fetch_dataset_info", fetch)
-    monkeypatch.setattr(ds, "fetch_dataset_size", lambda hf_id, log=print: pytest.fail("최신이 아닌 리비전인데 /size 를 물었다"))
+    monkeypatch.setattr(hub, "fetch_dataset_info", fetch)
+    monkeypatch.setattr(hub, "fetch_dataset_size", lambda hf_id, log=print: pytest.fail("최신이 아닌 리비전인데 /size 를 물었다"))
     write(tmp_path, "src/train.py", 'load_dataset("stanfordnlp/imdb", revision="94a9845c")\n')
     report: dict = {}
     comp = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, report=report))[IMDB_REF]
@@ -1115,37 +1116,37 @@ def test_one_dataset_loaded_at_several_revisions_in_code_is_looked_up_at_the_lat
 
 
 def test_the_data_revision_wins_over_the_revision_in_code_and_offline_both_keep_one(tmp_path, monkeypatch, imdb):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
     calls: list[str | None] = []
-    monkeypatch.setattr(ds, "fetch_dataset_info",
+    monkeypatch.setattr(hub, "fetch_dataset_info",
                         lambda hf_id, log=print, revision=None: calls.append(revision) or (copy.deepcopy(imdb) if hf_id == IMDB else None))
     write(tmp_path, "src/train.py", 'load_dataset("stanfordnlp/imdb", revision="aaaa")\nload_dataset("acme/eval-set", revision="v1")\n')
     logs: list[str] = []
     ds.discover(doc_of(), str(tmp_path), log=logs.append, data_paths=["hf://datasets/stanfordnlp/imdb@main"])
     assert "main" in calls and "aaaa" not in calls and any("--data revision main used over aaaa in code" in m for m in logs)
-    monkeypatch.setattr(ds, "hf_reachable", lambda: False)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: False)
     found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb@main"]))
     assert found[IMDB_REF]["version"] == "main" and found["pkg:huggingface/datasets/acme/eval-set"]["version"] == "v1"   # 못 물으면 리비전 그대로
 
 
 def test_missing_revisions_reports_only_what_the_hub_says_does_not_exist(monkeypatch):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
     answers = {"stanfordnlp/imdb": (404, "Invalid rev id: nope"), "nobody/private": (401, "Invalid username or password.")}
     asked: list[str] = []
-    monkeypatch.setattr(ds, "fetch_revision_error", lambda hf_id, revision: asked.append(hf_id) or answers.get(hf_id))
+    monkeypatch.setattr(hub, "fetch_revision_error", lambda hf_id, revision: asked.append(hf_id) or answers.get(hf_id))
     given = {"stanfordnlp/imdb": "nope", "nobody/private": "v1", "acme/ok": "main", "acme/latest": None}
     assert ds.missing_revisions(given) == [("hf://datasets/stanfordnlp/imdb@nope", "Invalid rev id: nope")]   # 401 은 없는 것인지 비공개인지 모른다
     assert sorted(asked) == ["acme/ok", "nobody/private", "stanfordnlp/imdb"]                              # 리비전을 안 준 것은 묻지 않는다
-    monkeypatch.setattr(ds, "hf_reachable", lambda: False)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: False)
     assert ds.missing_revisions(given) == []                                                              # 허브에 닿지 않으면 판단하지 않는다
-    monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("리비전이 없는데 네트워크를 봤다"))
+    monkeypatch.setattr(hub, "hf_reachable", lambda: pytest.fail("리비전이 없는데 네트워크를 봤다"))
     assert ds.missing_revisions({"acme/latest": None}) == []
 
 
 def test_a_dataset_both_given_and_found_in_code_is_one_component_at_the_given_revision(tmp_path, monkeypatch, imdb):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
     old = {**copy.deepcopy(imdb), "sha": OLD_IMDB_SHA}
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print, revision=None: copy.deepcopy(old if revision else imdb))
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print, revision=None: copy.deepcopy(old if revision else imdb))
     write(tmp_path, "src/train.py", 'load_dataset("imdb")\n')                                      # 코드는 옛 이름으로 부른다
     out = ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb@94a9845c"])
     comp = datasets(out)[IMDB_REF]
@@ -1156,7 +1157,7 @@ def test_a_dataset_both_given_and_found_in_code_is_one_component_at_the_given_re
 
 # -- 회귀 보호: 데이터셋이 없으면 문서는 그대로다 ----------------------------------------------
 def test_directory_without_datasets_leaves_the_document_byte_identical(tmp_path, monkeypatch):
-    monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("조회할 것이 없는데 네트워크를 봤다"))
+    monkeypatch.setattr(hub, "hf_reachable", lambda: pytest.fail("조회할 것이 없는데 네트워크를 봤다"))
     write(tmp_path, "requirements.txt", "numpy==2.5.1\n")
     write(tmp_path, "package.json", '{"name": "x"}')
     write(tmp_path, "app.py", 'import numpy as np\nopen("README.md")\n')
@@ -1336,7 +1337,7 @@ def test_looks_like_hub_id_rejects_any_file_extension(text, expected):
 
 def test_load_dataset_with_script_or_file_path_makes_no_hub_component(tmp_path, monkeypatch):
     """load_dataset("my_script.py") · load_dataset("data/train.xlsx") 가 가짜 허브 컴포넌트(pkg:huggingface/datasets/my_script.py)가 되었다."""
-    monkeypatch.setattr(ds, "hf_reachable", lambda: pytest.fail("허브 id 가 없는데 네트워크를 봤다"))
+    monkeypatch.setattr(hub, "hf_reachable", lambda: pytest.fail("허브 id 가 없는데 네트워크를 봤다"))
     write(tmp_path, "my_script.py", "")
     write(tmp_path, "data/train.csv", "a\n1\n")
     write(tmp_path, "t.py", 'load_dataset("my_script.py")\nload_dataset("data/train.xlsx")\nload_dataset("data/train.csv")\n')
@@ -1354,11 +1355,11 @@ def test_specific_text_to_tasks_map_before_the_text_prefix(task, modality):
 # -- 실제 허브 (하나뿐) ------------------------------------------------------------------
 @pytest.mark.skipif(skip_reason() is not None, reason=skip_reason() or "")
 def test_live_hub_returns_size_and_modality_for_imdb(monkeypatch):
-    monkeypatch.setattr(ds, "fetch_dataset_size", REAL_FETCH_SIZE)
-    monkeypatch.setattr(ds, "fetch_dataset_statistics", REAL_FETCH_STATISTICS)
-    info = ds.fetch_dataset_info(IMDB, log=print)
+    monkeypatch.setattr(hub, "fetch_dataset_size", REAL_FETCH_SIZE)
+    monkeypatch.setattr(hub, "fetch_dataset_statistics", REAL_FETCH_STATISTICS)
+    info = hub.fetch_dataset_info(IMDB, log=print)
     assert info and info["id"] == IMDB
-    size = ds.fetch_dataset_size(IMDB, log=print)
+    size = hub.fetch_dataset_size(IMDB, log=print)
     assert size and size["size"]["dataset"]["num_bytes_original_files"] > 0
     statistics = ds._fetch_statistics(IMDB, info, size, log=print)
     assert [(c, s) for c, s, _ in statistics] == [("plain_text", "train"), ("plain_text", "test"), ("plain_text", "unsupervised")]
@@ -1372,7 +1373,7 @@ def test_live_hub_returns_size_and_modality_for_imdb(monkeypatch):
 def test_a_dataset_link_in_code_is_one_component_with_the_model_card_dataset(tmp_path, online, monkeypatch):
     """코드의 huggingface.co/datasets 링크로 cdxgen 이 만든 데이터셋을 알아본다. 허브 모델 카드가 같은 데이터셋을 적어도 하나로 남고,
     조회한 뒤 purl·bom-ref 와 data[] 가 생긴다 (전에는 같은 데이터셋이 둘이고 링크 쪽은 조회되지 않았다)."""
-    monkeypatch.setattr(ds, "fetch_model_info", lambda hf_id, log=print: {"cardData": {"datasets": [IMDB]}})
+    monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id, log=print: {"cardData": {"datasets": [IMDB]}})
     hub_bert = {"bom-ref": BERT_REF, "type": "machine-learning-model", "group": "google-bert", "name": "bert-base-uncased", "purl": BERT_REF,
                 "evidence": {"occurrences": [{"location": "src/train.py#L5"}]}}                  # 코드가 부르는 허브 모델
     out = ds.discover(doc_of(cdxgen_link(IMDB), hub_bert), str(tmp_path), log=lambda m: None)
@@ -1390,8 +1391,8 @@ def test_a_dataset_link_in_code_is_one_component_with_the_model_card_dataset(tmp
 def test_renaming_rewrites_the_broken_datasets_datasets_url(tmp_path, monkeypatch, imdb):
     """이름만 있는 id(bookcorpus)에 cdxgen 은 https://huggingface.co/datasets/datasets/bookcorpus 주소를 적는다 (401). 정식 id 로 바꿀 때
     data[] 와 externalReferences 의 그 주소도 정식 주소로 바꾸고, 겹치면 하나만 남긴다."""
-    monkeypatch.setattr(ds, "hf_reachable", lambda: True)
-    monkeypatch.setattr(ds, "fetch_dataset_info", lambda hf_id, log=print: bookcorpus_hub(imdb))
+    monkeypatch.setattr(hub, "hf_reachable", lambda: True)
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: bookcorpus_hub(imdb))
     book = cdxgen_bookcorpus()
     book["externalReferences"] = [{"type": "distribution", "url": "https://huggingface.co/datasets/datasets/bookcorpus"},
                                   {"type": "website", "url": "https://example.org/bookcorpus"}]
@@ -1405,7 +1406,7 @@ def test_renaming_rewrites_the_broken_datasets_datasets_url(tmp_path, monkeypatc
 def test_owner_name_datasets_named_in_a_model_header_become_components(tmp_path, monkeypatch):
     """cdxgen 은 GGUF 헤더의 general.datasets 를 모델카드에 이름뿐인 항목으로 적는다 (contents.url 에도 id 를 그대로). owner/name 꼴이면
     데이터셋 컴포넌트로 만들어 ref 로 바꾸고, 모델 파일을 evidence 로 둔다. 표시 이름·이름 하나뿐인 것은 그대로 둔다."""
-    monkeypatch.setattr(ds, "hf_reachable", lambda: False)
+    monkeypatch.setattr(hub, "hf_reachable", lambda: False)
     gguf = {"bom-ref": "cdxgen:ai:model:Acme:Tiny", "type": "machine-learning-model", "group": "Acme", "name": "Tiny", "purl": "pkg:generic/Acme/Tiny",
             "evidence": {"occurrences": [{"location": "models/tiny.gguf"}]},
             "modelCard": {"modelParameters": {"datasets": [{"type": "dataset", "name": "acme/chat-sft", "contents": {"url": "acme/chat-sft"}},
