@@ -23,7 +23,6 @@ SPDX_OFFICIAL = SCHEMA_DIR / "spdx-3.0.1.schema.json"
 CDX_SCHEMA_BY_SPEC = {"1.7": CDX_OFFICIAL, "v0.6": CDX_SCHEMA}
 SPDX_SCHEMA_BY_SPEC = {"3.0.1": SPDX_OFFICIAL, "v0.6": SPDX_SCHEMA}
 SCHEMA_BY_FORMAT = {"cyclonedx": CDX_SCHEMA_BY_SPEC, "spdx": SPDX_SCHEMA_BY_SPEC}
-SPECS = ("1.7", "v0.6", "3.0.1")                           # validate --spec 의 선택지
 CDX_SCHEMAS = ("bom-1.7.schema.json", "aibom-v0.6-cyclonedx.schema.json", "cryptography-defs.schema.json", "jsf-0.82.schema.json",
                "spdx.schema.json")                         # CycloneDX 스키마가 $ref 로 서로 가리키는 파일들
 

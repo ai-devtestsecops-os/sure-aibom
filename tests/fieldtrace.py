@@ -1,7 +1,7 @@
 """sure-aibom scan 을 단계마다 가로채, 최종 BOM 의 값 하나하나가 어느 도구에서 왔는지 따라간다 (tests/test_fields.py 가 쓴다).
 
 단계와 출처:
-    run_syft · run_cdxgen    도구 출력 (runners/*.py 의 정리까지 끝난 것)을 원본으로 둔다
+    run_syft · run_cdxgen    도구 출력 (external/*.py 의 정리까지 끝난 것)을 원본으로 둔다
     merge                    값마다, 병합 키가 같은 원본 컴포넌트의 같은 자리에 같은 값이 있으면 그 도구, 없으면 sure-aibom.
                              컴포넌트 bom-ref 는 병합 키라 sure-aibom. 문서 머리·metadata.component 는 sure-aibom 이 쓰고, 그 가운데
                              이미지 OCI 라벨에서 옮긴 자리는 syft. metadata.tools · services 는 같은 자리에 같은 값을 낸 도구,
@@ -25,6 +25,7 @@ from collections import defaultdict
 from pathlib import PurePosixPath
 
 import sure_aibom.cli as cli
+import sure_aibom.pipeline as pipeline
 from sure_aibom.engine.enrich import LOCAL_MODEL_FILES, LOCAL_MODEL_SUFFIXES
 from sure_aibom.engine.form import HYPERPARAMETER_BY_PROPERTY, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX
 from sure_aibom.engine.merge import _walk_components, identity
@@ -195,8 +196,9 @@ def form_tool(path: str, value: str, consumed) -> set[str]:
 def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
     """cli.main(argv) 를 단계마다 가로채 돌린다. (최종 문서, Tracker) — 최종 문서의 컴포넌트에는 표지가 붙어 있다."""
     tracker = Tracker()
-    real = {n: getattr(cli, n) for n in ("run_syft", "run_cdxgen", "merge", "discover_services", "discover_datasets", "discover_models",
-                                         "enrich", "regulate", "_emit")}
+    home = lambda name: cli if name == "_emit" else pipeline          # 단계는 pipeline.py 가 부르고, 파일 쓰기는 cli.py 가 한다
+    real = {n: getattr(home(n), n) for n in ("run_syft", "run_cdxgen", "merge", "discover_services", "discover_datasets", "discover_models",
+                                             "enrich", "regulate", "_emit")}
     final: dict = {}
 
     def raw_of(name, tool):
@@ -238,11 +240,11 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
                    enrich=enrich, regulate=staged("regulate", form_tool), _emit=emit)
     try:
         for name, fn in patched.items():
-            setattr(cli, name, fn)
+            setattr(home(name), name, fn)
         code = cli.main(argv)
     finally:
         for name, fn in real.items():
-            setattr(cli, name, fn)
+            setattr(home(name), name, fn)
     assert code == 0, f"scan exited {code}"
     return final["doc"], tracker
 
