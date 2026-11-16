@@ -1,10 +1,10 @@
-"""validate 명령 (참고 구조의 controller). BOM 파일을 읽어 service/validate.py 에 넘기고 결과를 찍는다."""
+"""validate 명령 (참고 구조의 controller). BOM 파일을 읽어 service/validate_service.py 에 넘기고 결과를 찍는다."""
 from __future__ import annotations
 
 import argparse
 
 from ..formats import FORMAT_NAME, SPEC_BY_FORMAT
-from ..service import validate as validate_service
+from ..service import validate_service
 from .output import EXIT_INVALID, EXIT_TOOL, log, read_json
 
 

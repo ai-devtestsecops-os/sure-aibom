@@ -1,6 +1,6 @@
 """scan 의 단계 순서 (참고 구조의 service). 명령줄 인자를 받지 않고, 줄을 어디에 찍는지도 모른다.
 
-controller/scan.py 가 인자를 확인해 값만 넘기고, 여기서는 단계마다 stage(단계 이름, 결과)와 log(줄)로 알린다.
+controller/scan_controller.py 가 인자를 확인해 값만 넘기고, 여기서는 단계마다 stage(단계 이름, 결과)와 log(줄)로 알린다.
 
     check_scan  도구를 돌리기 전 입력 확인 (대상 경로, --data 경로, --data 허브 리비전)
     scan        S-BOM(syft) → 이미지 받기·풀기 → M-BOM(cdxgen) → 병합 → AI 서비스 → 로컬 모델 → 허브 모델 보강

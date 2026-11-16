@@ -1,12 +1,12 @@
-"""scan 명령 (참고 구조의 controller). 인자를 확인해 service/scan.py 에 값만 넘기고, 단계 줄과 결과를 찍는다."""
+"""scan 명령 (참고 구조의 controller). 인자를 확인해 service/scan_service.py 에 값만 넘기고, 단계 줄과 결과를 찍는다."""
 from __future__ import annotations
 
 import argparse
 from pathlib import Path
 
 from ..formats import FORMAT_NAME, SPEC_BY_FORMAT
-from ..service import scan as scan_service
-from ..service.scan import count, groups
+from ..service import scan_service
+from ..service.scan_service import count, groups
 from .output import EXIT_TOOL, emit, log, quiet, stage
 
 

@@ -25,8 +25,8 @@ from collections import defaultdict
 from pathlib import PurePosixPath
 
 import sure_aibom.cli as cli
-import sure_aibom.controller.scan as scan_controller
-import sure_aibom.service.scan as scan_service
+import sure_aibom.controller.scan_controller as scan_controller
+import sure_aibom.service.scan_service as scan_service
 from sure_aibom.engine.enrich import LOCAL_MODEL_FILES, LOCAL_MODEL_SUFFIXES
 from sure_aibom.engine.form import HYPERPARAMETER_BY_PROPERTY, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX
 from sure_aibom.engine.merge import _walk_components, identity
@@ -197,7 +197,7 @@ def form_tool(path: str, value: str, consumed) -> set[str]:
 def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
     """cli.main(argv) 를 단계마다 가로채 돌린다. (최종 문서, Tracker) — 최종 문서의 컴포넌트에는 표지가 붙어 있다."""
     tracker = Tracker()
-    home = lambda name: scan_controller if name == "emit" else scan_service   # 단계는 service/scan.py 가 부르고, 파일 쓰기는 controller/scan.py 가 한다
+    home = lambda name: scan_controller if name == "emit" else scan_service   # 단계는 service/scan_service.py 가 부르고, 파일 쓰기는 controller/scan_controller.py 가 한다
     real = {n: getattr(home(n), n) for n in ("run_syft", "run_cdxgen", "merge", "discover_services", "discover_datasets", "discover_models",
                                              "enrich", "regulate", "emit")}
     final: dict = {}

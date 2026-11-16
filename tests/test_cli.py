@@ -5,10 +5,10 @@ from pathlib import Path
 import pytest
 
 import sure_aibom.external.hub as hub
-import sure_aibom.service.scan as scan_service
+import sure_aibom.service.scan_service as scan_service
 from sure_aibom import NAME, __version__
 from sure_aibom.cli import HELP, build_parser, main
-from sure_aibom.service.scan import groups
+from sure_aibom.service.scan_service import groups
 
 README = Path(__file__).parents[1] / "README.md"
 

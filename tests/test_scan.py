@@ -16,7 +16,7 @@ from pathlib import Path
 import pytest
 
 import sure_aibom.external.hub as hub
-import sure_aibom.service.scan as scan_service
+import sure_aibom.service.scan_service as scan_service
 from sure_aibom.external._proc import RunnerError
 from sure_aibom.cli import main
 
