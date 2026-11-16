@@ -14,12 +14,12 @@ def cmd_scan(args: argparse.Namespace) -> int:
     """단계마다 한 줄씩 찍는다. 항목별 내용은 찍지 않고, 사용자가 할 일이 있는 것(건너뜀·실패)만 그 줄에 붙인다.
     syft·cdxgen 중 하나라도 실패하면 만든 만큼은 쓰되 종료 코드 2 로 끝낸다 (CI 가 모자란 BOM 을 성공으로 넘기지 않게)."""
     args.spec = args.spec or SPEC_BY_FORMAT[args.format][0]
-    if args.spec not in SPEC_BY_FORMAT[args.format]:
+    if args.spec not in SPEC_BY_FORMAT[args.format]:            # 명령줄만 보면 아는 확인(옵션 조합)은 여기서 한다
         log(f"[sure-aibom] error: --spec {args.spec} is not a {args.format} spec (use {' or '.join(SPEC_BY_FORMAT[args.format])})")
         return EXIT_TOOL
     if args.target.startswith("~"):
         args.target = str(Path(args.target).expanduser())
-    errors = scan_service.check_scan(args.target, args.data)
+    errors = scan_service.check_scan(args.target, args.data)    # 실제로 있는지 봐야 하는 확인(경로, --data, 허브 리비전)은 service 가 한다
     for error in errors:
         log(f"[sure-aibom] error: {error}")
     if errors:
