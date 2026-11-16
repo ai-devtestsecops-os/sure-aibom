@@ -7,7 +7,7 @@
                              이미지 OCI 라벨에서 옮긴 자리는 syft. metadata.tools · services 는 같은 자리에 같은 값을 낸 도구,
                              dependencies 는 그 관계를 낸 도구 (병합 키로 바꿔 비교)
     discover_services · discover_datasets · discover_models    새 값은 sure-aibom
-    enrich                   modelCard.properties 에 새로 든 값은 OWASP aibom-generator, 나머지(Hub API 로 채운 필드) 는 sure-aibom
+    enrich_hub_models        modelCard.properties 에 새로 든 값은 OWASP aibom-generator, 나머지(Hub API 로 채운 필드) 는 sure-aibom
     regulate (form)          새 값은 그 자리를 채우는 원본 키 가운데 같은 값을 가진, 소비된 프로퍼티의 도구 (같으면 OWASP > cdxgen > sure-aibom)
 값 단위 규칙: 단계 뒤의 값이 단계 앞에도 있던 값이면 앞의 출처를 잇고, 새 값이면 그 단계의 도구가 출처다.
 컴포넌트는 단계 사이에서 같은 dict 가 제자리에서 바뀌므로 숨은 표지(MARK)로 단계 전후를 맞춘다. 표지는 출력 직전에 뗀다.
@@ -27,7 +27,7 @@ from pathlib import PurePosixPath
 import sure_aibom.cli as cli
 import sure_aibom.controller.scan_controller as scan_controller
 import sure_aibom.service.scan_service as scan_service
-from sure_aibom.engine.enrich import LOCAL_MODEL_FILES, LOCAL_MODEL_SUFFIXES
+from sure_aibom.engine.model import LOCAL_MODEL_FILES, LOCAL_MODEL_SUFFIXES
 from sure_aibom.engine.form import HYPERPARAMETER_BY_PROPERTY, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX
 from sure_aibom.engine.merge import _walk_components, identity
 
@@ -199,7 +199,7 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
     tracker = Tracker()
     home = lambda name: scan_controller if name == "emit" else scan_service   # 단계는 service/scan_service.py 가 부르고, 파일 쓰기는 controller/scan_controller.py 가 한다
     real = {n: getattr(home(n), n) for n in ("run_syft", "run_cdxgen", "merge", "discover_services", "discover_datasets", "discover_models",
-                                             "enrich", "regulate", "emit")}
+                                             "enrich_hub_models", "regulate", "emit")}
     final: dict = {}
 
     def raw_of(name, tool):
@@ -218,9 +218,9 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
     def staged(name, tool_of):
         return lambda doc, *a, **k: tracker.stage(doc, lambda: real[name](doc, *a, **k), tool_of)
 
-    def enrich(doc, *a, **k):
+    def enrich_hub_models(doc, *a, **k):
         before = tool_entries(doc)
-        out = tracker.stage(doc, lambda: real["enrich"](doc, *a, **k), enrich_tool)
+        out = tracker.stage(doc, lambda: real["enrich_hub_models"](doc, *a, **k), enrich_tool)
         # 도구 목록은 항목 단위로 본다 (merge 와 같다): 새로 더해진 항목의 칸은 값이 다른 항목과 같아도(type) 그 항목을 낸 도구의 것이다
         for entry in tool_entries(out):
             if entry not in before:
@@ -238,7 +238,7 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
     patched = dict(run_syft=raw_of("run_syft", SYFT), run_cdxgen=raw_of("run_cdxgen", CDXGEN), merge=merge,
                    discover_services=staged("discover_services", lambda *_: {CLI}),
                    discover_datasets=staged("discover_datasets", lambda *_: {CLI}), discover_models=staged("discover_models", lambda *_: {CLI}),
-                   enrich=enrich, regulate=staged("regulate", form_tool), emit=emit)
+                   enrich_hub_models=enrich_hub_models, regulate=staged("regulate", form_tool), emit=emit)
     try:
         for name, fn in patched.items():
             setattr(home(name), name, fn)

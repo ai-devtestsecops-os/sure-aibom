@@ -11,6 +11,7 @@
          revision="…" 인자가 문자열이면 그 리비전으로 묻는다. 같은 id 를 리비전을 달리해(또는 없이) 부르면 정하지 않고 최신으로 묻는다.
        - 코드가 부르는 허브 모델(pkg:huggingface 모델 컴포넌트)의 모델 카드. 모델마다 GET {HF_ENDPOINT}/api/models/<id> 를
          한 번 불러 응답 cardData 의 datasets(학습)와 model-index[].results[].dataset.type(평가)을 모은다. 허브 id 꼴인 것만.
+         허브 모델인지는 model.py 의 hub_model_id 로 가른다 (로컬 모델 파일에서 찾은 모델은 뺀다).
        - scan --data hf://datasets/<id>[@<리비전>] 으로 직접 준 것 (huggingface_hub 의 HfFileSystem 표기). 코드에서 찾은 것과 같은 모양으로
          만든다. 리비전은 코드의 revision= 보다 우선한다. 저장소는 있는데 그 리비전이 없다고 허브가 답하면(404) scan 이 도구를 돌리기
          전에 오류로 끝낸다 (missing_revisions). 저장소가 없는 것과 비공개인 것은 허브가 둘 다 401 로 답해 구분하지 않는다.
@@ -71,11 +72,10 @@ import yaml
 from ..external import hub
 from ..utils.files import SKIP_DIRS, inside, notebook_code, relative
 from ..utils.licenses import card_licenses
-from .enrich import hub_model_id
 from .facts import Facts
 from .merge import fill_missing
 from .form import INTERNAL_PREFIX
-from .model import MODEL_TYPE, _inside_file
+from .model import MODEL_TYPE, _inside_file, hub_model_id
 
 DATA_TYPE = "data"
 DATASET_KIND = "dataset"       # data[].type 의 다섯 값 중 D-BOM 으로 치는 것

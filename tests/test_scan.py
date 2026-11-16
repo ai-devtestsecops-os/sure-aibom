@@ -63,8 +63,8 @@ def recorded_owasp(hf_id: str, workdir) -> dict:
 
 @pytest.fixture(autouse=True)
 def offline(monkeypatch):
-    monkeypatch.setattr("sure_aibom.engine.enrich.skip_reason", lambda: None)                                     # 보강은 녹화본으로 돌린다
-    monkeypatch.setattr("sure_aibom.engine.enrich.run_aibom_generator", recorded_owasp)
+    monkeypatch.setattr("sure_aibom.engine.model.skip_reason", lambda: None)                                     # 보강은 녹화본으로 돌린다
+    monkeypatch.setattr("sure_aibom.engine.model.run_aibom_generator", recorded_owasp)
     monkeypatch.setattr(hub, "hf_reachable", lambda: True)                                                 # 허브 모델 응답은 M-BOM 보강이 받는다
     monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id, log=print: recorded("model", hf_id))
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))

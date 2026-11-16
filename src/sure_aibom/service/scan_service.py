@@ -5,6 +5,7 @@ controller/scan_controller.py 가 인자를 확인해 값만 넘기고, 여기�
     check_scan  도구를 돌리기 전 입력 확인 (대상 경로, --data 경로, --data 허브 리비전)
     scan        S-BOM(syft) → 이미지 받기·풀기 → M-BOM(cdxgen) → 병합 → AI 서비스 → 로컬 모델 → 허브 모델 보강
                 → D-BOM → 규제 필드 → SPDX 변환 (--format spdx 일 때만)
+                로컬 모델과 허브 모델 보강은 둘 다 engine/model.py 다 (discover_models, enrich_hub_models)
 
 syft·cdxgen 가운데 하나라도 실패하면 만든 만큼은 돌려주고 failed 에 적는다 (CLI 는 종료 코드 2 로 끝낸다).
 """
@@ -19,12 +20,11 @@ from typing import Callable
 
 from ..engine.ai_services import discover_services
 from ..engine.dataset import discover_datasets, is_dataset, missing_revisions, split_data_args
-from ..engine.enrich import enrich
 from ..engine.extract_image import extract_image, is_archive
 from ..engine.facts import Facts
 from ..engine.form import drop_tool_properties, regulate
 from ..engine.merge import merge
-from ..engine.model import discover_models
+from ..engine.model import discover_models, enrich_hub_models
 from ..engine.spdx import convert_spdx
 from ..exceptions import RunnerError
 from ..external import run_cdxgen, run_syft
@@ -175,7 +175,7 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path, stag
     merged = discover_models(merged, scan_dir, log=detail)
 
     enriched: dict = {}
-    merged = enrich(merged, workdir, log=detail, report=enriched, facts=facts)
+    merged = enrich_hub_models(merged, workdir, log=detail, report=enriched, facts=facts)
     if enriched["hub_skipped"]:
         result = f"skipped: {enriched['hub_skipped']}"
     elif enriched["hub_missing"]:

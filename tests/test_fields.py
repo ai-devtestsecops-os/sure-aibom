@@ -18,7 +18,7 @@ from pathlib import Path
 import pytest
 
 import sure_aibom.external.hub as hub
-import sure_aibom.engine.enrich as en
+import sure_aibom.engine.model as en
 import fieldtrace
 from sure_aibom.exceptions import RunnerError
 from sure_aibom.engine.spdx import convert_spdx

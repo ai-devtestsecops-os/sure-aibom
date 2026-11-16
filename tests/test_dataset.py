@@ -14,7 +14,7 @@ import pytest
 
 import sure_aibom.external.hub as hub
 import sure_aibom.engine.dataset as ds
-from sure_aibom.engine.enrich import skip_reason
+from sure_aibom.engine.model import skip_reason
 from sure_aibom.engine.facts import Facts
 from sure_aibom.engine.merge import merge
 from sure_aibom.engine.form import INTERNAL_PREFIX, regulate

@@ -1,9 +1,9 @@
 """앞 단계들이 모아 둔 값을 aibom-v0.6 필드로 옮긴다. 형태(properties·typed) 스위치는 여기 하나다.
-값을 찾아내는 일은 dataset.py · model.py · enrich.py 가 하고, 여기서는 어느 자리에 어떤 모양으로 넣을지만 정한다.
+값을 찾아내는 일은 dataset.py · model.py 가 하고, 여기서는 어느 자리에 어떤 모양으로 넣을지만 정한다.
 
 모델(type=machine-learning-model): 가져오는 값은 전부 component.properties / component.modelCard.properties 에 있는
 것이다 — 조회·추론·본문 해석은 하지 않는다. hyperparameters · parameterCount · inputs maxSize 는 model.py 가 대상 안의 모델
-파일에서, enrich.py 가 Hub API 응답에서 읽어 둔 aibom-internal:model:* 도 원본으로 쓴다 (도구가 준 값이 먼저이고, 내부 키는
+파일과 Hub API 응답에서 읽어 둔 aibom-internal:model:* 도 원본으로 쓴다 (도구가 준 값이 먼저이고, 내부 키는
 이기든 지든 전부 지운다).
 
     v0.6 필드                 typed 형 (modelCard.…)                         properties 형 (modelCard.properties)
