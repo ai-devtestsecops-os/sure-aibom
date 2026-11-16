@@ -2,7 +2,7 @@
 
     이미지 이름 (alpine:3.20, ghcr.io/org/img)   docker, podman, crane 순으로 PATH 에 있는 것으로 .tar 를 받는다
 
-받은 .tar 를 디렉터리로 푸는 것은 engine/image.py 다.
+받은 .tar 를 디렉터리로 푸는 것은 engine/image_extract.py 다.
 """
 from __future__ import annotations
 

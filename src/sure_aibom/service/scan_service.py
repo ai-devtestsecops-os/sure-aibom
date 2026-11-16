@@ -22,7 +22,7 @@ from ..engine.dataset import discover as discover_datasets, is_dataset, missing_
 from ..engine.enrich import enrich
 from ..engine.facts import Facts
 from ..engine.form import apply as regulate, drop_tool_properties
-from ..engine.image import extract as extract_image, is_archive
+from ..engine.image_extract import extract as extract_image, is_archive
 from ..engine.merge import merge
 from ..engine.model import discover as discover_models
 from ..engine.spdx import convert as convert_spdx
@@ -136,7 +136,7 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path, stag
     except RunnerError as e:
         fail("Generating S-BOM (syft)", "syft", e)
 
-    # 이미지는 syft 만 그대로 읽는다. M-BOM·D-BOM 단계는 이미지를 푼 디렉터리에 대해 돌린다 (engine/image.py 참고).
+    # 이미지는 syft 만 그대로 읽는다. M-BOM·D-BOM 단계는 이미지를 푼 디렉터리에 대해 돌린다 (engine/image_extract.py 참고).
     scan_dir: str | None = target
     image_name: str | None = None
     if not Path(target).is_dir():
