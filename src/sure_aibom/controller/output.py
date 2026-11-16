@@ -23,7 +23,7 @@ def stage(label: str, result: str = "") -> None:
     log(f"[sure-aibom] {label} {dots} {result}".rstrip())
 
 
-def emit(doc: dict, path: str | None) -> None:
+def write_json(doc: dict, path: str | None) -> None:
     """경로가 있으면 파일로, 없으면 표준출력으로."""
     text = json.dumps(doc, ensure_ascii=False, indent=2) + "\n"
     if path:

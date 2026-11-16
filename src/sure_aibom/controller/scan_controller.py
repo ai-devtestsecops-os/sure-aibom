@@ -7,7 +7,7 @@ from pathlib import Path
 from ..formats import FORMAT_NAME, SPEC_BY_FORMAT
 from ..service import scan_service
 from ..service.scan_service import count, groups
-from .output import EXIT_TOOL, emit, log, quiet, stage
+from .output import EXIT_TOOL, log, quiet, stage, write_json
 
 
 def cmd_scan(args: argparse.Namespace) -> int:
@@ -33,7 +33,7 @@ def cmd_scan(args: argparse.Namespace) -> int:
         log("[sure-aibom] error: neither syft nor cdxgen produced a BOM")
         return EXIT_TOOL
 
-    emit(result.doc, args.output)
+    write_json(result.doc, args.output)
     # 단계 줄들을 더하지 않고 다 만든 BOM 을 다시 센다 (병합·별칭 합치기로 줄어든 만큼이 여기 반영된다)
     bom = result.bom
     log(f"[sure-aibom] Wrote {args.output or 'stdout'} ({count(len(bom['components']), 'component')}: "
