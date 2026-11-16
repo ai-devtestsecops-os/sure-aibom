@@ -25,7 +25,8 @@ from collections import defaultdict
 from pathlib import PurePosixPath
 
 import sure_aibom.cli as cli
-import sure_aibom.pipeline as pipeline
+import sure_aibom.controller.scan as scan_controller
+import sure_aibom.service.scan as scan_service
 from sure_aibom.engine.enrich import LOCAL_MODEL_FILES, LOCAL_MODEL_SUFFIXES
 from sure_aibom.engine.form import HYPERPARAMETER_BY_PROPERTY, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX
 from sure_aibom.engine.merge import _walk_components, identity
@@ -196,9 +197,9 @@ def form_tool(path: str, value: str, consumed) -> set[str]:
 def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
     """cli.main(argv) 를 단계마다 가로채 돌린다. (최종 문서, Tracker) — 최종 문서의 컴포넌트에는 표지가 붙어 있다."""
     tracker = Tracker()
-    home = lambda name: cli if name == "_emit" else pipeline          # 단계는 pipeline.py 가 부르고, 파일 쓰기는 cli.py 가 한다
+    home = lambda name: scan_controller if name == "emit" else scan_service   # 단계는 service/scan.py 가 부르고, 파일 쓰기는 controller/scan.py 가 한다
     real = {n: getattr(home(n), n) for n in ("run_syft", "run_cdxgen", "merge", "discover_services", "discover_datasets", "discover_models",
-                                             "enrich", "regulate", "_emit")}
+                                             "enrich", "regulate", "emit")}
     final: dict = {}
 
     def raw_of(name, tool):
@@ -232,12 +233,12 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
         clean = copy.deepcopy(doc)
         for c in clean.get("components") or []:
             c.pop(MARK, None)
-        return real["_emit"](clean, output)
+        return real["emit"](clean, output)
 
     patched = dict(run_syft=raw_of("run_syft", SYFT), run_cdxgen=raw_of("run_cdxgen", CDXGEN), merge=merge,
                    discover_services=staged("discover_services", lambda *_: {CLI}),
                    discover_datasets=staged("discover_datasets", lambda *_: {CLI}), discover_models=staged("discover_models", lambda *_: {CLI}),
-                   enrich=enrich, regulate=staged("regulate", form_tool), _emit=emit)
+                   enrich=enrich, regulate=staged("regulate", form_tool), emit=emit)
     try:
         for name, fn in patched.items():
             setattr(home(name), name, fn)

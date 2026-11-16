@@ -1,111 +1,15 @@
-"""sure-aibom 진입점 (scan(생성) · validate(검증)). 사용법은 README 또는 `sure-aibom --help`.
+"""sure-aibom 진입점. 인자를 등록하고 명령에 맞는 controller 함수로 넘긴다. 사용법은 README 또는 `sure-aibom --help`.
 
-참고 구조로 보면 main() 이 app.py, build_parser() · cmd_scan() · cmd_validate() 가 controller 다. 명령줄 인자를 확인해
-pipeline.py(service)에 값만 넘기고, 단계 알림과 결과를 찍는다. 단계 순서는 pipeline.py 에 있다."""
+참고 구조로 보면 이 파일이 app.py 다. 명령 처리는 controller/ 에, 단계 순서는 service/ 에 명령마다 파일 하나씩 있다."""
 from __future__ import annotations
 
 import argparse
-import json
 import sys
-from pathlib import Path
 
-from . import NAME, __version__, pipeline
-from .pipeline import FORMAT_NAME, FORMATS, SPEC_BY_FORMAT, SPECS, count, groups
-
-EXIT_TOOL = 2      # 실행 오류 (잘못된 인자·입력, 도구 없음·실패)
-EXIT_INVALID = 3   # 스키마 불일치 (1 은 파이썬이 처리 못 한 예외로 죽을 때 내므로 비워 둔다)
-STAGE_WIDTH = 36                                   # 단계 이름 뒤 점선까지의 너비
-
-
-def _log(msg: str) -> None:
-    print(msg, file=sys.stderr)
-
-
-def _quiet(msg: str) -> None:
-    """모듈의 항목별 로그는 -v 없이는 찍지 않는다 (단계마다 한 줄만 찍는다)."""
-
-
-def _stage(label: str, result: str = "") -> None:
-    dots = "." * max(3, STAGE_WIDTH - len(label))
-    _log(f"[sure-aibom] {label} {dots} {result}".rstrip())
-
-
-def _emit(doc: dict, path: str | None) -> None:
-    """경로가 있으면 파일로, 없으면 표준출력으로."""
-    text = json.dumps(doc, ensure_ascii=False, indent=2) + "\n"
-    if path:
-        out = Path(path)
-        out.parent.mkdir(parents=True, exist_ok=True)
-        out.write_text(text, encoding="utf-8")
-    else:
-        sys.stdout.write(text)
-
-
-def _read(path: str) -> dict | None:
-    try:
-        with open(path, encoding="utf-8") as f:
-            return json.load(f)
-    except (OSError, json.JSONDecodeError) as e:
-        _log(f"[sure-aibom] error: cannot read {path} ({e})")
-        return None
-
-
-# ── scan ────────────────────────────────────────────────────────────────────
-
-def cmd_scan(args: argparse.Namespace) -> int:
-    """단계마다 한 줄씩 찍는다. 항목별 내용은 찍지 않고, 사용자가 할 일이 있는 것(건너뜀·실패)만 그 줄에 붙인다.
-    syft·cdxgen 중 하나라도 실패하면 만든 만큼은 쓰되 종료 코드 2 로 끝낸다 (CI 가 모자란 BOM 을 성공으로 넘기지 않게)."""
-    args.spec = args.spec or SPEC_BY_FORMAT[args.format][0]
-    if args.spec not in SPEC_BY_FORMAT[args.format]:
-        _log(f"[sure-aibom] error: --spec {args.spec} is not a {args.format} spec (use {' or '.join(SPEC_BY_FORMAT[args.format])})")
-        return EXIT_TOOL
-    if args.target.startswith("~"):
-        args.target = str(Path(args.target).expanduser())
-    errors = pipeline.check_scan(args.target, args.data)
-    for error in errors:
-        _log(f"[sure-aibom] error: {error}")
-    if errors:
-        return EXIT_TOOL
-
-    data = f", data from {', '.join(args.data)}" if args.data else ""
-    _log(f"[sure-aibom] Generating {FORMAT_NAME[(args.format, args.spec)]} for {args.target}{data}")
-    detail = _log if getattr(args, "verbose", False) else _quiet     # -v: 모듈의 항목별 로그(건너뛴 것, 버린 값, 빈 필드)도 찍는다
-    result = pipeline.scan(args.target, args.data, args.format, args.spec, stage=_stage, log=_log, detail=detail)
-    if result is None:
-        _log("[sure-aibom] error: neither syft nor cdxgen produced a BOM")
-        return EXIT_TOOL
-
-    _emit(result.doc, args.output)
-    # 단계 줄들을 더하지 않고 다 만든 BOM 을 다시 센다 (병합·별칭 합치기로 줄어든 만큼이 여기 반영된다)
-    bom = result.bom
-    _log(f"[sure-aibom] Wrote {args.output or 'stdout'} ({count(len(bom['components']), 'component')}: "
-         f"{groups(bom['components'])}; {count(len(bom['dependencies']), 'dependency', 'dependencies')})")
-    if result.failed:
-        _log(f"[sure-aibom] error: {' and '.join(result.failed)} failed, so the BOM is incomplete")
-        return EXIT_TOOL
-    return 0
-
-
-# ── validate ────────────────────────────────────────────────────────────────
-
-def cmd_validate(args: argparse.Namespace) -> int:
-    doc = _read(args.bom)
-    if doc is None:
-        return EXIT_TOOL
-    result = pipeline.validate(doc, args.spec, log=_log)
-    if result.fmt is None:
-        _log(f"[sure-aibom] error: not a CycloneDX or SPDX document (no bomFormat or @context): {args.bom}")
-        return EXIT_TOOL
-    if result.valid is None:
-        _log(f"[sure-aibom] error: --spec {result.spec} is not a {result.fmt} spec, and {args.bom} is a {result.fmt} document "
-             f"(use {' or '.join(SPEC_BY_FORMAT[result.fmt])})")
-        return EXIT_TOOL
-    name = f"{FORMAT_NAME[(result.fmt, result.spec)]} schema"
-    if not result.valid:
-        _log(f"[sure-aibom] Invalid against the {name} (--spec {result.spec}): {args.bom}")
-        return EXIT_INVALID
-    _log(f"[sure-aibom] Valid against the {name}: {args.bom}")
-    return 0
+from . import NAME, __version__
+from .controller.scan import cmd_scan
+from .controller.validate import cmd_validate
+from .service.formats import FORMATS, SPECS
 
 
 # ── parser ──────────────────────────────────────────────────────────────────

@@ -1,10 +1,10 @@
-"""scan · validate 의 단계 순서 (참고 구조의 service). 명령줄 인자를 받지 않고, 줄을 어디에 찍는지도 모른다.
+"""scan 의 단계 순서 (참고 구조의 service). 명령줄 인자를 받지 않고, 줄을 어디에 찍는지도 모른다.
 
-cli.py 가 인자를 확인해 값만 넘기고, 여기서는 단계마다 stage(단계 이름, 결과)와 log(줄)로 알린다. 찍는 것은 cli.py 다.
+controller/scan.py 가 인자를 확인해 값만 넘기고, 여기서는 단계마다 stage(단계 이름, 결과)와 log(줄)로 알린다.
 
-    scan      S-BOM(syft) → 이미지 받기·풀기 → M-BOM(cdxgen) → 병합 → AI 서비스 → 로컬 모델 → 허브 모델 보강
-              → D-BOM → 규제 필드 → SPDX 변환 (--format spdx 일 때만)
-    validate  형식 알아내기 → spec 고르기 → 스키마 검증
+    check_scan  도구를 돌리기 전 입력 확인 (대상 경로, --data 경로, --data 허브 리비전)
+    scan        S-BOM(syft) → 이미지 받기·풀기 → M-BOM(cdxgen) → 병합 → AI 서비스 → 로컬 모델 → 허브 모델 보강
+                → D-BOM → 규제 필드 → SPDX 변환 (--format spdx 일 때만)
 
 syft·cdxgen 가운데 하나라도 실패하면 만든 만큼은 돌려주고 failed 에 적는다 (CLI 는 종료 코드 2 로 끝낸다).
 """
@@ -17,29 +17,20 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
-from .engine.ai_services import discover as discover_services
-from .engine.dataset import discover as discover_datasets, is_dataset, missing_revisions, split_data_args
-from .engine.enrich import enrich
-from .engine.facts import Facts
-from .engine.form import apply as regulate, drop_tool_properties
-from .engine.image import extract as extract_image, is_archive
-from .engine.merge import merge
-from .engine.model import discover as discover_models
-from .engine.spdx import convert as convert_spdx
-from .engine.validate import detect_format, schema_for, validate_doc
-from .external import run_cdxgen, run_syft
-from .external._proc import RunnerError
-from .external.image_pull import pull as pull_image
+from ..engine.ai_services import discover as discover_services
+from ..engine.dataset import discover as discover_datasets, is_dataset, missing_revisions, split_data_args
+from ..engine.enrich import enrich
+from ..engine.facts import Facts
+from ..engine.form import apply as regulate, drop_tool_properties
+from ..engine.image import extract as extract_image, is_archive
+from ..engine.merge import merge
+from ..engine.model import discover as discover_models
+from ..engine.spdx import convert as convert_spdx
+from ..external import run_cdxgen, run_syft
+from ..external._proc import RunnerError
+from ..external.image_pull import pull as pull_image
+from .formats import FORM_BY_SPEC, FORMAT_NAME
 
-# scan --format 과 --spec. 형식마다 spec 둘이고 첫 값이 기본이다. v0.6 은 두 형식에 다 있다 (AI-BOM v0.6 은 CycloneDX 판과 SPDX 판이 있다)
-FORMATS = ("cyclonedx", "spdx")
-SPEC_BY_FORMAT = {"cyclonedx": ("1.7", "v0.6"), "spdx": ("3.0.1", "v0.6")}
-SPECS = ("1.7", "v0.6", "3.0.1")                           # --spec 의 선택지 (scan · validate)
-# 규제 필드를 넣는 형태. 1.7 은 표준 properties 라 1.7·v0.6 스키마 모두에 맞고, v0.6 은 v0.6 스키마에만 맞는다.
-# SPDX 는 v0.6 형(typed)으로 만든 뒤 바꾼다 — 3.0.1 이면 변환기가 v0.6 이 더한 값을 확장에 넣는다
-FORM_BY_SPEC = {"1.7": "properties", "v0.6": "typed", "3.0.1": "typed"}
-FORMAT_NAME = {("cyclonedx", "1.7"): "CycloneDX 1.7", ("cyclonedx", "v0.6"): "AI-BOM v0.6 (CycloneDX)",
-               ("spdx", "3.0.1"): "SPDX 3.0.1", ("spdx", "v0.6"): "AI-BOM v0.6 (SPDX)"}
 # 요약의 묶음: CycloneDX type → S/M/D 와 파일. 목록에 없는 type(library, application, operating-system …)은 packages
 GROUP_ORDER = ("packages", "models", "datasets", "files", "other")
 SINGULAR = {"packages": "package", "models": "model", "datasets": "dataset", "files": "file", "other": "other"}
@@ -58,13 +49,6 @@ class ScanResult:
     doc: dict                                         # 내보낼 문서. --format spdx 면 SPDX
     bom: dict                                         # 다 만든 CycloneDX 문서. 요약은 이것을 센다
     failed: list[str] = field(default_factory=list)   # 실패한 단계 (syft, cdxgen, pulling image, unpacking image)
-
-
-@dataclass
-class Validation:
-    fmt: str | None        # cyclonedx · spdx. 문서에서 알아내지 못하면 None
-    spec: str | None       # 검증에 쓴 spec (주지 않았으면 그 형식의 기본)
-    valid: bool | None     # None 이면 검증하지 못했다 (형식을 모르거나 spec 이 그 형식의 것이 아니다)
 
 
 # ── 요약 ────────────────────────────────────────────────────────────────────
@@ -243,16 +227,3 @@ def scan_root(target: str, image_name: str | None = None) -> tuple[str, str]:
         return (path.resolve().name or target, "directory")
     return (image_name or (path.name if is_archive(target) else target), "image")
 
-
-# ── validate ────────────────────────────────────────────────────────────────
-
-def validate(doc: dict, spec: str | None, log: Log = _quiet) -> Validation:
-    """문서를 스키마로 검증한다. 형식은 문서에서 알아내고(bomFormat 이 있으면 CycloneDX, @context 가 있으면 SPDX),
-    spec 을 주지 않으면 CycloneDX 문서는 1.7, SPDX 문서는 3.0.1 로 본다. 어긋난 곳은 log 로 알린다."""
-    fmt = detect_format(doc)
-    if fmt is None:
-        return Validation(None, spec, None)
-    spec = spec or SPEC_BY_FORMAT[fmt][0]
-    if schema_for(fmt, spec) is None:
-        return Validation(fmt, spec, None)
-    return Validation(fmt, spec, validate_doc(doc, fmt, spec, log=log))

@@ -16,7 +16,7 @@ from pathlib import Path
 import pytest
 
 import sure_aibom.external.hub as hub
-import sure_aibom.pipeline as pipeline
+import sure_aibom.service.scan as scan_service
 from sure_aibom.external._proc import RunnerError
 from sure_aibom.cli import main
 
@@ -308,19 +308,19 @@ def test_an_image_target_is_unpacked_and_the_unpacked_directory_is_scanned(tmp_p
     def mkdtemp(prefix):
         (tmp_path / "work").mkdir(exist_ok=True)
         return str(tmp_path / "work")
-    monkeypatch.setattr(pipeline.tempfile, "mkdtemp", mkdtemp)
-    monkeypatch.setattr(pipeline, "run_syft", lambda target, workdir: seen.setdefault("syft", target) and {
+    monkeypatch.setattr(scan_service.tempfile, "mkdtemp", mkdtemp)
+    monkeypatch.setattr(scan_service, "run_syft", lambda target, workdir: seen.setdefault("syft", target) and {
         "bomFormat": "CycloneDX", "specVersion": "1.7",
         "components": [{"bom-ref": "a", "type": "library", "name": "a", "version": "1", "purl": "pkg:pypi/a@1"}]})
-    monkeypatch.setattr(pipeline, "run_cdxgen", lambda target, workdir: seen.setdefault("cdxgen", (target, Path(target).is_dir())) and {
+    monkeypatch.setattr(scan_service, "run_cdxgen", lambda target, workdir: seen.setdefault("cdxgen", (target, Path(target).is_dir())) and {
         "bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
-    monkeypatch.setattr(pipeline, "pull_image", lambda ref, workdir: seen.setdefault("pull", ref) and (workdir / "image.tar", "crane"))
+    monkeypatch.setattr(scan_service, "pull_image", lambda ref, workdir: seen.setdefault("pull", ref) and (workdir / "image.tar", "crane"))
 
     def extract(tar, rootfs):
         rootfs.mkdir()
         seen["extract"] = tar
         return 2, "some:tag"
-    monkeypatch.setattr(pipeline, "extract_image", extract)
+    monkeypatch.setattr(scan_service, "extract_image", extract)
 
     out = tmp_path / "i.json"
     assert cli.main(["scan", "some-image:latest", "-o", str(out)]) == 0
@@ -348,10 +348,10 @@ def test_an_image_target_is_unpacked_and_the_unpacked_directory_is_scanned(tmp_p
 def test_an_image_that_cannot_be_unpacked_skips_the_m_bom_and_exits_2(tmp_path, monkeypatch, capsys):
     import sure_aibom.cli as cli
     from sure_aibom.external._proc import RunnerError
-    monkeypatch.setattr(pipeline, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7",
+    monkeypatch.setattr(scan_service, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7",
         "components": [{"bom-ref": "a", "type": "library", "name": "a", "version": "1", "purl": "pkg:pypi/a@1"}]})
-    monkeypatch.setattr(pipeline, "run_cdxgen", lambda target, workdir: pytest.fail("이미지를 못 풀었는데 cdxgen 을 돌렸다"))
-    monkeypatch.setattr(pipeline, "pull_image", lambda ref, workdir: (_ for _ in ()).throw(RunnerError("could not fetch some-image:latest\ndocker: daemon down")))
+    monkeypatch.setattr(scan_service, "run_cdxgen", lambda target, workdir: pytest.fail("이미지를 못 풀었는데 cdxgen 을 돌렸다"))
+    monkeypatch.setattr(scan_service, "pull_image", lambda ref, workdir: (_ for _ in ()).throw(RunnerError("could not fetch some-image:latest\ndocker: daemon down")))
     out = tmp_path / "i.json"
     assert cli.main(["scan", "some-image:latest", "-o", str(out)]) == 2
     lines = capsys.readouterr().err.splitlines()
@@ -402,8 +402,8 @@ def test_one_failing_tool_still_writes_the_bom_but_exits_2(tmp_path, monkeypatch
 
     def broken(target, workdir):
         raise RunnerError("syft exited with 1\nfirst detail\nlast detail")
-    monkeypatch.setattr(pipeline, "run_syft", broken)
-    monkeypatch.setattr(pipeline, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": [
+    monkeypatch.setattr(scan_service, "run_syft", broken)
+    monkeypatch.setattr(scan_service, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": [
         {"bom-ref": "m", "type": "machine-learning-model", "name": "m", "purl": "pkg:generic/m"}]})
     out = tmp_path / "bom.json"
     assert cli.main(["scan", str(FIXTURE), "-o", str(out)]) == 2
@@ -422,8 +422,8 @@ def test_without_data_paths_the_project_has_no_local_dataset(tmp_path):
 
 def test_a_data_path_without_data_files_is_a_warning(tmp_path, monkeypatch, capsys):
     import sure_aibom.cli as cli
-    monkeypatch.setattr(pipeline, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
-    monkeypatch.setattr(pipeline, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
+    monkeypatch.setattr(scan_service, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
+    monkeypatch.setattr(scan_service, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
     (tmp_path / "docs").mkdir()
     (tmp_path / "docs" / "notes.md").write_text("x", encoding="utf-8")
     assert cli.main(["scan", str(FIXTURE), "-o", str(tmp_path / "b.json"), "--data", str(tmp_path / "docs")]) == 0
@@ -431,8 +431,8 @@ def test_a_data_path_without_data_files_is_a_warning(tmp_path, monkeypatch, caps
 
 
 def test_hub_datasets_in_data_join_the_ones_in_code_and_a_failed_lookup_is_a_warning(tmp_path, monkeypatch, capsys):
-    monkeypatch.setattr(pipeline, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
-    monkeypatch.setattr(pipeline, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
+    monkeypatch.setattr(scan_service, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
+    monkeypatch.setattr(scan_service, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print, revision=None: recorded("dataset", hf_id))
     doc = scan(FIXTURE, tmp_path / "b.json", "--data", "hf://datasets/stanfordnlp/imdb@e6281661", "--data", "hf://datasets/acme/missing")
     imdb = next(c for c in doc["components"] if c["bom-ref"] == IMDB_REF)              # src/train.py 의 load_dataset 과 합쳐져 하나

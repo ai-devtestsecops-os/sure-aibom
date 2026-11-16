@@ -5,10 +5,10 @@ from pathlib import Path
 import pytest
 
 import sure_aibom.external.hub as hub
-import sure_aibom.pipeline as pipeline
+import sure_aibom.service.scan as scan_service
 from sure_aibom import NAME, __version__
 from sure_aibom.cli import HELP, build_parser, main
-from sure_aibom.pipeline import groups
+from sure_aibom.service.scan import groups
 
 README = Path(__file__).parents[1] / "README.md"
 
@@ -62,7 +62,7 @@ def test_usage_errors_exit_2_and_name_the_command(argv, message, capsys):
 
 
 def test_a_missing_data_path_is_an_error_before_any_tool_runs(tmp_path, monkeypatch, capsys):
-    monkeypatch.setattr(pipeline, "run_syft", lambda *a: pytest.fail("데이터 경로가 틀렸는데 도구를 돌렸다"))
+    monkeypatch.setattr(scan_service, "run_syft", lambda *a: pytest.fail("데이터 경로가 틀렸는데 도구를 돌렸다"))
     out = tmp_path / "bom.json"
     assert main(["scan", str(tmp_path), "-o", str(out), "--data", str(tmp_path / "nope"), "--data", str(tmp_path)]) == 2
     assert f"[sure-aibom] error: data path not found: {tmp_path / 'nope'}" in capsys.readouterr().err
@@ -70,7 +70,7 @@ def test_a_missing_data_path_is_an_error_before_any_tool_runs(tmp_path, monkeypa
 
 
 def test_hub_datasets_in_data_are_not_paths_and_a_malformed_one_stops_the_scan(tmp_path, monkeypatch, capsys):
-    monkeypatch.setattr(pipeline, "run_syft", lambda *a: pytest.fail("--data 가 틀렸는데 도구를 돌렸다"))
+    monkeypatch.setattr(scan_service, "run_syft", lambda *a: pytest.fail("--data 가 틀렸는데 도구를 돌렸다"))
     out = tmp_path / "bom.json"
     assert main(["scan", str(tmp_path), "-o", str(out), "--data", "hf://datasets/a/b/train.csv"]) == 2
     assert "[sure-aibom] error: --data hf://datasets/a/b/train.csv: not a Hugging Face dataset" in capsys.readouterr().err
@@ -80,7 +80,7 @@ def test_hub_datasets_in_data_are_not_paths_and_a_malformed_one_stops_the_scan(t
 
 
 def test_a_revision_the_hub_says_does_not_exist_stops_the_scan_before_any_tool_runs(tmp_path, monkeypatch, capsys):
-    monkeypatch.setattr(pipeline, "run_syft", lambda *a: pytest.fail("리비전이 틀렸는데 도구를 돌렸다"))
+    monkeypatch.setattr(scan_service, "run_syft", lambda *a: pytest.fail("리비전이 틀렸는데 도구를 돌렸다"))
     monkeypatch.setattr(hub, "hf_reachable", lambda: True)
     monkeypatch.setattr(hub, "fetch_revision_error", lambda hf_id, revision: (404, f"Invalid rev id: {revision}"))
     out = tmp_path / "bom.json"
