@@ -8,7 +8,7 @@ from dataclasses import dataclass
 from typing import Callable
 
 from ..engine.validate import detect_format, schema_for, validate_doc
-from .formats import SPEC_BY_FORMAT
+from ..formats import SPEC_BY_FORMAT
 
 
 @dataclass

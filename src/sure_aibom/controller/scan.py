@@ -4,8 +4,8 @@ from __future__ import annotations
 import argparse
 from pathlib import Path
 
+from ..formats import FORMAT_NAME, SPEC_BY_FORMAT
 from ..service import scan as scan_service
-from ..service.formats import FORMAT_NAME, SPEC_BY_FORMAT
 from ..service.scan import count, groups
 from .output import EXIT_TOOL, emit, log, quiet, stage
 

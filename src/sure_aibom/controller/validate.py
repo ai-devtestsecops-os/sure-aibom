@@ -3,8 +3,8 @@ from __future__ import annotations
 
 import argparse
 
+from ..formats import FORMAT_NAME, SPEC_BY_FORMAT
 from ..service import validate as validate_service
-from ..service.formats import FORMAT_NAME, SPEC_BY_FORMAT
 from .output import EXIT_INVALID, EXIT_TOOL, log, read_json
 
 

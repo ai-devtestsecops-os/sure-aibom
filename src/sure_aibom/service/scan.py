@@ -29,7 +29,7 @@ from ..engine.spdx import convert as convert_spdx
 from ..external import run_cdxgen, run_syft
 from ..external._proc import RunnerError
 from ..external.image_pull import pull as pull_image
-from .formats import FORM_BY_SPEC, FORMAT_NAME
+from ..formats import FORM_BY_SPEC, FORMAT_NAME
 
 # 요약의 묶음: CycloneDX type → S/M/D 와 파일. 목록에 없는 type(library, application, operating-system …)은 packages
 GROUP_ORDER = ("packages", "models", "datasets", "files", "other")
