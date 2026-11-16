@@ -36,8 +36,8 @@ import re
 from pathlib import Path, PurePosixPath
 from typing import Iterable
 
+from ..exceptions import RunnerError
 from ..external import hub, run_aibom_generator
-from ..external._proc import RunnerError
 from ..utils.licenses import card_licenses
 from .facts import Facts
 from .form import HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON, INTERNAL_MODEL_PREFIX

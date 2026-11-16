@@ -18,7 +18,7 @@ import shutil
 import tarfile
 from pathlib import Path
 
-from ..external._proc import RunnerError
+from ..exceptions import RunnerError
 from ..utils.arch import host_arch
 
 ARCHIVE_SUFFIXES = (".tar", ".tar.gz", ".tgz")

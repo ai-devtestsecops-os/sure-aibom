@@ -21,8 +21,9 @@ import re
 from pathlib import Path, PurePosixPath
 from urllib.parse import quote, unquote
 
+from ..exceptions import RunnerError
 from ..utils.licenses import license_entry
-from ._proc import RunnerError, load_json_file, run
+from ._proc import load_json_file, run
 
 SPEC_VERSION = "1.7"
 MODEL_TYPE = "machine-learning-model"

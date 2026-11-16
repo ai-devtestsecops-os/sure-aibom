@@ -20,7 +20,7 @@ import pytest
 import sure_aibom.external.hub as hub
 import sure_aibom.engine.enrich as en
 import fieldtrace
-from sure_aibom.external._proc import RunnerError
+from sure_aibom.exceptions import RunnerError
 from sure_aibom.engine.spdx import convert
 from sure_aibom.engine.validate import validate_cdx, validate_spdx
 from test_image import docker_tar

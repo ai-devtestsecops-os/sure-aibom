@@ -13,7 +13,7 @@ import sure_aibom.external.hub as hub_api          # 이름 hub 는 아래의 Hu
 from sure_aibom.engine.enrich import OWASP_SOURCES, apply_model_info, enrich, hf_id_of, hub_model_id, performance_metrics, skip_reason
 from sure_aibom.engine.facts import Facts
 from sure_aibom.engine.form import apply
-from sure_aibom.external._proc import RunnerError
+from sure_aibom.exceptions import RunnerError
 
 OWASP = Path(__file__).parent / "data" / "owasp" / "bert-base-uncased.cdx.json"
 HUB = Path(__file__).parent / "data" / "hf_api" / "hf_model_google-bert_bert-base-uncased.json"

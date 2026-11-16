@@ -26,8 +26,8 @@ from ..engine.image_extract import extract as extract_image, is_archive
 from ..engine.merge import merge
 from ..engine.model import discover as discover_models
 from ..engine.spdx import convert as convert_spdx
+from ..exceptions import RunnerError
 from ..external import run_cdxgen, run_syft
-from ..external._proc import RunnerError
 from ..external.image_pull import pull as pull_image
 from ..formats import FORM_BY_SPEC, FORMAT_NAME
 

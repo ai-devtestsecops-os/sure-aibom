@@ -4,11 +4,7 @@ import os
 import subprocess
 from pathlib import Path
 
-
-class RunnerError(RuntimeError):
-    pass
-
-
+from ..exceptions import RunnerError
 
 
 def run(cmd: list[str], cwd: str | None = None, timeout: int = 1800, env: dict[str, str] | None = None) -> subprocess.CompletedProcess:

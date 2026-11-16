@@ -10,7 +10,8 @@ import os
 import sys
 from pathlib import Path
 
-from ._proc import RunnerError, load_json_file, run
+from ..exceptions import RunnerError
+from ._proc import load_json_file, run
 
 
 def run_aibom_generator(hf_id: str, workdir: Path) -> dict:

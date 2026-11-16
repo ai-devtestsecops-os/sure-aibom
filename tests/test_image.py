@@ -12,7 +12,7 @@ import pytest
 
 import sure_aibom.engine.image_extract as im
 import sure_aibom.external.image_pull as ip
-from sure_aibom.external._proc import RunnerError
+from sure_aibom.exceptions import RunnerError
 
 
 # ── tar 만들기 ────────────────────────────────────────────────────────────────

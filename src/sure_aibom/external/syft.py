@@ -20,7 +20,8 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from ._proc import RunnerError, load_json_file, run
+from ..exceptions import RunnerError
+from ._proc import load_json_file, run
 
 SPEC_VERSION = "1.7"
 ENV = {"SYFT_COMPLIANCE_MISSING_VERSION": "keep"}
