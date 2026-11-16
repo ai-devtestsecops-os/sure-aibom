@@ -20,15 +20,15 @@ from typing import Callable
 from ..engine.ai_services import discover_services
 from ..engine.dataset import discover_datasets, is_dataset, missing_revisions, split_data_args
 from ..engine.enrich import enrich
+from ..engine.extract_image import extract_image, is_archive
 from ..engine.facts import Facts
 from ..engine.form import drop_tool_properties, regulate
-from ..engine.image_extract import extract_image, is_archive
 from ..engine.merge import merge
 from ..engine.model import discover_models
 from ..engine.spdx import convert_spdx
 from ..exceptions import RunnerError
 from ..external import run_cdxgen, run_syft
-from ..external.image_pull import pull_image
+from ..external.pull_image import pull_image
 from ..formats import FORM_BY_SPEC, FORMAT_NAME
 
 # 요약의 묶음: CycloneDX type → S/M/D 와 파일. 목록에 없는 type(library, application, operating-system …)은 packages
@@ -136,7 +136,7 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path, stag
     except RunnerError as e:
         fail("Generating S-BOM (syft)", "syft", e)
 
-    # 이미지는 syft 만 그대로 읽는다. M-BOM·D-BOM 단계는 이미지를 푼 디렉터리에 대해 돌린다 (engine/image_extract.py 참고).
+    # 이미지는 syft 만 그대로 읽는다. M-BOM·D-BOM 단계는 이미지를 푼 디렉터리에 대해 돌린다 (engine/extract_image.py 참고).
     scan_dir: str | None = target
     image_name: str | None = None
     if not Path(target).is_dir():

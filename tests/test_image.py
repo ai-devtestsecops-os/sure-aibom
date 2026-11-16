@@ -10,8 +10,8 @@ from pathlib import Path
 
 import pytest
 
-import sure_aibom.engine.image_extract as im
-import sure_aibom.external.image_pull as ip
+import sure_aibom.engine.extract_image as im
+import sure_aibom.external.pull_image as ip
 from sure_aibom.exceptions import RunnerError
 
 
