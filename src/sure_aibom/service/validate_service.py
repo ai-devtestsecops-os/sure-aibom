@@ -1,4 +1,4 @@
-"""validate 의 흐름 (참고 구조의 service). 형식 알아내기 → spec 고르기 → 스키마 검증.
+"""validate 의 흐름. 형식 알아내기 → spec 고르기 → 스키마 검증.
 
 BOM 파일을 읽고 결과를 찍는 것은 controller/validate_controller.py 다.
 """

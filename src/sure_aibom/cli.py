@@ -1,6 +1,6 @@
-"""sure-aibom 진입점. 인자를 등록하고 명령에 맞는 controller 함수로 넘긴다. 사용법은 README 또는 `sure-aibom --help`.
+"""sure-aibom 진입점. 인자를 등록하고 명령에 맞는 명령 핸들러로 넘긴다. 사용법은 README 또는 `sure-aibom --help`.
 
-참고 구조로 보면 이 파일이 app.py 다. 명령 처리는 controller/ 에, 단계 순서는 service/ 에 명령마다 파일 하나씩 있다."""
+명령 핸들러는 controller/ 에, 단계 순서는 service/ 에 명령마다 파일 하나씩 있다."""
 from __future__ import annotations
 
 import argparse

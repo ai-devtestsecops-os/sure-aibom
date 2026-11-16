@@ -1,4 +1,4 @@
-"""scan 명령 (참고 구조의 controller). 인자를 확인해 service/scan_service.py 에 값만 넘기고, 단계 줄과 결과를 찍는다."""
+"""scan 명령 핸들러. 인자를 확인해 service/scan_service.py 에 값만 넘기고, 단계 줄과 결과를 찍고, 종료 코드를 돌려준다."""
 from __future__ import annotations
 
 import argparse

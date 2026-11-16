@@ -1,4 +1,4 @@
-"""validate 명령 (참고 구조의 controller). BOM 파일을 읽어 service/validate_service.py 에 넘기고 결과를 찍는다."""
+"""validate 명령 핸들러. BOM 파일을 읽어 service/validate_service.py 에 넘기고, 결과를 찍고, 종료 코드를 돌려준다."""
 from __future__ import annotations
 
 import argparse
