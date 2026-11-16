@@ -16,7 +16,7 @@ from ._proc import run
 PULL_TOOLS = ("docker", "podman", "crane")           # syft 와 같은 순서: 데몬 → 레지스트리
 
 
-def pull(ref: str, workdir: Path) -> tuple[Path, str]:
+def pull_image(ref: str, workdir: Path) -> tuple[Path, str]:
     """이미지 이름을 workdir/image.tar 로 받는다. (tar 경로, 쓴 도구). docker·podman 은 데몬에 있는 이미지를 save 하고
     없으면 pull 한 뒤 save 한다. crane 은 레지스트리에서 이 머신의 플랫폼으로 받는다. 하나가 실패하면 다음 것을 쓴다."""
     tools = [t for t in PULL_TOOLS if shutil.which(t)]

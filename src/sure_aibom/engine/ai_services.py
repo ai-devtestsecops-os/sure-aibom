@@ -63,7 +63,7 @@ _JS_IMPORTS = (
 )
 
 
-def discover(merged: dict, target: str, log=print) -> dict:
+def discover_services(merged: dict, target: str, log=print) -> dict:
     """머리 설명대로 services[] 와 그 관계를 고친다. 서비스도 SDK import 도 없으면 문서는 그대로다."""
     services = merged.get("services") or []
     root = Path(target)

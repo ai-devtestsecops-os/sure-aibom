@@ -12,7 +12,7 @@ import sure_aibom.engine.enrich as en
 import sure_aibom.external.hub as hub_api          # 이름 hub 는 아래의 Hub API 응답 fixture 가 쓴다
 from sure_aibom.engine.enrich import OWASP_SOURCES, apply_model_info, enrich, hf_id_of, hub_model_id, performance_metrics, skip_reason
 from sure_aibom.engine.facts import Facts
-from sure_aibom.engine.form import apply
+from sure_aibom.engine.form import regulate
 from sure_aibom.exceptions import RunnerError
 
 OWASP = Path(__file__).parent / "data" / "owasp" / "bert-base-uncased.cdx.json"
@@ -349,7 +349,7 @@ def test_performance_metrics_match_cdxgen():
 @pytest.mark.parametrize("form", ["properties", "typed"])
 def test_enriched_values_become_v06_fields(monkeypatch, owasp, hub, form):
     stub(monkeypatch, owasp)
-    out = apply(enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None, model_infos={HF_ID: hub}), form=form, log=lambda m: None)
+    out = regulate(enrich(doc_of(bert_component()), WORKDIR, log=lambda m: None, model_infos={HF_ID: hub}), form=form, log=lambda m: None)
     card = out["components"][0]["modelCard"]
     if form == "properties":
         props = card_props(out["components"][0])

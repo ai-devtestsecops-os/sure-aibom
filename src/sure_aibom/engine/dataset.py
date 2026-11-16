@@ -148,7 +148,7 @@ STATISTICS_FILE_LIMIT = JSON_PARSE_LIMIT                      # 로컬 파일 �
 
 # ── 진입점 ──────────────────────────────────────────────────────────────────
 
-def discover(merged: dict, target: str, log=print, report: dict | None = None, data_paths: Iterable[str] = (),
+def discover_datasets(merged: dict, target: str, log=print, report: dict | None = None, data_paths: Iterable[str] = (),
              model_infos: dict | None = None, hub_reachable: bool | None = None, facts: Facts | None = None) -> dict:
     """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다.
     data_paths 는 scan --data 값들로, 로컬 데이터 경로이거나 hf://datasets/<id>[@<리비전>] 꼴의 허브 데이터셋이다 (split_data_args).
@@ -1166,7 +1166,7 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | 
     revisions 는 id → 물을 리비전(--data 나 코드의 revision=)이다. 리비전이 있는 것은 그 리비전으로 묻고, 그 응답이 앞선 조회보다
     우선해 정식 id 의 응답이 된다 (version 은 응답의 전체 커밋 해시). 조회가 안 되면 리비전을 version 으로 남긴다.
     datasets-server 는 최신 리비전만 보므로 리비전이 최신이 아니면 /size·/statistics 는 묻지 않는다.
-    given 은 --data 로 준 id 들이고, 돌려주는 것은 그 가운데 조회가 안 된 id 들. 허브에 닿는지는 부르는 쪽(discover)이 먼저 본다."""
+    given 은 --data 로 준 id 들이고, 돌려주는 것은 그 가운데 조회가 안 된 id 들. 허브에 닿는지는 부르는 쪽(discover_datasets)이 먼저 본다."""
     revisions = revisions or {}
     given = set(given)
     info_by_canonical: dict[str, dict] = {}

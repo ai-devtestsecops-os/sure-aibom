@@ -17,18 +17,18 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
-from ..engine.ai_services import discover as discover_services
-from ..engine.dataset import discover as discover_datasets, is_dataset, missing_revisions, split_data_args
+from ..engine.ai_services import discover_services
+from ..engine.dataset import discover_datasets, is_dataset, missing_revisions, split_data_args
 from ..engine.enrich import enrich
 from ..engine.facts import Facts
-from ..engine.form import apply as regulate, drop_tool_properties
-from ..engine.image_extract import extract as extract_image, is_archive
+from ..engine.form import drop_tool_properties, regulate
+from ..engine.image_extract import extract_image, is_archive
 from ..engine.merge import merge
-from ..engine.model import discover as discover_models
-from ..engine.spdx import convert as convert_spdx
+from ..engine.model import discover_models
+from ..engine.spdx import convert_spdx
 from ..exceptions import RunnerError
 from ..external import run_cdxgen, run_syft
-from ..external.image_pull import pull as pull_image
+from ..external.image_pull import pull_image
 from ..formats import FORM_BY_SPEC, FORMAT_NAME
 
 # 요약의 묶음: CycloneDX type → S/M/D 와 파일. 목록에 없는 type(library, application, operating-system …)은 packages

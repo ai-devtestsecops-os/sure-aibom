@@ -85,7 +85,7 @@ def test_services_are_kept_only_with_an_sdk_import(tmp_path):
             {"ref": "urn:service:ai:mistral:mistral-service", "dependsOn": ["pkg:generic/mistral/mistral-7b-instruct"]},
             {"ref": "urn:service:ai:acme:acme-service", "dependsOn": [HUB_BERT["bom-ref"]]}]
     logs: list[str] = []
-    out = sv.discover(doc_of(copy.deepcopy(services), deps, [API_MODEL, HUB_BERT]), str(tmp_path), logs.append)
+    out = sv.discover_services(doc_of(copy.deepcopy(services), deps, [API_MODEL, HUB_BERT]), str(tmp_path), logs.append)
     assert out["services"] == [{k: v for k, v in s.items() if k != "version"} for s in services[:2]]
     assert out["dependencies"] == [deps[0], {"ref": "urn:file:ai:notebooks/eval.ipynb", "dependsOn": ["urn:service:ai:openai:OpenAI-API"]}, deps[2]]
     assert logs == [f"[service] {name}: dropped, no SDK import for {provider}"
@@ -97,7 +97,7 @@ def test_an_sdk_import_without_a_cdxgen_service_makes_one(tmp_path):
     """모델 이름 없이 부르면 cdxgen 은 서비스를 만들지 않는다. 같은 제공사의 cdxgen 서비스가 있으면 새로 만들지 않는다."""
     write(tmp_path, "agent.py", "import os\nfrom langchain_groq import ChatGroq\nimport anthropic\n\nllm = ChatGroq(model=os.environ['M'])\n")
     logs: list[str] = []
-    out = sv.discover(doc_of([cdxgen_service("anthropic", "Anthropic API")]), str(tmp_path), logs.append)
+    out = sv.discover_services(doc_of([cdxgen_service("anthropic", "Anthropic API")]), str(tmp_path), logs.append)
     assert out["services"] == [{k: v for k, v in cdxgen_service("anthropic", "Anthropic API").items() if k != "version"},
                                {"bom-ref": "urn:service:ai:groq:Groq-API", "group": "groq", "name": "Groq API",
                                 "provider": {"name": "groq"}, "tags": ["ai", "groq"]}]
@@ -110,7 +110,7 @@ def test_kept_services_lose_their_hub_model_relations(tmp_path):
     write(tmp_path, "app.py", "from openai import OpenAI\n")
     deps = [{"ref": "urn:service:ai:openai:OpenAI-API", "dependsOn": [HUB_BERT["bom-ref"], API_MODEL["bom-ref"], LOCAL_MODEL["bom-ref"]]}]
     logs: list[str] = []
-    out = sv.discover(doc_of([cdxgen_service("openai", "OpenAI API", "OpenAI-API", ("ai", "openai"))], deps, [HUB_BERT, API_MODEL, LOCAL_MODEL]),
+    out = sv.discover_services(doc_of([cdxgen_service("openai", "OpenAI API", "OpenAI-API", ("ai", "openai"))], deps, [HUB_BERT, API_MODEL, LOCAL_MODEL]),
                       str(tmp_path), logs.append)
     assert out["dependencies"] == [{"ref": "urn:service:ai:openai:OpenAI-API", "dependsOn": [API_MODEL["bom-ref"], LOCAL_MODEL["bom-ref"]]}]
     assert logs == ["[service] OpenAI API: dependency on hub model acme/acme-bert dropped, hub models run locally"]
@@ -120,13 +120,13 @@ def test_without_services_or_sdk_imports_the_document_is_byte_identical(tmp_path
     write(tmp_path, "train.py", "from transformers import AutoModel\nmodel = AutoModel.from_pretrained('acme/acme-bert')\n")
     doc = doc_of([], [{"ref": ROOT, "dependsOn": [HUB_BERT["bom-ref"]]}], [HUB_BERT])
     before = json.dumps(doc, sort_keys=True)
-    assert json.dumps(sv.discover(doc, str(tmp_path), log=lambda m: None), sort_keys=True) == before
-    assert json.dumps(sv.discover(doc, "alpine:3.20", log=lambda m: None), sort_keys=True) == before      # 풀지 못한 이미지 (디렉터리가 아니다)
+    assert json.dumps(sv.discover_services(doc, str(tmp_path), log=lambda m: None), sort_keys=True) == before
+    assert json.dumps(sv.discover_services(doc, "alpine:3.20", log=lambda m: None), sort_keys=True) == before      # 풀지 못한 이미지 (디렉터리가 아니다)
 
 
 def test_running_twice_changes_nothing(tmp_path):
     write(tmp_path, "app.py", "import anthropic\nfrom langchain_groq import ChatGroq\n")
     deps = [{"ref": "urn:service:ai:anthropic:anthropic-service", "dependsOn": [HUB_BERT["bom-ref"]]}]
-    once = sv.discover(doc_of([cdxgen_service("anthropic", "Anthropic API"), cdxgen_service("acme", "acme-service")], deps, [HUB_BERT]),
+    once = sv.discover_services(doc_of([cdxgen_service("anthropic", "Anthropic API"), cdxgen_service("acme", "acme-service")], deps, [HUB_BERT]),
                        str(tmp_path), log=lambda m: None)
-    assert sv.discover(copy.deepcopy(once), str(tmp_path), log=lambda m: None) == once
+    assert sv.discover_services(copy.deepcopy(once), str(tmp_path), log=lambda m: None) == once

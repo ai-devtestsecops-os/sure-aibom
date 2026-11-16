@@ -88,7 +88,7 @@ PRESENCE = {"yes": "yes", "no": "no", "unknown": "noAssertion"}
 SAFE = ":/@!$&'()*+,;="                  # IRI 조각(fragment)에 그대로 둘 수 있는 글자. 나머지(공백, %, ?, # …)는 퍼센트 인코딩
 
 
-def convert(doc: dict, spec: str = SPEC_VERSION, log=print, facts: Facts | None = None) -> dict:
+def convert_spdx(doc: dict, spec: str = SPEC_VERSION, log=print, facts: Facts | None = None) -> dict:
     """CycloneDX 문서를 SPDX 3.0.1 JSON-LD 로 바꿔 돌려준다 (입력은 그대로 둔다). facts 는 수집 단계의 메모리 부가 기록."""
     if spec not in SPECS:
         raise ValueError(f"spec 은 {SPECS} 중 하나여야 한다: {spec!r}")

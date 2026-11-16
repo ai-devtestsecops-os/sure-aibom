@@ -35,7 +35,7 @@ def is_archive(target: str) -> bool:
 
 # ── .tar → 디렉터리 ───────────────────────────────────────────────────────────
 
-def extract(tar_path: Path, rootfs: Path) -> tuple[int, str | None]:
+def extract_image(tar_path: Path, rootfs: Path) -> tuple[int, str | None]:
     """이미지 tar 의 레이어를 rootfs 에 순서대로 푼다. (레이어 수, 이미지 이름). 이름은 tar 에 적힌 것(RepoTags 등)이 없으면 None."""
     rootfs.mkdir(parents=True, exist_ok=True)
     try:

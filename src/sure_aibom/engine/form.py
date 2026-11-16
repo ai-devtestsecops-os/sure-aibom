@@ -84,7 +84,7 @@ HF_DATASETS_PURL = "pkg:huggingface/datasets/"
 
 # ── 진입점 ──────────────────────────────────────────────────────────────────
 
-def apply(doc: dict, form: str = "properties", log=print, report: dict | None = None) -> dict:
+def regulate(doc: dict, form: str = "properties", log=print, report: dict | None = None) -> dict:
     """문서를 제자리에서 고치고 돌려준다. form 은 "properties"(기본) 또는 "typed".
     report 를 주면 완성도를 적는다: {"models": {"filled", "total"}, "datasets": {…}, "filled", "total"}."""
     if form not in FORMS:

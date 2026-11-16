@@ -327,12 +327,12 @@ def spdx_site_sources(doc: dict, tracker: Tracker) -> dict[str, set[tuple[str, s
     변환기(sure-aibom)다. 공급자·작성자·라이선스 요소는 그것을 가리키는 컴포넌트로, 관계는 종류마다 CycloneDX 의 관계·계보·라이선스
     값으로, 루트의 builtTime 은 syft 가 읽은 이미지 라벨로 잇는다."""
     from sure_aibom.engine.facts import normalize_time
-    from sure_aibom.engine.spdx import AVAILABILITY, EXTERNAL_REF_TYPE, HASH_ALGORITHM, PRESENCE, PURPOSE_BY_TYPE, convert
+    from sure_aibom.engine.spdx import AVAILABILITY, EXTERNAL_REF_TYPE, HASH_ALGORITHM, PRESENCE, PURPOSE_BY_TYPE, convert_spdx
 
     clean = copy.deepcopy(doc)
     for c in clean.get("components") or []:
         c.pop(MARK, None)
-    graph = convert(clean, "v0.6", log=lambda m: None, facts=tracker.facts)["@graph"]
+    graph = convert_spdx(clean, "v0.6", log=lambda m: None, facts=tracker.facts)["@graph"]
     doc_attr = tracker.attr.get("doc", {})
     out: dict[str, set] = defaultdict(set)
 

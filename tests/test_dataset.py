@@ -17,7 +17,7 @@ import sure_aibom.engine.dataset as ds
 from sure_aibom.engine.enrich import skip_reason
 from sure_aibom.engine.facts import Facts
 from sure_aibom.engine.merge import merge
-from sure_aibom.engine.form import INTERNAL_PREFIX, apply
+from sure_aibom.engine.form import INTERNAL_PREFIX, regulate
 from sure_aibom.utils.licenses import card_licenses, license_entry
 from sure_aibom.engine.validate import validate_cdx
 
@@ -266,7 +266,7 @@ def test_large_files_record_size_only(tmp_path, monkeypatch):
 # -- discover: --data 경로 + 코드 ------------------------------------------------------------
 def test_discover_builds_one_component_per_data_path_and_links_from_root(tmp_path, online):
     root = project(tmp_path)
-    out = ds.discover(doc_of(), str(root), log=lambda m: None, data_paths=data_of(root))
+    out = ds.discover_datasets(doc_of(), str(root), log=lambda m: None, data_paths=data_of(root))
     found = datasets(out)
     assert set(found) == {"data:local/data@", IMDB_REF}
 
@@ -295,7 +295,7 @@ def test_data_path_counts_json_and_txt_but_not_metadata_names(tmp_path, online):
     for rel in ("a.txt", "labels.json", "b.csv", "README.md", "README.txt", "LICENSE.txt", "model_config.json",
                 "dataset_info.json", "state.json", "x.xlsx", ".hidden.csv"):
         write(tmp_path, f"corpus/{rel}", "a\n1\n")
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "corpus")]))
+    found = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "corpus")]))
     assert [d["name"] for d in found["data:local/corpus@"]["data"]] == ["corpus/a.txt", "corpus/b.csv", "corpus/labels.json"]
 
 
@@ -304,13 +304,13 @@ def test_skip_dirs_and_hidden_dirs_are_not_walked(tmp_path, online):
         write(tmp_path, f"data/{d}/x.csv", "a\n1\n")                          # 데이터 경로 안에서도
         write(tmp_path, f"{d}/x.py", 'load_dataset("hidden/one")\n')            # 대상의 소스를 걸을 때도
     write(tmp_path, "data/ok/y.csv", "a\n1\n")
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=data_of(tmp_path)))
+    found = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=data_of(tmp_path)))
     assert set(found) == {"data:local/data@"} and [d["name"] for d in found["data:local/data@"]["data"]] == ["data/ok/y.csv"]
 
 
 def test_a_single_file_data_path_is_its_own_component(tmp_path, online):
     write(tmp_path, "train.csv", "a\n1\n")
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "train.csv")]))
+    found = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "train.csv")]))
     assert set(found) == {"data:local/train@"} and found["data:local/train@"]["name"] == "train"
     assert [d["name"] for d in found["data:local/train@"]["data"]] == ["train.csv"]
     facts = internal(found["data:local/train@"])
@@ -326,7 +326,7 @@ def test_media_files_are_grouped_by_folder_and_modality(tmp_path, online):
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
         (tmp_path / rel).write_bytes(content)
     write(tmp_path, "data/train.csv", "a,b\n1,2\n")
-    local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "data")]))["data:local/data@"]
+    local = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "data")]))["data:local/data@"]
     assert [d["name"] for d in local["data"]] == ["data/audio/x.wav", "data/images/cat/*.{jpg,png}", "data/photos/d.png", "data/train.csv"]   # 파일 하나뿐인 묶음은 그 이름
     assert all(set(d) == {"type", "name"} for d in local["data"])                                 # 파일 사실은 원소에 적지 않는다
     facts = internal(local)
@@ -339,14 +339,14 @@ def test_mixed_formats_in_class_folders_are_one_dataset(tmp_path, online):
     """ImageFolder 처럼 jpg 와 png 가 섞인 클래스 폴더도 데이터셋 하나이고 라벨 수에 전부 든다."""
     local = fake_jpgs(tmp_path, "imgset", ["train/cat/0.jpg", "train/cat/2.jpg", "train/dog/0.jpg", "train/dog/1.jpg"])
     (tmp_path / "imgset/train/cat/1.png").write_bytes(b"\x89PNG" + bytes(8))
-    local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "imgset")]))["data:local/imgset@"]
+    local = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "imgset")]))["data:local/imgset@"]
     assert [d["name"] for d in local["data"]] == ["imgset/train/*.{jpg,png}"]
     assert stats_of(local)["label:frequencies"] == "cat=3,dog=2"
 
 
 def test_a_single_media_file_data_path_keeps_its_file_name(tmp_path, online):
     (tmp_path / "photo.jpg").write_bytes(b"\xff\xd8" + b"p" * 3)
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "photo.jpg")]))
+    found = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "photo.jpg")]))
     items = found["data:local/photo@"]["data"]
     assert items == [{"type": "dataset", "name": "photo.jpg"}]
     assert internal(found["data:local/photo@"])["size"] == "5"
@@ -364,7 +364,7 @@ def test_shards_of_one_split_are_merged_into_one_entry(tmp_path, online):
     write(tmp_path, "data/train-00000-of-00002.csv", a)
     write(tmp_path, "data/train-00001-of-00002.csv", b)
     write(tmp_path, "data/test-00000-of-00001.csv", t)
-    local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "data")]))["data:local/data@"]
+    local = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "data")]))["data:local/data@"]
     assert [d["name"] for d in local["data"]] == ["data/test-00000-of-00001.csv", "data/train-*.csv"]
     stats = stats_of(local)
     assert (stats["train:a:min"], stats["train:a:max"], stats["train:a:mean"]) == ("1", "3", "2")
@@ -382,7 +382,7 @@ def test_class_folders_merge_into_one_entry_with_label_statistics(tmp_path, onli
     meta = "file_name,label\ntrain/cat/0.jpg,cat\ntrain/cat/1.jpg,cat\ntrain/dog/0.jpg,dog\n"
     write(tmp_path, "imgset/metadata.csv", meta)
     write(tmp_path, "imgset/labels/0.txt", "0 0.5 0.5 0.1 0.1\n")
-    local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "imgset")]))["data:local/imgset@"]
+    local = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "imgset")]))["data:local/imgset@"]
     assert [d["name"] for d in local["data"]] == ["imgset/test/*.jpg", "imgset/train/*.jpg"]    # train 이 합쳐졌으니 클래스 하나뿐인 test 도 같은 꼴로
     stats = stats_of(local)
     assert (stats["train:label:n_unique"], stats["train:label:mode"], stats["train:label:frequencies"]) == ("2", "cat", "cat=2,dog=1")
@@ -398,7 +398,7 @@ def fake_jpgs(tmp_path, root: str, rels: list[str]) -> dict:
     for rel in rels:
         (tmp_path / root / rel).parent.mkdir(parents=True, exist_ok=True)
         (tmp_path / root / rel).write_bytes(b"\xff\xd8" + bytes(10))
-    doc = ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / root)])
+    doc = ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / root)])
     return datasets(doc)[f"data:local/{root}@"]
 
 
@@ -470,7 +470,7 @@ def test_media_statistics_come_from_file_headers(tmp_path, online):
     for rel, content in files.items():
         (tmp_path / rel).parent.mkdir(parents=True, exist_ok=True)
         (tmp_path / rel).write_bytes(content)
-    local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "media")]))["data:local/media@"]
+    local = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "media")]))["data:local/media@"]
     stats = stats_of(local)
     assert (stats["img:image:width:min"], stats["img:image:width:max"], stats["img:image:width:mean"], stats["img:image:width:std"]) == ("320", "640", "480", "226.27417")
     assert (stats["img:image:height:min"], stats["img:image:height:max"]) == ("10", "10")                     # png() 는 높이 10 으로 만든다
@@ -501,7 +501,7 @@ def test_data_files_in_the_target_are_not_read_without_a_data_path(tmp_path, mon
     write(tmp_path, "app.py", 'import pandas as pd\npd.read_csv("data/train.csv")\n')       # 코드가 읽어도 넣지 않는다
     doc = doc_of()
     before = json.dumps(doc)
-    assert json.dumps(ds.discover(doc, str(tmp_path), log=lambda m: None)) == before
+    assert json.dumps(ds.discover_datasets(doc, str(tmp_path), log=lambda m: None)) == before
 
 
 def test_data_paths_are_deduplicated_and_names_do_not_collide(tmp_path, online):
@@ -511,7 +511,7 @@ def test_data_paths_are_deduplicated_and_names_do_not_collide(tmp_path, online):
     report: dict = {}
     paths = [str(tmp_path / "a/data"), str(tmp_path / "a/data") + "/", str(tmp_path / "a/data/x.csv"),   # 같은 곳 · 이미 들어간 파일
              str(tmp_path / "b/data"), str(tmp_path / "empty"), str(tmp_path / "missing")]
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, report=report, data_paths=paths))
+    found = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, report=report, data_paths=paths))
     assert set(found) == {"data:local/data@", "data:local/data-2@"}                  # 폴더 이름이 같으면 -2
     assert [d["name"] for d in found["data:local/data@"]["data"]] == ["data/x.csv"]
     assert [d["name"] for d in found["data:local/data-2@"]["data"]] == ["data/y.csv"]
@@ -521,7 +521,7 @@ def test_data_paths_are_deduplicated_and_names_do_not_collide(tmp_path, online):
 def test_nested_files_keep_their_path_and_statistics_prefix(tmp_path, online):
     write(tmp_path, "imdb/train/part-0.csv", "v\n1\n3\n")
     write(tmp_path, "imdb/test/part-0.csv", "v\n5\n")
-    local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "imdb")]))["data:local/imdb@"]
+    local = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=[str(tmp_path / "imdb")]))["data:local/imdb@"]
     assert [d["name"] for d in local["data"]] == ["imdb/test/part-0.csv", "imdb/train/part-0.csv"]
     kinds = {v for k, v in internal(local).items() if k.endswith(":type")}
     assert {"test/part-0:v:min", "train/part-0:v:min"} <= kinds                   # 같은 파일 이름도 경로로 갈린다
@@ -586,7 +586,7 @@ def test_existing_cdxgen_component_is_enriched_in_place_not_duplicated(tmp_path,
     monkeypatch.setattr(hub, "hf_reachable", lambda: True)
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: {**copy.deepcopy(imdb), "id": "bookcorpus", "sha": "abc"} if hf_id == "bookcorpus" else None)
     deps_before = copy.deepcopy(doc["dependencies"])
-    out = ds.discover(doc, str(tmp_path), log=lambda m: None)
+    out = ds.discover_datasets(doc, str(tmp_path), log=lambda m: None)
     found = datasets(out)
     assert set(found) == {BOOK_HUB}                                                    # 새 컴포넌트 없이, purl 없던 cdxgen 것이 정식 purl·bom-ref 로
     book = found[BOOK_HUB]
@@ -646,7 +646,7 @@ def test_same_dataset_under_two_ids_becomes_one_component_and_one_hub_call(tmp_p
     calls: list[str] = []
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: calls.append(hf_id) or bookcorpus_hub(imdb))
     logs: list[str] = []
-    out = ds.discover(readme_doc(), str(tmp_path), log=logs.append)
+    out = ds.discover_datasets(readme_doc(), str(tmp_path), log=logs.append)
     found = datasets(out)
     assert set(found) == {BOOK_CANON} and calls == ["bookcorpus"]                       # 하나로, 조회도 한 번
     book = found[BOOK_CANON]
@@ -662,7 +662,7 @@ def test_same_dataset_under_two_ids_becomes_one_component_and_one_hub_call(tmp_p
     assert refs_in(out) <= {c["bom-ref"] for c in out["components"]} | {out["metadata"]["component"]["bom-ref"]}   # 끊긴 참조 없음
     assert [m for m in logs if "merged into" in m] == ["[dataset] bookcorpus: merged into bookcorpus/bookcorpus, same dataset"]
     for form in ("properties", "typed"):
-        assert validate_cdx(apply(copy.deepcopy(out), form=form, log=print), "1.7" if form == "properties" else "v0.6", log=print)
+        assert validate_cdx(regulate(copy.deepcopy(out), form=form, log=print), "1.7" if form == "properties" else "v0.6", log=print)
 
 
 def test_readme_only_component_is_renamed_to_the_hub_id_and_refs_follow(tmp_path, monkeypatch, imdb):
@@ -670,7 +670,7 @@ def test_readme_only_component_is_renamed_to_the_hub_id_and_refs_follow(tmp_path
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: bookcorpus_hub(imdb))
     logs: list[str] = []
     facts = Facts()
-    out = ds.discover(readme_doc(), str(tmp_path), log=logs.append, facts=facts)
+    out = ds.discover_datasets(readme_doc(), str(tmp_path), log=logs.append, facts=facts)
     found = datasets(out)
     assert set(found) == {BOOK_CANON}
     assert facts.times == {BOOK_CANON: {"releaseTime": "2024-01-04T12:09:45Z"}} and not facts.roles   # cdxgen 이 이은 것이라 역할은 모른다
@@ -692,7 +692,7 @@ def test_old_hub_name_in_code_is_renamed_and_two_spellings_collapse(tmp_path, mo
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: calls.append(hf_id) or copy.deepcopy(imdb))
     write(tmp_path, "a.py", 'load_dataset("imdb")\n')
     write(tmp_path, "b.py", 'load_dataset("stanfordnlp/imdb")\n')
-    out = ds.discover(doc_of(), str(tmp_path), log=lambda m: None)
+    out = ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None)
     found = datasets(out)
     assert set(found) == {IMDB_REF} and calls == ["imdb"]
     hf = found[IMDB_REF]
@@ -706,7 +706,7 @@ def test_alias_whose_lookup_fails_stays_a_separate_component(tmp_path, monkeypat
     monkeypatch.setattr(hub, "hf_reachable", lambda: True)
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: copy.deepcopy(imdb) if hf_id == IMDB else None)
     write(tmp_path, "a.py", 'load_dataset("imdb")\nload_dataset("stanfordnlp/imdb")\n')
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))
+    found = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None))
     assert set(found) == {IMDB_REF, "pkg:huggingface/datasets/imdb"}                     # 같은 것인지 알 길이 없으니 둔다
     assert "properties" not in found["pkg:huggingface/datasets/imdb"]
 
@@ -734,7 +734,7 @@ def test_hub_model_card_datasets_become_components_linked_from_the_model(tmp_pat
     monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id, log=print: calls.append(hf_id) or copy.deepcopy(info))
     logs: list[str] = []
     facts = Facts()
-    out = ds.discover(doc_of(hub_bert(), cdxgen_bookcorpus()), str(tmp_path), log=logs.append, facts=facts)
+    out = ds.discover_datasets(doc_of(hub_bert(), cdxgen_bookcorpus()), str(tmp_path), log=logs.append, facts=facts)
     glue = "pkg:huggingface/datasets/glue"
     assert calls == ["google-bert/bert-base-uncased"]
     assert facts.roles == {(BERT_REF, BOOK_HUB): {"training"}, (BERT_REF, IMDB_REF): {"training", "evaluation"}, (BERT_REF, glue): {"evaluation"}}
@@ -755,7 +755,7 @@ def test_model_infos_from_the_m_bom_step_are_read_without_asking_the_hub_again(t
     허브 연결도 다시 보지 않는다. 데이터셋 조회는 그대로 한다."""
     monkeypatch.setattr(hub, "hf_reachable", lambda: pytest.fail("M-BOM 보강이 본 결과가 있는데 허브 연결을 다시 봤다"))
     monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id, log=print: pytest.fail("M-BOM 보강이 받은 응답이 있는데 다시 받았다"))
-    out = ds.discover(doc_of(hub_bert()), str(tmp_path), log=lambda m: None,
+    out = ds.discover_datasets(doc_of(hub_bert()), str(tmp_path), log=lambda m: None,
                       model_infos={"google-bert/bert-base-uncased": model_info([IMDB])}, hub_reachable=True)
     bert = next(c for c in out["components"] if c["bom-ref"] == BERT_REF)
     assert bert["modelCard"]["modelParameters"]["datasets"] == [{"ref": IMDB_REF}]
@@ -772,7 +772,7 @@ def test_name_only_entries_become_refs_and_a_model_card_that_cannot_be_read_chan
     monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id, log=print: model_info(["glue"]) if hf_id == "google-bert/bert-base-uncased" else None)
     doc = doc_of(named, other)
     before = json.dumps(next(c for c in doc["components"] if c["name"] == "other"))
-    out = ds.discover(doc, str(tmp_path), log=lambda m: None)
+    out = ds.discover_datasets(doc, str(tmp_path), log=lambda m: None)
     bert = next(c for c in out["components"] if c["bom-ref"] == BERT_REF)
     assert bert["modelCard"]["modelParameters"]["datasets"] == [{"type": "dataset", "name": "kept"}, {"ref": "pkg:huggingface/datasets/glue"}]
     assert json.dumps(next(c for c in out["components"] if c["name"] == "other")) == before
@@ -788,7 +788,7 @@ def test_offline_reads_no_model_card_and_says_so_once(tmp_path, monkeypatch):
     report: dict = {}
     doc = doc_of(hub_bert(), cdxgen_bookcorpus())
     before = json.dumps(doc)
-    out = ds.discover(doc, str(tmp_path), log=logs.append, report=report)
+    out = ds.discover_datasets(doc, str(tmp_path), log=logs.append, report=report)
     assert json.dumps(out) == before and report["hub_unreachable"] is True and checks == [True]
     assert logs == ["[dataset] huggingface.co unreachable: 1 dataset keeps name and purl only, 1 hub model card not read"]
 
@@ -845,7 +845,7 @@ def with_cdxgen_imdb(model: dict) -> dict:
 def test_owner_name_dataset_from_a_local_model_card_is_filled_and_gets_its_purl(tmp_path, online):
     """cdxgen 은 모델 카드의 stanfordnlp/imdb 를 purl 없이 group·name 과 허브 주소로만 적는다. 그래도 허브 데이터셋으로 알아보고
     조회해 채우며, purl·bom-ref 를 정식 id 로 맞춘다. 모델카드 ref 와 모델 → 데이터셋 관계도 따라간다."""
-    out = ds.discover(with_cdxgen_imdb(local_model(tmp_path, "# tiny\n", [{"ref": cdxgen_imdb()["bom-ref"]}])), str(tmp_path), log=lambda m: None)
+    out = ds.discover_datasets(with_cdxgen_imdb(local_model(tmp_path, "# tiny\n", [{"ref": cdxgen_imdb()["bom-ref"]}])), str(tmp_path), log=lambda m: None)
     found = datasets(out)
     assert set(found) == {IMDB_REF} and online == [IMDB]
     imdb = found[IMDB_REF]
@@ -865,7 +865,7 @@ def test_local_model_card_datasets_become_components_linked_from_the_model(tmp_p
                                               {"type": "dataset", "name": "IMDB"}, {"type": "dataset", "name": "private eval"}])
     logs: list[str] = []
     facts = Facts()
-    out = ds.discover(with_cdxgen_imdb(model), str(tmp_path), log=logs.append, facts=facts)
+    out = ds.discover_datasets(with_cdxgen_imdb(model), str(tmp_path), log=logs.append, facts=facts)
     glue = "pkg:huggingface/datasets/glue"
     found = datasets(out)
     assert set(found) == {IMDB_REF, glue, BOOK_HUB} and online == ["bookcorpus", "glue", IMDB]
@@ -890,7 +890,7 @@ def test_a_local_model_card_without_a_usable_header_changes_nothing(tmp_path, mo
     doc = doc_of(local_model(tmp_path, readme, [{"type": "dataset", "name": "GLUE SST2"}]))
     before = json.dumps(doc)
     logs: list[str] = []
-    assert json.dumps(ds.discover(doc, str(tmp_path), log=logs.append)) == before
+    assert json.dumps(ds.discover_datasets(doc, str(tmp_path), log=logs.append)) == before
     assert logs == ([f"[dataset] models/tiny/README.md: model card header skipped, cannot parse ({error})"] if error else [])
 
 
@@ -970,7 +970,7 @@ def test_local_file_statistics_for_jsonl_json_tsv_and_limits(tmp_path, monkeypat
 
 def test_local_statistics_prefix_only_when_a_directory_has_several_files(tmp_path):
     write(tmp_path, "data/only.csv", "v\n1\n2\n")
-    facts = internal(datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=data_of(tmp_path)))["data:local/data@"])
+    facts = internal(datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=data_of(tmp_path)))["data:local/data@"])
     assert facts["statistics:0:type"] == "v:nan_count" and facts["statistics:3:value"] == "1.5"                     # 파일 하나면 파일 이름을 붙이지 않는다
 
 
@@ -979,13 +979,13 @@ def test_offline_keeps_name_and_purl_and_logs_once(tmp_path, monkeypatch):
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: pytest.fail("offline 인데 조회했다"))
     write(tmp_path, "train.py", 'load_dataset("stanfordnlp/imdb")\nload_dataset("imdb")\n')
     logs: list[str] = []
-    out = ds.discover(doc_of(), str(tmp_path), log=logs.append)
+    out = ds.discover_datasets(doc_of(), str(tmp_path), log=logs.append)
     found = datasets(out)
     assert set(found) == {IMDB_REF, "pkg:huggingface/datasets/imdb"}
     assert all("properties" not in c and "version" not in c for c in found.values())
     assert sum("unreachable" in m for m in logs) == 1
     for form in ("properties", "typed"):
-        doc = apply(copy.deepcopy(out), form=form, log=print)
+        doc = regulate(copy.deepcopy(out), form=form, log=print)
         assert validate_cdx(doc, "1.7" if form == "properties" else "v0.6", log=print)
 
 
@@ -993,12 +993,12 @@ def test_fetch_failure_is_logged_and_component_kept(tmp_path, monkeypatch):
     monkeypatch.setattr(hub, "hf_reachable", lambda: True)
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: None)
     write(tmp_path, "train.py", 'load_dataset("nobody/nothing")\n')
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None))
+    found = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None))
     assert set(found) == {"pkg:huggingface/datasets/nobody/nothing"} and "properties" not in found["pkg:huggingface/datasets/nobody/nothing"]
 
 
 def test_image_target_only_enriches_existing_components(online):
-    out = ds.discover(doc_of(cdxgen_bookcorpus(), root=("img:latest", "image")), "img:latest", log=lambda m: None)
+    out = ds.discover_datasets(doc_of(cdxgen_bookcorpus(), root=("img:latest", "image")), "img:latest", log=lambda m: None)
     assert set(datasets(out)) == {BOOK_HUB} and online == ["bookcorpus"]
 
 
@@ -1030,14 +1030,14 @@ def test_split_data_args_rejects_one_dataset_with_two_revisions():
 def test_hub_dataset_given_with_data_is_built_like_one_found_in_code(tmp_path, online):
     write(tmp_path, "code/src/train.py", 'load_dataset("stanfordnlp/imdb")\n')
     (tmp_path / "empty").mkdir()
-    from_code = datasets(ds.discover(doc_of(), str(tmp_path / "code"), log=lambda m: None))[IMDB_REF]
-    out = ds.discover(doc_of(), str(tmp_path / "empty"), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb"])
+    from_code = datasets(ds.discover_datasets(doc_of(), str(tmp_path / "code"), log=lambda m: None))[IMDB_REF]
+    out = ds.discover_datasets(doc_of(), str(tmp_path / "empty"), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb"])
     given = datasets(out)[IMDB_REF]
     assert {k: v for k, v in given.items() if k != "evidence"} == {k: v for k, v in from_code.items() if k != "evidence"}
     assert given["version"] == from_code["version"] == "e6281661ce1c48d982bc483cf8a173c1bbeb5d31"     # 리비전을 안 주면 최신 커밋
     assert "evidence" not in given and from_code["evidence"]["occurrences"] == [{"location": "src/train.py"}]   # 출처는 코드에서 찾은 것만
     assert next(d for d in out["dependencies"] if d["ref"] == "application:/proj@")["dependsOn"] == [IMDB_REF]
-    image = ds.discover(doc_of(root=("img:latest", "image")), "img:latest", log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb"])
+    image = ds.discover_datasets(doc_of(root=("img:latest", "image")), "img:latest", log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb"])
     assert set(datasets(image)) == {IMDB_REF}                                                      # 이미지를 스캔할 때도 같다
 
 
@@ -1054,7 +1054,7 @@ def test_a_given_revision_is_looked_up_at_that_revision_and_becomes_the_version(
     monkeypatch.setattr(hub, "fetch_dataset_statistics", lambda *a, **k: pytest.fail("최신이 아닌 리비전인데 /statistics 를 물었다"))
     logs: list[str] = []
     facts = Facts()
-    out = ds.discover(doc_of(), str(tmp_path), log=logs.append, data_paths=["hf://datasets/stanfordnlp/imdb@94a9845c"], facts=facts)
+    out = ds.discover_datasets(doc_of(), str(tmp_path), log=logs.append, data_paths=["hf://datasets/stanfordnlp/imdb@94a9845c"], facts=facts)
     comp = datasets(out)[IMDB_REF]
     assert comp["version"] == OLD_IMDB_SHA                                       # 짧은 해시를 줘도 허브가 돌려준 전체 해시
     assert calls == [(IMDB, "94a9845c"), (IMDB, None)]                          # 그 리비전으로 한 번, 최신인지 보려고 한 번
@@ -1064,14 +1064,14 @@ def test_a_given_revision_is_looked_up_at_that_revision_and_becomes_the_version(
 
 def test_a_given_revision_that_is_the_latest_still_gets_datasets_server_statistics(tmp_path, monkeypatch, imdb, online):
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print, revision=None: copy.deepcopy(imdb) if hf_id == IMDB else None)
-    comp = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb@main"]))[IMDB_REF]
+    comp = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb@main"]))[IMDB_REF]
     assert comp["version"] == imdb["sha"] and any(k.startswith("statistics:") for k in internal(comp))
 
 
 def test_offline_keeps_the_given_revision_as_the_version(tmp_path, monkeypatch):
     monkeypatch.setattr(hub, "hf_reachable", lambda: False)
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda *a, **k: pytest.fail("offline 인데 조회했다"))
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None,
+    found = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None,
                                  data_paths=["hf://datasets/stanfordnlp/imdb@e6281661", "hf://datasets/acme/eval-set"]))
     assert found[IMDB_REF]["version"] == "e6281661" and "version" not in found["pkg:huggingface/datasets/acme/eval-set"]
 
@@ -1081,7 +1081,7 @@ def test_a_given_dataset_the_hub_cannot_look_up_is_kept_and_reported(tmp_path, m
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print, revision=None: None)
     write(tmp_path, "train.py", 'load_dataset("nobody/nothing")\n')
     report: dict = {}
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, report=report,
+    found = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, report=report,
                                  data_paths=["hf://datasets/acme/eval-set@v2", "hf://datasets/acme/other"]))
     assert set(found) == {"pkg:huggingface/datasets/acme/eval-set", "pkg:huggingface/datasets/acme/other", "pkg:huggingface/datasets/nobody/nothing"}
     assert found["pkg:huggingface/datasets/acme/eval-set"]["version"] == "v2"                     # 조회가 안 돼도 준 리비전은 남는다
@@ -1100,7 +1100,7 @@ def test_a_revision_in_code_is_looked_up_at_that_revision(tmp_path, monkeypatch,
     monkeypatch.setattr(hub, "fetch_dataset_size", lambda hf_id, log=print: pytest.fail("최신이 아닌 리비전인데 /size 를 물었다"))
     write(tmp_path, "src/train.py", 'load_dataset("stanfordnlp/imdb", revision="94a9845c")\n')
     report: dict = {}
-    comp = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, report=report))[IMDB_REF]
+    comp = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, report=report))[IMDB_REF]
     assert comp["version"] == OLD_IMDB_SHA and calls == [(IMDB, "94a9845c"), (IMDB, None)]
     assert report["unresolved_hub_data"] == []                                                    # 코드에서 찾은 것은 경고하지 않는다
 
@@ -1109,7 +1109,7 @@ def test_one_dataset_loaded_at_several_revisions_in_code_is_looked_up_at_the_lat
     write(tmp_path, "src/train.py", 'load_dataset("stanfordnlp/imdb", revision="94a9845c")\n')
     write(tmp_path, "src/eval.py", 'load_dataset("stanfordnlp/imdb")\n')
     logs: list[str] = []
-    comp = datasets(ds.discover(doc_of(), str(tmp_path), log=logs.append))[IMDB_REF]
+    comp = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=logs.append))[IMDB_REF]
     assert comp["version"] == "e6281661ce1c48d982bc483cf8a173c1bbeb5d31" and online == [IMDB]
     assert comp["evidence"]["occurrences"] == [{"location": "src/eval.py"}, {"location": "src/train.py"}]
     assert any("several revisions in code (94a9845c, no revision)" in m for m in logs)
@@ -1122,10 +1122,10 @@ def test_the_data_revision_wins_over_the_revision_in_code_and_offline_both_keep_
                         lambda hf_id, log=print, revision=None: calls.append(revision) or (copy.deepcopy(imdb) if hf_id == IMDB else None))
     write(tmp_path, "src/train.py", 'load_dataset("stanfordnlp/imdb", revision="aaaa")\nload_dataset("acme/eval-set", revision="v1")\n')
     logs: list[str] = []
-    ds.discover(doc_of(), str(tmp_path), log=logs.append, data_paths=["hf://datasets/stanfordnlp/imdb@main"])
+    ds.discover_datasets(doc_of(), str(tmp_path), log=logs.append, data_paths=["hf://datasets/stanfordnlp/imdb@main"])
     assert "main" in calls and "aaaa" not in calls and any("--data revision main used over aaaa in code" in m for m in logs)
     monkeypatch.setattr(hub, "hf_reachable", lambda: False)
-    found = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb@main"]))
+    found = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb@main"]))
     assert found[IMDB_REF]["version"] == "main" and found["pkg:huggingface/datasets/acme/eval-set"]["version"] == "v1"   # 못 물으면 리비전 그대로
 
 
@@ -1148,7 +1148,7 @@ def test_a_dataset_both_given_and_found_in_code_is_one_component_at_the_given_re
     old = {**copy.deepcopy(imdb), "sha": OLD_IMDB_SHA}
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print, revision=None: copy.deepcopy(old if revision else imdb))
     write(tmp_path, "src/train.py", 'load_dataset("imdb")\n')                                      # 코드는 옛 이름으로 부른다
-    out = ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb@94a9845c"])
+    out = ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=["hf://datasets/stanfordnlp/imdb@94a9845c"])
     comp = datasets(out)[IMDB_REF]
     assert set(datasets(out)) == {IMDB_REF} and comp["version"] == OLD_IMDB_SHA                    # 겹치면 하나로, 리비전은 준 것
     assert comp["evidence"]["occurrences"] == [{"location": "src/train.py"}]
@@ -1163,21 +1163,21 @@ def test_directory_without_datasets_leaves_the_document_byte_identical(tmp_path,
     write(tmp_path, "app.py", 'import numpy as np\nopen("README.md")\n')
     doc = doc_of({"bom-ref": "pkg:pypi/numpy@2.5.1", "type": "library", "name": "numpy", "version": "2.5.1", "purl": "pkg:pypi/numpy@2.5.1"})
     before = json.dumps(doc, ensure_ascii=False)
-    out = ds.discover(doc, str(tmp_path), log=lambda m: None)
+    out = ds.discover_datasets(doc, str(tmp_path), log=lambda m: None)
     assert json.dumps(out, ensure_ascii=False) == before
     for form in ("properties", "typed"):
-        assert json.dumps(apply(copy.deepcopy(out), form=form, log=lambda m: None), ensure_ascii=False) == before
+        assert json.dumps(regulate(copy.deepcopy(out), form=form, log=lambda m: None), ensure_ascii=False) == before
 
 
 # -- form: 두 형태 --------------------------------------------------------------
 @pytest.fixture
 def discovered(tmp_path, online) -> dict:
     root = project(tmp_path)
-    return ds.discover(doc_of(), str(root), log=lambda m: None, data_paths=data_of(root))
+    return ds.discover_datasets(doc_of(), str(root), log=lambda m: None, data_paths=data_of(root))
 
 
 def test_properties_form_moves_facts_to_aibom_dataset_keys(discovered):
-    out = apply(copy.deepcopy(discovered), form="properties", log=print)
+    out = regulate(copy.deepcopy(discovered), form="properties", log=print)
     hf = datasets(out)[IMDB_REF]
     p = props(hf)
     assert p["aibom:dataset:size"] == "133190302" and p["aibom:dataset:modality:0"] == "text"
@@ -1193,7 +1193,7 @@ def test_properties_form_moves_facts_to_aibom_dataset_keys(discovered):
 
 
 def test_typed_form_fills_componentdata_fields_on_data0(discovered):
-    out = apply(copy.deepcopy(discovered), form="typed", log=print)
+    out = regulate(copy.deepcopy(discovered), form="typed", log=print)
     hf = datasets(out)[IMDB_REF]
     entry = hf["data"][0]
     assert entry["size"] == 133190302 and isinstance(entry["size"], int) and entry["modality"] == ["text"]
@@ -1212,7 +1212,7 @@ def test_typed_form_fills_componentdata_fields_on_data0(discovered):
 
 def test_typed_form_creates_data_entry_when_missing():
     comp = {"type": "data", "name": "d", "bom-ref": "d", "properties": [{"name": INTERNAL_PREFIX + "size", "value": "5"}]}
-    out = apply({"components": [comp]}, form="typed", log=print)
+    out = regulate({"components": [comp]}, form="typed", log=print)
     assert out["components"][0] == {"type": "data", "name": "d", "bom-ref": "d", "data": [{"type": "dataset", "name": "d", "size": 5}]}
 
 
@@ -1235,7 +1235,7 @@ def test_existing_values_win_and_internal_keys_are_always_removed(form):
         comp["properties"] = [{"name": "aibom:dataset:size", "value": "99"}, {"name": "aibom:dataset:modality:0", "value": "text"},
                               {"name": "aibom:dataset:statistics:0:type", "value": "rows"}, {"name": "aibom:dataset:statistics:0:value", "value": "7"}] + comp["properties"]
     logs: list[str] = []
-    out = apply({"components": [comp]}, form=form, log=logs.append)
+    out = regulate({"components": [comp]}, form=form, log=logs.append)
     c = out["components"][0]
     assert not any(p["name"].startswith(INTERNAL_PREFIX) for p in c["properties"])
     assert sum("dropped" in m for m in logs) == 2 and any("not an allowed value" in m for m in logs)
@@ -1253,15 +1253,15 @@ def test_existing_values_win_and_internal_keys_are_always_removed(form):
 
 @pytest.mark.parametrize("form", ["properties", "typed"])
 def test_dataset_form_is_idempotent(discovered, form):
-    once = apply(copy.deepcopy(discovered), form=form, log=lambda m: None)
+    once = regulate(copy.deepcopy(discovered), form=form, log=lambda m: None)
     logs: list[str] = []
-    assert json.dumps(apply(copy.deepcopy(once), form=form, log=logs.append)) == json.dumps(once) and logs == []
+    assert json.dumps(regulate(copy.deepcopy(once), form=form, log=logs.append)) == json.dumps(once) and logs == []
 
 
 def test_data_component_without_internal_keys_is_untouched():
     comp = {"type": "data", "name": "d", "bom-ref": "d", "properties": [{"name": "cdx:ai:kind", "value": "dataset"}], "data": [{"type": "dataset"}]}
     for form in ("properties", "typed"):
-        assert json.dumps(apply({"components": [copy.deepcopy(comp)]}, form=form, log=print)) == json.dumps({"components": [comp]})
+        assert json.dumps(regulate({"components": [copy.deepcopy(comp)]}, form=form, log=print)) == json.dumps({"components": [comp]})
 
 
 # -- 회귀: 확인된 결함 ------------------------------------------------------------------
@@ -1271,7 +1271,7 @@ def test_unknown_extensions_are_not_data_and_the_analyser_accepts_them(tmp_path,
     write(tmp_path, "data/train", "a,b\n1,2\n")
     write(tmp_path, "data/x.xlsx", "x")
     report: dict = {}
-    out = ds.discover(doc_of(), str(tmp_path), log=lambda m: None, report=report, data_paths=data_of(tmp_path))
+    out = ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, report=report, data_paths=data_of(tmp_path))
     assert datasets(out) == {} and report["empty_data_paths"] == data_of(tmp_path)
     a = ds._analyze_file(tmp_path / "data/train.dat", "data/train.dat", log=print)
     assert a == {"path": "data/train.dat", "size": 8, "format": "dat", "modality": "other"}
@@ -1287,7 +1287,7 @@ def test_a_symlink_leaving_the_data_path_is_skipped(tmp_path, monkeypatch, onlin
     for data in (str(root / "data"), "T/data"):
         monkeypatch.chdir(tmp_path)
         logs: list[str] = []
-        out = ds.discover(doc_of(), str(root), log=logs.append, data_paths=[data])
+        out = ds.discover_datasets(doc_of(), str(root), log=logs.append, data_paths=[data])
         local = datasets(out)["data:local/data@"]
         assert [d["name"] for d in local["data"]] == ["data/inner.csv", "data/train.csv"]
         text = json.dumps(out)
@@ -1306,7 +1306,7 @@ def test_unreadable_file_records_size_only(tmp_path, online):
         a = ds._analyze_file(secret, "data/secret.csv", log=logs.append)
         assert a == {"path": "data/secret.csv", "size": 8, "format": "csv", "modality": "structured"}
         assert any("data/secret.csv" in m and "cannot read content" in m for m in logs)
-        local = datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None, data_paths=data_of(tmp_path)))["data:local/data@"]
+        local = datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=data_of(tmp_path)))["data:local/data@"]
         assert [d["name"] for d in local["data"]] == ["data/ok.csv", "data/secret.csv"] and internal(local)["size"] == "12"
     finally:
         secret.chmod(0o644)
@@ -1341,7 +1341,7 @@ def test_load_dataset_with_script_or_file_path_makes_no_hub_component(tmp_path, 
     write(tmp_path, "my_script.py", "")
     write(tmp_path, "data/train.csv", "a\n1\n")
     write(tmp_path, "t.py", 'load_dataset("my_script.py")\nload_dataset("data/train.xlsx")\nload_dataset("data/train.csv")\n')
-    assert datasets(ds.discover(doc_of(), str(tmp_path), log=lambda m: None)) == {}
+    assert datasets(ds.discover_datasets(doc_of(), str(tmp_path), log=lambda m: None)) == {}
 
 
 @pytest.mark.parametrize("task, modality", [
@@ -1376,7 +1376,7 @@ def test_a_dataset_link_in_code_is_one_component_with_the_model_card_dataset(tmp
     monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id, log=print: {"cardData": {"datasets": [IMDB]}})
     hub_bert = {"bom-ref": BERT_REF, "type": "machine-learning-model", "group": "google-bert", "name": "bert-base-uncased", "purl": BERT_REF,
                 "evidence": {"occurrences": [{"location": "src/train.py#L5"}]}}                  # 코드가 부르는 허브 모델
-    out = ds.discover(doc_of(cdxgen_link(IMDB), hub_bert), str(tmp_path), log=lambda m: None)
+    out = ds.discover_datasets(doc_of(cdxgen_link(IMDB), hub_bert), str(tmp_path), log=lambda m: None)
     found = datasets(out)
     assert set(found) == {IMDB_REF} and online == [IMDB]
     link = found[IMDB_REF]
@@ -1396,7 +1396,7 @@ def test_renaming_rewrites_the_broken_datasets_datasets_url(tmp_path, monkeypatc
     book = cdxgen_bookcorpus()
     book["externalReferences"] = [{"type": "distribution", "url": "https://huggingface.co/datasets/datasets/bookcorpus"},
                                   {"type": "website", "url": "https://example.org/bookcorpus"}]
-    out = ds.discover(doc_of(book), str(tmp_path), log=lambda m: None)
+    out = ds.discover_datasets(doc_of(book), str(tmp_path), log=lambda m: None)
     found = datasets(out)["pkg:huggingface/datasets/bookcorpus/bookcorpus"]
     assert found["externalReferences"] == [{"type": "distribution", "url": "https://huggingface.co/datasets/bookcorpus/bookcorpus"},
                                            {"type": "website", "url": "https://example.org/bookcorpus"}]
@@ -1412,7 +1412,7 @@ def test_owner_name_datasets_named_in_a_model_header_become_components(tmp_path,
             "modelCard": {"modelParameters": {"datasets": [{"type": "dataset", "name": "acme/chat-sft", "contents": {"url": "acme/chat-sft"}},
                                                            {"type": "dataset", "name": "wikitext"}, {"type": "dataset", "name": "Acme Eval"}]}}}
     facts = Facts()
-    out = ds.discover(doc_of(gguf), str(tmp_path), log=lambda m: None, facts=facts)
+    out = ds.discover_datasets(doc_of(gguf), str(tmp_path), log=lambda m: None, facts=facts)
     model = next(c for c in out["components"] if c["type"] == "machine-learning-model")
     ref = "pkg:huggingface/datasets/acme/chat-sft"
     assert facts.roles == {(model["bom-ref"], ref): {"training"}}                       # general.datasets 는 학습 데이터셋

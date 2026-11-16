@@ -69,7 +69,7 @@ _READ_ERRORS = (OSError, ValueError, UnicodeDecodeError, struct.error, Recursion
 
 # ── 진입점 ──────────────────────────────────────────────────────────────────
 
-def discover(merged: dict, target: str, log=print) -> dict:
+def discover_models(merged: dict, target: str, log=print) -> dict:
     """모델 컴포넌트마다 대상 안의 모델 파일을 읽어 사실을 붙인다. 읽을 것이 없으면 문서는 바이트 단위로 그대로다."""
     root = Path(target)
     if not root.is_dir():

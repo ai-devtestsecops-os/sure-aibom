@@ -114,7 +114,7 @@ def test_layers_stack_in_order_and_whiteouts_hide_only_lower_layers(tmp_path):
     upper = layer(("file", "app/new.txt", "new"), ("file", "app/.wh.old.txt", ""),
                   ("file", "app/.wh.same", ""), ("file", "app/same", "upper"),        # 같은 레이어의 것은 화이트아웃이 못 지운다
                   ("file", "etc/d/.wh..wh..opq", ""), ("file", "etc/d/y", "y"), gz=True)
-    layers, name = im.extract(docker_tar(tmp_path / "img.tar", [lower, upper]), tmp_path / "rootfs")
+    layers, name = im.extract_image(docker_tar(tmp_path / "img.tar", [lower, upper]), tmp_path / "rootfs")
     assert (layers, name) == (2, "img:test")
     assert tree(tmp_path / "rootfs") == {"app/a.txt": "A", "app/new.txt": "new", "app/same": "upper", "etc/d/y": "y"}
 
@@ -126,7 +126,7 @@ def test_links_are_kept_inside_the_unpacked_tree_and_escapes_are_skipped(tmp_pat
                 ("symlink", "app/esc", "../../../../etc/passwd"),   # 밖으로 나가는 링크는 건너뛴다
                 ("file", "../evil", "evil"), ("file", "/rooted/file", "r"),
                 ("hardlink", "app/hard", "app/a.txt"), ("dev", "dev/null"))
-    im.extract(docker_tar(tmp_path / "img.tar", [one]), tmp_path / "rootfs")
+    im.extract_image(docker_tar(tmp_path / "img.tar", [one]), tmp_path / "rootfs")
     got = tree(tmp_path / "rootfs")
     assert got["app/abs"] == "-> a.txt" and (tmp_path / "rootfs" / "app" / "abs").read_text() == "A"
     assert got["bin"] == "-> usr/bin" and got["rooted/file"] == "r" and got["app/hard"] == "A"
@@ -136,14 +136,14 @@ def test_links_are_kept_inside_the_unpacked_tree_and_escapes_are_skipped(tmp_pat
 def test_a_higher_layer_replaces_a_link_without_writing_through_it(tmp_path):
     lower = layer(("file", "real", "R"), ("symlink", "link", "real"), ("dir", "d"), ("file", "d/f", "f"), ("file", "plain", "p"))
     upper = layer(("file", "link", "L"), ("file", "d", "now a file"), ("dir", "plain"), ("file", "plain/inside", "i"))
-    im.extract(docker_tar(tmp_path / "img.tar", [lower, upper]), tmp_path / "rootfs")
+    im.extract_image(docker_tar(tmp_path / "img.tar", [lower, upper]), tmp_path / "rootfs")
     assert tree(tmp_path / "rootfs") == {"real": "R", "link": "L", "d": "now a file", "plain/inside": "i"}
 
 
 def test_hardlink_to_a_lower_layer_file_and_image_without_tags(tmp_path):
     lower = layer(("file", "a", "A"))
     upper = layer(("hardlink", "b", "a"))
-    layers, name = im.extract(docker_tar(tmp_path / "img.tar", [lower, upper], tag=None), tmp_path / "rootfs")
+    layers, name = im.extract_image(docker_tar(tmp_path / "img.tar", [lower, upper], tag=None), tmp_path / "rootfs")
     assert (layers, name) == (2, None) and tree(tmp_path / "rootfs") == {"a": "A", "b": "A"}
 
 
@@ -152,10 +152,10 @@ def test_oci_layout_picks_this_machines_platform(tmp_path, monkeypatch):
     images = {"amd64": [layer(("file", "arch", "amd64"))], "arm64": [layer(("file", "arch", "arm64"))]}
     for nested in (False, True):
         rootfs = tmp_path / f"rootfs{nested}"
-        layers, name = im.extract(oci_tar(tmp_path / f"{nested}.tar", images, nested=nested), rootfs)
+        layers, name = im.extract_image(oci_tar(tmp_path / f"{nested}.tar", images, nested=nested), rootfs)
         assert (layers, name) == (1, "img:oci") and tree(rootfs) == {"arch": "arm64"}
     monkeypatch.setattr(im, "host_arch", lambda: "riscv64")           # 맞는 것이 없으면 첫 번째
-    im.extract(oci_tar(tmp_path / "first.tar", images, name=None), tmp_path / "first")
+    im.extract_image(oci_tar(tmp_path / "first.tar", images, name=None), tmp_path / "first")
     assert tree(tmp_path / "first") == {"arch": "amd64"}
 
 
@@ -171,7 +171,7 @@ def test_manifest_json_with_several_images_picks_this_machines_platform(tmp_path
         _add(t, "./manifest.json", json.dumps(entries).encode())
         for name, data in blobs.items():
             _add(t, "./" + name, data)
-    assert im.extract(tmp_path / "multi.tar", tmp_path / "rootfs") == (1, "img:amd64")
+    assert im.extract_image(tmp_path / "multi.tar", tmp_path / "rootfs") == (1, "img:amd64")
     assert tree(tmp_path / "rootfs") == {"arch": "amd64"}
 
 
@@ -187,7 +187,7 @@ def test_bad_image_tars_are_runner_errors(tmp_path, make, message):
     path = tmp_path / "bad.tar"
     make(path)
     with pytest.raises(RunnerError, match=message):
-        im.extract(path, tmp_path / "rootfs")
+        im.extract_image(path, tmp_path / "rootfs")
 
 
 def _plain_tar(path: Path, files: dict[str, bytes]) -> None:
@@ -227,7 +227,7 @@ def fake_tools(monkeypatch):
 
 def test_pull_saves_from_the_daemon_first(tmp_path, fake_tools):
     fake_tools["present"] = {"docker", "crane"}
-    tar, tool = ip.pull("alpine:3.20", tmp_path)
+    tar, tool = ip.pull_image("alpine:3.20", tmp_path)
     assert (tar, tool) == (tmp_path / "image.tar", "docker")
     assert fake_tools["calls"] == [["docker", "image", "save", "-o", str(tar), "alpine:3.20"]]
 
@@ -245,19 +245,19 @@ def test_pull_fetches_when_the_daemon_does_not_have_the_image(tmp_path, fake_too
                 return subprocess.CompletedProcess(cmd, 1, "", "Error: reference does not exist\n")
         return real(cmd, cwd, timeout)
     monkeypatch.setattr(ip, "run", run)
-    tar, tool = ip.pull("alpine:3.20", tmp_path)
+    tar, tool = ip.pull_image("alpine:3.20", tmp_path)
     assert tool == "docker" and [c[:2] for c in fake_tools["calls"]] == [["docker", "image"], ["docker", "pull"], ["docker", "image"]]
 
 
 def test_pull_moves_on_to_the_next_tool_and_reports_every_failure(tmp_path, fake_tools):
     fake_tools["present"] = {"docker", "podman", "crane"}
     fake_tools["fail"] = {"docker image save", "docker pull", "podman image save", "podman pull"}     # 데몬이 둘 다 죽어 있다
-    tar, tool = ip.pull("alpine:3.20", tmp_path)
+    tar, tool = ip.pull_image("alpine:3.20", tmp_path)
     assert tool == "crane" and fake_tools["calls"][-1] == ["crane", "pull", "--platform", "linux/amd64", "alpine:3.20", str(tar)]
 
     fake_tools["fail"].add("crane pull")
     with pytest.raises(RunnerError) as e:
-        ip.pull("alpine:3.20", tmp_path)
+        ip.pull_image("alpine:3.20", tmp_path)
     lines = str(e.value).splitlines()
     assert lines[0] == "could not fetch alpine:3.20" and [line.split(":")[0] for line in lines[1:]] == ["docker", "podman", "crane"]
     assert lines[1] == "docker: docker pull exited with 1: Error: docker pull failed"
@@ -265,4 +265,4 @@ def test_pull_moves_on_to_the_next_tool_and_reports_every_failure(tmp_path, fake
 
 def test_pull_without_any_tool_says_which_are_needed(tmp_path, fake_tools):
     with pytest.raises(RunnerError, match=r"docker, podman or crane is needed to fetch alpine:3.20 \(or pass the image as a .tar\)"):
-        ip.pull("alpine:3.20", tmp_path)
+        ip.pull_image("alpine:3.20", tmp_path)
