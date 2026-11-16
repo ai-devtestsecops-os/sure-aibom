@@ -1,11 +1,11 @@
-"""모델 컴포넌트를 채운다. 병합 뒤, 규제 정규화 앞에서 두 함수가 차례로 돈다.
+"""M-BOM 보강. cdxgen 이 담지 못한 모델 컴포넌트 값을 채운다. 병합 뒤, 규제 정규화 앞에서 두 함수가 차례로 돈다.
 
     discover_models     로컬 모델. 스캔 대상 안의 모델 파일에서 규제 필드 값을 읽는다
     enrich_hub_models   허브 모델. 코드가 부르는 Hugging Face 모델을 Hub API 응답과 OWASP aibom-generator 로 보강한다
 
 [로컬 모델] 스캔 대상 안의 모델 파일에서 규제 필드 값을 읽는다.
 
-M-BOM 을 보강하지 않는다 — 컴포넌트를 만들지도, 규제 필드가 아닌 값을 더하지도 않는다. 읽는 값은 규제 필드 둘뿐이다.
+컴포넌트를 만들지도, 규제 필드가 아닌 값을 더하지도 않는다. 읽는 값은 규제 필드 둘뿐이다.
     hyperparameters   config.json (HuggingFace 형식) · *.gguf 헤더
     parameterCount    *.safetensors 헤더 (샤드는 합산) · *.gguf 텐서 정보
 이름은 llama.cpp 의 이름으로 맞춘다 (block_count, embedding_length …). 같은 값을 계열마다 다른 키로 적는 것을

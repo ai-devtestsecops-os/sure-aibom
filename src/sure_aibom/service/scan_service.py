@@ -3,9 +3,9 @@
 controller/scan_controller.py 가 인자를 확인해 값만 넘기고, 여기서는 단계마다 stage(단계 이름, 결과)와 log(줄)로 알린다.
 
     check_scan  도구를 돌리기 전 입력 확인 (대상 경로, --data 경로, --data 허브 리비전)
-    scan        S-BOM(syft) → 이미지 받기·풀기 → M-BOM(cdxgen) → 병합 → AI 서비스 → 로컬 모델 → 허브 모델 보강
+    scan        S-BOM(syft) → 이미지 받기·풀기 → M-BOM(cdxgen) → 병합 → AI 서비스 → M-BOM 보강(로컬 모델, 허브 모델)
                 → D-BOM → 규제 필드 → SPDX 변환 (--format spdx 일 때만)
-                로컬 모델과 허브 모델 보강은 둘 다 engine/model.py 다 (discover_models, enrich_hub_models)
+                M-BOM 보강은 로컬 모델, 허브 모델 둘 다 engine/model.py 다 (discover_models, enrich_hub_models)
 
 syft·cdxgen 가운데 하나라도 실패하면 만든 만큼은 돌려주고 failed 에 적는다 (CLI 는 종료 코드 2 로 끝낸다).
 """
