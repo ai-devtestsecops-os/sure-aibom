@@ -141,20 +141,9 @@ class Tracker:
         return tools
 
     def stage(self, doc: dict, run, tool_of):
-        before_props = self._before(doc)
-        return self._after(run(), before_props, tool_of)
-
-    def stage_steps(self, doc: dict, steps, tool_of):
-        """stage 와 같되 허브에 물을 것을 내보내는 engine 단계(제너레이터)를 감싼다. 요청과 답은 그대로 지나간다."""
-        before_props = self._before(doc)
-        out = yield from steps
-        return self._after(out, before_props, tool_of)
-
-    def _before(self, doc: dict) -> dict:
         self.mark_all(doc)
-        return {c[MARK]: props_of(c) for c in doc.get("components") or []}
-
-    def _after(self, out: dict, before_props: dict, tool_of):
+        before_props = {c[MARK]: props_of(c) for c in doc.get("components") or []}
+        out = run()
         self.mark_all(out)
         now = self.snapshot(out)
         consumed = {}
@@ -229,12 +218,9 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
     def staged(name, tool_of):
         return lambda doc, *a, **k: tracker.stage(doc, lambda: real[name](doc, *a, **k), tool_of)
 
-    def staged_steps(name, tool_of):                # 허브에 물을 것을 내보내는 engine 단계 (service 의 ask_external 이 돌린다)
-        return lambda doc, *a, **k: tracker.stage_steps(doc, real[name](doc, *a, **k), tool_of)
-
     def enrich_hub_models(doc, *a, **k):
         before = tool_entries(doc)
-        out = yield from tracker.stage_steps(doc, real["enrich_hub_models"](doc, *a, **k), enrich_tool)
+        out = tracker.stage(doc, lambda: real["enrich_hub_models"](doc, *a, **k), enrich_tool)
         # 도구 목록은 항목 단위로 본다 (merge 와 같다): 새로 더해진 항목의 칸은 값이 다른 항목과 같아도(type) 그 항목을 낸 도구의 것이다
         for entry in tool_entries(out):
             if entry not in before:
@@ -251,7 +237,7 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
 
     patched = dict(run_syft=raw_of("run_syft", SYFT), run_cdxgen=raw_of("run_cdxgen", CDXGEN), merge=merge,
                    discover_services=staged("discover_services", lambda *_: {CLI}),
-                   discover_datasets=staged_steps("discover_datasets", lambda *_: {CLI}), enrich_local_models=staged("enrich_local_models", lambda *_: {CLI}),
+                   discover_datasets=staged("discover_datasets", lambda *_: {CLI}), enrich_local_models=staged("enrich_local_models", lambda *_: {CLI}),
                    enrich_hub_models=enrich_hub_models, regulate=staged("regulate", form_tool), write_json=write_json)
     try:
         for name, fn in patched.items():

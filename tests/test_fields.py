@@ -17,8 +17,8 @@ from pathlib import Path
 
 import pytest
 
+import sure_aibom.external.aibom_generator as aibom_generator
 import sure_aibom.external.hub as hub
-import sure_aibom.service.scan_service as scan_service
 import fieldtrace
 from sure_aibom.exceptions import RunnerError
 from sure_aibom.engine.spdx import convert_spdx
@@ -75,8 +75,8 @@ def scans(tmp_path_factory) -> dict:
     OUT.mkdir(parents=True, exist_ok=True)
     out = {}
     with pytest.MonkeyPatch.context() as mp:
-        mp.setattr(scan_service, "aibom_generator_skip_reason", lambda: None)
-        mp.setattr(scan_service, "run_aibom_generator", recorded_owasp)
+        mp.setattr(aibom_generator, "skip_reason", lambda: None)
+        mp.setattr(aibom_generator, "run_aibom_generator", recorded_owasp)
         mp.setattr(hub, "hf_reachable", lambda: True)                       # 허브 모델 응답은 M-BOM 보강이 받는다
         mp.setattr(hub, "fetch_model_info", lambda hf_id, log=print: recorded("model", hf_id))
         mp.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))

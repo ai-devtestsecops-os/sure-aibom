@@ -56,10 +56,10 @@ import json
 import re
 import struct
 from pathlib import Path, PurePosixPath
-from typing import Generator, Iterable
+from typing import Iterable
 
 from ..exceptions import RunnerError
-# 허브와 OWASP 에는 직접 묻지 않는다: enrich_hub_models 가 물을 것을 내보내면 service 의 ask_external 이 external 로 묻는다
+# external 은 import 하지 않는다: enrich_hub_models 는 service 가 넘겨준 external 모듈(hub, aibom_generator)로 부른다
 from ..utils.licenses import card_licenses
 from .facts import Facts
 from .form import HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON
@@ -476,14 +476,14 @@ def hub_model_id(component: dict) -> str | None:
 
 
 def enrich_hub_models(merged: dict, workdir: Path, log=print, report: dict | None = None, model_infos: dict | None = None,
-           facts: Facts | None = None) -> Generator[tuple, object, dict]:
-    """허브와 OWASP 에 직접 묻지 않고 물을 것을 요청으로 내보낸다(yield). service 의 ask_external 이 external 로 묻고 답을
-    돌려보낸다(send). 끝나면 merged 를 돌려준다.
-        ("hub_reachable",)          huggingface.co 에 닿는가 (bool)
-        ("model_info", id, log)     GET /api/models/<id> 응답 (실패면 None)
-        ("owasp_skip_reason",)      OWASP 를 건너뛸 이유 (돌려도 되면 None)
-        ("owasp", id, workdir)      aibom-generator 출력 (실패면 RunnerError)
-    model_infos 는 허브 모델 id → Hub API 응답 (실패면 None). 주지 않으면 허브에 닿는지 묻고 허브 모델마다 묻는다.
+           facts: Facts | None = None, *, hub, aibom_generator) -> dict:
+    """hub 와 aibom_generator 는 service 가 넘겨주는 external 모듈이다 (external/hub.py, external/aibom_generator.py).
+    engine 은 external 을 import 하지 않고 넘겨받은 것으로만 부른다. 쓰는 함수:
+        hub.hf_reachable()                                  huggingface.co 에 닿는가
+        hub.fetch_model_info(id, log)                       GET /api/models/<id> 응답 (실패면 None)
+        aibom_generator.skip_reason()                       OWASP 를 건너뛸 이유 (돌려도 되면 None)
+        aibom_generator.run_aibom_generator(id, workdir)    aibom-generator 출력 (실패면 RunnerError)
+    model_infos 는 허브 모델 id → Hub API 응답 (실패면 None). 주지 않으면 허브에 닿는지 보고 허브 모델마다 받는다.
     facts 를 주면 응답의 lastModified 를 그 모델의 releaseTime 으로 적는다.
     report 를 주면 결과를 적는다: models(허브 모델 수) · hub(Hub API 로 채운 수) · hub_missing(응답이 없던 id) ·
     hub_skipped(Hub API 를 쓰지 못한 이유) · hub_reachable(허브에 닿는지 본 결과, 보지 않았으면 None) ·
@@ -499,11 +499,11 @@ def enrich_hub_models(merged: dict, workdir: Path, log=print, report: dict | Non
         return merged
 
     if model_infos is None:
-        report["hub_reachable"] = yield ("hub_reachable",)
+        report["hub_reachable"] = hub.hf_reachable()
         if report["hub_reachable"]:
             model_infos = {}
             for hf_id in targets:
-                model_infos[hf_id] = yield ("model_info", hf_id, log)
+                model_infos[hf_id] = hub.fetch_model_info(hf_id, log)
     if model_infos is None:
         report["hub_skipped"] = "huggingface.co unreachable"
     else:
@@ -519,18 +519,19 @@ def enrich_hub_models(merged: dict, workdir: Path, log=print, report: dict | Non
                 report["hub_missing"].append(hf_id)
                 log(f"[enrich] {hf_id}: no Hub API model info, fields left as cdxgen wrote them")
 
-    reason = yield ("owasp_skip_reason",)
+    reason = aibom_generator.skip_reason()
     if reason:
         log(f"[enrich] aibom-generator skipped for {len(targets)} hub model{'s' if len(targets) != 1 else ''}: {reason}")
         report["skipped"] = reason
         return merged
     used_tools: list[dict] = []
     for hf_id, comp in targets.items():
-        owasp = yield ("owasp", hf_id, workdir)
-        if isinstance(owasp, RunnerError):
-            log(f"[enrich] {hf_id}: {owasp}")
+        try:
+            owasp = aibom_generator.run_aibom_generator(hf_id, workdir)
+        except RunnerError as e:
+            log(f"[enrich] {hf_id}: {e}")
             report["failed"].append(hf_id)
-            report["errors"][hf_id] = (str(owasp).splitlines() or ["failed"])[0]
+            report["errors"][hf_id] = (str(e).splitlines() or ["failed"])[0]
             continue
         src = next((c for c in owasp.get("components", []) if c.get("type") == "machine-learning-model"), None)
         taken = _apply_owasp(comp, src) if src else 0

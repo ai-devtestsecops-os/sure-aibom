@@ -1,4 +1,4 @@
-"""scan 의 단계 순서. 명령줄 인자를 받지 않고, 줄을 어디에 찍는지도 모른다. 바깥 호출(도구 실행, 허브 조회)은 모두 여기서 한다.
+"""scan 의 단계 순서. 명령줄 인자를 받지 않고, 줄을 어디에 찍는지도 모른다. external 을 import 하는 곳은 여기뿐이다 (engine 에는 넘겨준다).
 
 controller/scan_controller.py 가 인자를 확인해 값만 넘기고, 여기서는 단계마다 stage(단계 이름, 결과)와 log(줄)로 알린다.
 
@@ -16,7 +16,7 @@ import shutil
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Callable, Generator
+from typing import Callable
 
 from ..engine.discover_services import discover_services
 from ..engine.dataset import discover_datasets, is_dataset, missing_revisions, split_data_args
@@ -27,7 +27,7 @@ from ..engine.merge import merge
 from ..engine.model import enrich_hub_models, enrich_local_models
 from ..engine.spdx import convert_spdx
 from ..exceptions import RunnerError
-from ..external import aibom_generator_skip_reason, hub, run_aibom_generator, run_cdxgen, run_syft
+from ..external import aibom_generator, hub, run_cdxgen, run_syft
 from ..external.pull_image import pull_image
 from ..formats import FORM_BY_SPEC, FORMAT_NAME
 
@@ -96,7 +96,7 @@ def check_scan(target: str, data: list[str]) -> list[str]:
     missing = [d for d in local_data if not Path(d).expanduser().exists()]
     if missing:
         return [f"data path not found: {', '.join(missing)}"]
-    return [f"--data {ref}: revision not found on huggingface.co ({reason})" for ref, reason in ask_external(missing_revisions(hub_data))]
+    return [f"--data {ref}: revision not found on huggingface.co ({reason})" for ref, reason in missing_revisions(hub_data, hub=hub)]
 
 
 def _looks_like_path(target: str) -> bool:
@@ -171,7 +171,7 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path, stag
     merged = enrich_local_models(merged, scan_dir, log=detail)
 
     enriched: dict = {}
-    merged = ask_external(enrich_hub_models(merged, workdir, log=detail, report=enriched, facts=facts))
+    merged = enrich_hub_models(merged, workdir, log=detail, report=enriched, facts=facts, hub=hub, aibom_generator=aibom_generator)
     if enriched["hub_skipped"]:
         result = f"skipped: {enriched['hub_skipped']}"
     elif enriched["hub_missing"]:
@@ -191,8 +191,8 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path, stag
 
     # 허브 모델 카드의 데이터셋은 M-BOM 보강이 받아 둔 Hub API 응답에서 읽는다 (같은 응답을 다시 받지 않는다)
     datasets: dict = {}
-    merged = ask_external(discover_datasets(merged, scan_dir, log=detail, report=datasets, data_paths=data,
-                                            model_infos=enriched["model_infos"], hub_reachable=enriched["hub_reachable"], facts=facts))
+    merged = discover_datasets(merged, scan_dir, log=detail, report=datasets, data_paths=data,
+                               model_infos=enriched["model_infos"], hub_reachable=enriched["hub_reachable"], facts=facts, hub=hub)
     total = count(sum(1 for c in merged["components"] if is_dataset(c)), "dataset")
     stage("Generating D-BOM", total + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
     for path in datasets.get("empty_data_paths") or []:
@@ -222,41 +222,4 @@ def scan_root(target: str, image_name: str | None = None) -> tuple[str, str]:
     if path.is_dir():
         return (path.resolve().name or target, "directory")
     return (image_name or (path.name if is_archive(target) else target), "image")
-
-
-def ask_external(steps: Generator[tuple, Any, Any]) -> Any:
-    """engine 이 바깥에 물을 것을 요청으로 내보내면(yield) 여기서 external 로 묻고 답을 돌려보낸다(send). engine 은 external 을
-    부르지 않으므로 허브 조회와 OWASP 실행은 모두 여기를 지난다. 단계가 끝나면 그 단계가 돌려준 값을 돌려준다."""
-    answer = None
-    try:
-        while True:
-            answer = _answer(steps.send(answer))
-    except StopIteration as done:
-        return done.value
-
-
-def _answer(request: tuple) -> Any:
-    """요청 하나를 external 호출로 바꾼다. 요청은 (종류, 인자…)이다."""
-    kind, *args = request
-    if kind == "hub_reachable":                       # ()
-        return hub.hf_reachable()
-    if kind == "model_info":                          # (허브 모델 id, log)
-        return hub.fetch_model_info(*args)
-    if kind == "dataset_info":                        # (데이터셋 id, 리비전 또는 None, log)
-        hf_id, revision, log = args
-        return hub.fetch_dataset_info(hf_id, log, revision=revision) if revision else hub.fetch_dataset_info(hf_id, log)
-    if kind == "revision_error":                      # (데이터셋 id, 리비전)
-        return hub.fetch_revision_error(*args)
-    if kind == "dataset_size":                        # (데이터셋 id, log)
-        return hub.fetch_dataset_size(*args)
-    if kind == "dataset_statistics":                  # (데이터셋 id, config, split, log)
-        return hub.fetch_dataset_statistics(*args)
-    if kind == "owasp_skip_reason":                   # ()
-        return aibom_generator_skip_reason()
-    if kind == "owasp":                               # (허브 모델 id, workdir). 실패는 던지지 않고 답으로 돌려준다
-        try:
-            return run_aibom_generator(*args)
-        except RunnerError as e:
-            return e
-    raise ValueError(f"unknown request: {kind}")
 

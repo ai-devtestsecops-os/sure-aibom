@@ -18,23 +18,21 @@ from sure_aibom.engine.facts import Facts
 from sure_aibom.engine.merge import merge
 from sure_aibom.engine.form import INTERNAL_PREFIX, regulate
 from sure_aibom.engine.validate import validate_cdx
-from sure_aibom.external.aibom_generator import aibom_generator_skip_reason
-from sure_aibom.service.scan_service import ask_external
+from sure_aibom.external.aibom_generator import skip_reason
 from sure_aibom.utils.licenses import card_licenses, license_entry
 
 
-# engine 의 함수는 허브에 직접 묻지 않고 요청을 내보낸다. scan 처럼 service 의 ask_external 로 답해 가며 돌린다
-# (허브 함수는 시험마다 hub 모듈에 바꿔 끼운다).
+# engine 의 함수는 external 을 import 하지 않는다. scan 처럼 hub 모듈을 넘겨 돌린다 (허브 함수는 시험마다 hub 모듈에 바꿔 끼운다).
 def discover_datasets(*args, **kwargs):
-    return ask_external(ds.discover_datasets(*args, **kwargs))
+    return ds.discover_datasets(*args, hub=hub, **kwargs)
 
 
 def missing_revisions(*args, **kwargs):
-    return ask_external(ds.missing_revisions(*args, **kwargs))
+    return ds.missing_revisions(*args, hub=hub, **kwargs)
 
 
 def fetch_statistics(*args, **kwargs):
-    return ask_external(ds._fetch_statistics(*args, **kwargs))
+    return ds._fetch_statistics(*args, hub=hub, **kwargs)
 
 IMDB_FIXTURE = Path(__file__).parent / "data" / "hf_api" / "hf_dataset_stanfordnlp_imdb.json"
 IMDB = "stanfordnlp/imdb"
@@ -1368,7 +1366,7 @@ def test_specific_text_to_tasks_map_before_the_text_prefix(task, modality):
 
 
 # -- 실제 허브 (하나뿐) ------------------------------------------------------------------
-@pytest.mark.skipif(aibom_generator_skip_reason() is not None, reason=aibom_generator_skip_reason() or "")
+@pytest.mark.skipif(skip_reason() is not None, reason=skip_reason() or "")
 def test_live_hub_returns_size_and_modality_for_imdb(monkeypatch):
     monkeypatch.setattr(hub, "fetch_dataset_size", REAL_FETCH_SIZE)
     monkeypatch.setattr(hub, "fetch_dataset_statistics", REAL_FETCH_STATISTICS)
