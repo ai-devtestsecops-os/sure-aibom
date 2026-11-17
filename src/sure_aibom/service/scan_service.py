@@ -18,7 +18,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable
 
-from ..engine.ai_services import discover_services
+from ..engine.discover_services import discover_services
 from ..engine.dataset import discover_datasets, is_dataset, missing_revisions, split_data_args
 from ..engine.extract_image import extract_image, is_archive
 from ..engine.facts import Facts

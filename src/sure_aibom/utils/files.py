@@ -1,4 +1,4 @@
-"""스캔 대상의 파일을 걸을 때 쓰는 공용 함수 (engine/dataset.py, engine/ai_services.py).
+"""스캔 대상의 파일을 걸을 때 쓰는 공용 함수 (engine/dataset.py, engine/discover_services.py).
 
     SKIP_DIRS       걷지 않는 폴더 (설치된 의존성, 캐시, .git)
     inside          심볼릭 링크를 따라간 실제 위치가 루트 안인가
