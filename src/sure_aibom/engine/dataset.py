@@ -65,11 +65,11 @@ import zipfile
 from collections import Counter
 from statistics import fmean, median, stdev
 from pathlib import Path, PurePosixPath
-from typing import Iterable
+from typing import Generator, Iterable
 
 import yaml
 
-from ..external import hub
+# 허브에는 직접 묻지 않는다: discover_datasets · missing_revisions 가 물을 것을 내보내면 service 의 ask_external 이 external 로 묻는다
 from ..utils.files import SKIP_DIRS, inside, notebook_code, relative
 from ..utils.licenses import card_licenses
 from .facts import Facts
@@ -149,14 +149,14 @@ STATISTICS_FILE_LIMIT = JSON_PARSE_LIMIT                      # 로컬 파일 �
 # ── 진입점 ──────────────────────────────────────────────────────────────────
 
 def discover_datasets(merged: dict, target: str, log=print, report: dict | None = None, data_paths: Iterable[str] = (),
-             model_infos: dict | None = None, hub_reachable: bool | None = None, facts: Facts | None = None) -> dict:
-    """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다.
+             model_infos: dict | None = None, hub_reachable: bool | None = None, facts: Facts | None = None) -> Generator[tuple, object, dict]:
+    """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다. 허브에는 직접 묻지 않고 물을 것을
+    요청으로 내보낸다(yield, 요청의 종류는 service 의 ask_external). 답을 받아 가며 돌고, 끝나면 merged 를 돌려준다.
     data_paths 는 scan --data 값들로, 로컬 데이터 경로이거나 hf://datasets/<id>[@<리비전>] 꼴의 허브 데이터셋이다 (split_data_args).
-    model_infos 는 M-BOM 보강이 받아 둔 허브 모델 id → Hub API 응답이고,
-    주면 허브 모델 카드를 다시 받지 않는다 (주지 않으면 여기서 받는다). hub_reachable 은 M-BOM 보강이 허브에 닿는지 본
-    결과이고, None 이면 물을 것이 있을 때 여기서 본다. report 를 주면 hub_unreachable(허브에 물을 것이 있는데 허브에 닿지
-    않았는지), empty_data_paths(데이터 파일이 하나도 없던 경로), unresolved_hub_data(허브에 닿는데 조회가 안 된 --data 허브 데이터셋)를
-    적는다. facts 를 주면 모델 카드 데이터셋의 역할(학습·평가)과 허브 응답의 lastModified 를 거기 적는다 (문서에는 자리가 없다)."""
+    model_infos 는 M-BOM 보강이 받아 둔 허브 모델 id → Hub API 응답이고, 주면 허브 모델 카드를 다시 묻지 않는다. hub_reachable 은
+    M-BOM 보강이 허브에 닿는지 본 결과이고, None 이면 물을 것이 있을 때 여기서 묻는다. report 를 주면 hub_unreachable(허브에 물을
+    것이 있는데 닿지 않았는지), empty_data_paths(데이터 파일이 하나도 없던 경로), unresolved_hub_data(허브에 닿는데 조회가 안 된
+    --data 허브 데이터셋)를 적는다. facts 를 주면 모델 카드 데이터셋의 역할(학습·평가)과 허브 응답의 lastModified 를 거기 적는다."""
     local_paths, given = split_data_args(data_paths)              # given: --data 로 준 허브 데이터셋 id → 리비전 (안 주면 None)
     components: list[dict] = merged.setdefault("components", [])
     by_hf_id: dict[str, dict] = {}
@@ -199,14 +199,14 @@ def discover_datasets(merged: dict, target: str, log=print, report: dict | None 
     hub_models = [(c, model_id) for c in components if (model_id := hub_model_id(c))]
     reachable = True
     if hub_models or by_hf_id:
-        reachable = hub.hf_reachable() if hub_reachable is None else hub_reachable
+        reachable = (yield ("hub_reachable",)) if hub_reachable is None else hub_reachable
         if not reachable:
             n, m = len(by_hf_id), len(hub_models)
             skipped = [f"{n} dataset{'s keep' if n != 1 else ' keeps'} name and purl only"] if n else []
             skipped += [f"{m} hub model card{'s' if m != 1 else ''} not read"] if m else []
             log(f"[dataset] huggingface.co unreachable: {', '.join(skipped)}")
     if reachable and hub_models:
-        _datasets_from_model_cards(merged, hub_models, by_hf_id, log, model_infos, facts)
+        yield from _datasets_from_model_cards(merged, hub_models, by_hf_id, log, model_infos, facts)
 
     empty: list[str] = []
     for comp in _data_components(local_paths, log, empty):
@@ -217,7 +217,7 @@ def discover_datasets(merged: dict, target: str, log=print, report: dict | None 
         _link_from_root(merged, new_refs)
     unresolved: list[str] = []
     if reachable and by_hf_id:
-        unresolved = _fill_from_hub(merged, by_hf_id, log, facts, revisions, given)
+        unresolved = yield from _fill_from_hub(merged, by_hf_id, log, facts, revisions, given)
     elif not reachable:
         for hf_id, revision in revisions.items():                # 허브에 못 물어도 리비전은 남긴다
             if not by_hf_id[hf_id].get("version"):
@@ -254,16 +254,16 @@ def hub_data_arg(hf_id: str, revision: str | None = None) -> str:
     return HF_DATA_ARG + hf_id + (f"@{revision}" if revision else "")
 
 
-def missing_revisions(given: dict[str, str | None]) -> list[tuple[str, str]]:
+def missing_revisions(given: dict[str, str | None]) -> Generator[tuple, object, list[tuple[str, str]]]:
     """--data 로 리비전을 준 허브 데이터셋 가운데, 저장소는 있는데 그 리비전이 없다고 허브가 답한(404) 것의 (--data 표기, 허브의 오류 문구).
-    scan 이 도구를 돌리기 전에 불러 입력 실수로 멈춘다. 저장소가 없거나 비공개라 401 이거나 허브에 닿지 않으면 판단하지 않는다
-    (스캔은 이름과 리비전을 남기고 경고한다)."""
+    scan 이 도구를 돌리기 전에 불러 입력 실수로 멈춘다. 허브에는 요청으로 묻는다(ask_external). 저장소가 없거나 비공개라 401 이거나
+    허브에 닿지 않으면 판단하지 않는다 (스캔은 이름과 리비전을 남기고 경고한다)."""
     pinned = sorted((hf_id, revision) for hf_id, revision in given.items() if revision)
-    if not pinned or not hub.hf_reachable():
+    if not pinned or not (yield ("hub_reachable",)):
         return []
     out: list[tuple[str, str]] = []
     for hf_id, revision in pinned:
-        error = hub.fetch_revision_error(hf_id, revision)
+        error = yield ("revision_error", hf_id, revision)
         if error and error[0] == 404:
             out.append((hub_data_arg(hf_id, revision), error[1]))
     return out
@@ -380,12 +380,12 @@ def _parse_python(path: Path, log) -> list[tuple[str, str | None]]:
 # ── 허브 모델 카드 ────────────────────────────────────────────────────────────
 
 def _datasets_from_model_cards(merged: dict, hub_models: list[tuple[dict, str]], by_hf_id: dict[str, dict], log,
-                               infos: dict | None = None, facts: Facts | None = None) -> None:
+                               infos: dict | None = None, facts: Facts | None = None) -> Generator[tuple, object, None]:
     """허브 모델마다 모델 카드의 데이터셋을 데이터셋 컴포넌트로 만들어 잇는다 (_link_model_datasets). 모델 카드는 infos
-    (M-BOM 보강이 받아 둔 Hub API 응답)에서 읽고, infos 가 없으면 여기서 받는다. 모델 카드를 못 읽었거나 데이터셋이 없는
+    (M-BOM 보강이 받아 둔 Hub API 응답)에서 읽고, infos 가 없으면 요청으로 묻는다. 모델 카드를 못 읽었거나 데이터셋이 없는
     모델은 손대지 않는다."""
     for model, model_id in hub_models:
-        info = infos.get(model_id) if infos is not None else hub.fetch_model_info(model_id, log)
+        info = infos.get(model_id) if infos is not None else (yield ("model_info", model_id, log))
         card = (info or {}).get("cardData")
         ids = model_card_dataset_ids(card, model_id, log)
         if ids:
@@ -1161,7 +1161,7 @@ def _number(v) -> str:
 # ── Hugging Face 허브 ────────────────────────────────────────────────────────
 
 def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | None = None,
-                   revisions: dict[str, str] | None = None, given: Iterable[str] = ()) -> list[str]:
+                   revisions: dict[str, str] | None = None, given: Iterable[str] = ()) -> Generator[tuple, object, list[str]]:
     """허브 응답으로 채우고, 같은 데이터셋을 다른 id 로 부른 컴포넌트는 정식 id 의 컴포넌트 하나로 모은다.
     revisions 는 id → 물을 리비전(--data 나 코드의 revision=)이다. 리비전이 있는 것은 그 리비전으로 묻고, 그 응답이 앞선 조회보다
     우선해 정식 id 의 응답이 된다 (version 은 응답의 전체 커밋 해시). 조회가 안 되면 리비전을 version 으로 남긴다.
@@ -1176,9 +1176,9 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | 
     for hf_id in sorted(by_hf_id):
         revision = revisions.get(hf_id)
         if revision:
-            info = hub.fetch_dataset_info(hf_id, log, revision=revision)
+            info = yield ("dataset_info", hf_id, revision, log)
         else:
-            info = info_by_canonical.get(hf_id) or hub.fetch_dataset_info(hf_id, log)   # 앞선 조회가 정식 id 로 알려 준 것은 다시 묻지 않는다
+            info = info_by_canonical.get(hf_id) or (yield ("dataset_info", hf_id, None, log))   # 앞선 조회가 정식 id 로 알려 준 것은 다시 묻지 않는다
         canonical = canonical_id(hf_id, info)
         if info and revision:
             if pinned.get(canonical, revision) != revision:
@@ -1209,25 +1209,25 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | 
         info = info_by_canonical.get(canonical)
         if info:
             revision = pinned.get(canonical)
-            if revision and not _is_latest(canonical, info, log):
+            if revision and not (yield from _is_latest(canonical, info, log)):
                 log(f"[dataset] {canonical}: revision {revision} is not the latest, datasets-server size and statistics skipped")
                 size, statistics = None, []
             else:
-                size = hub.fetch_dataset_size(canonical, log)
-                statistics = _fetch_statistics(canonical, info, size, log)
+                size = yield ("dataset_size", canonical, log)
+                statistics = yield from _fetch_statistics(canonical, info, size, log)
             apply_hub_info(comp, canonical, info, size, statistics)
             if facts is not None:
                 facts.set_time(comp["bom-ref"], "releaseTime", info.get("lastModified"))
     return unresolved
 
 
-def _is_latest(hf_id: str, info: dict, log) -> bool:
+def _is_latest(hf_id: str, info: dict, log) -> Generator[tuple, object, bool]:
     """리비전을 지정해 받은 응답이 지금 기본 브랜치의 최신 커밋과 같은가. 최신을 받지 못하면 아니라고 본다."""
-    latest = hub.fetch_dataset_info(hf_id, log)
+    latest = yield ("dataset_info", hf_id, None, log)
     return bool(latest) and isinstance(info.get("sha"), str) and latest.get("sha") == info["sha"]
 
 
-def _fetch_statistics(hf_id: str, info: dict, size: dict | None, log) -> list[tuple[str, str, dict]]:
+def _fetch_statistics(hf_id: str, info: dict, size: dict | None, log) -> Generator[tuple, object, list[tuple[str, str, dict]]]:
     """(config, split) 마다 datasets-server 통계를 받는다. 상한을 넘으면 앞쪽만 받고 알린다."""
     pairs = _config_splits(info, size)
     if len(pairs) > STATISTICS_REQUEST_LIMIT:
@@ -1235,7 +1235,7 @@ def _fetch_statistics(hf_id: str, info: dict, size: dict | None, log) -> list[tu
         pairs = pairs[:STATISTICS_REQUEST_LIMIT]
     out: list[tuple[str, str, dict]] = []
     for config, split in pairs:
-        resp = hub.fetch_dataset_statistics(hf_id, config, split, log)
+        resp = yield ("dataset_statistics", hf_id, config, split, log)
         if resp and isinstance(resp.get("statistics"), list):
             if resp.get("partial"):
                 log(f"[dataset] {hf_id}: {config}/{split} statistics are partial")

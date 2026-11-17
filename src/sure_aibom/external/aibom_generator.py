@@ -11,7 +11,23 @@ import sys
 from pathlib import Path
 
 from ..exceptions import RunnerError
+from . import hub
 from ._proc import load_json_file, run
+
+
+def aibom_generator_skip_reason() -> str | None:
+    """aibom-generator 를 건너뛰어야 하면 그 이유를, 돌려도 되면 None 을 돌려준다. 클론을 먼저 보고 네트워크는 마지막에 본다.
+    이유는 CLI 요약에 그대로 나가므로 영어다."""
+    repo = os.environ.get("AIBOM_GENERATOR_DIR")
+    if not repo:
+        return "AIBOM_GENERATOR_DIR not set"
+    if not Path(repo).is_dir():
+        return f"AIBOM_GENERATOR_DIR not found: {repo}"
+    if not (Path(repo) / "src" / "cli.py").is_file():
+        return f"AIBOM_GENERATOR_DIR is not an aibom-generator clone (no src/cli.py): {repo}"
+    if not hub.hf_reachable():
+        return "huggingface.co unreachable"
+    return None
 
 
 def run_aibom_generator(hf_id: str, workdir: Path) -> dict:

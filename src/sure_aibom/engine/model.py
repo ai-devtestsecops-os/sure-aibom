@@ -53,14 +53,13 @@ from __future__ import annotations
 
 import copy
 import json
-import os
 import re
 import struct
 from pathlib import Path, PurePosixPath
-from typing import Iterable
+from typing import Generator, Iterable
 
 from ..exceptions import RunnerError
-from ..external import hub, run_aibom_generator
+# 허브와 OWASP 에는 직접 묻지 않는다: enrich_hub_models 가 물을 것을 내보내면 service 의 ask_external 이 external 로 묻는다
 from ..utils.licenses import card_licenses
 from .facts import Facts
 from .form import HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON
@@ -476,28 +475,15 @@ def hub_model_id(component: dict) -> str | None:
     return hf_id
 
 
-def fetch_model_infos(hf_ids: Iterable[str], log=print) -> dict[str, dict | None]:
-    """허브 모델 id 마다 GET /api/models/<id> 응답 (실패면 None)."""
-    return {hf_id: hub.fetch_model_info(hf_id, log) for hf_id in hf_ids}
-
-
-def skip_reason() -> str | None:
-    """OWASP 보강을 건너뛰어야 하면 그 이유를, 해도 되면 None 을 돌려준다. 이유는 CLI 요약에 그대로 나가므로 영어다."""
-    repo = os.environ.get("AIBOM_GENERATOR_DIR")
-    if not repo:
-        return "AIBOM_GENERATOR_DIR not set"
-    if not Path(repo).is_dir():
-        return f"AIBOM_GENERATOR_DIR not found: {repo}"
-    if not (Path(repo) / "src" / "cli.py").is_file():
-        return f"AIBOM_GENERATOR_DIR is not an aibom-generator clone (no src/cli.py): {repo}"
-    if not hub.hf_reachable():
-        return "huggingface.co unreachable"
-    return None
-
-
 def enrich_hub_models(merged: dict, workdir: Path, log=print, report: dict | None = None, model_infos: dict | None = None,
-           facts: Facts | None = None) -> dict:
-    """model_infos 는 허브 모델 id → Hub API 응답 (실패면 None). 주지 않으면 허브에 닿는지 보고 허브 모델마다 받는다.
+           facts: Facts | None = None) -> Generator[tuple, object, dict]:
+    """허브와 OWASP 에 직접 묻지 않고 물을 것을 요청으로 내보낸다(yield). service 의 ask_external 이 external 로 묻고 답을
+    돌려보낸다(send). 끝나면 merged 를 돌려준다.
+        ("hub_reachable",)          huggingface.co 에 닿는가 (bool)
+        ("model_info", id, log)     GET /api/models/<id> 응답 (실패면 None)
+        ("owasp_skip_reason",)      OWASP 를 건너뛸 이유 (돌려도 되면 None)
+        ("owasp", id, workdir)      aibom-generator 출력 (실패면 RunnerError)
+    model_infos 는 허브 모델 id → Hub API 응답 (실패면 None). 주지 않으면 허브에 닿는지 묻고 허브 모델마다 묻는다.
     facts 를 주면 응답의 lastModified 를 그 모델의 releaseTime 으로 적는다.
     report 를 주면 결과를 적는다: models(허브 모델 수) · hub(Hub API 로 채운 수) · hub_missing(응답이 없던 id) ·
     hub_skipped(Hub API 를 쓰지 못한 이유) · hub_reachable(허브에 닿는지 본 결과, 보지 않았으면 None) ·
@@ -513,9 +499,11 @@ def enrich_hub_models(merged: dict, workdir: Path, log=print, report: dict | Non
         return merged
 
     if model_infos is None:
-        report["hub_reachable"] = hub.hf_reachable()
+        report["hub_reachable"] = yield ("hub_reachable",)
         if report["hub_reachable"]:
-            model_infos = fetch_model_infos(targets, log)
+            model_infos = {}
+            for hf_id in targets:
+                model_infos[hf_id] = yield ("model_info", hf_id, log)
     if model_infos is None:
         report["hub_skipped"] = "huggingface.co unreachable"
     else:
@@ -531,19 +519,18 @@ def enrich_hub_models(merged: dict, workdir: Path, log=print, report: dict | Non
                 report["hub_missing"].append(hf_id)
                 log(f"[enrich] {hf_id}: no Hub API model info, fields left as cdxgen wrote them")
 
-    reason = skip_reason()
+    reason = yield ("owasp_skip_reason",)
     if reason:
         log(f"[enrich] aibom-generator skipped for {len(targets)} hub model{'s' if len(targets) != 1 else ''}: {reason}")
         report["skipped"] = reason
         return merged
     used_tools: list[dict] = []
     for hf_id, comp in targets.items():
-        try:
-            owasp = run_aibom_generator(hf_id, workdir)
-        except RunnerError as e:
-            log(f"[enrich] {hf_id}: {e}")
+        owasp = yield ("owasp", hf_id, workdir)
+        if isinstance(owasp, RunnerError):
+            log(f"[enrich] {hf_id}: {owasp}")
             report["failed"].append(hf_id)
-            report["errors"][hf_id] = (str(e).splitlines() or ["failed"])[0]
+            report["errors"][hf_id] = (str(owasp).splitlines() or ["failed"])[0]
             continue
         src = next((c for c in owasp.get("components", []) if c.get("type") == "machine-learning-model"), None)
         taken = _apply_owasp(comp, src) if src else 0
@@ -606,7 +593,7 @@ def apply_model_info(comp: dict, hf_id: str, info: dict) -> None:
             comp["description"] = " ".join(text.split())
     if not comp.get("supplier") and isinstance(info.get("author"), str) and info["author"]:
         comp["supplier"] = {"name": info["author"]}
-    refs = [{"type": "distribution", "url": f"{hub.HUB}/{hf_id}"}]
+    refs = [{"type": "distribution", "url": f"https://huggingface.co/{hf_id}"}]
     refs += [{"type": "documentation", "url": f"https://arxiv.org/abs/{t[len('arxiv:'):]}"}
              for t in _as_list(info.get("tags")) if isinstance(t, str) and t.startswith("arxiv:") and t[len("arxiv:"):]]
     existing = {(r.get("type"), r.get("url")) for r in comp.get("externalReferences") or []}
