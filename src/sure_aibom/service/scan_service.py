@@ -5,7 +5,7 @@ controller/scan_controller.py 가 인자를 확인해 값만 넘기고, 여기�
     check_scan  도구를 돌리기 전 입력 확인 (대상 경로, --data 경로, --data 허브 리비전)
     scan        S-BOM(syft) → 이미지 받기·풀기 → M-BOM(cdxgen) → 병합 → AI 서비스 → M-BOM 보강(로컬 모델, 허브 모델)
                 → D-BOM → 규제 필드 → SPDX 변환 (--format spdx 일 때만)
-                M-BOM 보강은 로컬 모델, 허브 모델 둘 다 engine/model.py 다 (discover_models, enrich_hub_models)
+                M-BOM 보강은 로컬 모델, 허브 모델 둘 다 engine/model.py 다 (enrich_local_models, enrich_hub_models)
 
 syft·cdxgen 가운데 하나라도 실패하면 만든 만큼은 돌려주고 failed 에 적는다 (CLI 는 종료 코드 2 로 끝낸다).
 """
@@ -24,7 +24,7 @@ from ..engine.extract_image import extract_image, is_archive
 from ..engine.facts import Facts
 from ..engine.form import drop_tool_properties, regulate
 from ..engine.merge import merge
-from ..engine.model import discover_models, enrich_hub_models
+from ..engine.model import enrich_hub_models, enrich_local_models
 from ..engine.spdx import convert_spdx
 from ..exceptions import RunnerError
 from ..external import run_cdxgen, run_syft
@@ -168,7 +168,7 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path, stag
     scan_dir = scan_dir or target                             # 이미지를 못 풀었으면 볼 디렉터리가 없다
 
     merged = discover_services(merged, scan_dir, log=detail)  # cdxgen 서비스 가운데 코드가 SDK 로 부르는 것만 (import 는 직접 읽는다)
-    merged = discover_models(merged, scan_dir, log=detail)
+    merged = enrich_local_models(merged, scan_dir, log=detail)
 
     enriched: dict = {}
     merged = enrich_hub_models(merged, workdir, log=detail, report=enriched, facts=facts)

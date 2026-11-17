@@ -239,7 +239,7 @@ def test_discover_fills_hyperparameters_and_parameter_count_from_a_model_directo
     write_json(tmp_path, "models/config.json", BERT_CONFIG)
     write_safetensors(tmp_path, "models/model.safetensors", {"w": [30522, 768]})
     logs: list[str] = []
-    out = md.discover_models(doc_of(model_component("models/README.md", "models/config.json")), str(tmp_path), logs.append)
+    out = md.enrich_local_models(doc_of(model_component("models/README.md", "models/config.json")), str(tmp_path), logs.append)
     comp = model_of(out)
     assert hparams_of(comp) == BERT_HPARAMS
     assert internal(comp)["parameterCount"] == str(30522 * 768)
@@ -249,7 +249,7 @@ def test_discover_fills_hyperparameters_and_parameter_count_from_a_model_directo
 def test_discover_reads_gguf_named_in_the_evidence(tmp_path):
     (tmp_path / "weights").mkdir()
     (tmp_path / "weights" / "tiny.gguf").write_bytes(llama_gguf())
-    comp = model_of(md.discover_models(doc_of(model_component("weights/tiny.gguf")), str(tmp_path), log=lambda m: None))
+    comp = model_of(md.enrich_local_models(doc_of(model_component("weights/tiny.gguf")), str(tmp_path), log=lambda m: None))
     assert dict(hparams_of(comp))["block_count"] == "16" and internal(comp)["parameterCount"] == str(2048 * 100 + 2048 * 2048)
 
 
@@ -258,7 +258,7 @@ def test_first_file_wins_when_two_files_disagree(tmp_path):
     (tmp_path / "a.gguf").write_bytes(gguf_bytes([string("general.architecture", "llama"), u32("llama.block_count", 16),
                                                   u32("llama.context_length", 99)], []))
     logs: list[str] = []
-    comp = model_of(md.discover_models(doc_of(model_component("config.json", "a.gguf")), str(tmp_path), logs.append))
+    comp = model_of(md.enrich_local_models(doc_of(model_component("config.json", "a.gguf")), str(tmp_path), logs.append))
     facts = dict(hparams_of(comp))
     assert facts["block_count"] == "16" and facts["context_length"] == "99"         # a.gguf 를 먼저 읽는다 (경로 정렬)
     assert facts["embedding_length"] == "768"                                       # 겹치지 않는 값은 뒤 파일에서 온다
@@ -277,7 +277,7 @@ def test_documents_without_readable_model_files_are_byte_identical(tmp_path, com
     write(tmp_path, "train.py", "import torch\n")
     doc = doc_of(component)
     before = json.dumps(doc, ensure_ascii=False)
-    out = md.discover_models(doc, str(tmp_path), log=lambda m: None)
+    out = md.enrich_local_models(doc, str(tmp_path), log=lambda m: None)
     assert json.dumps(out, ensure_ascii=False) == before
     assert json.dumps(regulate(copy.deepcopy(out), form="typed", log=lambda m: None), ensure_ascii=False) == before
 
@@ -285,10 +285,10 @@ def test_documents_without_readable_model_files_are_byte_identical(tmp_path, com
 def test_image_target_and_unreadable_config_change_nothing(tmp_path):
     doc = doc_of(model_component("config.json"))
     before = json.dumps(doc, ensure_ascii=False)
-    assert json.dumps(md.discover_models(copy.deepcopy(doc), "alpine:3.20", log=lambda m: None), ensure_ascii=False) == before
+    assert json.dumps(md.enrich_local_models(copy.deepcopy(doc), "alpine:3.20", log=lambda m: None), ensure_ascii=False) == before
     write(tmp_path, "config.json", "{not json")
     logs: list[str] = []
-    assert json.dumps(md.discover_models(copy.deepcopy(doc), str(tmp_path), logs.append), ensure_ascii=False) == before
+    assert json.dumps(md.enrich_local_models(copy.deepcopy(doc), str(tmp_path), logs.append), ensure_ascii=False) == before
     assert any("config.json: skipped, cannot read" in m for m in logs)
 
 
@@ -303,13 +303,13 @@ def test_a_symlink_pointing_outside_the_target_is_skipped(tmp_path):
         pytest.skip("심볼릭 링크를 만들 수 없다")
     doc = doc_of(model_component("config.json"))
     before = json.dumps(doc, ensure_ascii=False)
-    assert json.dumps(md.discover_models(doc, str(root), log=lambda m: None), ensure_ascii=False) == before
+    assert json.dumps(md.enrich_local_models(doc, str(root), log=lambda m: None), ensure_ascii=False) == before
 
 
 def test_evidence_locations_may_be_absolute_or_windows_style(tmp_path):
     write_json(tmp_path, "models/config.json", BERT_CONFIG)
     for location in (str(tmp_path / "models" / "config.json"), "models\\config.json", "/models/config.json"):
-        comp = model_of(md.discover_models(doc_of(model_component(location)), str(tmp_path), log=lambda m: None))
+        comp = model_of(md.enrich_local_models(doc_of(model_component(location)), str(tmp_path), log=lambda m: None))
         assert dict(hparams_of(comp))["block_count"] == "12", location
 
 
@@ -318,7 +318,7 @@ def test_evidence_locations_may_be_absolute_or_windows_style(tmp_path):
 def discovered(tmp_path) -> dict:
     write_json(tmp_path, "models/config.json", BERT_CONFIG)
     write_safetensors(tmp_path, "models/model.safetensors", {"w": [30522, 768]})
-    return md.discover_models(doc_of(model_component("models/config.json")), str(tmp_path), log=lambda m: None)
+    return md.enrich_local_models(doc_of(model_component("models/config.json")), str(tmp_path), log=lambda m: None)
 
 
 def test_properties_form_moves_local_facts_to_aibom_model_keys(discovered):

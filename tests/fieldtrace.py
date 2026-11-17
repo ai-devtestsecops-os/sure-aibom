@@ -6,7 +6,7 @@
                              컴포넌트 bom-ref 는 병합 키라 sure-aibom. 문서 머리·metadata.component 는 sure-aibom 이 쓰고, 그 가운데
                              이미지 OCI 라벨에서 옮긴 자리는 syft. metadata.tools · services 는 같은 자리에 같은 값을 낸 도구,
                              dependencies 는 그 관계를 낸 도구 (병합 키로 바꿔 비교)
-    discover_services · discover_datasets · discover_models    새 값은 sure-aibom
+    discover_services · discover_datasets · enrich_local_models    새 값은 sure-aibom
     enrich_hub_models        modelCard.properties 에 새로 든 값은 OWASP aibom-generator, 나머지(Hub API 로 채운 필드) 는 sure-aibom
     regulate (form)          새 값은 그 자리를 채우는 원본 키 가운데 같은 값을 가진, 소비된 프로퍼티의 도구 (같으면 OWASP > cdxgen > sure-aibom)
 값 단위 규칙: 단계 뒤의 값이 단계 앞에도 있던 값이면 앞의 출처를 잇고, 새 값이면 그 단계의 도구가 출처다.
@@ -198,7 +198,7 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
     """cli.main(argv) 를 단계마다 가로채 돌린다. (최종 문서, Tracker) — 최종 문서의 컴포넌트에는 표지가 붙어 있다."""
     tracker = Tracker()
     home = lambda name: scan_controller if name == "write_json" else scan_service   # 단계는 service/scan_service.py 가 부르고, 파일 쓰기는 controller/scan_controller.py 가 한다
-    real = {n: getattr(home(n), n) for n in ("run_syft", "run_cdxgen", "merge", "discover_services", "discover_datasets", "discover_models",
+    real = {n: getattr(home(n), n) for n in ("run_syft", "run_cdxgen", "merge", "discover_services", "discover_datasets", "enrich_local_models",
                                              "enrich_hub_models", "regulate", "write_json")}
     final: dict = {}
 
@@ -237,7 +237,7 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
 
     patched = dict(run_syft=raw_of("run_syft", SYFT), run_cdxgen=raw_of("run_cdxgen", CDXGEN), merge=merge,
                    discover_services=staged("discover_services", lambda *_: {CLI}),
-                   discover_datasets=staged("discover_datasets", lambda *_: {CLI}), discover_models=staged("discover_models", lambda *_: {CLI}),
+                   discover_datasets=staged("discover_datasets", lambda *_: {CLI}), enrich_local_models=staged("enrich_local_models", lambda *_: {CLI}),
                    enrich_hub_models=enrich_hub_models, regulate=staged("regulate", form_tool), write_json=write_json)
     try:
         for name, fn in patched.items():
