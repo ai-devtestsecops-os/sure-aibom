@@ -1,6 +1,6 @@
-"""스캔 대상의 파일을 걸을 때 쓰는 공용 함수 (engine/dataset.py, engine/ai_service.py).
+"""스캔 대상의 파일을 훑을 때 쓰는 공용 함수 (engine/dataset.py, engine/ai_service.py).
 
-    SKIP_DIRS       걷지 않는 폴더 (설치된 의존성, 캐시, .git)
+    SKIP_DIRS       건너뛰는 폴더 (설치된 의존성, 캐시, .git)
     inside          심볼릭 링크를 따라간 실제 위치가 루트 안인가
     relative        대상 루트 기준 상대 경로 (링크를 따라가지 않는다)
     notebook_code   노트북(.ipynb)의 코드 셀을 이어 붙인 파이썬 소스

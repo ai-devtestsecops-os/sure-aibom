@@ -315,7 +315,7 @@ def test_data_path_counts_json_and_txt_but_not_metadata_names(tmp_path, online):
 def test_skip_dirs_and_hidden_dirs_are_not_walked(tmp_path, online):
     for d in ("node_modules", ".git", "venv", ".venv", "site-packages", "__pycache__", ".cache"):
         write(tmp_path, f"data/{d}/x.csv", "a\n1\n")                          # 데이터 경로 안에서도
-        write(tmp_path, f"{d}/x.py", 'load_dataset("hidden/one")\n')            # 대상의 소스를 걸을 때도
+        write(tmp_path, f"{d}/x.py", 'load_dataset("hidden/one")\n')            # 대상의 소스를 훑을 때도
     write(tmp_path, "data/ok/y.csv", "a\n1\n")
     found = datasets(discover_datasets(doc_of(), str(tmp_path), log=lambda m: None, data_paths=data_of(tmp_path)))
     assert set(found) == {"data:local/data@"} and [d["name"] for d in found["data:local/data@"]["data"]] == ["data/ok/y.csv"]

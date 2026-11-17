@@ -25,7 +25,7 @@
        허브가 돌려준 id 가 정식 id 다: 옛 이름(imdb → stanfordnlp/imdb)이나 두 이름(bookcorpus, bookcorpus/bookcorpus)으로 부른
        같은 데이터셋은 정식 id 의 컴포넌트 하나로 모으고 (purl·bom-ref 를 바꾸고, 가리키던 관계·modelCard ref 도 따라간다) 한 번만 조회한다.
        조회한 컴포넌트의 purl·bom-ref 는 pkg:huggingface/datasets/<정식 id> 다 (cdxgen 이 purl 없이 만든 것도 맞춘다).
-    2) 로컬 데이터 파일: scan --data 로 지목한 경로(hf:// 로 시작하지 않는 값)에서만 읽는다. 스캔 대상은 데이터 파일을 찾으려고 걷지 않는다
+    2) 로컬 데이터 파일: scan --data 로 지목한 경로(hf:// 로 시작하지 않는 값)에서만 읽는다. 스캔 대상은 데이터 파일을 찾으려고 훑지 않는다
        (확장자만으로 추측하면 웹앱의 아이콘 같은 것도 데이터셋이 된다).
        경로 하나가 컴포넌트 하나 (bom-ref "data:local/<폴더 이름>@", 이름이 겹치면 -2, -3 을 붙인다). 파일 하나를 지목하면
        그 파일만으로 만든다. 같은 경로를 두 번 주면 한 번만 읽는다.
