@@ -1,4 +1,4 @@
-"""이 머신의 CPU 종류를 컨테이너 이미지의 플랫폼 표기(amd64, arm64)로 돌려준다."""
+"""이 머신의 CPU 종류를 컨테이너 이미지가 쓰는 이름(amd64, arm64)으로 돌려준다."""
 from __future__ import annotations
 
 import platform
