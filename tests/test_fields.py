@@ -22,8 +22,8 @@ import sure_aibom.external.hub as hub
 import fieldtrace
 from sure_aibom.exceptions import RunnerError
 from sure_aibom.engine.spdx import convert_spdx
-from sure_aibom.engine.validate import _validate_cdx, _validate_spdx
-from test_image import docker_tar
+from sure_aibom.engine.validation import _validate_cdx, _validate_spdx
+from test_image_tar import docker_tar
 
 FIELDS = Path(__file__).parent / "data" / "fields"
 PROJECT = FIELDS / "project"

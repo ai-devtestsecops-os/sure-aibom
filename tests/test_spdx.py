@@ -7,7 +7,7 @@ import pytest
 
 from sure_aibom.engine.facts import Facts
 from sure_aibom.engine.spdx import convert_spdx
-from sure_aibom.engine.validate import _validate_spdx, detect_format, schema_for, validate_doc
+from sure_aibom.engine.validation import _validate_spdx, detect_format, schema_for, validate_doc
 
 NS = "urn:uuid:3b1f6c2e-8a4d-4c1e-9f7a-0d2b5e6a7c91"
 ROOT, BERT, REVIEWS, LOCAL, LIB, FILE, OS_REF = ("container:/acme-app:1.4.0@", "pkg:huggingface/acme/acme-bert", "pkg:huggingface/datasets/acme/reviews",

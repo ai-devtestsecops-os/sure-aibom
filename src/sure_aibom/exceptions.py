@@ -6,4 +6,4 @@ class RunnerError(RuntimeError):
 
 
 class ImageExtractionError(RuntimeError):
-    """이미지 tar 를 풀지 못함. 이미지 tar 가 아니거나, 목차나 레이어가 빠졌거나, zstd 레이어처럼 지원하지 않으면 engine/extract_image.py 가 던진다."""
+    """이미지 tar 를 풀지 못함. 이미지 tar 가 아니거나, 목차나 레이어가 빠졌거나, zstd 레이어처럼 지원하지 않으면 engine/image_tar.py 가 던진다."""

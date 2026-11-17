@@ -10,7 +10,7 @@ import pytest
 import sure_aibom.engine.model as md
 from sure_aibom.engine.merge import merge
 from sure_aibom.engine.form import INTERNAL_MODEL_PREFIX, regulate
-from sure_aibom.engine.validate import _validate_cdx
+from sure_aibom.engine.validation import _validate_cdx
 
 MODEL_REF = "pkg:huggingface/acme/tiny"
 

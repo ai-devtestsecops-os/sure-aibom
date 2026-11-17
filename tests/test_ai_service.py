@@ -1,11 +1,11 @@
-"""service — cdxgen 서비스 가운데 코드가 SDK 로 부르는 것만 남기고, 없는 것은 import 를 읽어 만든다. 네트워크는 쓰지 않는다."""
+"""ai_service — cdxgen 서비스 가운데 코드가 SDK 로 부르는 것만 남기고, 없는 것은 import 를 읽어 만든다. 네트워크는 쓰지 않는다."""
 import copy
 import json
 from pathlib import Path
 
 import pytest
 
-import sure_aibom.engine.discover_services as sv
+import sure_aibom.engine.ai_service as sv
 
 HUB_BERT = {"bom-ref": "pkg:huggingface/acme/acme-bert", "type": "machine-learning-model", "group": "acme", "name": "acme-bert",
             "purl": "pkg:huggingface/acme/acme-bert", "evidence": {"occurrences": [{"location": "app.py#L4"}]}}

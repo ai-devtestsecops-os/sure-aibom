@@ -7,7 +7,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Callable
 
-from ..engine.validate import detect_format, schema_for, validate_doc
+from ..engine.validation import detect_format, schema_for, validate_doc
 from ..formats import SPEC_BY_FORMAT
 
 

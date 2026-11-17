@@ -2,7 +2,7 @@
 
     이미지 이름 (alpine:3.20, ghcr.io/org/img)   docker, podman, crane 순으로 PATH 에 있는 것으로 .tar 를 받는다
 
-받은 .tar 를 디렉터리로 푸는 것은 engine/extract_image.py 다.
+받은 .tar 를 디렉터리로 푸는 것은 engine/image_tar.py 다.
 """
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ import shutil
 from pathlib import Path
 
 from ..exceptions import RunnerError
-from ..utils.arch import host_arch
+from ..utils.host import host_arch
 from ._proc import run
 
 PULL_TOOLS = ("docker", "podman", "crane")           # syft 와 같은 순서: 데몬 → 레지스트리

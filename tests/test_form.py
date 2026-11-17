@@ -8,7 +8,7 @@ import pytest
 
 from sure_aibom.cli import main
 from sure_aibom.engine.form import regulate
-from sure_aibom.engine.validate import _validate_cdx
+from sure_aibom.engine.validation import _validate_cdx
 
 SAMPLE = Path(__file__).parent / "data" / "merged_sample.cdx.json"
 BERT = "pkg:huggingface/google-bert/bert-base-uncased"

@@ -17,7 +17,7 @@ import sure_aibom.engine.dataset as ds
 from sure_aibom.engine.facts import Facts
 from sure_aibom.engine.merge import merge
 from sure_aibom.engine.form import INTERNAL_PREFIX, regulate
-from sure_aibom.engine.validate import _validate_cdx
+from sure_aibom.engine.validation import _validate_cdx
 from sure_aibom.external.aibom_generator import skip_reason
 from sure_aibom.utils.licenses import card_licenses, license_entry
 

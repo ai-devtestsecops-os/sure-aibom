@@ -1,6 +1,6 @@
 """tests/data/project 를 실제 syft·cdxgen 으로 스캔해 병합 결과를 확인한다.
 두 도구가 없으면 건너뛴다. owasp 보강은 네트워크와 클론이 필요해, 실제로 돌려 녹화해 둔 tests/data/owasp/ 의 출력으로 바꿔 끼운다
-(허브 모델은 bert-base-uncased 하나다). 보강 로직의 세부는 test_enrich 가 본다.
+(허브 모델은 bert-base-uncased 하나다). 보강 로직의 세부는 test_model_hub 가 본다.
 모델 네 개가 서로 다른 경로로 들어온다: 소스의 from_pretrained (허브 참조, 파일 없음) · 받아 둔 HF 모델 디렉터리 ·
 gguf 파일 하나 · LoRA 어댑터. 규제 필드는 cdxgen 프로퍼티와 우리가 읽은 config.json·gguf·safetensors 헤더에서 온다.
 데이터셋과 허브 모델 카드의 조회도 네트워크가 필요해, 닿는 것으로 치고 tests/data/hf_api/ 에 기록해 둔 실제 응답으로 답한다.
@@ -386,7 +386,7 @@ def test_a_tar_that_is_not_an_image_fails_the_unpacking_step_and_exits_2(tmp_pat
 
 def test_an_image_tar_yields_the_models_inside_it(tmp_path):
     """픽스처 프로젝트를 /app 에 담은 docker-save 모양의 tar: 디렉터리 스캔과 같은 모델·데이터셋이 나오고 경로는 이미지 안 경로다."""
-    from test_image import docker_tar
+    from test_image_tar import docker_tar
     buf = io.BytesIO()
     with tarfile.open(fileobj=buf, mode="w") as t:
         t.add(FIXTURE, arcname="app")
