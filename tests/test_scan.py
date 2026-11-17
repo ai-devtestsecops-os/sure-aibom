@@ -345,7 +345,7 @@ def test_an_image_target_is_unpacked_and_the_unpacked_directory_is_scanned(tmp_p
     assert "extract" not in seen and seen["cdxgen"] == (str(FIXTURE), True)
 
 
-def test_an_image_that_cannot_be_unpacked_skips_the_m_bom_and_exits_2(tmp_path, monkeypatch, capsys):
+def test_an_image_that_cannot_be_pulled_skips_the_m_bom_and_exits_2(tmp_path, monkeypatch, capsys):
     import sure_aibom.cli as cli
     from sure_aibom.exceptions import RunnerError
     monkeypatch.setattr(scan_service, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7",
@@ -361,6 +361,27 @@ def test_an_image_that_cannot_be_unpacked_skips_the_m_bom_and_exits_2(tmp_path, 
     assert stages["[sure-aibom] Generating M-BOM (cdxgen)"] == "skipped: image not unpacked"
     assert lines[-1] == "[sure-aibom] error: pulling image failed, so the BOM is incomplete"
     assert json.loads(out.read_text())["components"][0]["name"] == "a"      # S-BOM 은 그래도 쓴다
+
+
+def test_a_tar_that_is_not_an_image_fails_the_unpacking_step_and_exits_2(tmp_path, monkeypatch, capsys):
+    """이미지가 아닌 .tar 는 풀기 단계만 실패로 적고(ImageExtractionError), S-BOM 은 쓰고 2 로 끝낸다."""
+    import sure_aibom.cli as cli
+    monkeypatch.setattr(scan_service, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7",
+        "components": [{"bom-ref": "a", "type": "library", "name": "a", "version": "1", "purl": "pkg:pypi/a@1"}]})
+    monkeypatch.setattr(scan_service, "run_cdxgen", lambda target, workdir: pytest.fail("이미지를 못 풀었는데 cdxgen 을 돌렸다"))
+    tar = tmp_path / "plain.tar"
+    with tarfile.open(tar, "w") as t:
+        info = tarfile.TarInfo("README")
+        info.size = 1
+        t.addfile(info, io.BytesIO(b"x"))
+    out = tmp_path / "p.json"
+    assert cli.main(["scan", str(tar), "-o", str(out)]) == 2
+    lines = capsys.readouterr().err.splitlines()
+    stages = {line.split(" .")[0]: line.rsplit(". ", 1)[-1] for line in lines if " ..." in line}
+    assert stages["[sure-aibom] Unpacking image"] == "failed: not an image tar (no manifest.json or index.json)"
+    assert stages["[sure-aibom] Generating M-BOM (cdxgen)"] == "skipped: image not unpacked"
+    assert lines[-1] == "[sure-aibom] error: unpacking image failed, so the BOM is incomplete"
+    assert json.loads(out.read_text())["components"][0]["name"] == "a"
 
 
 def test_an_image_tar_yields_the_models_inside_it(tmp_path):

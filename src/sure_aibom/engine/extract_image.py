@@ -18,7 +18,7 @@ import shutil
 import tarfile
 from pathlib import Path
 
-from ..exceptions import RunnerError
+from ..exceptions import ImageExtractionError
 from ..utils.arch import host_arch
 
 ARCHIVE_SUFFIXES = (".tar", ".tar.gz", ".tgz")
@@ -44,15 +44,15 @@ def extract_image(tar_path: Path, rootfs: Path) -> tuple[int, str | None]:
             layers, name = _layers_of(outer, members)
             for layer_name in layers:
                 if layer_name not in members:
-                    raise RunnerError(f"layer {layer_name} is missing")
+                    raise ImageExtractionError(f"layer {layer_name} is missing")
                 with outer.extractfile(members[layer_name]) as raw:
                     if raw.read(4) == ZSTD_MAGIC:
-                        raise RunnerError("zstd-compressed layers are not supported")
+                        raise ImageExtractionError("zstd-compressed layers are not supported")
                     raw.seek(0)
                     with tarfile.open(fileobj=raw, mode="r:*") as layer:
                         _apply_layer(layer, rootfs)
     except (tarfile.TarError, OSError, ValueError, KeyError, TypeError) as e:
-        raise RunnerError(f"cannot unpack {tar_path.name}: {e}") from e
+        raise ImageExtractionError(f"cannot unpack {tar_path.name}: {e}") from e
     return len(layers), name
 
 
@@ -61,21 +61,21 @@ def _layers_of(outer: tarfile.TarFile, members: dict[str, tarfile.TarInfo]) -> t
     if "manifest.json" in members:
         entries = _json(outer, members, "manifest.json")
         if not isinstance(entries, list) or not entries:
-            raise RunnerError("manifest.json lists no image")
+            raise ImageExtractionError("manifest.json lists no image")
         entry = _for_this_machine(entries, lambda e: _platform_of(_json(outer, members, e.get("Config", ""))))
         tags = entry.get("RepoTags") or []
         return [layer.removeprefix("./") for layer in entry.get("Layers") or []], (tags[0] if tags else None)
     if "index.json" in members:
         manifest, name = _resolve_index(outer, members, _json(outer, members, "index.json"), None)
         return [_blob(layer["digest"]) for layer in manifest.get("layers") or []], name
-    raise RunnerError("not an image tar (no manifest.json or index.json)")
+    raise ImageExtractionError("not an image tar (no manifest.json or index.json)")
 
 
 def _resolve_index(outer, members, index: dict, name: str | None) -> tuple[dict, str | None]:
     """OCI index → (이미지 매니페스트, 이름). 다중 플랫폼이면 이 머신의 것, 인덱스가 인덱스를 가리키면 따라 들어간다."""
     descriptors = index.get("manifests") or []
     if not descriptors:
-        raise RunnerError("index.json lists no image")
+        raise ImageExtractionError("index.json lists no image")
     chosen = _for_this_machine(descriptors, lambda d: _platform_of(d.get("platform") or {}))
     name = name or _name_of(chosen) or next((n for n in map(_name_of, descriptors) if n), None)
     manifest = _json(outer, members, _blob(chosen["digest"]))
@@ -96,7 +96,7 @@ def _for_this_machine(candidates: list[dict], platform_of) -> dict:
         try:
             if platform_of(candidate) == wanted:
                 return candidate
-        except RunnerError:
+        except ImageExtractionError:
             continue
     return candidates[0]
 
@@ -112,12 +112,12 @@ def _blob(digest: str) -> str:
 
 def _json(outer: tarfile.TarFile, members: dict[str, tarfile.TarInfo], name: str):
     if name not in members:
-        raise RunnerError(f"{name} is missing")
+        raise ImageExtractionError(f"{name} is missing")
     with outer.extractfile(members[name]) as f:
         try:
             return json.load(f)
         except json.JSONDecodeError as e:
-            raise RunnerError(f"{name} is not JSON") from e
+            raise ImageExtractionError(f"{name} is not JSON") from e
 
 
 def _apply_layer(layer: tarfile.TarFile, rootfs: Path) -> None:

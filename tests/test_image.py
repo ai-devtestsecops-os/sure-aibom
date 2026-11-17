@@ -12,7 +12,7 @@ import pytest
 
 import sure_aibom.engine.extract_image as im
 import sure_aibom.external.pull_image as ip
-from sure_aibom.exceptions import RunnerError
+from sure_aibom.exceptions import ImageExtractionError, RunnerError
 
 
 # ── tar 만들기 ────────────────────────────────────────────────────────────────
@@ -183,10 +183,10 @@ def test_manifest_json_with_several_images_picks_this_machines_platform(tmp_path
                               "z.tar": im.ZSTD_MAGIC + b"\x00" * 16}), "zstd-compressed layers are not supported"),
     (lambda p: p.write_bytes(b"not a tar at all"), "cannot unpack"),
 ])
-def test_bad_image_tars_are_runner_errors(tmp_path, make, message):
+def test_bad_image_tars_are_image_extraction_errors(tmp_path, make, message):
     path = tmp_path / "bad.tar"
     make(path)
-    with pytest.raises(RunnerError, match=message):
+    with pytest.raises(ImageExtractionError, match=message):
         im.extract_image(path, tmp_path / "rootfs")
 
 

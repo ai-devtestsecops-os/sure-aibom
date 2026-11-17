@@ -26,7 +26,7 @@ from ..engine.form import drop_tool_properties, regulate
 from ..engine.merge import merge
 from ..engine.model import enrich_hub_models, enrich_local_models
 from ..engine.spdx import convert_spdx
-from ..exceptions import RunnerError
+from ..exceptions import ImageExtractionError, RunnerError
 from ..external import aibom_generator, hub, run_cdxgen, run_syft
 from ..external.pull_image import pull_image
 from ..formats import FORM_BY_SPEC, FORMAT_NAME
@@ -137,18 +137,21 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path, stag
     image_name: str | None = None
     if not Path(target).is_dir():
         scan_dir = None
-        label = "Pulling image"
-        try:
-            tar = Path(target)
-            if not is_archive(target):
+        tar: Path | None = Path(target)
+        if not is_archive(target):
+            try:
                 tar, tool = pull_image(target, workdir)
-                stage(f"{label} ({tool})", "done")
-            label = "Unpacking image"
-            layers, image_name = extract_image(tar, workdir / "rootfs")
-            stage(label, count(layers, "layer"))
-            scan_dir = str(workdir / "rootfs")
-        except RunnerError as e:
-            fail(label, label.lower(), e)
+                stage(f"Pulling image ({tool})", "done")
+            except RunnerError as e:
+                fail("Pulling image", "pulling image", e)
+                tar = None
+        if tar is not None:
+            try:
+                layers, image_name = extract_image(tar, workdir / "rootfs")
+                stage("Unpacking image", count(layers, "layer"))
+                scan_dir = str(workdir / "rootfs")
+            except ImageExtractionError as e:
+                fail("Unpacking image", "unpacking image", e)
 
     if scan_dir is None:
         stage("Generating M-BOM (cdxgen)", "skipped: image not unpacked")
