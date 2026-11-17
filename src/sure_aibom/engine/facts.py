@@ -34,7 +34,7 @@ class Facts:
         """value 가 읽을 수 있는 날짜·시각이면 적고, 아니면 아무것도 하지 않는다. 이미 있는 값은 두지 않고 덮는다."""
         if key not in TIME_KEYS:
             raise ValueError(f"key 는 {TIME_KEYS} 중 하나여야 한다: {key!r}")
-        stamp = normalize_time(value)
+        stamp = _normalize_time(value)
         if stamp:
             self.times.setdefault(ref, {})[key] = stamp
 
@@ -54,7 +54,7 @@ class Facts:
                 target.setdefault(k, v)
 
 
-def normalize_time(value) -> str | None:
+def _normalize_time(value) -> str | None:
     """ISO 8601 날짜·시각 문자열 → SPDX DateTimeStamp("YYYY-MM-DDTHH:MM:SSZ", UTC). 날짜만 있거나 못 읽으면 None.
     소수점 초는 버리고, 시간대 표시가 없으면 UTC 로 본다."""
     if not isinstance(value, str) or not _DATE_TIME.match(value.strip()):

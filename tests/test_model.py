@@ -10,7 +10,7 @@ import pytest
 import sure_aibom.engine.model as md
 from sure_aibom.engine.merge import merge
 from sure_aibom.engine.form import INTERNAL_MODEL_PREFIX, regulate
-from sure_aibom.engine.validate import validate_cdx
+from sure_aibom.engine.validate import _validate_cdx
 
 MODEL_REF = "pkg:huggingface/acme/tiny"
 
@@ -126,11 +126,11 @@ def model_of(doc: dict) -> dict:
 
 # -- config.json ---------------------------------------------------------------------
 def test_parse_config_uses_llama_cpp_names_and_the_first_integer_candidate(tmp_path):
-    assert list(md.parse_config(write_json(tmp_path, "config.json", BERT_CONFIG)).items()) == BERT_HPARAMS
+    assert list(md._parse_config(write_json(tmp_path, "config.json", BERT_CONFIG)).items()) == BERT_HPARAMS
     # 계열마다 다른 키도 같은 이름으로. null 인 앞 후보는 건너뛰고 다음 후보를 본다
     gpt2 = {"n_layer": 12, "n_ctx": None, "n_positions": 1024, "n_embd": 768, "n_inner": 3072, "n_head": 12,
             "rotary_dim": 64, "vocab_size": 50257}
-    assert md.parse_config(write_json(tmp_path, "gpt2.json", gpt2)) == {
+    assert md._parse_config(write_json(tmp_path, "gpt2.json", gpt2)) == {
         "block_count": "12", "context_length": "1024", "embedding_length": "768", "feed_forward_length": "3072",
         "attention_head_count": "12", "rope_dimension_count": "64", "vocab_size": "50257"}
 
@@ -138,31 +138,31 @@ def test_parse_config_uses_llama_cpp_names_and_the_first_integer_candidate(tmp_p
 def test_parse_config_skips_non_integers_and_merges_text_config(tmp_path):
     odd = {"num_hidden_layers": "12", "hidden_size": 768.5, "num_attention_heads": True, "vocab_size": 30522,
            "max_position_embeddings": [512]}
-    assert md.parse_config(write_json(tmp_path, "a.json", odd)) == {"vocab_size": "30522"}   # 문자열·실수·bool·목록은 버린다
+    assert md._parse_config(write_json(tmp_path, "a.json", odd)) == {"vocab_size": "30522"}   # 문자열·실수·bool·목록은 버린다
     vlm = {"hidden_size": 1024, "text_config": {"hidden_size": 4096, "num_hidden_layers": 32}}
-    assert md.parse_config(write_json(tmp_path, "b.json", vlm)) == {"block_count": "32", "embedding_length": "4096"}
-    assert md.parse_config(write_json(tmp_path, "c.json", [1, 2])) == {}                     # 객체가 아니면 빈 dict
+    assert md._parse_config(write_json(tmp_path, "b.json", vlm)) == {"block_count": "32", "embedding_length": "4096"}
+    assert md._parse_config(write_json(tmp_path, "c.json", [1, 2])) == {}                     # 객체가 아니면 빈 dict
     with pytest.raises(ValueError):
-        md.parse_config(write(tmp_path, "big.json", " " * (md.CONFIG_LIMIT + 1)))
+        md._parse_config(write(tmp_path, "big.json", " " * (md.CONFIG_LIMIT + 1)))
 
 
 # -- safetensors ---------------------------------------------------------------------
 def test_safetensors_parameters_sums_shape_products(tmp_path):
     path = write_safetensors(tmp_path, "model.safetensors", {"a": [2, 3], "b": [4], "scalar": []}, metadata={"format": "pt"})
-    assert md.safetensors_parameters(path) == 6 + 4 + 1                                      # __metadata__ 는 세지 않는다
-    assert md.safetensors_parameters(write_safetensors(tmp_path, "empty.safetensors", {})) == 0
+    assert md._safetensors_parameters(path) == 6 + 4 + 1                                      # __metadata__ 는 세지 않는다
+    assert md._safetensors_parameters(write_safetensors(tmp_path, "empty.safetensors", {})) == 0
     bad = tmp_path / "bad.safetensors"
     bad.write_bytes(struct.pack("<Q", 0))
     with pytest.raises(ValueError):
-        md.safetensors_parameters(bad)
+        md._safetensors_parameters(bad)
     short = tmp_path / "short.safetensors"
     short.write_bytes(struct.pack("<Q", 100) + b"{}")
     with pytest.raises(ValueError):
-        md.safetensors_parameters(short)
+        md._safetensors_parameters(short)
     huge = tmp_path / "huge.safetensors"
     huge.write_bytes(struct.pack("<Q", md.SAFETENSORS_HEADER_LIMIT + 1))
     with pytest.raises(ValueError):
-        md.safetensors_parameters(huge)
+        md._safetensors_parameters(huge)
 
 
 def test_safetensors_total_follows_the_shard_index(tmp_path):
@@ -190,7 +190,7 @@ def test_safetensors_total_is_none_when_a_file_cannot_be_read(tmp_path):
 def test_parse_gguf_reads_architecture_keys_and_counts_tensor_elements(tmp_path):
     path = tmp_path / "tiny.gguf"
     path.write_bytes(llama_gguf())
-    hparams, count = md.parse_gguf(path)
+    hparams, count = md._parse_gguf(path)
     assert hparams == {"block_count": "16", "context_length": "4096", "embedding_length": "2048",
                        "feed_forward_length": "8192", "attention_head_count": "32", "attention_head_count_kv": "8",
                        "rope_dimension_count": "64", "vocab_size": "3"}                       # vocab 은 토큰 배열 길이
@@ -202,10 +202,10 @@ def test_parse_gguf_prefers_an_explicit_vocab_size_and_handles_version_1_lengths
           string_array("tokenizer.ggml.tokens", ["a", "b"])]
     path = tmp_path / "v.gguf"
     path.write_bytes(gguf_bytes(kv, [("w", [2, 2])]))
-    assert md.parse_gguf(path)[0]["vocab_size"] == "32000"
+    assert md._parse_gguf(path)[0]["vocab_size"] == "32000"
     old = tmp_path / "v1.gguf"
     old.write_bytes(gguf_bytes([string("general.architecture", "llama", "<I"), u32("llama.block_count", 4)], [("w", [3])], version=1))
-    assert md.parse_gguf(old) == ({"block_count": "4"}, 3)
+    assert md._parse_gguf(old) == ({"block_count": "4"}, 3)
 
 
 def test_parse_gguf_rejects_broken_files(tmp_path):
@@ -217,21 +217,21 @@ def test_parse_gguf_rejects_broken_files(tmp_path):
         path = tmp_path / name
         path.write_bytes(data)
         with pytest.raises(ValueError):
-            md.parse_gguf(path)
+            md._parse_gguf(path)
     unknown = tmp_path / "unknownkind.gguf"
     unknown.write_bytes(gguf_bytes([("k", 99, b"\0")], []))
     with pytest.raises(ValueError):
-        md.parse_gguf(unknown)
+        md._parse_gguf(unknown)
     nodims = tmp_path / "dims.gguf"
     nodims.write_bytes(gguf_bytes([], [("w", [1] * (md.GGUF_MAX_DIMS + 1))]))
     with pytest.raises(ValueError):
-        md.parse_gguf(nodims)
+        md._parse_gguf(nodims)
 
 
 def test_parse_gguf_without_architecture_yields_no_hyperparameters(tmp_path):
     path = tmp_path / "noarch.gguf"
     path.write_bytes(gguf_bytes([u32("llama.block_count", 16)], [("w", [5])]))
-    assert md.parse_gguf(path) == ({}, 5)
+    assert md._parse_gguf(path) == ({}, 5)
 
 
 # -- discover --------------------------------------------------------------------------
@@ -328,7 +328,7 @@ def test_properties_form_moves_local_facts_to_aibom_model_keys(discovered):
     assert (card["aibom:model:hyperparameters:0:name"], card["aibom:model:hyperparameters:0:value"]) == ("block_count", "12")
     assert card["aibom:model:parameterCount"] == str(30522 * 768)
     assert "properties" not in comp and "aibom-internal" not in json.dumps(out)      # 내부 키는 목록째 사라진다
-    assert validate_cdx(out, "1.7", log=print) and validate_cdx(out, "v0.6", log=print)
+    assert _validate_cdx(out, "1.7", log=print) and _validate_cdx(out, "v0.6", log=print)
 
 
 def test_typed_form_fills_model_parameters(discovered):
@@ -337,7 +337,7 @@ def test_typed_form_fills_model_parameters(discovered):
     assert params["hyperparameters"] == [{"name": n, "value": v} for n, v in BERT_HPARAMS]
     assert params["parameterCount"] == 30522 * 768 and isinstance(params["parameterCount"], int)
     assert "aibom-internal" not in json.dumps(out) and "aibom:model:" not in json.dumps(out)
-    assert validate_cdx(out, "v0.6", log=print)
+    assert _validate_cdx(out, "v0.6", log=print)
 
 
 def test_tool_values_win_over_local_files_and_internal_keys_always_go(discovered):

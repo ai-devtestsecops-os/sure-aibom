@@ -326,7 +326,7 @@ def spdx_site_sources(doc: dict, tracker: Tracker) -> dict[str, set[tuple[str, s
     값과 맞춰 도구를 잇는다: 같은 값, 열거값 대응(direct-download → directDownload 등), 이어 붙인 문자열은 풀어서. 못 찾으면
     변환기(sure-aibom)다. 공급자·작성자·라이선스 요소는 그것을 가리키는 컴포넌트로, 관계는 종류마다 CycloneDX 의 관계·계보·라이선스
     값으로, 루트의 builtTime 은 syft 가 읽은 이미지 라벨로 잇는다."""
-    from sure_aibom.engine.facts import normalize_time
+    from sure_aibom.engine.facts import _normalize_time
     from sure_aibom.engine.spdx import AVAILABILITY, EXTERNAL_REF_TYPE, HASH_ALGORITHM, PRESENCE, PURPOSE_BY_TYPE, convert_spdx
 
     clean = copy.deepcopy(doc)
@@ -349,7 +349,7 @@ def spdx_site_sources(doc: dict, tracker: Tracker) -> dict[str, set[tuple[str, s
         if svc.get("bom-ref"):
             contexts[svc["bom-ref"]] = ({p: v for p, v in doc_attr.items() if p.startswith("services")}, "서비스")
     tools_attr = {p: v for p, v in doc_attr.items() if p.startswith("metadata.tools")}
-    label_times = {normalize_time(p.get("value")) for p in ((tracker.raw.get(SYFT) or {}).get("metadata") or {}).get("properties") or []
+    label_times = {_normalize_time(p.get("value")) for p in ((tracker.raw.get(SYFT) or {}).get("metadata") or {}).get("properties") or []
                    if isinstance(p, dict)} - {None}
 
     def bom_ref_of(el: dict) -> str | None:

@@ -54,7 +54,7 @@ NOTEBOOK = json.dumps({"cells": [{"cell_type": "markdown", "source": ["import op
 ])
 def test_sdk_imports_are_read_from_python_notebooks_and_js(tmp_path, name, text, expected):
     write(tmp_path, f"src/{name}", text)
-    assert sv.sdk_imports(tmp_path, log=lambda m: None) == {p: [f"src/{name}"] for p in expected}
+    assert sv._sdk_imports(tmp_path, log=lambda m: None) == {p: [f"src/{name}"] for p in expected}
 
 
 def test_skipped_folders_and_unparsable_files(tmp_path):
@@ -64,7 +64,7 @@ def test_skipped_folders_and_unparsable_files(tmp_path):
     write(tmp_path, "src/broken.py", "import (\n")
     write(tmp_path, "src/ok.py", "import replicate\n")
     logs: list[str] = []
-    assert sv.sdk_imports(tmp_path, logs.append) == {"replicate": ["src/ok.py"]}
+    assert sv._sdk_imports(tmp_path, logs.append) == {"replicate": ["src/ok.py"]}
     assert logs == ["[service] src/broken.py: skipped, cannot parse (SyntaxError)"]
 
 

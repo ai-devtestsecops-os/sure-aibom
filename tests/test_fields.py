@@ -22,7 +22,7 @@ import sure_aibom.external.hub as hub
 import fieldtrace
 from sure_aibom.exceptions import RunnerError
 from sure_aibom.engine.spdx import convert_spdx
-from sure_aibom.engine.validate import validate_cdx, validate_spdx
+from sure_aibom.engine.validate import _validate_cdx, _validate_spdx
 from test_image import docker_tar
 
 FIELDS = Path(__file__).parent / "data" / "fields"
@@ -131,8 +131,8 @@ def test_the_fixture_is_what_the_builder_makes(tmp_path):
 def test_the_scans_validate(scans):
     for name in scans:
         doc = json.loads((OUT / f"{name}.cdx.json").read_text())
-        assert validate_cdx(doc, "v0.6", log=lambda m: None), name
-    assert validate_cdx(json.loads((OUT / "directory-1.7.cdx.json").read_text()), "1.7", log=lambda m: None)
+        assert _validate_cdx(doc, "v0.6", log=lambda m: None), name
+    assert _validate_cdx(json.loads((OUT / "directory-1.7.cdx.json").read_text()), "1.7", log=lambda m: None)
 
 
 def test_the_spdx_conversion_of_the_scans_validates(scans):
@@ -143,7 +143,7 @@ def test_the_spdx_conversion_of_the_scans_validates(scans):
         refs = {c["bom-ref"] for c in doc["components"]} | {s["bom-ref"] for s in doc["services"]} | {doc["metadata"]["component"]["bom-ref"]}
         for spec in ("3.0.1", "v0.6"):
             out = convert_spdx(doc, spec, log=lambda m: None)
-            assert validate_spdx(out, spec, log=print), (name, spec)
+            assert _validate_spdx(out, spec, log=print), (name, spec)
             kept = {p["extension_cdxPropValue"] for e in out["@graph"] for x in e.get("extension") or []
                     for p in x["extension_cdxProperty"] if p["extension_cdxPropName"] == "bom-ref"}
             assert refs <= kept, (name, spec)

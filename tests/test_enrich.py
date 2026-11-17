@@ -11,7 +11,7 @@ import pytest
 import sure_aibom.engine.model as en
 import sure_aibom.external.aibom_generator as aibom_generator
 import sure_aibom.external.hub as hub_api          # 이름 hub 는 아래의 Hub API 응답 fixture 가 쓴다
-from sure_aibom.engine.model import OWASP_SOURCES, apply_model_info, hf_id_of, hub_model_id, performance_metrics
+from sure_aibom.engine.model import OWASP_SOURCES, _apply_model_info, _hf_id_of, _performance_metrics, hub_model_id
 from sure_aibom.engine.facts import Facts
 from sure_aibom.engine.form import regulate
 from sure_aibom.exceptions import RunnerError
@@ -88,7 +88,7 @@ def stub(monkeypatch, result, calls: list | None = None):
     ({"type": "machine-learning-model"}, None),
 ])
 def test_hf_id_of(comp, expected):
-    assert hf_id_of(comp) == expected
+    assert _hf_id_of(comp) == expected
 
 
 @pytest.mark.parametrize("locations, expected", [
@@ -312,7 +312,7 @@ def test_hub_api_fields_follow_the_cdxgen_rules_for_cards():
                               "metrics": [{"type": "accuracy", "value": 0.5}, {"name": "f1", "value": None}, {"value": 1}]}]}]},
             "gguf": {"total": 15000000, "architecture": "llama", "context_length": 2048}}
     comp = {"type": "machine-learning-model", "name": "chat-GGUF", "purl": "pkg:huggingface/acme/chat-GGUF"}
-    apply_model_info(comp, "acme/chat-GGUF", info)
+    _apply_model_info(comp, "acme/chat-GGUF", info)
     assert comp["licenses"] == [{"license": {"name": "acme-license", "url": "https://acme.example/l"}}]
     assert comp["description"] == "Acme chat\\nmodel."
     assert comp["pedigree"] == {"ancestors": [{"type": "machine-learning-model", "group": "acme", "name": "base", "purl": "pkg:huggingface/acme/base"}],
@@ -330,15 +330,15 @@ def test_hub_api_never_overwrites_and_infers_io_from_widgets_like_cdxgen():
             "licenses": [{"license": {"id": "MIT"}}], "pedigree": {"ancestors": [{"name": "x"}]},
             "modelCard": {"modelParameters": {"inputs": [{"format": "image"}]}}}
     before = copy.deepcopy(comp)
-    apply_model_info(comp, "a/m", {"sha": "s", "cardData": {"license": "apache-2.0", "base_model": "a/b", "model_description": "x"},
-                                   "pipeline_tag": "text-classification", "widgetData": [{"text": "hi"}]})
+    _apply_model_info(comp, "a/m", {"sha": "s", "cardData": {"license": "apache-2.0", "base_model": "a/b", "model_description": "x"},
+                                    "pipeline_tag": "text-classification", "widgetData": [{"text": "hi"}]})
     assert {k: comp[k] for k in before} == {**before, "modelCard": comp["modelCard"]}
     assert comp["modelCard"]["modelParameters"] == {"inputs": [{"format": "image"}], "task": "text-classification"}   # 입출력이 있으면 손대지 않는다
     widget = {"type": "machine-learning-model", "name": "m", "purl": "pkg:huggingface/a/m"}
-    apply_model_info(widget, "a/m", {"pipeline_tag": "text-classification", "widgetData": [{"text": "hi"}]})      # 표에 없는 task 는 widget 으로
+    _apply_model_info(widget, "a/m", {"pipeline_tag": "text-classification", "widgetData": [{"text": "hi"}]})      # 표에 없는 task 는 widget 으로
     assert widget["modelCard"]["modelParameters"]["inputs"] == [{"format": "text"}]
     empty = {"type": "machine-learning-model", "name": "m", "purl": "pkg:huggingface/a/m"}
-    apply_model_info(empty, "a/m", {"id": "a/m"})
+    _apply_model_info(empty, "a/m", {"id": "a/m"})
     assert empty == {"type": "machine-learning-model", "name": "m", "purl": "pkg:huggingface/a/m",
                      "externalReferences": [{"type": "distribution", "url": "https://huggingface.co/a/m"}]}
 
@@ -347,9 +347,9 @@ def test_performance_metrics_match_cdxgen():
     index = [{"results": [{"dataset": {"name": "D", "split": "s"}, "metrics": [{"type": "acc", "value": 0.9}, {"name": "f1", "value": "0.8"},
                                                                              {"type": "x", "value": ""}, {"value": 1}]},
                           {"metrics": [{"type": "bleu", "value": 30}]}, "bad"]}, None]
-    assert performance_metrics(index) == [{"type": "acc", "value": "0.9", "slice": "D / s"}, {"type": "f1", "value": "0.8", "slice": "D / s"},
-                                          {"type": "bleu", "value": "30"}]
-    assert performance_metrics(None) == [] and performance_metrics({"results": []}) == []
+    assert _performance_metrics(index) == [{"type": "acc", "value": "0.9", "slice": "D / s"}, {"type": "f1", "value": "0.8", "slice": "D / s"},
+                                           {"type": "bleu", "value": "30"}]
+    assert _performance_metrics(None) == [] and _performance_metrics({"results": []}) == []
 
 
 # -- form 으로 이어지는가 ----------------------------------------------------------

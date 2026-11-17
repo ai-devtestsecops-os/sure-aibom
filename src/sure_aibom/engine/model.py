@@ -143,14 +143,14 @@ def _apply(comp: dict, root: Path, root_resolved: Path, log) -> None:
     for path in _model_files(comp, root, root_resolved):
         rel = _relative(path, root_resolved)
         if path.name == CONFIG_NAME:
-            found = _read(parse_config, path, rel, log)
+            found = _read(_parse_config, path, rel, log)
             if found is None:
                 continue
             _take(hparams, found, rel, label, log)
             if parameter_count is None:
                 parameter_count = _safetensors_total(path.parent, root_resolved, log)
         else:
-            got = _read(parse_gguf, path, rel, log)
+            got = _read(_parse_gguf, path, rel, log)
             if got is None:
                 continue
             found, count = got
@@ -158,7 +158,7 @@ def _apply(comp: dict, root: Path, root_resolved: Path, log) -> None:
             if parameter_count is None:
                 parameter_count = count
 
-    props = internal_properties(hparams, parameter_count)
+    props = _internal_properties(hparams, parameter_count)
     if props:
         comp["properties"] = (comp.get("properties") or []) + props
 
@@ -192,13 +192,13 @@ def _model_files(comp: dict, root: Path, root_resolved: Path) -> list[Path]:
         name = PurePosixPath(location.replace("\\", "/")).name
         if name != CONFIG_NAME and not name.lower().endswith(GGUF_SUFFIX):
             continue
-        path = _inside_file(root, root_resolved, location)
+        path = inside_file(root, root_resolved, location)
         if path is not None:
             found.add(path)
     return sorted(found, key=str)
 
 
-def _inside_file(root: Path, root_resolved: Path, location: str) -> Path | None:
+def inside_file(root: Path, root_resolved: Path, location: str) -> Path | None:
     """대상 루트 기준 경로(cdxgen 이 쓰는 모양)를 실제 파일로. 링크를 따라간 뒤에도 대상 안이어야 한다."""
     text = location.replace("\\", "/")
     candidates = [root / text.lstrip("/")]
@@ -231,7 +231,7 @@ def _relative(path: Path, root_resolved: Path) -> str:
 
 # ── config.json ─────────────────────────────────────────────────────────────
 
-def parse_config(path: Path) -> dict[str, str]:
+def _parse_config(path: Path) -> dict[str, str]:
     """HuggingFace config.json → llama.cpp 이름의 하이퍼파라미터. 정수 값만 가져온다."""
     if path.stat().st_size > CONFIG_LIMIT:
         raise ValueError("config.json 이 너무 크다")
@@ -264,7 +264,7 @@ def _safetensors_total(directory: Path, root_resolved: Path, log) -> int | None:
         return None
     total = 0
     for path in _shards(directory, files):
-        n = _read(safetensors_parameters, path, _relative(path, root_resolved), log)
+        n = _read(_safetensors_parameters, path, _relative(path, root_resolved), log)
         if n is None:
             return None
         total += n
@@ -287,7 +287,7 @@ def _shards(directory: Path, files: list[Path]) -> list[Path]:
     return files
 
 
-def safetensors_parameters(path: Path) -> int:
+def _safetensors_parameters(path: Path) -> int:
     """safetensors 헤더(앞 8바이트 길이 + JSON)의 텐서 shape 곱의 합. 가중치는 읽지 않는다."""
     with path.open("rb") as fh:
         head = fh.read(8)
@@ -318,7 +318,7 @@ def safetensors_parameters(path: Path) -> int:
 
 # ── gguf ────────────────────────────────────────────────────────────────────
 
-def parse_gguf(path: Path) -> tuple[dict[str, str], int | None]:
+def _parse_gguf(path: Path) -> tuple[dict[str, str], int | None]:
     """GGUF 헤더 → (하이퍼파라미터, 파라미터 수). 메타데이터 KV 표와 텐서 정보만 읽고 텐서 데이터는 읽지 않는다."""
     with path.open("rb") as fh:
         head = fh.read(8)
@@ -419,7 +419,7 @@ class _Gguf:
 
 # ── 내부 프로퍼티 ────────────────────────────────────────────────────────────
 
-def internal_properties(hparams: dict[str, str], parameter_count: int | None) -> list[dict]:
+def _internal_properties(hparams: dict[str, str], parameter_count: int | None) -> list[dict]:
     """사실 → aibom-internal:model:* 프로퍼티. 키 모양은 정의서의 aibom:model:* 와 같다 (접두어만 다르다)."""
     props: list[dict] = []
     for i, name in enumerate(n for n in HPARAM_ORDER if n in hparams):
@@ -454,7 +454,7 @@ TASK_IO_FORMATS = {
 }
 
 
-def hf_id_of(component: dict) -> str | None:
+def _hf_id_of(component: dict) -> str | None:
     m = _HF_PURL.match(component.get("purl") or "")
     if not m or component.get("type") != "machine-learning-model":
         return None
@@ -463,7 +463,7 @@ def hf_id_of(component: dict) -> str | None:
 
 def hub_model_id(component: dict) -> str | None:
     """허브 모델이면 그 id (머리 설명). 로컬 모델 파일에서 찾은 모델이면 None."""
-    hf_id = hf_id_of(component)
+    hf_id = _hf_id_of(component)
     if hf_id is None:
         return None
     for occurrence in (component.get("evidence") or {}).get("occurrences") or []:
@@ -511,7 +511,7 @@ def enrich_hub_models(merged: dict, workdir: Path, log=print, report: dict | Non
         for hf_id, comp in targets.items():
             info = model_infos.get(hf_id)
             if isinstance(info, dict):
-                apply_model_info(comp, hf_id, info)
+                _apply_model_info(comp, hf_id, info)
                 if facts is not None and comp.get("bom-ref"):
                     facts.set_time(comp["bom-ref"], "releaseTime", info.get("lastModified"))
                 report["hub"] += 1
@@ -579,7 +579,7 @@ def _apply_owasp(dst: dict, src: dict) -> int:
 
 # ── Hub API 응답 → 필드 ────────────────────────────────────────────────────────
 
-def apply_model_info(comp: dict, hf_id: str, info: dict) -> None:
+def _apply_model_info(comp: dict, hf_id: str, info: dict) -> None:
     """머리 설명 1) 의 표대로 비어 있는 필드만 채운다."""
     cid = info.get("id") if isinstance(info.get("id"), str) and _HF_ID.match(info["id"].strip("/")) else hf_id
     hf_id = cid.strip("/")
@@ -645,7 +645,7 @@ def _model_card(comp: dict, info: dict, card: dict) -> None:
         updates["inputs"], updates["outputs"] = [{"format": io[0]}], [{"format": io[1]}]
     if updates:
         comp.setdefault("modelCard", {}).setdefault("modelParameters", {}).update(updates)
-    metrics = performance_metrics(card.get("model-index") or info.get("model-index"))
+    metrics = _performance_metrics(card.get("model-index") or info.get("model-index"))
     if metrics and not ((comp.get("modelCard") or {}).get("quantitativeAnalysis") or {}).get("performanceMetrics"):
         comp.setdefault("modelCard", {}).setdefault("quantitativeAnalysis", {})["performanceMetrics"] = metrics
 
@@ -673,7 +673,7 @@ def _widget_io(widgets) -> tuple[str, str] | None:
     return None
 
 
-def performance_metrics(model_index) -> list[dict]:
+def _performance_metrics(model_index) -> list[dict]:
     """cdxgen createPerformanceMetrics 와 같은 규칙: metric 마다 {type, value(문자열), slice "데이터셋 이름 / split"}. 값이 없으면 뺀다."""
     out = []
     for entry in _as_list(model_index):

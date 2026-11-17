@@ -94,7 +94,7 @@ def _spdx_errors(doc: dict, schema_path: Path) -> list[str]:
     return out
 
 
-def validate_cdx(doc: dict, spec: str, log=print) -> bool:
+def _validate_cdx(doc: dict, spec: str, log=print) -> bool:
     """CycloneDX 문서를 spec 이 고른 스키마 하나로만 검사한다. "1.7" 은 공식 CycloneDX 1.7 (properties 형),
     "v0.6" 은 aibom-v0.6 CycloneDX 스키마 (typed 형). 자동으로 다른 쪽을 시도하지 않는다."""
     if spec not in CDX_SCHEMA_BY_SPEC:
@@ -104,7 +104,7 @@ def validate_cdx(doc: dict, spec: str, log=print) -> bool:
     return not errors
 
 
-def validate_spdx(doc: dict, spec: str, log=print) -> bool:
+def _validate_spdx(doc: dict, spec: str, log=print) -> bool:
     """SPDX 3.0.1 JSON-LD 문서를 spec 이 고른 스키마 하나로만 검사한다. "3.0.1" 은 공식 스키마, "v0.6" 은 aibom-v0.6 SPDX 스키마."""
     if spec not in SPDX_SCHEMA_BY_SPEC:
         raise ValueError(f"spec 은 {tuple(SPDX_SCHEMA_BY_SPEC)} 중 하나여야 한다: {spec!r}")
@@ -117,7 +117,7 @@ def validate_doc(doc: dict, fmt: str, spec: str, log=print) -> bool:
     """형식에 맞는 검사기로 넘긴다. schema_for(fmt, spec) 가 None 이면 ValueError."""
     if schema_for(fmt, spec) is None:
         raise ValueError(f"{spec} 은 {fmt} 의 스키마가 아니다")
-    return (validate_cdx if fmt == "cyclonedx" else validate_spdx)(doc, spec, log)
+    return (_validate_cdx if fmt == "cyclonedx" else _validate_spdx)(doc, spec, log)
 
 
 def _report(messages: list[str], log) -> None:

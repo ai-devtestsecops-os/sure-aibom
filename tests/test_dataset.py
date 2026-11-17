@@ -17,7 +17,7 @@ import sure_aibom.engine.dataset as ds
 from sure_aibom.engine.facts import Facts
 from sure_aibom.engine.merge import merge
 from sure_aibom.engine.form import INTERNAL_PREFIX, regulate
-from sure_aibom.engine.validate import validate_cdx
+from sure_aibom.engine.validate import _validate_cdx
 from sure_aibom.external.aibom_generator import skip_reason
 from sure_aibom.utils.licenses import card_licenses, license_entry
 
@@ -179,7 +179,7 @@ def data_of(root: Path) -> list[str]:
     ({"type": "library", "purl": "pkg:huggingface/datasets/x/y"}, None),
 ])
 def test_hf_dataset_id_of(comp, expected):
-    assert ds.hf_dataset_id_of(comp) == expected
+    assert ds._hf_dataset_id_of(comp) == expected
 
 
 @pytest.mark.parametrize("comp, expected", [
@@ -543,7 +543,7 @@ def test_nested_files_keep_their_path_and_statistics_prefix(tmp_path, online):
 # -- discover: 허브 -------------------------------------------------------------------
 def test_hub_info_fills_component_and_facts(imdb):
     comp = ds._new_hf_component(IMDB)
-    ds.apply_hub_info(comp, IMDB, imdb)
+    ds._apply_hub_info(comp, IMDB, imdb)
     assert comp["version"] == imdb["sha"] and comp["supplier"] == {"name": "stanfordnlp"}
     assert comp["licenses"] == [{"license": {"name": "other"}}]                   # "other" 는 SPDX id 가 아니다
     assert comp["description"].startswith('Dataset Card for "imdb" Dataset Summary Large Movie Review Dataset.') and "\n" not in comp["description"]
@@ -555,35 +555,35 @@ def test_hub_info_fills_component_and_facts(imdb):
                               "collectionProcess": "annotations expert-generated; language expert-generated"}   # 통계 응답이 없으면 statistics 도 없다
     # datasets-server 통계를 주면 split:열:통계 로 들어간다. 라벨 열은 n_unique·frequencies, 글 열은 길이의 min·max·mean·median·std
     comp = ds._new_hf_component(IMDB)
-    ds.apply_hub_info(comp, IMDB, imdb, imdb_size(), [("plain_text", "train", imdb_statistics("plain_text", "train"))])
+    ds._apply_hub_info(comp, IMDB, imdb, imdb_size(), [("plain_text", "train", imdb_statistics("plain_text", "train"))])
     assert {k: v for k, v in internal(comp).items() if k.startswith("statistics")} == stats_props(IMDB_TRAIN_STATS)
 
 
 def test_hub_facts_variants():
-    gated = ds.hub_facts("a/b", {"gated": "auto", "cardData": {"license": "apache-2.0", "task_categories": ["image-classification", "audio-classification", "tabular-regression", "weird"],
-                                                              "dataset_info": [{"config_name": "x", "download_size": 10, "splits": [{"name": "train", "num_examples": 3}], "features": [{}]},
-                                                                               {"config_name": "y", "dataset_size": 5}]}})
+    gated = ds._hub_facts("a/b", {"gated": "auto", "cardData": {"license": "apache-2.0", "task_categories": ["image-classification", "audio-classification", "tabular-regression", "weird"],
+                                                               "dataset_info": [{"config_name": "x", "download_size": 10, "splits": [{"name": "train", "num_examples": 3}], "features": [{}]},
+                                                                                {"config_name": "y", "dataset_size": 5}]}})
     assert gated["availability"] == "registration" and gated["size"] == 15 and gated["modality"] == ["image", "audio", "structured", "other"]
     assert gated["statistics"] == []                                                       # 행 수·feature 수·config 수는 통계가 아니다
     assert gated["intendedUse"] == "image-classification, audio-classification, tabular-regression, weird" and gated["collectionProcess"] is None
-    empty = ds.hub_facts("a/b", {"id": "a/b"})
+    empty = ds._hub_facts("a/b", {"id": "a/b"})
     assert empty["size"] is None and empty["modality"] == [] and empty["statistics"] == [] and empty["availability"] == "direct-download"
     assert empty["intendedUse"] is None and empty["collectionProcess"] is None and empty["provenance"] == ["https://huggingface.co/datasets/a/b"]
     # source_datasets: 상위 데이터셋은 provenance 에 더한다. original·extended 는 id 가 아니고, extended|<id> 는 id 만
     card = {"source_datasets": ["original", "extended|squad", "rajpurkar/squad_v2", "extended"], "annotations_creators": ["crowdsourced", "crowdsourced"],
             "language_creators": ["found"]}
-    facts = ds.hub_facts("a/b", {"id": "a/b", "cardData": card})
+    facts = ds._hub_facts("a/b", {"id": "a/b", "cardData": card})
     assert facts["provenance"] == ["https://huggingface.co/datasets/a/b", "https://huggingface.co/datasets/squad", "https://huggingface.co/datasets/rajpurkar/squad_v2"]
     assert facts["collectionProcess"] == "annotations crowdsourced; language found"
     # README 앞머리에 크기가 없으면 datasets-server /size 의 원본 파일 바이트. 앞머리에 있으면 그것이 이긴다
-    assert ds.hub_facts("a/b", {"id": "a/b"}, imdb_size())["size"] == 83446840
-    assert ds.hub_facts("a/b", {"id": "a/b", "cardData": {"dataset_info": {"dataset_size": 7}}}, imdb_size())["size"] == 7
-    assert ds.hub_facts("a/b", {"id": "a/b"}, {"size": {}})["size"] is None
+    assert ds._hub_facts("a/b", {"id": "a/b"}, imdb_size())["size"] == 83446840
+    assert ds._hub_facts("a/b", {"id": "a/b", "cardData": {"dataset_info": {"dataset_size": 7}}}, imdb_size())["size"] == 7
+    assert ds._hub_facts("a/b", {"id": "a/b"}, {"size": {}})["size"] is None
     # 허브의 modality: 태그가 있으면 task_categories 보다 먼저다. 모르는 태그 값은 other, 태그 값은 v0.6 허용값으로 옮긴다
-    tagged = ds.hub_facts("a/b", {"tags": ["modality:tabular", "modality:text", "modality:3d", "format:parquet", "modality:text"],
-                                  "cardData": {"task_categories": ["image-classification"]}})
+    tagged = ds._hub_facts("a/b", {"tags": ["modality:tabular", "modality:text", "modality:3d", "format:parquet", "modality:text"],
+                                   "cardData": {"task_categories": ["image-classification"]}})
     assert tagged["modality"] == ["structured", "text", "other"]
-    assert ds.hub_facts("a/b", {"tags": ["format:parquet"], "cardData": {"task_categories": ["image-classification"]}})["modality"] == ["image"]
+    assert ds._hub_facts("a/b", {"tags": ["format:parquet"], "cardData": {"task_categories": ["image-classification"]}})["modality"] == ["image"]
     assert license_entry("apache-2.0") == {"license": {"id": "Apache-2.0"}} and license_entry("MIT") == {"license": {"id": "MIT"}}
     assert license_entry("unknown") == {"license": {"name": "unknown"}}
     # 카드의 other 는 license_name 이 있으면 그 이름, license_link 는 url. 이름이 없으면 other 그대로
@@ -648,8 +648,8 @@ def deps_of(doc: dict) -> dict[str, list[str]]:
 @pytest.mark.parametrize("info_id", ["imdb", "stanfordnlp/imdb", "", None, "../x", 3])
 def test_canonical_id_takes_a_well_formed_hub_id_only(info_id):
     expected = info_id if info_id in ("imdb", "stanfordnlp/imdb") else "a/b"
-    assert ds.canonical_id("a/b", {"id": info_id}) == expected
-    assert ds.canonical_id("a/b", None) == "a/b" and ds.canonical_id("a/b", {}) == "a/b"
+    assert ds._canonical_id("a/b", {"id": info_id}) == expected
+    assert ds._canonical_id("a/b", None) == "a/b" and ds._canonical_id("a/b", {}) == "a/b"
 
 
 def test_same_dataset_under_two_ids_becomes_one_component_and_one_hub_call(tmp_path, monkeypatch, imdb):
@@ -675,7 +675,7 @@ def test_same_dataset_under_two_ids_becomes_one_component_and_one_hub_call(tmp_p
     assert refs_in(out) <= {c["bom-ref"] for c in out["components"]} | {out["metadata"]["component"]["bom-ref"]}   # 끊긴 참조 없음
     assert [m for m in logs if "merged into" in m] == ["[dataset] bookcorpus: merged into bookcorpus/bookcorpus, same dataset"]
     for form in ("properties", "typed"):
-        assert validate_cdx(regulate(copy.deepcopy(out), form=form, log=print), "1.7" if form == "properties" else "v0.6", log=print)
+        assert _validate_cdx(regulate(copy.deepcopy(out), form=form, log=print), "1.7" if form == "properties" else "v0.6", log=print)
 
 
 def test_readme_only_component_is_renamed_to_the_hub_id_and_refs_follow(tmp_path, monkeypatch, imdb):
@@ -815,7 +815,7 @@ def test_offline_reads_no_model_card_and_says_so_once(tmp_path, monkeypatch):
     ({"datasets": ["https://example.org/data", "train.csv"]}, []),                            # 허브 id 꼴이 아닌 것
 ])
 def test_model_card_dataset_ids(card, expected):
-    assert ds.model_card_dataset_ids(card, "m", log=lambda m: None) == expected
+    assert ds._model_card_dataset_ids(card, "m", log=lambda m: None) == expected
 
 
 # -- 로컬 모델 카드의 데이터셋 ----------------------------------------------------------
@@ -999,7 +999,7 @@ def test_offline_keeps_name_and_purl_and_logs_once(tmp_path, monkeypatch):
     assert sum("unreachable" in m for m in logs) == 1
     for form in ("properties", "typed"):
         doc = regulate(copy.deepcopy(out), form=form, log=print)
-        assert validate_cdx(doc, "1.7" if form == "properties" else "v0.6", log=print)
+        assert _validate_cdx(doc, "1.7" if form == "properties" else "v0.6", log=print)
 
 
 def test_fetch_failure_is_logged_and_component_kept(tmp_path, monkeypatch):
@@ -1202,7 +1202,7 @@ def test_properties_form_moves_facts_to_aibom_dataset_keys(discovered):
     local = datasets(out)["data:local/data@"]
     assert props(local)["aibom:dataset:size"] == "80" and props(local)["aibom:dataset:statistics:0:type"] == "id:nan_count"
     assert "aibom:dataset:statistics:17:type" in props(local) and "aibom:dataset:statistics:18:type" not in props(local)       # 열 셋 × 6개
-    assert validate_cdx(out, "1.7", log=print) and validate_cdx(out, "v0.6", log=print)
+    assert _validate_cdx(out, "1.7", log=print) and _validate_cdx(out, "v0.6", log=print)
 
 
 def test_typed_form_fills_componentdata_fields_on_data0(discovered):
@@ -1218,9 +1218,9 @@ def test_typed_form_fills_componentdata_fields_on_data0(discovered):
     assert local["data"][0]["size"] == 80 and local["data"][0]["modality"] == ["structured"] and len(local["data"]) == 1
     assert "contents" not in local["data"][0] and "properties" not in local["data"][0]              # 원소에 도구 속성은 없다
     assert "aibom-internal" not in json.dumps(out) and "aibom:dataset:" not in json.dumps(out)
-    assert validate_cdx(out, "v0.6", log=print)
+    assert _validate_cdx(out, "v0.6", log=print)
     logs: list[str] = []
-    assert not validate_cdx(out, "1.7", log=logs.append) and any("data/0" in m for m in logs)
+    assert not _validate_cdx(out, "1.7", log=logs.append) and any("data/0" in m for m in logs)
 
 
 def test_typed_form_creates_data_entry_when_missing():
@@ -1376,7 +1376,7 @@ def test_live_hub_returns_size_and_modality_for_imdb(monkeypatch):
     assert size and size["size"]["dataset"]["num_bytes_original_files"] > 0
     statistics = fetch_statistics(IMDB, info, size, log=print)
     assert [(c, s) for c, s, _ in statistics] == [("plain_text", "train"), ("plain_text", "test"), ("plain_text", "unsupervised")]
-    facts = ds.hub_facts(IMDB, info, size, statistics)
+    facts = ds._hub_facts(IMDB, info, size, statistics)
     assert facts["size"] and facts["size"] > 0 and facts["modality"] == ["text"] and facts["availability"] == "direct-download"
     kinds = dict(facts["statistics"])
     assert kinds["train:label:n_unique"] == "2" and float(kinds["train:text:length:mean"]) > 0

@@ -67,7 +67,7 @@ def discover_services(merged: dict, target: str, log=print) -> dict:
     """머리 설명대로 services[] 와 그 관계를 고친다. 서비스도 SDK import 도 없으면 문서는 그대로다."""
     services = merged.get("services") or []
     root = Path(target)
-    imported = sdk_imports(root, log) if root.is_dir() else {}
+    imported = _sdk_imports(root, log) if root.is_dir() else {}
     if not services and not imported:
         return merged
     kept, dropped = [], set()
@@ -88,7 +88,7 @@ def discover_services(merged: dict, target: str, log=print) -> dict:
     return merged
 
 
-def sdk_imports(root: Path, log=print) -> dict[str, list[str]]:
+def _sdk_imports(root: Path, log=print) -> dict[str, list[str]]:
     """대상 디렉터리의 소스가 import 하는 SDK. 제공사 → 그 import 가 있는 파일들 (대상 기준 상대 경로)."""
     found: dict[str, list[str]] = {}
     root_resolved = root.resolve()

@@ -48,7 +48,7 @@ _SPDX_OPERATOR = (" AND ", " OR ", " WITH ", "(")
 def identity(component: dict) -> str:
     """컴포넌트의 병합 키."""
     if component.get("type") == FILE_TYPE:
-        path = file_path_of(component)
+        path = _file_path_of(component)
         if path:
             return f"file:/{path.lstrip('/')}"
     purl = component.get("purl")
@@ -61,7 +61,7 @@ def identity(component: dict) -> str:
     return f"{component.get('type', 'component')}:{component.get('group', '')}/{component.get('name', '')}@{component.get('version', '')}"
 
 
-def file_path_of(component: dict) -> str | None:
+def _file_path_of(component: dict) -> str | None:
     """파일 컴포넌트의 경로. cdxgen 이미지 스캔은 purl 의 `path=` 에, cdxgen AI 파일은 bom-ref `urn:file:ai:<path>` 에,
     syft 는 name 에 경로를 둔다 (디렉터리 스캔은 스캔 루트 기준, 이미지는 이미지 안 절대경로)."""
     purl = component.get("purl") or ""
@@ -121,7 +121,7 @@ def _walk_components(components: Iterable[dict]):
         yield from _walk_components(c.get("components") or [])
 
 
-def root_component(name: str, kind: str, labels: dict[str, str] | None = None, facts: Facts | None = None) -> dict:
+def _root_component(name: str, kind: str, labels: dict[str, str] | None = None, facts: Facts | None = None) -> dict:
     """스캔 대상 → metadata.component. bom-ref 는 identity 규칙으로 정해 결정적이다 (라벨의 version 은 넣지 않는다).
     labels 는 이미지의 OCI 라벨 (키 → 값). facts 를 주면 created 라벨을 루트의 builtTime 으로 적는다."""
     comp = {"type": ROOT_TYPE_BY_KIND.get(kind, "application"), "name": name}
@@ -167,7 +167,7 @@ def _apply_image_labels(comp: dict, labels: dict[str, str]) -> None:
         comp["pedigree"] = {"ancestors": [ancestor]}
 
 
-def image_labels(docs: list[dict]) -> dict[str, str]:
+def _image_labels(docs: list[dict]) -> dict[str, str]:
     """도구 문서들의 metadata.properties 에서 syft 가 적은 이미지 라벨 (키 → 값). 먼저 나온 값이 이긴다."""
     labels: dict[str, str] = {}
     for doc in docs:
@@ -215,7 +215,7 @@ def merge(docs: list[dict], root: tuple[str, str] | None = None, facts: Facts | 
     for key, comp in components.items():
         comp["bom-ref"] = key
 
-    root_comp = root_component(*root, labels=image_labels(docs), facts=facts) if root is not None else None
+    root_comp = _root_component(*root, labels=_image_labels(docs), facts=facts) if root is not None else None
     root_key = root_comp["bom-ref"] if root_comp else None
     if root_key:
         for ref in producer_roots:            # 도구의 루트 행은 새 루트의 행이 된다 (컴포넌트이기도 하면 컴포넌트가 이긴다)

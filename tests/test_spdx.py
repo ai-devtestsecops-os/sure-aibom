@@ -7,7 +7,7 @@ import pytest
 
 from sure_aibom.engine.facts import Facts
 from sure_aibom.engine.spdx import convert_spdx
-from sure_aibom.engine.validate import detect_format, schema_for, validate_doc, validate_spdx
+from sure_aibom.engine.validate import _validate_spdx, detect_format, schema_for, validate_doc
 
 NS = "urn:uuid:3b1f6c2e-8a4d-4c1e-9f7a-0d2b5e6a7c91"
 ROOT, BERT, REVIEWS, LOCAL, LIB, FILE, OS_REF = ("container:/acme-app:1.4.0@", "pkg:huggingface/acme/acme-bert", "pkg:huggingface/datasets/acme/reviews",
@@ -115,15 +115,15 @@ def sid(local: str) -> str:
 @pytest.mark.parametrize("spec", ["3.0.1", "v0.6"])
 def test_both_specs_validate_against_their_schema(spec):
     out = convert_spdx(doc_of(), spec, log=lambda m: None)
-    assert validate_spdx(out, spec, log=print)
+    assert _validate_spdx(out, spec, log=print)
     has_aibom = any(k.startswith("aibom_") for e in out["@graph"] for k in e)
     assert has_aibom == (spec == "v0.6")                                      # 3.0.1 문서에는 v0.6 속성이 없다
 
 
 def test_a_v06_document_is_not_plain_spdx_and_a_plain_one_is_also_v06():
     v06 = convert_spdx(doc_of(), "v0.6", log=lambda m: None)
-    assert not validate_spdx(v06, "3.0.1", log=lambda m: None)                  # aibom_* 는 공식 스키마에 없는 속성이다
-    assert validate_spdx(convert_spdx(doc_of(), "3.0.1", log=lambda m: None), "v0.6", log=lambda m: None)   # 3.0.1 문서는 v0.6 의 부분집합
+    assert not _validate_spdx(v06, "3.0.1", log=lambda m: None)                  # aibom_* 는 공식 스키마에 없는 속성이다
+    assert _validate_spdx(convert_spdx(doc_of(), "3.0.1", log=lambda m: None), "v0.6", log=lambda m: None)   # 3.0.1 문서는 v0.6 의 부분집합
 
 
 def test_classes_follow_the_component_type():
@@ -282,7 +282,7 @@ def test_facts_add_training_and_evaluation_relationships_and_times():
     assert g[sid(ROOT)]["builtTime"] == "2026-10-01T00:00:00Z" and g[sid(BERT)]["releaseTime"] == "2024-02-19T11:06:12Z"
     assert g[sid(REVIEWS)]["releaseTime"] == "2024-01-04T12:09:45Z" and not any("Time" in k for k in g[sid(LIB)])
     assert f"[spdx] dataset role of unknown element skipped: pkg:huggingface/acme/gone -> {REVIEWS}" in logs
-    assert validate_spdx(out, "3.0.1", log=print) and validate_spdx(convert_spdx(doc_of(), "v0.6", log=lambda m: None, facts=facts), "v0.6", log=print)
+    assert _validate_spdx(out, "3.0.1", log=print) and _validate_spdx(convert_spdx(doc_of(), "v0.6", log=lambda m: None, facts=facts), "v0.6", log=print)
     plain = convert_spdx(doc_of(), "3.0.1", log=lambda m: None)                             # facts 가 없으면 아무것도 더하지 않는다
     assert not rels(plain, "trainedOn") and not rels(plain, "testedOn") and "builtTime" not in graph_of(plain)[sid(ROOT)]
 
@@ -297,7 +297,7 @@ def test_ids_come_from_the_serial_number_and_bom_refs_and_the_output_is_determin
     assert sid("rel/dependsOn/" + ROOT) in ids and all(e.startswith(NS + "#") for e in ids)
     without_serial = convert_spdx({k: v for k, v in doc.items() if k != "serialNumber"}, "v0.6", log=lambda m: None)
     assert all(e["spdxId"].startswith("urn:uuid:") for e in without_serial["@graph"] if "spdxId" in e)
-    assert validate_spdx(once, "v0.6", log=print)
+    assert _validate_spdx(once, "v0.6", log=print)
 
 
 def test_the_input_document_is_left_untouched():
@@ -325,5 +325,5 @@ def test_validate_detects_the_format_and_refuses_a_spec_of_the_other_format():
     broken["@graph"][2]["bogus"] = 1
     broken["@graph"].append({"type": "Nope", "spdxId": "x:y"})
     messages: list[str] = []
-    assert not validate_spdx(broken, "3.0.1", log=messages.append)
+    assert not _validate_spdx(broken, "3.0.1", log=messages.append)
     assert any("bogus" in m for m in messages) and any("'Nope' is not an SPDX class" in m for m in messages)

@@ -75,7 +75,7 @@ from ..utils.licenses import card_licenses
 from .facts import Facts
 from .merge import fill_missing
 from .form import INTERNAL_PREFIX
-from .model import MODEL_TYPE, _inside_file, hub_model_id
+from .model import MODEL_TYPE, hub_model_id, inside_file
 
 DATA_TYPE = "data"
 DATASET_KIND = "dataset"       # data[].type 의 다섯 값 중 D-BOM 으로 치는 것
@@ -161,7 +161,7 @@ def discover_datasets(merged: dict, target: str, log=print, report: dict | None 
     components: list[dict] = merged.setdefault("components", [])
     by_hf_id: dict[str, dict] = {}
     for comp in components:
-        hf_id = hf_dataset_id_of(comp)
+        hf_id = _hf_dataset_id_of(comp)
         if hf_id and hf_id not in by_hf_id:
             by_hf_id[hf_id] = comp
 
@@ -225,7 +225,7 @@ def discover_datasets(merged: dict, target: str, log=print, report: dict | None 
     if report is not None:
         report["hub_unreachable"] = not reachable
         report["empty_data_paths"] = empty
-        report["unresolved_hub_data"] = [hub_data_arg(hf_id, given[hf_id]) for hf_id in unresolved]
+        report["unresolved_hub_data"] = [_hub_data_arg(hf_id, given[hf_id]) for hf_id in unresolved]
     return merged
 
 
@@ -249,7 +249,7 @@ def split_data_args(values: Iterable[str]) -> tuple[list[str], dict[str, str | N
     return local, given
 
 
-def hub_data_arg(hf_id: str, revision: str | None = None) -> str:
+def _hub_data_arg(hf_id: str, revision: str | None = None) -> str:
     """허브 데이터셋 id 와 리비전을 --data 표기로."""
     return HF_DATA_ARG + hf_id + (f"@{revision}" if revision else "")
 
@@ -265,7 +265,7 @@ def missing_revisions(given: dict[str, str | None], *, hub) -> list[tuple[str, s
     for hf_id, revision in pinned:
         error = hub.fetch_revision_error(hf_id, revision)
         if error and error[0] == 404:
-            out.append((hub_data_arg(hf_id, revision), error[1]))
+            out.append((_hub_data_arg(hf_id, revision), error[1]))
     return out
 
 
@@ -276,10 +276,10 @@ def is_dataset(comp: dict) -> bool:
     type=data 로 낸다. data[] 에 dataset 항목이 있거나 허브 데이터셋 id 가 있으면 데이터셋이다."""
     if comp.get("type") != DATA_TYPE:
         return False
-    return any(d.get("type") == DATASET_KIND for d in comp.get("data") or []) or hf_dataset_id_of(comp) is not None
+    return any(d.get("type") == DATASET_KIND for d in comp.get("data") or []) or _hf_dataset_id_of(comp) is not None
 
 
-def hf_dataset_id_of(comp: dict) -> str | None:
+def _hf_dataset_id_of(comp: dict) -> str | None:
     """type=data 컴포넌트의 Hugging Face 데이터셋 id. purl → data[].name "datasets/<id>" → group "datasets" 의 name →
     data[].contents.url 이나 externalReferences 의 허브 데이터셋 주소. cdxgen 은 모델 카드의 이름만 있는 id 를 datasets/<id> 로,
     owner/name 은 group·name 으로 나누고 purl 없이 주소에만 남긴다. 코드의 huggingface.co/datasets 링크로 만든 것은 data[] 도 없이
@@ -387,9 +387,9 @@ def _datasets_from_model_cards(merged: dict, hub_models: list[tuple[dict, str]],
     for model, model_id in hub_models:
         info = infos.get(model_id) if infos is not None else hub.fetch_model_info(model_id, log)
         card = (info or {}).get("cardData")
-        ids = model_card_dataset_ids(card, model_id, log)
+        ids = _model_card_dataset_ids(card, model_id, log)
         if ids:
-            _link_model_datasets(merged, model, ids, by_hf_id, facts=facts, roles=model_card_dataset_roles(card))
+            _link_model_datasets(merged, model, ids, by_hf_id, facts=facts, roles=_model_card_dataset_roles(card))
 
 
 def _datasets_from_local_model_cards(merged: dict, root: Path, by_hf_id: dict[str, dict], log, facts: Facts | None = None) -> None:
@@ -404,13 +404,13 @@ def _datasets_from_local_model_cards(merged: dict, root: Path, by_hf_id: dict[st
     for model in [c for c in merged["components"] if c.get("type") == MODEL_TYPE]:
         for path in _card_files(model, root, root_resolved):
             rel = relative(path, root)
-            card = read_card_header(path, rel, log)
-            ids = model_card_dataset_ids(card, rel, log)
+            card = _read_card_header(path, rel, log)
+            ids = _model_card_dataset_ids(card, rel, log)
             if not ids:
                 continue
             shown = {d["name"] for d in _model_index_datasets(card)
                      if isinstance(d.get("name"), str) and isinstance(d.get("type"), str) and d["type"].strip() in ids}
-            _link_model_datasets(merged, model, ids, by_hf_id, shown, location=rel, facts=facts, roles=model_card_dataset_roles(card))
+            _link_model_datasets(merged, model, ids, by_hf_id, shown, location=rel, facts=facts, roles=_model_card_dataset_roles(card))
 
 
 def _datasets_named_by_models(merged: dict, by_hf_id: dict[str, dict], facts: Facts | None = None) -> None:
@@ -434,13 +434,13 @@ def _card_files(model: dict, root: Path, root_resolved: Path) -> list[Path]:
         location = occurrence.get("location") if isinstance(occurrence, dict) else None
         if not isinstance(location, str) or PurePosixPath(location.replace("\\", "/")).name.lower() != CARD_NAME:
             continue
-        path = _inside_file(root, root_resolved, location)
+        path = inside_file(root, root_resolved, location)
         if path is not None and path not in found:
             found.append(path)
     return found
 
 
-def read_card_header(path: Path, rel: str, log=print) -> dict | None:
+def _read_card_header(path: Path, rel: str, log=print) -> dict | None:
     """모델 카드(README.md) 맨 앞의 YAML 헤더. 헤더가 없으면 None, 읽지 못하면 알리고 None."""
     try:
         if path.stat().st_size > CARD_MAX_BYTES:
@@ -487,7 +487,7 @@ def _link_model_datasets(merged: dict, model: dict, ids: list[str], by_hf_id: di
     params["datasets"] = kept + [{"ref": r} for r in refs if r not in have]
 
 
-def model_card_dataset_ids(card, model_id: str, log=print) -> list[str]:
+def _model_card_dataset_ids(card, model_id: str, log=print) -> list[str]:
     """모델 카드 YAML 헤더(Hub API 응답의 cardData, 로컬은 README.md)의 datasets 와 model-index 결과의 dataset.type. 둘 다
     허브 데이터셋 id 를 적는 자리다. 순서는 datasets 다음 model-index, 겹치면 한 번. 허브 id 꼴이 아닌 것은 건너뛰고 알린다."""
     ids: list[str] = []
@@ -501,7 +501,7 @@ def model_card_dataset_ids(card, model_id: str, log=print) -> list[str]:
     return ids
 
 
-def model_card_dataset_roles(card) -> dict[str, set[str]]:
+def _model_card_dataset_roles(card) -> dict[str, set[str]]:
     """허브 id 꼴인 데이터셋마다의 역할. datasets 는 training, model-index 결과의 dataset 은 evaluation (둘 다면 둘 다)."""
     roles: dict[str, set[str]] = {}
     for name, role in _card_dataset_names(card):
@@ -965,7 +965,7 @@ def _data_component(ref: str, name: str, analyses: list[dict], extra_size: int =
         "modality": _unique(a["modality"] for a in analyses),
         "statistics": _local_statistics(analyses, bool(extra_stats)) + list(extra_stats),
     }
-    comp["properties"] = internal_properties(facts)
+    comp["properties"] = _internal_properties(facts)
     return comp
 
 
@@ -1179,7 +1179,7 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | 
             info = hub.fetch_dataset_info(hf_id, log, revision=revision)
         else:
             info = info_by_canonical.get(hf_id) or hub.fetch_dataset_info(hf_id, log)   # 앞선 조회가 정식 id 로 알려 준 것은 다시 묻지 않는다
-        canonical = canonical_id(hf_id, info)
+        canonical = _canonical_id(hf_id, info)
         if info and revision:
             if pinned.get(canonical, revision) != revision:
                 log(f"[dataset] {canonical}: asked at two revisions ({pinned[canonical]}, {revision}), {revision} used")
@@ -1215,7 +1215,7 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | 
             else:
                 size = hub.fetch_dataset_size(canonical, log)
                 statistics = _fetch_statistics(canonical, info, size, log, hub=hub)
-            apply_hub_info(comp, canonical, info, size, statistics)
+            _apply_hub_info(comp, canonical, info, size, statistics)
             if facts is not None:
                 facts.set_time(comp["bom-ref"], "releaseTime", info.get("lastModified"))
     return unresolved
@@ -1261,7 +1261,7 @@ def _config_splits(info: dict, size: dict | None) -> list[tuple[str, str]]:
     return list(dict.fromkeys(pairs))
 
 
-def canonical_id(hf_id: str, info: dict | None) -> str:
+def _canonical_id(hf_id: str, info: dict | None) -> str:
     """허브 응답의 id. 허브는 옛 이름(imdb, bookcorpus)을 정식 owner/name 으로 돌려주므로 응답의 id 가 정식 id 다. 없으면 부른 id."""
     cid = (info or {}).get("id")
     cid = cid.strip("/") if isinstance(cid, str) else ""
@@ -1355,11 +1355,11 @@ def _repoint(merged: dict, old: str, new: str, facts: Facts | None = None) -> No
         params["datasets"] = kept
 
 
-def apply_hub_info(comp: dict, hf_id: str, info: dict, size: dict | None = None,
-                   statistics: list[tuple[str, str, dict]] = ()) -> None:
+def _apply_hub_info(comp: dict, hf_id: str, info: dict, size: dict | None = None,
+                    statistics: list[tuple[str, str, dict]] = ()) -> None:
     """허브 응답으로 컴포넌트를 채운다. 이미 있는 값은 두고 없는 것만 채운다. 사실은 aibom-internal:dataset:* 로. URL 은 정식 id 로.
     size 는 datasets-server /size 응답, statistics 는 (config, split, /statistics 응답) 목록. 둘 다 없어도 된다."""
-    hf_id = canonical_id(hf_id, info)
+    hf_id = _canonical_id(hf_id, info)
     card = info.get("cardData") or {}
     if not comp.get("version") and isinstance(info.get("sha"), str):
         comp["version"] = info["sha"]
@@ -1381,18 +1381,18 @@ def apply_hub_info(comp: dict, hf_id: str, info: dict, size: dict | None = None,
     if new_refs:
         comp["externalReferences"] = (comp.get("externalReferences") or []) + new_refs
 
-    facts = hub_facts(hf_id, info, size, statistics)
-    props = internal_properties(facts)
+    facts = _hub_facts(hf_id, info, size, statistics)
+    props = _internal_properties(facts)
     if props:
         comp["properties"] = (comp.get("properties") or []) + props
 
 
-def hub_facts(hf_id: str, info: dict, size: dict | None = None, statistics: list[tuple[str, str, dict]] = ()) -> dict:
+def _hub_facts(hf_id: str, info: dict, size: dict | None = None, statistics: list[tuple[str, str, dict]] = ()) -> dict:
     """허브 응답 → 데이터셋 사실. 값이 없는 키는 비워 둔다 (추론하지 않는다). 출처 URL 은 정식 id 로.
     크기는 README 앞머리 dataset_info 의 바이트 합, 없으면 datasets-server /size 의 원본 파일 바이트.
     모달리티는 허브가 붙인 modality:<x> 태그를 먼저 보고, 태그가 없을 때만 task_categories 로 추론한다.
     통계는 datasets-server /statistics 의 열 통계 (split 이름과 열 이름이 앞에 붙는다)."""
-    hf_id = canonical_id(hf_id, info)
+    hf_id = _canonical_id(hf_id, info)
     card = info.get("cardData") or {}
     tag_modalities = [t[len("modality:"):].strip().lower() for t in _as_list(info.get("tags")) if isinstance(t, str) and t.startswith("modality:")]
     infos = [i for i in _as_list(card.get("dataset_info")) if isinstance(i, dict)]
@@ -1486,7 +1486,7 @@ def _column_statistics(column_type, cs: dict) -> list[tuple[str, str]]:
 
 # ── 사실 ↔ 내부 프로퍼티 ─────────────────────────────────────────────────────
 
-def internal_properties(facts: dict) -> list[dict]:
+def _internal_properties(facts: dict) -> list[dict]:
     """사실 dict → aibom-internal:dataset:* 프로퍼티. 키 모양은 정의서의 aibom:dataset:* 와 같다 (접두어만 다르다)."""
     props: list[dict] = []
     if facts.get("size") is not None:

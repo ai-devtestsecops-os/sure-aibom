@@ -130,7 +130,7 @@ def drop_tool_properties(doc: dict) -> dict:
     return doc
 
 
-def coverage(comp: dict, form: str) -> tuple[list[str], list[str]] | None:
+def _coverage(comp: dict, form: str) -> tuple[list[str], list[str]] | None:
     """컴포넌트의 규제 필드 가운데 (채운 것, 빈 것). 모델·데이터셋이 아니면 None."""
     if comp.get("type") == MODEL_TYPE:
         target = (_TypedTarget if form == "typed" else _PropertiesTarget)(comp)
@@ -159,7 +159,7 @@ def _is_dataset(comp: dict) -> bool:
 def _coverage_report(doc: dict, form: str, log) -> dict:
     report = {"models": {"filled": 0, "total": 0}, "datasets": {"filled": 0, "total": 0}}
     for comp in _walk(doc.get("components") or []):
-        found = coverage(comp, form)
+        found = _coverage(comp, form)
         if found is None:
             continue
         filled, missing = found

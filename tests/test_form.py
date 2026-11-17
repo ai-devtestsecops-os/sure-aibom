@@ -8,7 +8,7 @@ import pytest
 
 from sure_aibom.cli import main
 from sure_aibom.engine.form import regulate
-from sure_aibom.engine.validate import validate_cdx
+from sure_aibom.engine.validate import _validate_cdx
 
 SAMPLE = Path(__file__).parent / "data" / "merged_sample.cdx.json"
 BERT = "pkg:huggingface/google-bert/bert-base-uncased"
@@ -87,7 +87,7 @@ def test_properties_form_promotes_into_aibom_model_properties(sample):
     assert "technicalRequirements" not in bert["modelCard"]["considerations"]
     # 값은 한 곳에만 있다
     assert sum(1 for v in props.values() if v == "30522") == 1
-    assert validate_cdx(out, "1.7", log=print)
+    assert _validate_cdx(out, "1.7", log=print)
 
 
 def test_properties_form_parameter_count(sample):
@@ -98,7 +98,7 @@ def test_properties_form_parameter_count(sample):
     bert = component(out, BERT)
     assert card_props(bert)["aibom:model:parameterCount"] == "110106428"
     assert not {"safetensors_total_parameters", "cdx:ai:parameterCount"} & all_names(bert)
-    assert validate_cdx(out, "1.7", log=print)
+    assert _validate_cdx(out, "1.7", log=print)
 
 
 # -- (b) typed 형 -------------------------------------------------------------------
@@ -116,11 +116,11 @@ def test_typed_form_fills_v06_fields_and_passes_v06_not_17(sample):
     assert not CONSUMED & all_names(bert)
     assert UNTOUCHED_CARD <= set(card_props(bert)) and UNTOUCHED_COMPONENT <= set(names(bert["properties"]))
 
-    assert validate_cdx(out, "v0.6", log=print)
+    assert _validate_cdx(out, "v0.6", log=print)
     # 공식 1.7 스키마는 modelParameters·considerations·inputOutputMLParameters 가 additionalProperties:false 라
     # hyperparameters / maxSize / technicalRequirements 를 거부한다
     logs: list[str] = []
-    assert not validate_cdx(out, "1.7", log=logs.append)
+    assert not _validate_cdx(out, "1.7", log=logs.append)
     assert any("hyperparameters" in m for m in logs) and any("maxSize" in m for m in logs) and any("technicalRequirements" in m for m in logs)
 
 
@@ -131,7 +131,7 @@ def test_typed_form_parameter_count_is_integer_and_creates_inputs():
     assert params["parameterCount"] == 1234 and isinstance(params["parameterCount"], int)
     assert params["inputs"] == [{"maxSize": "2048"}]                           # format 은 v0.6 스키마상 필수가 아니다
     assert "properties" not in out["components"][0]["modelCard"]              # 모두 소비되어 비면 목록도 없다
-    assert validate_cdx(out, "v0.6", log=print)
+    assert _validate_cdx(out, "v0.6", log=print)
 
 
 # -- (c)(d) 건드리지 않는 것 -----------------------------------------------------------
@@ -237,7 +237,7 @@ def test_typed_hyperparameter_entry_without_value_does_not_crash():
     comp["modelCard"]["modelParameters"] = {"hyperparameters": [{"name": "x"}]}
     out = regulate(doc_of(comp), form="typed", log=lambda m: None)
     assert out["components"][0]["modelCard"]["modelParameters"]["hyperparameters"] == [{"name": "x"}, {"name": "lr", "value": "0.1"}]
-    assert validate_cdx(out, "v0.6", log=print)
+    assert _validate_cdx(out, "v0.6", log=print)
 
 
 def test_typed_nameless_hyperparameter_entry_survives_promotion():

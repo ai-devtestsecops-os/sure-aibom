@@ -1,7 +1,7 @@
 """facts — CycloneDX 문서에 자리가 없어 메모리로만 들고 가는 값 (데이터셋 역할, 생성·공개 시각). SPDX 변환기만 읽는다."""
 import pytest
 
-from sure_aibom.engine.facts import Facts, normalize_time
+from sure_aibom.engine.facts import Facts, _normalize_time
 
 
 @pytest.mark.parametrize("value, expected", [
@@ -13,7 +13,7 @@ from sure_aibom.engine.facts import Facts, normalize_time
     ("yesterday", None), ("", None), (None, None), (1700000000, None),
 ])
 def test_normalize_time_gives_spdx_date_time_stamps_or_nothing(value, expected):
-    assert normalize_time(value) == expected
+    assert _normalize_time(value) == expected
 
 
 def test_roles_and_times_are_checked_and_unreadable_times_are_ignored():
