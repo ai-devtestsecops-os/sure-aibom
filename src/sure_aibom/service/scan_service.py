@@ -40,10 +40,6 @@ Stage = Callable[[str, str], None]       # (단계 이름, 결과)
 Log = Callable[[str], None]
 
 
-def _quiet(msg: str) -> None:
-    """찍지 않는다."""
-
-
 @dataclass
 class ScanResult:
     doc: dict                                         # 내보낼 문서. --format spdx 면 SPDX
@@ -109,7 +105,7 @@ def _looks_like_path(target: str) -> bool:
             or target.lower().endswith((".tar", ".tar.gz", ".tgz")))
 
 
-def scan(target: str, data: list[str], fmt: str, spec: str, stage: Stage, log: Log, detail: Log = _quiet) -> ScanResult | None:
+def scan(target: str, data: list[str], fmt: str, spec: str, stage: Stage, log: Log, detail: Log) -> ScanResult | None:
     """단계를 차례로 돌려 BOM 을 만든다. syft·cdxgen 이 둘 다 BOM 을 내지 못하면 None.
     detail 은 모듈의 항목별 로그(건너뛴 것, 버린 값, 빈 필드)를 받는다. 이미지를 푼 임시 폴더는 커서 끝나면 지운다."""
     workdir = Path(tempfile.mkdtemp(prefix="sure-aibom-"))

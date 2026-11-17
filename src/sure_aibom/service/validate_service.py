@@ -18,11 +18,7 @@ class Validation:
     valid: bool | None     # None 이면 검증하지 못했다 (형식을 모르거나 spec 이 그 형식의 것이 아니다)
 
 
-def _quiet(msg: str) -> None:
-    """찍지 않는다."""
-
-
-def validate(doc: dict, spec: str | None, log: Callable[[str], None] = _quiet) -> Validation:
+def validate(doc: dict, spec: str | None, log: Callable[[str], None]) -> Validation:
     """문서를 스키마로 검증한다. 형식은 문서에서 알아내고(bomFormat 이 있으면 CycloneDX, @context 가 있으면 SPDX),
     spec 을 주지 않으면 CycloneDX 문서는 1.7, SPDX 문서는 3.0.1 로 본다. 어긋난 곳은 log 로 알린다."""
     fmt = detect_format(doc)
