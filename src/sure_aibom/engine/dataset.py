@@ -71,12 +71,12 @@ import yaml
 
 from ..log import detail
 # external 은 import 하지 않는다: 허브 조회는 service 가 넘겨준 external 모듈(hub)로 한다
-from ..utils.files import SKIP_DIRS, inside, notebook_code, relative
+from ..utils.files import SKIP_DIRS, inside, inside_file, notebook_code, relative
 from ..utils.licenses import card_licenses
 from .facts import Facts
 from .merge import fill_missing
 from .form import INTERNAL_PREFIX
-from .model import MODEL_TYPE, hub_model_id, inside_file
+from .model import MODEL_TYPE, hub_model_id
 
 DATA_TYPE = "data"
 DATASET_KIND = "dataset"       # data[].type 의 다섯 값 중 D-BOM 으로 치는 것

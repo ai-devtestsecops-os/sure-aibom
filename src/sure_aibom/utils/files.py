@@ -1,7 +1,8 @@
-"""스캔 대상의 파일을 훑을 때 쓰는 공용 함수. engine/dataset.py, engine/ai_service.py 가 쓴다.
+"""스캔 대상의 파일을 훑거나 찾을 때 쓰는 공용 함수. engine/dataset.py, engine/ai_service.py, engine/model.py 가 쓴다.
 
     SKIP_DIRS       건너뛰는 폴더 (설치된 의존성, 캐시, .git)
     inside          심볼릭 링크를 따라간 실제 위치가 루트 안인가
+    inside_file     대상 루트 기준으로 적힌 위치를 실제 파일로 (없거나 대상 밖이면 None)
     relative        대상 루트 기준 상대 경로 (링크를 따라가지 않는다)
     notebook_code   노트북(.ipynb)의 코드 셀을 이어 붙인 파이썬 소스
 """
@@ -19,6 +20,22 @@ def inside(path: Path, root_resolved: Path) -> bool:
         return path.resolve().is_relative_to(root_resolved)
     except OSError:
         return False
+
+
+def inside_file(root: Path, root_resolved: Path, location: str) -> Path | None:
+    """대상 루트 기준 경로(cdxgen 이 쓰는 모양)를 실제 파일로. 링크를 따라간 뒤에도 대상 안이어야 한다."""
+    text = location.replace("\\", "/")
+    candidates = [root / text.lstrip("/")]
+    if Path(text).is_absolute():
+        candidates.insert(0, Path(text))
+    for candidate in candidates:
+        try:
+            resolved = candidate.resolve()
+            if resolved.is_file() and resolved.is_relative_to(root_resolved):
+                return resolved
+        except OSError:
+            continue
+    return None
 
 
 def relative(path: Path, root: Path) -> str:

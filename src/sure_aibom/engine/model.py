@@ -61,6 +61,7 @@ from typing import Iterable
 from ..exceptions import RunnerError
 from ..log import detail
 # external 은 import 하지 않는다: enrich_hub_models 는 service 가 넘겨준 external 모듈(hub, aibom_generator)로 부른다
+from ..utils.files import inside_file
 from ..utils.licenses import card_licenses
 from .facts import Facts
 from .form import HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON
@@ -197,22 +198,6 @@ def _model_files(comp: dict, root: Path, root_resolved: Path) -> list[Path]:
         if path is not None:
             found.add(path)
     return sorted(found, key=str)
-
-
-def inside_file(root: Path, root_resolved: Path, location: str) -> Path | None:
-    """대상 루트 기준 경로(cdxgen 이 쓰는 모양)를 실제 파일로. 링크를 따라간 뒤에도 대상 안이어야 한다."""
-    text = location.replace("\\", "/")
-    candidates = [root / text.lstrip("/")]
-    if Path(text).is_absolute():
-        candidates.insert(0, Path(text))
-    for candidate in candidates:
-        try:
-            resolved = candidate.resolve()
-            if resolved.is_file() and _inside(resolved, root_resolved):
-                return resolved
-        except OSError:
-            continue
-    return None
 
 
 def _inside(path: Path, root_resolved: Path) -> bool:
