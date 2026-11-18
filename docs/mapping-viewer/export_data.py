@@ -58,8 +58,8 @@ def save(name, obj):
 
 
 # 저작권이 있는 표준. 필드 탐색기는 공개 문서 사이트에 실리므로 본문(원문 번역)을 싣지 않고 조항 제목만 싣는다.
-# 엑셀은 내부용이라 그대로 둔다.
-TITLE_ONLY = {"ISO/IEC 42001": "iso42001.json"}
+# 엑셀은 내부용이라 그대로 둔다. 제목은 엑셀의 ISO 시트 표(ai-bom/data/cards_iso42001.json)에서 읽는다.
+TITLE_ONLY = {"ISO/IEC 42001": "cards_iso42001.json"}
 
 
 def public_requirements(rows):
