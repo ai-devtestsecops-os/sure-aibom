@@ -71,7 +71,7 @@ import yaml
 
 from ..log import detail
 # external 은 import 하지 않는다: 허브 조회는 service 가 넘겨준 external 모듈(hub)로 한다
-from ..utils.files import SKIP_DIRS, inside, inside_file, notebook_code, relative
+from ..utils.files import SKIP_DIRS, find_file, is_inside, notebook_code, relative_path
 from ..utils.licenses import card_licenses
 from .facts import Facts
 from .merge import fill_missing
@@ -334,10 +334,10 @@ def _scan_sources(root: Path) -> dict[str, list[tuple[str, str | None]]]:
             if not filename.endswith((".py", ".ipynb")):
                 continue
             path = here / filename
-            if not inside(path, root_resolved):
-                detail(f"[dataset] {relative(path, root)}: skipped, symlink points outside the target")
+            if not is_inside(path, root_resolved):
+                detail(f"[dataset] {relative_path(path, root)}: skipped, symlink points outside the target")
                 continue
-            loc = relative(path, root)
+            loc = relative_path(path, root)
             for hf_id, revision in _parse_python(path):
                 hf_ids.setdefault(hf_id, []).append((loc, revision))
     return hf_ids
@@ -404,7 +404,7 @@ def _datasets_from_local_model_cards(merged: dict, root: Path, by_hf_id: dict[st
         return
     for model in [c for c in merged["components"] if c.get("type") == MODEL_TYPE]:
         for path in _card_files(model, root, root_resolved):
-            rel = relative(path, root)
+            rel = relative_path(path, root)
             card = _read_card_header(path, rel)
             ids = _model_card_dataset_ids(card, rel)
             if not ids:
@@ -435,7 +435,7 @@ def _card_files(model: dict, root: Path, root_resolved: Path) -> list[Path]:
         location = occurrence.get("location") if isinstance(occurrence, dict) else None
         if not isinstance(location, str) or PurePosixPath(location.replace("\\", "/")).name.lower() != CARD_NAME:
             continue
-        path = inside_file(root, root_resolved, location)
+        path = find_file(root, root_resolved, location)
         if path is not None and path not in found:
             found.append(path)
     return found
@@ -950,11 +950,11 @@ def _data_files(base: Path) -> list[tuple[Path, str]]:
             if filename.startswith(".") or _extension(filename) not in DATA_EXTENSIONS or _NON_DATA_NAME.match(filename):
                 continue
             path = here / filename
-            if not inside(path, base):
-                detail(f"[dataset] {relative(path, base)}: skipped, symlink points outside the data path")
+            if not is_inside(path, base):
+                detail(f"[dataset] {relative_path(path, base)}: skipped, symlink points outside the data path")
                 continue
             if path.is_file():
-                found.append((path, relative(path, base)))
+                found.append((path, relative_path(path, base)))
     return sorted(found, key=lambda item: item[1])
 
 

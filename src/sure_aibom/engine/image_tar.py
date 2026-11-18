@@ -126,14 +126,14 @@ def _apply_layer(layer: tarfile.TarFile, rootfs: Path) -> None:
     for m in members:
         directory, base = os.path.split(m.name)
         if base == OPAQUE:
-            _remove_children(_inside(rootfs, directory))
+            _remove_children(_safe_join(rootfs, directory))
         elif base.startswith(WHITEOUT):
-            _remove(_inside(rootfs, os.path.join(directory, base[len(WHITEOUT):])))
+            _remove(_safe_join(rootfs, os.path.join(directory, base[len(WHITEOUT):])))
     link_filter = _filter_for(rootfs)
     for m in members:
         if os.path.basename(m.name).startswith(WHITEOUT):
             continue
-        target = _inside(rootfs, m.name)
+        target = _safe_join(rootfs, m.name)
         if target is None:
             continue
         _clear(target, m)
@@ -155,7 +155,7 @@ def _filter_for(rootfs: Path):
     return _filter
 
 
-def _inside(rootfs: Path, name: str) -> str | None:
+def _safe_join(rootfs: Path, name: str) -> str | None:
     """rootfs 안의 경로. 밖으로 나가면 None."""
     root = str(rootfs)
     path = os.path.normpath(os.path.join(root, name.lstrip("/")))

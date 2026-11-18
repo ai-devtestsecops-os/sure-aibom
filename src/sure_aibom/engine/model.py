@@ -61,7 +61,7 @@ from typing import Iterable
 from ..exceptions import RunnerError
 from ..log import detail
 # external 은 import 하지 않는다: enrich_hub_models 는 service 가 넘겨준 external 모듈(hub, aibom_generator)로 부른다
-from ..utils.files import inside_file
+from ..utils.files import find_file, is_inside, relative_path
 from ..utils.licenses import card_licenses
 from .facts import Facts
 from .form import HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON
@@ -143,7 +143,7 @@ def _apply(comp: dict, root: Path, root_resolved: Path) -> None:
     hparams: dict[str, str] = {}
     parameter_count: int | None = None
     for path in _model_files(comp, root, root_resolved):
-        rel = _relative(path, root_resolved)
+        rel = relative_path(path, root_resolved)
         if path.name == CONFIG_NAME:
             found = _read(_parse_config, path, rel)
             if found is None:
@@ -194,25 +194,10 @@ def _model_files(comp: dict, root: Path, root_resolved: Path) -> list[Path]:
         name = PurePosixPath(location.replace("\\", "/")).name
         if name != CONFIG_NAME and not name.lower().endswith(GGUF_SUFFIX):
             continue
-        path = inside_file(root, root_resolved, location)
+        path = find_file(root, root_resolved, location)
         if path is not None:
             found.add(path)
     return sorted(found, key=str)
-
-
-def _inside(path: Path, root_resolved: Path) -> bool:
-    try:
-        path.relative_to(root_resolved)
-    except ValueError:
-        return False
-    return True
-
-
-def _relative(path: Path, root_resolved: Path) -> str:
-    try:
-        return path.relative_to(root_resolved).as_posix()
-    except ValueError:
-        return path.name
 
 
 # ── config.json ─────────────────────────────────────────────────────────────
@@ -243,14 +228,14 @@ def _safetensors_total(directory: Path, root_resolved: Path) -> int | None:
     """디렉터리의 *.safetensors 파라미터 수 합. 인덱스가 있으면 거기 적힌 샤드만 센다. 하나라도 못 읽으면 None."""
     try:
         files = sorted((p for p in directory.glob(f"*{SAFETENSORS_SUFFIX}")
-                        if p.is_file() and _inside(p.resolve(), root_resolved)), key=str)
+                        if p.is_file() and is_inside(p, root_resolved)), key=str)
     except OSError:
         return None
     if not files:
         return None
     total = 0
     for path in _shards(directory, files):
-        n = _read(_safetensors_parameters, path, _relative(path, root_resolved))
+        n = _read(_safetensors_parameters, path, relative_path(path, root_resolved))
         if n is None:
             return None
         total += n

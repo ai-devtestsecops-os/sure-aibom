@@ -28,7 +28,7 @@ import re
 from pathlib import Path
 
 from ..log import detail
-from ..utils.files import SKIP_DIRS, inside, notebook_code, relative
+from ..utils.files import SKIP_DIRS, is_inside, notebook_code, relative_path
 from .model import hub_model_id
 
 # (제공사, 서비스 이름, 파이썬 모듈, JS 패키지). 모듈은 그 이름이거나 그 아래 하위 모듈이면 맞는다 (openai.types)
@@ -101,9 +101,9 @@ def _sdk_imports(root: Path) -> dict[str, list[str]]:
             if suffix not in PYTHON_SUFFIXES and suffix not in JS_SUFFIXES:
                 continue
             path = here / filename
-            if not inside(path, root_resolved):
+            if not is_inside(path, root_resolved):
                 continue
-            rel = relative(path, root)
+            rel = relative_path(path, root)
             providers = _python_providers(path, rel) if suffix in PYTHON_SUFFIXES else _js_providers(path)
             for provider in providers:
                 found.setdefault(provider, []).append(rel)

@@ -131,7 +131,7 @@ def _modelfile_models(doc: dict, root: Path) -> None:
     for model in [c for c in doc.get("components") or [] if c.get("type") == MODEL_TYPE and _prop(c, "cdx:ai:artifactFormat") == MODELFILE_FORMAT]:
         location = next((o.get("location") for o in (model.get("evidence") or {}).get("occurrences") or []
                          if isinstance(o, dict) and isinstance(o.get("location"), str)), None)
-        path = _inside(root, location) if location else None
+        path = _find_path(root, location) if location else None
         if path is None:
             continue
         try:
@@ -195,7 +195,7 @@ def _local_source(root: Path, modelfile: str, source: str | None) -> str | None:
         return None
     candidate = "/".join(parts)
     explicit = source.startswith(("./", "../", "/"))
-    return candidate if explicit or _inside(root, candidate) is not None else None
+    return candidate if explicit or _find_path(root, candidate) is not None else None
 
 
 def _absorb(doc: dict, target: dict, model: dict) -> None:
@@ -230,7 +230,7 @@ def _repoint(doc: dict, old: str | None, new: str | None) -> None:
         doc["dependencies"] = list(rows.values())
 
 
-def _inside(root: Path, location: str) -> Path | None:
+def _find_path(root: Path, location: str) -> Path | None:
     """root 기준 상대 경로 location 의 실제 파일. root 밖(심볼릭 링크 포함)이거나 없으면 None."""
     try:
         path = (root / location.split("#", 1)[0]).resolve()
