@@ -27,6 +27,7 @@ import os
 import re
 from pathlib import Path
 
+from ..log import detail
 from ..utils.files import SKIP_DIRS, inside, notebook_code, relative
 from .model import hub_model_id
 
@@ -63,11 +64,11 @@ _JS_IMPORTS = (
 )
 
 
-def discover_services(merged: dict, target: str, log=print) -> dict:
+def discover_services(merged: dict, target: str) -> dict:
     """머리 설명대로 services[] 와 그 관계를 고친다. 서비스도 SDK import 도 없으면 문서는 그대로다."""
     services = merged.get("services") or []
     root = Path(target)
-    imported = _sdk_imports(root, log) if root.is_dir() else {}
+    imported = _sdk_imports(root) if root.is_dir() else {}
     if not services and not imported:
         return merged
     kept, dropped = [], set()
@@ -77,18 +78,18 @@ def discover_services(merged: dict, target: str, log=print) -> dict:
             kept.append({k: v for k, v in service.items() if not (k == "version" and v == "observed")})
         else:
             dropped.add(service.get("bom-ref"))
-            log(f"[service] {service.get('name')}: dropped, no SDK import for {provider}")
+            detail(f"[service] {service.get('name')}: dropped, no SDK import for {provider}")
     have = {s.get("group") or (s.get("provider") or {}).get("name") for s in kept}
     for provider, _, _, _ in SDKS:
         if provider in imported and provider not in have:
             kept.append(_new_service(provider))
-            log(f"[service] {SERVICE_NAME[provider]}: added, SDK imported in {', '.join(imported[provider])}")
+            detail(f"[service] {SERVICE_NAME[provider]}: added, SDK imported in {', '.join(imported[provider])}")
     merged["services"] = kept
-    _fix_relations(merged, dropped, {s.get("bom-ref"): s.get("name") for s in kept}, log)
+    _fix_relations(merged, dropped, {s.get("bom-ref"): s.get("name") for s in kept})
     return merged
 
 
-def _sdk_imports(root: Path, log=print) -> dict[str, list[str]]:
+def _sdk_imports(root: Path) -> dict[str, list[str]]:
     """대상 디렉터리의 소스가 import 하는 SDK. 제공사 → 그 import 가 있는 파일들 (대상 기준 상대 경로)."""
     found: dict[str, list[str]] = {}
     root_resolved = root.resolve()
@@ -103,19 +104,19 @@ def _sdk_imports(root: Path, log=print) -> dict[str, list[str]]:
             if not inside(path, root_resolved):
                 continue
             rel = relative(path, root)
-            providers = _python_providers(path, rel, log) if suffix in PYTHON_SUFFIXES else _js_providers(path)
+            providers = _python_providers(path, rel) if suffix in PYTHON_SUFFIXES else _js_providers(path)
             for provider in providers:
                 found.setdefault(provider, []).append(rel)
     return found
 
 
-def _python_providers(path: Path, rel: str, log) -> set[str]:
+def _python_providers(path: Path, rel: str) -> set[str]:
     """파이썬 소스나 노트북 하나가 import 하는 SDK 의 제공사. 파싱이 안 되면 건너뛰고 알린다."""
     try:
         text = path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(notebook_code(text) if path.suffix.lower() == ".ipynb" else text)
     except (SyntaxError, ValueError, OSError, KeyError, TypeError) as e:
-        log(f"[service] {rel}: skipped, cannot parse ({e.__class__.__name__})")
+        detail(f"[service] {rel}: skipped, cannot parse ({e.__class__.__name__})")
         return set()
     modules: set[str] = set()
     for node in ast.walk(tree):
@@ -157,7 +158,7 @@ def _new_service(provider: str) -> dict:
             "provider": {"name": provider}, "tags": ["ai", provider]}
 
 
-def _fix_relations(merged: dict, dropped: set[str], kept: dict[str, str], log) -> None:
+def _fix_relations(merged: dict, dropped: set[str], kept: dict[str, str]) -> None:
     """뺀 서비스의 행과 그 서비스로 가는 관계를 지우고, 남긴 서비스에서 허브 모델로 가는 관계를 지운다."""
     hub = {c.get("bom-ref"): model_id for c in _walk(merged.get("components") or []) if (model_id := hub_model_id(c))}
     rows = []
@@ -169,7 +170,7 @@ def _fix_relations(merged: dict, dropped: set[str], kept: dict[str, str], log) -
         if ref in kept:
             for t in targets:
                 if t in hub:
-                    log(f"[service] {kept[ref]}: dependency on hub model {hub[t]} dropped, hub models run locally")
+                    detail(f"[service] {kept[ref]}: dependency on hub model {hub[t]} dropped, hub models run locally")
             targets = [t for t in targets if t not in hub]
         rows.append({**row, "dependsOn": targets} if "dependsOn" in row else row)
     if "dependencies" in merged:

@@ -114,20 +114,20 @@ def sid(local: str) -> str:
 
 @pytest.mark.parametrize("spec", ["3.0.1", "v0.6"])
 def test_both_specs_validate_against_their_schema(spec):
-    out = convert_spdx(doc_of(), spec, log=lambda m: None)
+    out = convert_spdx(doc_of(), spec)
     assert _validate_spdx(out, spec)
     has_aibom = any(k.startswith("aibom_") for e in out["@graph"] for k in e)
     assert has_aibom == (spec == "v0.6")                                      # 3.0.1 문서에는 v0.6 속성이 없다
 
 
 def test_a_v06_document_is_not_plain_spdx_and_a_plain_one_is_also_v06():
-    v06 = convert_spdx(doc_of(), "v0.6", log=lambda m: None)
-    assert not _validate_spdx(v06, "3.0.1")                  # aibom_* 는 공식 스키마에 없는 속성이다
-    assert _validate_spdx(convert_spdx(doc_of(), "3.0.1", log=lambda m: None), "v0.6")   # 3.0.1 문서는 v0.6 의 부분집합
+    v06 = convert_spdx(doc_of(), "v0.6")
+    assert not _validate_spdx(v06, "3.0.1")                                      # aibom_* 는 공식 스키마에 없는 속성이다
+    assert _validate_spdx(convert_spdx(doc_of(), "3.0.1"), "v0.6")                                           # 3.0.1 문서는 v0.6 의 부분집합
 
 
 def test_classes_follow_the_component_type():
-    g = graph_of(convert_spdx(doc_of(), "3.0.1", log=lambda m: None))
+    g = graph_of(convert_spdx(doc_of(), "3.0.1"))
     kinds = {local: g[sid(local)]["type"] for local in (ROOT, LIB, FILE, OS_REF, BERT, REVIEWS, LOCAL, APT, SERVICE)}
     assert kinds == {ROOT: "software_Package", LIB: "software_Package", FILE: "software_File", OS_REF: "software_Package", BERT: "ai_AIPackage",
                      REVIEWS: "dataset_DatasetPackage", LOCAL: "dataset_DatasetPackage", APT: "software_Package", SERVICE: "software_Package"}
@@ -138,7 +138,7 @@ def test_classes_follow_the_component_type():
 
 
 def test_package_fields_land_in_standard_spdx_properties():
-    g = graph_of(convert_spdx(doc_of(), "3.0.1", log=lambda m: None))
+    g = graph_of(convert_spdx(doc_of(), "3.0.1"))
     lib, root, file = g[sid(LIB)], g[sid(ROOT)], g[sid(FILE)]
     assert (lib["software_packageVersion"], lib["software_packageUrl"]) == ("2.31.0", LIB)
     assert lib["externalIdentifier"] == [{"type": "ExternalIdentifier", "externalIdentifierType": "cpe23", "identifier": lib_cpe()}]
@@ -160,8 +160,8 @@ def lib_cpe() -> str:
 
 
 def test_model_fields_split_between_standard_properties_and_the_spec():
-    plain = graph_of(convert_spdx(doc_of(), "3.0.1", log=lambda m: None))[sid(BERT)]
-    rich = graph_of(convert_spdx(doc_of(), "v0.6", log=lambda m: None))[sid(BERT)]
+    plain = graph_of(convert_spdx(doc_of(), "3.0.1"))[sid(BERT)]
+    rich = graph_of(convert_spdx(doc_of(), "v0.6"))[sid(BERT)]
     for el in (plain, rich):                                                   # SPDX 3.0.1 에 자리가 있는 값은 두 spec 에서 같다
         assert el["ai_typeOfModel"] == ["supervised"]
         assert el["ai_hyperparameter"] == [{"type": "DictionaryEntry", "key": "learning_rate", "value": "2e-5"},
@@ -199,8 +199,8 @@ def test_model_fields_split_between_standard_properties_and_the_spec():
 
 
 def test_dataset_fields_split_between_standard_properties_and_the_spec():
-    plain = graph_of(convert_spdx(doc_of(), "3.0.1", log=lambda m: None))
-    rich = graph_of(convert_spdx(doc_of(), "v0.6", log=lambda m: None))
+    plain = graph_of(convert_spdx(doc_of(), "3.0.1"))
+    rich = graph_of(convert_spdx(doc_of(), "v0.6"))
     for g in (plain, rich):
         el = g[sid(REVIEWS)]
         assert (el["dataset_datasetType"], el["dataset_datasetSize"], el["dataset_datasetAvailability"]) == (["text"], 750000, "directDownload")
@@ -227,7 +227,7 @@ def test_dataset_fields_split_between_standard_properties_and_the_spec():
 
 
 def test_relationships_cover_dependencies_lineage_and_licenses(logs):
-    out = convert_spdx(doc_of(), "3.0.1", log=logs.append)
+    out = convert_spdx(doc_of(), "3.0.1")
     g = graph_of(out)
     depends = rels(out, "dependsOn")
     assert set(depends[sid(ROOT)]) == {sid(x) for x in (LIB, FILE, OS_REF, BERT, LOCAL, APT)}            # 없는 대상은 뺀다
@@ -274,27 +274,27 @@ def test_facts_add_training_and_evaluation_relationships_and_times(logs):
     facts.set_time(BERT, "releaseTime", "2024-02-19T11:06:12.000Z")
     facts.set_time(REVIEWS, "releaseTime", "2024-01-04T21:09:45+09:00")
     logs.clear()
-    out = convert_spdx(doc_of(), "3.0.1", log=logs.append, facts=facts)
+    out = convert_spdx(doc_of(), "3.0.1", facts=facts)
     g = graph_of(out)
     assert rels(out, "trainedOn") == {sid(BERT): [sid(REVIEWS)]} and rels(out, "testedOn") == {sid(BERT): [sid(REVIEWS), sid(LOCAL)]}
     assert rels(out, "dependsOn")[sid(BERT)] == [sid(REVIEWS)]                      # dependsOn 은 그대로 (CycloneDX 와 같게)
     assert g[sid(ROOT)]["builtTime"] == "2026-10-01T00:00:00Z" and g[sid(BERT)]["releaseTime"] == "2024-02-19T11:06:12Z"
     assert g[sid(REVIEWS)]["releaseTime"] == "2024-01-04T12:09:45Z" and not any("Time" in k for k in g[sid(LIB)])
     assert f"[spdx] dataset role of unknown element skipped: pkg:huggingface/acme/gone -> {REVIEWS}" in logs
-    assert _validate_spdx(out, "3.0.1") and _validate_spdx(convert_spdx(doc_of(), "v0.6", log=lambda m: None, facts=facts), "v0.6")
-    plain = convert_spdx(doc_of(), "3.0.1", log=lambda m: None)                             # facts 가 없으면 아무것도 더하지 않는다
+    assert _validate_spdx(out, "3.0.1") and _validate_spdx(convert_spdx(doc_of(), "v0.6", facts=facts), "v0.6")
+    plain = convert_spdx(doc_of(), "3.0.1")                                                 # facts 가 없으면 아무것도 더하지 않는다
     assert not rels(plain, "trainedOn") and not rels(plain, "testedOn") and "builtTime" not in graph_of(plain)[sid(ROOT)]
 
 
 def test_ids_come_from_the_serial_number_and_bom_refs_and_the_output_is_deterministic():
     doc = doc_of()
     doc["components"].append({"type": "machine-learning-model", "bom-ref": "pkg:generic/Acme/Acme%20Tiny%20Chat@v1.0", "name": "Acme Tiny Chat"})
-    once, twice = convert_spdx(doc, "v0.6", log=lambda m: None), convert_spdx(copy.deepcopy(doc), "v0.6", log=lambda m: None)
+    once, twice = convert_spdx(doc, "v0.6"), convert_spdx(copy.deepcopy(doc), "v0.6")
     assert once == twice
     ids = {e["spdxId"] for e in once["@graph"] if "spdxId" in e}
     assert sid("pkg:generic/Acme/Acme%2520Tiny%2520Chat@v1.0") in ids                 # % 는 퍼센트 인코딩, : / @ 는 그대로
     assert sid("rel/dependsOn/" + ROOT) in ids and all(e.startswith(NS + "#") for e in ids)
-    without_serial = convert_spdx({k: v for k, v in doc.items() if k != "serialNumber"}, "v0.6", log=lambda m: None)
+    without_serial = convert_spdx({k: v for k, v in doc.items() if k != "serialNumber"}, "v0.6")
     assert all(e["spdxId"].startswith("urn:uuid:") for e in without_serial["@graph"] if "spdxId" in e)
     assert _validate_spdx(once, "v0.6")
 
@@ -302,8 +302,8 @@ def test_ids_come_from_the_serial_number_and_bom_refs_and_the_output_is_determin
 def test_the_input_document_is_left_untouched():
     doc = doc_of()
     before = json.dumps(doc, sort_keys=True)
-    convert_spdx(doc, "3.0.1", log=lambda m: None)
-    convert_spdx(doc, "v0.6", log=lambda m: None)
+    convert_spdx(doc, "3.0.1")
+    convert_spdx(doc, "v0.6")
     assert json.dumps(doc, sort_keys=True) == before
 
 
@@ -313,7 +313,7 @@ def test_convert_rejects_an_unknown_spec():
 
 
 def test_validate_detects_the_format_and_refuses_a_spec_of_the_other_format(logs):
-    cdx, spdx = doc_of(), convert_spdx(doc_of(), "3.0.1", log=lambda m: None)
+    cdx, spdx = doc_of(), convert_spdx(doc_of(), "3.0.1")
     assert (detect_format(cdx), detect_format(spdx), detect_format({"x": 1})) == ("cyclonedx", "spdx", None)
     assert schema_for("cyclonedx", "3.0.1") is None and schema_for("spdx", "1.7") is None
     assert schema_for("cyclonedx", "v0.6") is not None and schema_for("spdx", "v0.6") is not None

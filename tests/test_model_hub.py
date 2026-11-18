@@ -110,7 +110,7 @@ def test_nothing_to_enrich_is_left_alone(monkeypatch, logs):
     doc = doc_of({"bom-ref": "x", "type": "library", "name": "numpy"})
     before = json.dumps(doc)
     report: dict = {}
-    assert json.dumps(enrich_hub_models(doc, WORKDIR, logs.append, report=report)) == before
+    assert json.dumps(enrich_hub_models(doc, WORKDIR, report=report)) == before
     assert any("no hub model components" in m for m in logs)
     assert report["skipped"] == report["hub_skipped"] == "no Hugging Face models"
 
@@ -118,13 +118,13 @@ def test_nothing_to_enrich_is_left_alone(monkeypatch, logs):
 def test_offline_skips_without_running_anything(monkeypatch, logs):
     """허브에 닿지 않으면 Hub API 모델 응답을 받지 않고, OWASP 도 건너뛴다."""
     monkeypatch.setattr(aibom_generator, "skip_reason", lambda: "huggingface.co unreachable")
-    monkeypatch.setattr(hub_api, "fetch_model_info", lambda hf_id, log=print: pytest.fail("offline 인데 모델 응답을 받았다"))
+    monkeypatch.setattr(hub_api, "fetch_model_info", lambda hf_id: pytest.fail("offline 인데 모델 응답을 받았다"))
     stub(monkeypatch, RunnerError("불려서는 안 된다"))
     logs.clear()
     doc = doc_of(bert_component())
     before = json.dumps(doc)
     report: dict = {}
-    assert json.dumps(enrich_hub_models(doc, WORKDIR, logs.append, report=report)) == before
+    assert json.dumps(enrich_hub_models(doc, WORKDIR, report=report)) == before
     assert [m for m in logs if "skipped" in m] == ["[enrich] aibom-generator skipped for 1 hub model: huggingface.co unreachable"]
     assert report["hub_skipped"] == report["skipped"] == "huggingface.co unreachable"
     assert report["hub_reachable"] is False and report["model_infos"] == {}
@@ -156,7 +156,7 @@ def test_report_carries_the_first_line_of_each_failure(monkeypatch, owasp):
     monkeypatch.setattr(aibom_generator, "run_aibom_generator", run)
     report: dict = {}
     enrich_hub_models(doc_of(bert_component(), {"bom-ref": other, "type": "machine-learning-model", "name": "other", "purl": other}),
-           WORKDIR, log=lambda m: None, report=report)
+           WORKDIR, report=report)
     assert (report["models"], report["enriched"], sorted(report["failed"])) == (2, 0, ["acme/other", HF_ID])
     assert report["errors"] == {HF_ID: "no model component in the aibom-generator output",
                                 "acme/other": "aibom-generator exited with 1 for acme/other"}
@@ -173,7 +173,7 @@ def test_only_regulation_sources_are_taken_from_owasp(monkeypatch, owasp):
     calls: list[str] = []
     stub(monkeypatch, owasp, calls)
     report: dict = {}
-    out = enrich_hub_models(doc_of(bert_component()), WORKDIR, log=lambda m: None, report=report)
+    out = enrich_hub_models(doc_of(bert_component()), WORKDIR, report=report)
     comp = out["components"][0]
     assert calls == [HF_ID] and report["enriched"] == 1
     props = card_props(comp)
@@ -188,9 +188,9 @@ def test_owasp_fields_other_than_regulation_sources_are_not_taken(monkeypatch, o
     supplier·authors·version 은 하나도 들어오지 않는다. 비어 있는 자리여도 그렇다."""
     stub(monkeypatch, owasp)
     comp = {"bom-ref": BERT, "type": "machine-learning-model", "name": "bert-base-uncased", "purl": BERT}
-    out = enrich_hub_models(doc_of(comp), WORKDIR, log=lambda m: None)["components"][0]
+    out = enrich_hub_models(doc_of(comp), WORKDIR)["components"][0]
     assert set(out) == {"bom-ref", "type", "name", "purl", "modelCard"} and set(out["modelCard"]) == {"properties"}
-    kept = enrich_hub_models(doc_of(bert_component(description="cdxgen 설명")), WORKDIR, log=lambda m: None)["components"][0]
+    kept = enrich_hub_models(doc_of(bert_component(description="cdxgen 설명")), WORKDIR)["components"][0]
     assert kept["modelCard"]["modelParameters"] == {"task": "fill-mask", "modelArchitecture": "BertForMaskedLM"}
     assert kept["description"] == "cdxgen 설명" and "considerations" not in kept["modelCard"]
 
@@ -206,7 +206,7 @@ def test_an_owasp_result_without_regulation_values_counts_as_failed(monkeypatch,
     doc = doc_of(bert_component())
     before = json.dumps(doc)
     report: dict = {}
-    assert json.dumps(enrich_hub_models(doc, WORKDIR, log=lambda m: None, report=report)) == before
+    assert json.dumps(enrich_hub_models(doc, WORKDIR, report=report)) == before
     assert report["failed"] == [HF_ID] and report["errors"] == {HF_ID: "no regulation values in the aibom-generator output"}
 
 
@@ -215,21 +215,21 @@ def test_the_generator_is_listed_as_a_tool_only_when_its_values_are_used(monkeyp
     모델이 여럿이어도, 두 번 돌려도 한 번만 둔다. 원본을 하나도 못 가져온 결과(비공개·없는 저장소)면 더하지 않는다."""
     stub(monkeypatch, owasp)
     other = bert_component(**{"bom-ref": "pkg:huggingface/acme/other", "purl": "pkg:huggingface/acme/other", "group": "acme", "name": "other"})
-    out = enrich_hub_models(doc_of(bert_component(), other), WORKDIR, log=lambda m: None)
+    out = enrich_hub_models(doc_of(bert_component(), other), WORKDIR)
     assert out["metadata"]["tools"]["components"] == owasp["metadata"]["tools"]["components"]
-    assert enrich_hub_models(copy.deepcopy(out), WORKDIR, log=lambda m: None)["metadata"] == out["metadata"]
+    assert enrich_hub_models(copy.deepcopy(out), WORKDIR)["metadata"] == out["metadata"]
     empty = copy.deepcopy(owasp)
     for comp in empty["components"]:
         card = comp.get("modelCard") or {}
         card["properties"] = [p for p in card.get("properties") or [] if p.get("name") not in OWASP_SOURCES]
     stub(monkeypatch, empty)
-    assert "metadata" not in enrich_hub_models(doc_of(bert_component()), WORKDIR, log=lambda m: None)
+    assert "metadata" not in enrich_hub_models(doc_of(bert_component()), WORKDIR)
 
 
 def test_running_twice_adds_nothing_new(monkeypatch, owasp, hub):
     stub(monkeypatch, owasp)
-    once = enrich_hub_models(doc_of(bert_component()), WORKDIR, log=lambda m: None, model_infos={HF_ID: hub})
-    twice = enrich_hub_models(copy.deepcopy(once), WORKDIR, log=lambda m: None, model_infos={HF_ID: hub})
+    once = enrich_hub_models(doc_of(bert_component()), WORKDIR, model_infos={HF_ID: hub})
+    twice = enrich_hub_models(copy.deepcopy(once), WORKDIR, model_infos={HF_ID: hub})
     assert json.dumps(twice) == json.dumps(once)
 
 
@@ -245,7 +245,7 @@ def test_a_failing_run_is_logged_and_the_other_models_still_run(monkeypatch, owa
     monkeypatch.setattr(aibom_generator, "run_aibom_generator", run)
     logs.clear()
     doc = doc_of(bert_component(), {"bom-ref": other, "type": "machine-learning-model", "name": "other", "purl": other})
-    out = enrich_hub_models(doc, WORKDIR, logs.append)
+    out = enrich_hub_models(doc, WORKDIR)
     assert sorted(calls) == ["acme/other", HF_ID]
     assert card_props(out["components"][0]) and "modelCard" not in out["components"][1]
     assert any("acme/other: exit 1" in m for m in logs)
@@ -255,7 +255,7 @@ def test_a_result_without_a_model_component_changes_nothing(monkeypatch):
     stub(monkeypatch, {"bomFormat": "CycloneDX", "components": [{"type": "library", "name": "x"}]})
     doc = doc_of(bert_component())
     before = json.dumps(doc)
-    assert json.dumps(enrich_hub_models(doc, WORKDIR, log=lambda m: None)) == before
+    assert json.dumps(enrich_hub_models(doc, WORKDIR)) == before
 
 
 # -- Hub API 응답으로 채우기 --------------------------------------------------------------
@@ -265,7 +265,7 @@ def test_hub_api_response_fills_the_empty_fields(monkeypatch, hub):
     stub(monkeypatch, RunnerError("OWASP 는 이 테스트의 관심 밖"))
     report: dict = {}
     facts = Facts()
-    comp = enrich_hub_models(doc_of(bert_component()), WORKDIR, log=lambda m: None, report=report, model_infos={HF_ID: hub}, facts=facts)["components"][0]
+    comp = enrich_hub_models(doc_of(bert_component()), WORKDIR, report=report, model_infos={HF_ID: hub}, facts=facts)["components"][0]
     assert (report["hub"], report["hub_missing"]) == (1, [])
     assert facts.times == {comp["bom-ref"]: {"releaseTime": "2024-02-19T11:06:12Z"}}     # lastModified 는 문서가 아니라 facts 에
     assert comp["version"] == "86b5e0934494bd15c9632b12f734a8a67f723594"
@@ -283,10 +283,10 @@ def test_hub_model_responses_are_fetched_once_and_handed_to_the_d_bom(monkeypatc
     뒤의 D-BOM 이 모델 카드의 데이터셋을 읽을 때 다시 쓴다."""
     calls: list[str] = []
     monkeypatch.setattr(hub_api, "hf_reachable", lambda: True)
-    monkeypatch.setattr(hub_api, "fetch_model_info", lambda hf_id, log=print: calls.append(hf_id) or copy.deepcopy(hub))
+    monkeypatch.setattr(hub_api, "fetch_model_info", lambda hf_id: calls.append(hf_id) or copy.deepcopy(hub))
     monkeypatch.setattr(aibom_generator, "skip_reason", lambda: "not under test")
     report: dict = {}
-    comp = enrich_hub_models(doc_of(bert_component()), WORKDIR, log=lambda m: None, report=report)["components"][0]
+    comp = enrich_hub_models(doc_of(bert_component()), WORKDIR, report=report)["components"][0]
     assert calls == [HF_ID]
     assert report["hub_reachable"] is True and report["hub"] == 1 and report["model_infos"] == {HF_ID: hub}
     assert comp["version"] == hub["sha"]
@@ -297,7 +297,7 @@ def test_hub_models_without_a_response_are_reported(monkeypatch, hub):
     stub(monkeypatch, RunnerError("x"))
     report: dict = {}
     doc = doc_of(bert_component(), {"bom-ref": other, "type": "machine-learning-model", "name": "private", "purl": other})
-    out = enrich_hub_models(doc, WORKDIR, log=lambda m: None, report=report, model_infos={HF_ID: hub, "acme/private": None})
+    out = enrich_hub_models(doc, WORKDIR, report=report, model_infos={HF_ID: hub, "acme/private": None})
     assert (report["models"], report["hub"], report["hub_missing"]) == (2, 1, ["acme/private"])
     assert set(out["components"][1]) == {"bom-ref", "type", "name", "purl"}
 
@@ -356,7 +356,7 @@ def test_performance_metrics_match_cdxgen():
 @pytest.mark.parametrize("form", ["properties", "typed"])
 def test_enriched_values_become_v06_fields(monkeypatch, owasp, hub, form):
     stub(monkeypatch, owasp)
-    out = regulate(enrich_hub_models(doc_of(bert_component()), WORKDIR, log=lambda m: None, model_infos={HF_ID: hub}), form=form, log=lambda m: None)
+    out = regulate(enrich_hub_models(doc_of(bert_component()), WORKDIR, model_infos={HF_ID: hub}), form=form)
     card = out["components"][0]["modelCard"]
     if form == "properties":
         props = card_props(out["components"][0])

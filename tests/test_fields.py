@@ -78,10 +78,10 @@ def scans(tmp_path_factory) -> dict:
         mp.setattr(aibom_generator, "skip_reason", lambda: None)
         mp.setattr(aibom_generator, "run_aibom_generator", recorded_owasp)
         mp.setattr(hub, "hf_reachable", lambda: True)                       # 허브 모델 응답은 M-BOM 보강이 받는다
-        mp.setattr(hub, "fetch_model_info", lambda hf_id, log=print: recorded("model", hf_id))
-        mp.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))
-        mp.setattr(hub, "fetch_dataset_size", lambda hf_id, log=print: recorded("size", hf_id))
-        mp.setattr(hub, "fetch_dataset_statistics", lambda hf_id, config, split, log=print: recorded("statistics", hf_id, config, split))
+        mp.setattr(hub, "fetch_model_info", lambda hf_id: recorded("model", hf_id))
+        mp.setattr(hub, "fetch_dataset_info", lambda hf_id: recorded("dataset", hf_id))
+        mp.setattr(hub, "fetch_dataset_size", lambda hf_id: recorded("size", hf_id))
+        mp.setattr(hub, "fetch_dataset_statistics", lambda hf_id, config, split: recorded("statistics", hf_id, config, split))
         for name, target, spec in (("directory", PROJECT, "v0.6"), ("image", tar, "v0.6"), ("directory-1.7", PROJECT, "1.7")):
             err = io.StringIO()
             with contextlib.redirect_stderr(err):
@@ -142,7 +142,7 @@ def test_the_spdx_conversion_of_the_scans_validates(scans):
         doc = json.loads((OUT / f"{name}.cdx.json").read_text())
         refs = {c["bom-ref"] for c in doc["components"]} | {s["bom-ref"] for s in doc["services"]} | {doc["metadata"]["component"]["bom-ref"]}
         for spec in ("3.0.1", "v0.6"):
-            out = convert_spdx(doc, spec, log=lambda m: None)
+            out = convert_spdx(doc, spec)
             assert _validate_spdx(out, spec), (name, spec)
             kept = {p["extension_cdxPropValue"] for e in out["@graph"] for x in e.get("extension") or []
                     for p in x["extension_cdxProperty"] if p["extension_cdxPropName"] == "bom-ref"}

@@ -66,12 +66,12 @@ def offline(monkeypatch):
     monkeypatch.setattr("sure_aibom.external.aibom_generator.skip_reason", lambda: None)                         # 보강은 녹화본으로 돌린다
     monkeypatch.setattr("sure_aibom.external.aibom_generator.run_aibom_generator", recorded_owasp)
     monkeypatch.setattr(hub, "hf_reachable", lambda: True)                                                 # 허브 모델 응답은 M-BOM 보강이 받는다
-    monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id, log=print: recorded("model", hf_id))
-    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print: recorded("dataset", hf_id))
+    monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id: recorded("model", hf_id))
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id: recorded("dataset", hf_id))
     monkeypatch.setattr(hub, "fetch_revision_error", lambda hf_id, revision: None)                          # --data 리비전은 있는 것으로 친다
-    monkeypatch.setattr(hub, "fetch_dataset_size", lambda hf_id, log=print: recorded("size", hf_id))
+    monkeypatch.setattr(hub, "fetch_dataset_size", lambda hf_id: recorded("size", hf_id))
     monkeypatch.setattr(hub, "fetch_dataset_statistics",
-                        lambda hf_id, config, split, log=print: recorded("statistics", hf_id, config, split))
+                        lambda hf_id, config, split: recorded("statistics", hf_id, config, split))
 
 
 def scan(target, out: Path, *flags) -> dict:
@@ -454,7 +454,7 @@ def test_a_data_path_without_data_files_is_a_warning(tmp_path, monkeypatch, caps
 def test_hub_datasets_in_data_join_the_ones_in_code_and_a_failed_lookup_is_a_warning(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(scan_service, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
     monkeypatch.setattr(scan_service, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
-    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, log=print, revision=None: recorded("dataset", hf_id))
+    monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id, revision=None: recorded("dataset", hf_id))
     doc = scan(FIXTURE, tmp_path / "b.json", "--data", "hf://datasets/stanfordnlp/imdb@e6281661", "--data", "hf://datasets/acme/missing")
     imdb = next(c for c in doc["components"] if c["bom-ref"] == IMDB_REF)              # src/train.py 의 load_dataset 과 합쳐져 하나
     assert imdb["version"] == "e6281661ce1c48d982bc483cf8a173c1bbeb5d31" and imdb["evidence"]["occurrences"] == [{"location": "src/train.py"}]

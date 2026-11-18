@@ -59,6 +59,7 @@ from pathlib import Path, PurePosixPath
 from typing import Iterable
 
 from ..exceptions import RunnerError
+from ..log import detail
 # external 은 import 하지 않는다: enrich_hub_models 는 service 가 넘겨준 external 모듈(hub, aibom_generator)로 부른다
 from ..utils.licenses import card_licenses
 from .facts import Facts
@@ -115,7 +116,7 @@ _READ_ERRORS = (OSError, ValueError, UnicodeDecodeError, struct.error, Recursion
 
 # ── 진입점 ──────────────────────────────────────────────────────────────────
 
-def enrich_local_models(merged: dict, target: str, log=print) -> dict:
+def enrich_local_models(merged: dict, target: str) -> dict:
     """모델 컴포넌트마다 대상 안의 모델 파일을 읽어 사실을 붙인다. 읽을 것이 없으면 문서는 바이트 단위로 그대로다."""
     root = Path(target)
     if not root.is_dir():
@@ -126,7 +127,7 @@ def enrich_local_models(merged: dict, target: str, log=print) -> dict:
         return merged
     for comp in _walk(merged.get("components") or []):
         if comp.get("type") == MODEL_TYPE:
-            _apply(comp, root, root_resolved, log)
+            _apply(comp, root, root_resolved)
     return merged
 
 
@@ -136,25 +137,25 @@ def _walk(components: Iterable[dict]):
         yield from _walk(c.get("components") or [])
 
 
-def _apply(comp: dict, root: Path, root_resolved: Path, log) -> None:
+def _apply(comp: dict, root: Path, root_resolved: Path) -> None:
     label = comp.get("bom-ref") or comp.get("name") or "?"
     hparams: dict[str, str] = {}
     parameter_count: int | None = None
     for path in _model_files(comp, root, root_resolved):
         rel = _relative(path, root_resolved)
         if path.name == CONFIG_NAME:
-            found = _read(_parse_config, path, rel, log)
+            found = _read(_parse_config, path, rel)
             if found is None:
                 continue
-            _take(hparams, found, rel, label, log)
+            _take(hparams, found, rel, label)
             if parameter_count is None:
-                parameter_count = _safetensors_total(path.parent, root_resolved, log)
+                parameter_count = _safetensors_total(path.parent, root_resolved)
         else:
-            got = _read(_parse_gguf, path, rel, log)
+            got = _read(_parse_gguf, path, rel)
             if got is None:
                 continue
             found, count = got
-            _take(hparams, found, rel, label, log)
+            _take(hparams, found, rel, label)
             if parameter_count is None:
                 parameter_count = count
 
@@ -163,21 +164,21 @@ def _apply(comp: dict, root: Path, root_resolved: Path, log) -> None:
         comp["properties"] = (comp.get("properties") or []) + props
 
 
-def _read(parse, path: Path, rel: str, log):
+def _read(parse, path: Path, rel: str):
     try:
         return parse(path)
     except _READ_ERRORS as e:
-        log(f"[model] {rel}: skipped, cannot read ({e.__class__.__name__}: {e})")
+        detail(f"[model] {rel}: skipped, cannot read ({e.__class__.__name__}: {e})")
         return None
 
 
-def _take(hparams: dict[str, str], found: dict[str, str], rel: str, label: str, log) -> None:
+def _take(hparams: dict[str, str], found: dict[str, str], rel: str, label: str) -> None:
     """먼저 읽은 파일의 값이 이긴다. 값이 다르면 알리고 버린다 (한 이름이 두 번 나오지 않는다)."""
     for name, value in found.items():
         if name not in hparams:
             hparams[name] = value
         elif hparams[name] != value:
-            log(f"[model] {label}: hyperparameters[{name}] already has {hparams[name]!r}, {value!r} from {rel} dropped")
+            detail(f"[model] {label}: hyperparameters[{name}] already has {hparams[name]!r}, {value!r} from {rel} dropped")
 
 
 # ── 읽을 파일 찾기 ───────────────────────────────────────────────────────────
@@ -253,7 +254,7 @@ def _parse_config(path: Path) -> dict[str, str]:
 
 # ── safetensors ─────────────────────────────────────────────────────────────
 
-def _safetensors_total(directory: Path, root_resolved: Path, log) -> int | None:
+def _safetensors_total(directory: Path, root_resolved: Path) -> int | None:
     """디렉터리의 *.safetensors 파라미터 수 합. 인덱스가 있으면 거기 적힌 샤드만 센다. 하나라도 못 읽으면 None."""
     try:
         files = sorted((p for p in directory.glob(f"*{SAFETENSORS_SUFFIX}")
@@ -264,7 +265,7 @@ def _safetensors_total(directory: Path, root_resolved: Path, log) -> int | None:
         return None
     total = 0
     for path in _shards(directory, files):
-        n = _read(_safetensors_parameters, path, _relative(path, root_resolved), log)
+        n = _read(_safetensors_parameters, path, _relative(path, root_resolved))
         if n is None:
             return None
         total += n
@@ -475,12 +476,12 @@ def hub_model_id(component: dict) -> str | None:
     return hf_id
 
 
-def enrich_hub_models(merged: dict, workdir: Path, log=print, report: dict | None = None, model_infos: dict | None = None,
+def enrich_hub_models(merged: dict, workdir: Path, report: dict | None = None, model_infos: dict | None = None,
            facts: Facts | None = None, *, hub, aibom_generator) -> dict:
     """hub 와 aibom_generator 는 service 가 넘겨주는 external 모듈이다 (external/hub.py, external/aibom_generator.py).
     engine 은 external 을 import 하지 않고 넘겨받은 것으로만 부른다. 쓰는 함수:
         hub.hf_reachable()                                  huggingface.co 에 닿는가
-        hub.fetch_model_info(id, log)                       GET /api/models/<id> 응답 (실패면 None)
+        hub.fetch_model_info(id)                            GET /api/models/<id> 응답 (실패면 None)
         aibom_generator.skip_reason()                       OWASP 를 건너뛸 이유 (돌려도 되면 None)
         aibom_generator.run_aibom_generator(id, workdir)    aibom-generator 출력 (실패면 RunnerError)
     model_infos 는 허브 모델 id → Hub API 응답 (실패면 None). 주지 않으면 허브에 닿는지 보고 허브 모델마다 받는다.
@@ -494,7 +495,7 @@ def enrich_hub_models(merged: dict, workdir: Path, log=print, report: dict | Non
     report.update(models=len(targets), hub=0, hub_missing=[], hub_skipped=None, hub_reachable=None, model_infos={},
                   enriched=0, failed=[], errors={}, skipped=None)
     if not targets:
-        log("[enrich] no hub model components, nothing to enrich")
+        detail("[enrich] no hub model components, nothing to enrich")
         report["skipped"] = report["hub_skipped"] = "no Hugging Face models"
         return merged
 
@@ -503,7 +504,7 @@ def enrich_hub_models(merged: dict, workdir: Path, log=print, report: dict | Non
         if report["hub_reachable"]:
             model_infos = {}
             for hf_id in targets:
-                model_infos[hf_id] = hub.fetch_model_info(hf_id, log)
+                model_infos[hf_id] = hub.fetch_model_info(hf_id)
     if model_infos is None:
         report["hub_skipped"] = "huggingface.co unreachable"
     else:
@@ -517,11 +518,11 @@ def enrich_hub_models(merged: dict, workdir: Path, log=print, report: dict | Non
                 report["hub"] += 1
             else:
                 report["hub_missing"].append(hf_id)
-                log(f"[enrich] {hf_id}: no Hub API model info, fields left as cdxgen wrote them")
+                detail(f"[enrich] {hf_id}: no Hub API model info, fields left as cdxgen wrote them")
 
     reason = aibom_generator.skip_reason()
     if reason:
-        log(f"[enrich] aibom-generator skipped for {len(targets)} hub model{'s' if len(targets) != 1 else ''}: {reason}")
+        detail(f"[enrich] aibom-generator skipped for {len(targets)} hub model{'s' if len(targets) != 1 else ''}: {reason}")
         report["skipped"] = reason
         return merged
     used_tools: list[dict] = []
@@ -529,7 +530,7 @@ def enrich_hub_models(merged: dict, workdir: Path, log=print, report: dict | Non
         try:
             owasp = aibom_generator.run_aibom_generator(hf_id, workdir)
         except RunnerError as e:
-            log(f"[enrich] {hf_id}: {e}")
+            detail(f"[enrich] {hf_id}: {e}")
             report["failed"].append(hf_id)
             report["errors"][hf_id] = (str(e).splitlines() or ["failed"])[0]
             continue

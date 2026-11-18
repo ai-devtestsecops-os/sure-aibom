@@ -332,7 +332,7 @@ def spdx_site_sources(doc: dict, tracker: Tracker) -> dict[str, set[tuple[str, s
     clean = copy.deepcopy(doc)
     for c in clean.get("components") or []:
         c.pop(MARK, None)
-    graph = convert_spdx(clean, "v0.6", log=lambda m: None, facts=tracker.facts)["@graph"]
+    graph = convert_spdx(clean, "v0.6", facts=tracker.facts)["@graph"]
     doc_attr = tracker.attr.get("doc", {})
     out: dict[str, set] = defaultdict(set)
 

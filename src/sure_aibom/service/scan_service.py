@@ -29,7 +29,7 @@ from ..exceptions import ImageExtractionError, RunnerError
 from ..external import aibom_generator, hub, run_cdxgen, run_syft
 from ..external.container_tools import pull_image
 from ..formats import FORM_BY_SPEC, FORMAT_NAME
-from ..log import detail, log, stage
+from ..log import log, stage
 
 # 요약의 묶음: CycloneDX type → S/M/D 와 파일. 목록에 없는 type(library, application, operating-system …)은 packages
 GROUP_ORDER = ("packages", "models", "datasets", "files", "other")
@@ -170,11 +170,11 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path) -> S
     merged = merge(docs, root=scan_root(target, image_name), facts=facts)
     scan_dir = scan_dir or target                             # 이미지를 못 풀었으면 볼 디렉터리가 없다
 
-    merged = discover_services(merged, scan_dir, log=detail)  # cdxgen 서비스 가운데 코드가 SDK 로 부르는 것만 (import 는 직접 읽는다)
-    merged = enrich_local_models(merged, scan_dir, log=detail)
+    merged = discover_services(merged, scan_dir)              # cdxgen 서비스 가운데 코드가 SDK 로 부르는 것만 (import 는 직접 읽는다)
+    merged = enrich_local_models(merged, scan_dir)
 
     enriched: dict = {}
-    merged = enrich_hub_models(merged, workdir, log=detail, report=enriched, facts=facts, hub=hub, aibom_generator=aibom_generator)
+    merged = enrich_hub_models(merged, workdir, report=enriched, facts=facts, hub=hub, aibom_generator=aibom_generator)
     if enriched["hub_skipped"]:
         result = f"skipped: {enriched['hub_skipped']}"
     elif enriched["hub_missing"]:
@@ -194,7 +194,7 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path) -> S
 
     # 허브 모델 카드의 데이터셋은 M-BOM 보강이 받아 둔 Hub API 응답에서 읽는다 (같은 응답을 다시 받지 않는다)
     datasets: dict = {}
-    merged = discover_datasets(merged, scan_dir, log=detail, report=datasets, data_paths=data,
+    merged = discover_datasets(merged, scan_dir, report=datasets, data_paths=data,
                                model_infos=enriched["model_infos"], hub_reachable=enriched["hub_reachable"], facts=facts, hub=hub)
     total = count(sum(1 for c in merged["components"] if is_dataset(c)), "dataset")
     stage("Generating D-BOM", total + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
@@ -204,13 +204,13 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path) -> S
         log(f"[sure-aibom] warning: huggingface.co lookup failed for {ref}, kept as given")
 
     regulation: dict = {}
-    merged = regulate(merged, form=FORM_BY_SPEC[spec], log=detail, report=regulation)
+    merged = regulate(merged, form=FORM_BY_SPEC[spec], report=regulation)
     stage("Adding regulation fields", coverage_text(regulation))
     merged = drop_tool_properties(merged)                         # 출력의 properties 는 aibom:* 뿐이다
 
     out_doc = merged
     if fmt == "spdx":                                             # 값은 CycloneDX 로 다 만들고 마지막에 모양만 바꾼다
-        out_doc = convert_spdx(merged, spec, log=detail, facts=facts)
+        out_doc = convert_spdx(merged, spec, facts=facts)
         graph = out_doc["@graph"]
         stage(f"Converting to {FORMAT_NAME[(fmt, spec)]}",
               f"{count(sum(1 for e in graph if e['type'] not in ('CreationInfo', 'Relationship')), 'element')}, "

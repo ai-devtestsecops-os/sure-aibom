@@ -43,6 +43,8 @@ import json
 import re
 from typing import Iterable
 
+from ..log import detail
+
 FORMS = ("properties", "typed")
 MODEL_TYPE = "machine-learning-model"
 DATA_TYPE = "data"
@@ -84,18 +86,18 @@ HF_DATASETS_PURL = "pkg:huggingface/datasets/"
 
 # ── 진입점 ──────────────────────────────────────────────────────────────────
 
-def regulate(doc: dict, form: str = "properties", log=print, report: dict | None = None) -> dict:
+def regulate(doc: dict, form: str = "properties", report: dict | None = None) -> dict:
     """문서를 제자리에서 고치고 돌려준다. form 은 "properties"(기본) 또는 "typed".
     report 를 주면 완성도를 적는다: {"models": {"filled", "total"}, "datasets": {…}, "filled", "total"}."""
     if form not in FORMS:
         raise ValueError(f"form 은 {FORMS} 중 하나여야 한다: {form!r}")
     for comp in _walk(doc.get("components") or []):
         if comp.get("type") == MODEL_TYPE:
-            _apply_component(comp, form, log)
+            _apply_component(comp, form)
         elif comp.get("type") == DATA_TYPE:
-            _apply_dataset(comp, form, log)
+            _apply_dataset(comp, form)
     if report is not None:
-        report.update(_coverage_report(doc, form, log))
+        report.update(_coverage_report(doc, form))
     return doc
 
 
@@ -156,7 +158,7 @@ def _is_dataset(comp: dict) -> bool:
         or str(comp.get("purl") or "").startswith(HF_DATASETS_PURL)
 
 
-def _coverage_report(doc: dict, form: str, log) -> dict:
+def _coverage_report(doc: dict, form: str) -> dict:
     report = {"models": {"filled": 0, "total": 0}, "datasets": {"filled": 0, "total": 0}}
     for comp in _walk(doc.get("components") or []):
         found = _coverage(comp, form)
@@ -168,7 +170,7 @@ def _coverage_report(doc: dict, form: str, log) -> dict:
         bucket["total"] += len(filled) + len(missing)
         if missing:
             label = comp.get("bom-ref") or comp.get("name") or "?"
-            log(f"[form] {label}: {len(filled)}/{len(filled) + len(missing)} regulation fields filled, missing {', '.join(missing)}")
+            detail(f"[form] {label}: {len(filled)}/{len(filled) + len(missing)} regulation fields filled, missing {', '.join(missing)}")
     report["filled"] = report["models"]["filled"] + report["datasets"]["filled"]
     report["total"] = report["models"]["total"] + report["datasets"]["total"]
     return report
@@ -180,14 +182,14 @@ def _walk(components: Iterable[dict]):
         yield from _walk(c.get("components") or [])
 
 
-def _apply_component(comp: dict, form: str, log) -> None:
+def _apply_component(comp: dict, form: str) -> None:
     label = comp.get("bom-ref") or comp.get("name") or "?"
     target = (_TypedTarget if form == "typed" else _PropertiesTarget)(comp)
     consumed: list[dict] = []
-    consumed += _hyperparameters(comp, target, label, log)
-    consumed += _parameter_count(comp, target, label, log)
-    consumed += _max_size(comp, target, label, log)
-    consumed += _technical_requirements(comp, target, label, log)
+    consumed += _hyperparameters(comp, target, label)
+    consumed += _parameter_count(comp, target, label)
+    consumed += _max_size(comp, target, label)
+    consumed += _technical_requirements(comp, target, label)
     consumed += _internal(comp)                                   # 내부 키는 이기든 지든 전부 지운다
     if consumed:                                                  # 아무것도 소비하지 않았으면 컴포넌트에 손대지 않는다
         _remove(comp, consumed)
@@ -227,7 +229,7 @@ def _remove_from(owner: dict, ids: set[int]) -> None:
         del owner["properties"]
 
 
-def _resolve(existing, candidates: list[tuple[object, dict]], field: str, label: str, log) -> tuple[object, list[dict]]:
+def _resolve(existing, candidates: list[tuple[object, dict]], field: str, label: str) -> tuple[object, list[dict]]:
     """단일 값: 목표에 있는 값, 없으면 우선순위 첫 후보가 이긴다. 이긴 값과 같은 후보만 소비하고 다른 후보는 남기며 로그에 적는다."""
     winner = existing if existing is not None else (candidates[0][0] if candidates else None)
     consumed: list[dict] = []
@@ -236,13 +238,13 @@ def _resolve(existing, candidates: list[tuple[object, dict]], field: str, label:
             consumed.append(prop)
         else:
             verb = "dropped" if prop["name"].startswith(INTERNAL_MODEL_PREFIX) else "left as is"
-            log(f"[form] {label}: {field}: {prop['name']}={prop['value']!r} differs from {winner!r}, {verb}")
+            detail(f"[form] {label}: {field}: {prop['name']}={prop['value']!r} differs from {winner!r}, {verb}")
     return winner, consumed
 
 
 # ── 필드별 ───────────────────────────────────────────────────────────────────
 
-def _hyperparameters(comp: dict, target: "_Target", label: str, log) -> list[dict]:
+def _hyperparameters(comp: dict, target: "_Target", label: str) -> list[dict]:
     by_name: dict[str, str] = {e["name"]: e["value"] for e in target.get_hyperparameters()}
     added: list[dict] = []                                        # 새로 붙이는 항목만 — 기존 항목은 손대지 않는다
     consumed: list[dict] = []
@@ -258,12 +260,12 @@ def _hyperparameters(comp: dict, target: "_Target", label: str, log) -> list[dic
     for prop in _sources(comp, HYPERPARAMETER_JSON):
         parsed = _json_object(prop["value"])
         if parsed is None:
-            log(f"[form] {label}: {HYPERPARAMETER_JSON} is not a JSON object, left as is")
+            detail(f"[form] {label}: {HYPERPARAMETER_JSON} is not a JSON object, left as is")
             continue
         pairs = {k: _stringify(v) for k, v in parsed.items()}
         conflicts = {k: v for k, v in pairs.items() if k in by_name and by_name[k] != v}
         if conflicts:
-            log(f"[form] {label}: hyperparameters {sorted(conflicts)} differ from existing values, {HYPERPARAMETER_JSON} left as is")
+            detail(f"[form] {label}: hyperparameters {sorted(conflicts)} differ from existing values, {HYPERPARAMETER_JSON} left as is")
             continue
         for k, v in pairs.items():
             take(k, v)
@@ -273,44 +275,44 @@ def _hyperparameters(comp: dict, target: "_Target", label: str, log) -> list[dic
             if take(name, prop["value"]):
                 consumed.append(prop)
             else:
-                log(f"[form] {label}: hyperparameters[{name}]={prop['value']!r} differs from {by_name[name]!r}, {source} left as is")
+                detail(f"[form] {label}: hyperparameters[{name}]={prop['value']!r} differs from {by_name[name]!r}, {source} left as is")
     for name, value in _Bag(_internal(comp), INTERNAL_MODEL_PREFIX).named_pairs("hyperparameters"):
         if not take(name, value):                                 # 내부 키는 뒤에 본다 — 도구가 준 값이 먼저다
-            log(f"[form] {label}: hyperparameters[{name}]={value!r} differs from {by_name[name]!r}, dropped")
+            detail(f"[form] {label}: hyperparameters[{name}]={value!r} differs from {by_name[name]!r}, dropped")
     if added:
         target.add_hyperparameters(added)
     return consumed
 
 
-def _parameter_count(comp: dict, target: "_Target", label: str, log) -> list[dict]:
+def _parameter_count(comp: dict, target: "_Target", label: str) -> list[dict]:
     candidates: list[tuple[object, dict]] = []
     internal = [p for p in _internal(comp) if p["name"] == INTERNAL_MODEL_PREFIX + "parameterCount"]
     for prop in [p for source in PARAMETER_COUNT_SOURCES for p in _sources(comp, source)] + internal:
         n = _non_negative_int(prop["value"])
         if n is None:
-            log(f"[form] {label}: {prop['name']}={prop['value']!r} is not a non-negative integer, not promoted")
+            detail(f"[form] {label}: {prop['name']}={prop['value']!r} is not a non-negative integer, not promoted")
         else:
             candidates.append((n, prop))
     existing = target.get_parameter_count()
     if existing is not None and not isinstance(existing, int) and candidates:
-        log(f"[form] {label}: existing parameterCount={existing!r} is not a non-negative integer, kept as is and sources left")
-    winner, consumed = _resolve(existing, candidates, "parameterCount", label, log)
+        detail(f"[form] {label}: existing parameterCount={existing!r} is not a non-negative integer, kept as is and sources left")
+    winner, consumed = _resolve(existing, candidates, "parameterCount", label)
     if consumed and existing is None:
         target.set_parameter_count(winner)
     return consumed
 
 
-def _max_size(comp: dict, target: "_Target", label: str, log) -> list[dict]:
+def _max_size(comp: dict, target: "_Target", label: str) -> list[dict]:
     candidates = [(prop["value"], prop) for source in MAX_SIZE_SOURCES for prop in _sources(comp, source)]
     candidates += [(p["value"], p) for p in _internal(comp) if p["name"] == INTERNAL_MODEL_PREFIX + "maxSize"]
     existing = target.get_max_size()
-    winner, consumed = _resolve(existing, candidates, "inputs[0].maxSize", label, log)
+    winner, consumed = _resolve(existing, candidates, "inputs[0].maxSize", label)
     if consumed and existing is None:
         target.set_max_size(winner)
     return consumed
 
 
-def _technical_requirements(comp: dict, target: "_Target", label: str, log) -> list[dict]:
+def _technical_requirements(comp: dict, target: "_Target", label: str) -> list[dict]:
     values = list(target.get_technical_requirements())
     added: list[str] = []
     consumed: list[dict] = []
@@ -327,7 +329,7 @@ def _technical_requirements(comp: dict, target: "_Target", label: str, log) -> l
 
 # ── 데이터셋 ─────────────────────────────────────────────────────────────────
 
-def _apply_dataset(comp: dict, form: str, log) -> None:
+def _apply_dataset(comp: dict, form: str) -> None:
     """aibom-internal:dataset:* 를 form 의 자리로 옮기고 지운다. 내부 키가 없는 컴포넌트는 손대지 않는다."""
     internal = [p for p in comp.get("properties") or [] if isinstance(p.get("name"), str) and p["name"].startswith(INTERNAL_PREFIX)
                 and isinstance(p.get("value"), str)]
@@ -344,23 +346,23 @@ def _apply_dataset(comp: dict, form: str, log) -> None:
         if field == "size":
             value = _non_negative_int(value)
             if value is None:
-                log(f"[form] {label}: size={facts.scalar(field)!r} is not a non-negative integer, not promoted")
+                detail(f"[form] {label}: size={facts.scalar(field)!r} is not a non-negative integer, not promoted")
                 continue
         elif valid and value not in valid:
-            log(f"[form] {label}: {field}={value!r} is not an allowed value, not promoted")
+            detail(f"[form] {label}: {field}={value!r} is not an allowed value, not promoted")
             continue
         existing = target.get_scalar(field)
         if existing is None:
             target.set_scalar(field, value)
         elif existing != value:
-            log(f"[form] {label}: {field} already has {existing!r}, {value!r} dropped")
+            detail(f"[form] {label}: {field} already has {existing!r}, {value!r} dropped")
 
     for field in ("modality", "provenance"):
         have = target.get_list(field)
         new: list[str] = []
         for value in facts.indexed(field):
             if field == "modality" and value not in MODALITIES:
-                log(f"[form] {label}: modality={value!r} is not an allowed value, not promoted")
+                detail(f"[form] {label}: modality={value!r} is not an allowed value, not promoted")
             elif value not in have and value not in new:
                 new.append(value)
         if new:
@@ -371,7 +373,7 @@ def _apply_dataset(comp: dict, form: str, log) -> None:
     for kind, value in facts.statistics():
         if kind in have_stats:
             if have_stats[kind] != value:
-                log(f"[form] {label}: statistics[{kind}] already has {have_stats[kind]!r}, {value!r} dropped")
+                detail(f"[form] {label}: statistics[{kind}] already has {have_stats[kind]!r}, {value!r} dropped")
         elif kind not in dict(new_stats):
             new_stats.append((kind, value))
     if new_stats:

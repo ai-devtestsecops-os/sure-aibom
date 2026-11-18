@@ -69,6 +69,7 @@ from typing import Iterable
 
 import yaml
 
+from ..log import detail
 # external 은 import 하지 않는다: 허브 조회는 service 가 넘겨준 external 모듈(hub)로 한다
 from ..utils.files import SKIP_DIRS, inside, notebook_code, relative
 from ..utils.licenses import card_licenses
@@ -148,7 +149,7 @@ STATISTICS_FILE_LIMIT = JSON_PARSE_LIMIT                      # 로컬 파일 �
 
 # ── 진입점 ──────────────────────────────────────────────────────────────────
 
-def discover_datasets(merged: dict, target: str, log=print, report: dict | None = None, data_paths: Iterable[str] = (),
+def discover_datasets(merged: dict, target: str, report: dict | None = None, data_paths: Iterable[str] = (),
              model_infos: dict | None = None, hub_reachable: bool | None = None, facts: Facts | None = None, *, hub) -> dict:
     """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다. 허브 조회는 hub(service 가
     넘겨주는 external/hub.py 모듈)로 한다: hf_reachable, fetch_model_info, fetch_dataset_info, fetch_dataset_size, fetch_dataset_statistics.
@@ -166,12 +167,12 @@ def discover_datasets(merged: dict, target: str, log=print, report: dict | None 
             by_hf_id[hf_id] = comp
 
     root = Path(target)
-    code_calls = _scan_sources(root, log) if root.is_dir() else {}      # id → [(그것을 부른 소스 파일, revision= 값)]
-    revisions = _code_revisions(code_calls, log)                         # 물을 리비전. --data 로 준 것이 코드의 것보다 우선한다
+    code_calls = _scan_sources(root) if root.is_dir() else {}           # id → [(그것을 부른 소스 파일, revision= 값)]
+    revisions = _code_revisions(code_calls)                              # 물을 리비전. --data 로 준 것이 코드의 것보다 우선한다
     for hf_id, revision in given.items():
         if revision:
             if revisions.get(hf_id, revision) != revision:
-                log(f"[dataset] {hf_id}: --data revision {revision} used over {revisions[hf_id]} in code")
+                detail(f"[dataset] {hf_id}: --data revision {revision} used over {revisions[hf_id]} in code")
             revisions[hf_id] = revision
 
     # --data 로 준 것도 코드에서 찾은 것과 같은 모양으로 만들고 루트가 dependsOn 한다. evidence 에는 코드에서 찾은 위치만 적는다
@@ -184,7 +185,7 @@ def discover_datasets(merged: dict, target: str, log=print, report: dict | None 
             by_hf_id[hf_id] = comp
             new_refs.append(comp["bom-ref"])
         if hf_id in given:
-            log(f"[dataset] {hf_id}: given with --data" + (f" at revision {given[hf_id]}" if given[hf_id] else ""))
+            detail(f"[dataset] {hf_id}: given with --data" + (f" at revision {given[hf_id]}" if given[hf_id] else ""))
         if hf_id in code_calls:
             occurrences = comp.setdefault("evidence", {}).setdefault("occurrences", [])
             known = {o.get("location") for o in occurrences}
@@ -192,7 +193,7 @@ def discover_datasets(merged: dict, target: str, log=print, report: dict | None 
 
     # 로컬 모델 카드는 파일이라 네트워크 없이 읽는다. 여기서 생긴 데이터셋도 아래 허브 확인과 조회에 들어간다.
     if root.is_dir():
-        _datasets_from_local_model_cards(merged, root, by_hf_id, log, facts)
+        _datasets_from_local_model_cards(merged, root, by_hf_id, facts)
     _datasets_named_by_models(merged, by_hf_id, facts)
 
     # 허브에 닿는지는 한 번만 본다. 물을 것(허브 모델의 카드, 허브 데이터셋)이 없으면 보지 않는다.
@@ -204,12 +205,12 @@ def discover_datasets(merged: dict, target: str, log=print, report: dict | None 
             n, m = len(by_hf_id), len(hub_models)
             skipped = [f"{n} dataset{'s keep' if n != 1 else ' keeps'} name and purl only"] if n else []
             skipped += [f"{m} hub model card{'s' if m != 1 else ''} not read"] if m else []
-            log(f"[dataset] huggingface.co unreachable: {', '.join(skipped)}")
+            detail(f"[dataset] huggingface.co unreachable: {', '.join(skipped)}")
     if reachable and hub_models:
-        _datasets_from_model_cards(merged, hub_models, by_hf_id, log, model_infos, facts, hub=hub)
+        _datasets_from_model_cards(merged, hub_models, by_hf_id, model_infos, facts, hub=hub)
 
     empty: list[str] = []
-    for comp in _data_components(local_paths, log, empty):
+    for comp in _data_components(local_paths, empty):
         components.append(comp)
         new_refs.append(comp["bom-ref"])
 
@@ -217,7 +218,7 @@ def discover_datasets(merged: dict, target: str, log=print, report: dict | None 
         _link_from_root(merged, new_refs)
     unresolved: list[str] = []
     if reachable and by_hf_id:
-        unresolved = _fill_from_hub(merged, by_hf_id, log, facts, revisions, given, hub=hub)
+        unresolved = _fill_from_hub(merged, by_hf_id, facts, revisions, given, hub=hub)
     elif not reachable:
         for hf_id, revision in revisions.items():                # 허브에 못 물어도 리비전은 남긴다
             if not by_hf_id[hf_id].get("version"):
@@ -321,7 +322,7 @@ def _hub_url(hf_id: str) -> str:
 
 # ── 소스 코드 훑기 ────────────────────────────────────────────────────────────
 
-def _scan_sources(root: Path, log) -> dict[str, list[tuple[str, str | None]]]:
+def _scan_sources(root: Path) -> dict[str, list[tuple[str, str | None]]]:
     """대상 디렉터리의 파이썬 소스와 노트북에서 load_dataset 으로 부른 HF id 를 찾는다.
     id → [(그것을 부른 소스 파일의 상대 경로, revision= 문자열 또는 None)]."""
     hf_ids: dict[str, list[tuple[str, str | None]]] = {}
@@ -334,15 +335,15 @@ def _scan_sources(root: Path, log) -> dict[str, list[tuple[str, str | None]]]:
                 continue
             path = here / filename
             if not inside(path, root_resolved):
-                log(f"[dataset] {relative(path, root)}: skipped, symlink points outside the target")
+                detail(f"[dataset] {relative(path, root)}: skipped, symlink points outside the target")
                 continue
             loc = relative(path, root)
-            for hf_id, revision in _parse_python(path, log):
+            for hf_id, revision in _parse_python(path):
                 hf_ids.setdefault(hf_id, []).append((loc, revision))
     return hf_ids
 
 
-def _code_revisions(code_calls: dict[str, list[tuple[str, str | None]]], log) -> dict[str, str]:
+def _code_revisions(code_calls: dict[str, list[tuple[str, str | None]]]) -> dict[str, str]:
     """코드가 load_dataset(..., revision="…") 로 리비전 하나만 정해 부른 id → 그 리비전. 같은 id 를 리비전을 달리하거나 리비전 없이도
     부르면 어느 것인지 정하지 않고(최신으로 묻는다) 알린다."""
     out: dict[str, str] = {}
@@ -350,20 +351,20 @@ def _code_revisions(code_calls: dict[str, list[tuple[str, str | None]]], log) ->
         revisions = {revision for _, revision in calls}
         if len(revisions) > 1:
             shown = ", ".join(sorted(r or "no revision" for r in revisions))
-            log(f"[dataset] {hf_id}: loaded at several revisions in code ({shown}), looked up at the latest")
+            detail(f"[dataset] {hf_id}: loaded at several revisions in code ({shown}), looked up at the latest")
         elif (revision := next(iter(revisions))):
             out[hf_id] = revision
     return out
 
 
-def _parse_python(path: Path, log) -> list[tuple[str, str | None]]:
+def _parse_python(path: Path) -> list[tuple[str, str | None]]:
     """소스 하나(.py 또는 .ipynb)에서 load_dataset 으로 부른 (HF 데이터셋 id, revision= 문자열 또는 None) 들. 파싱이 안 되면 건너뛰고 알린다.
     첫 인자가 로컬 빌더(csv, json …)이거나 경로·파일 이름이면 허브 id 가 아니라 넘긴다. revision 이 변수면 None 이다."""
     try:
         text = path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(notebook_code(text) if path.suffix == ".ipynb" else text)
     except (SyntaxError, ValueError, OSError, KeyError, TypeError) as e:
-        log(f"[dataset] {path.name}: skipped, cannot parse ({e.__class__.__name__})")
+        detail(f"[dataset] {path.name}: skipped, cannot parse ({e.__class__.__name__})")
         return []
     calls: list[tuple[str, str | None]] = []
     for node in ast.walk(tree):
@@ -379,20 +380,20 @@ def _parse_python(path: Path, log) -> list[tuple[str, str | None]]:
 
 # ── 허브 모델 카드 ────────────────────────────────────────────────────────────
 
-def _datasets_from_model_cards(merged: dict, hub_models: list[tuple[dict, str]], by_hf_id: dict[str, dict], log,
+def _datasets_from_model_cards(merged: dict, hub_models: list[tuple[dict, str]], by_hf_id: dict[str, dict],
                                infos: dict | None = None, facts: Facts | None = None, *, hub) -> None:
     """허브 모델마다 모델 카드의 데이터셋을 데이터셋 컴포넌트로 만들어 잇는다 (_link_model_datasets). 모델 카드는 infos
     (M-BOM 보강이 받아 둔 Hub API 응답)에서 읽고, infos 가 없으면 hub 로 받는다. 모델 카드를 못 읽었거나 데이터셋이 없는
     모델은 손대지 않는다."""
     for model, model_id in hub_models:
-        info = infos.get(model_id) if infos is not None else hub.fetch_model_info(model_id, log)
+        info = infos.get(model_id) if infos is not None else hub.fetch_model_info(model_id)
         card = (info or {}).get("cardData")
-        ids = _model_card_dataset_ids(card, model_id, log)
+        ids = _model_card_dataset_ids(card, model_id)
         if ids:
             _link_model_datasets(merged, model, ids, by_hf_id, facts=facts, roles=_model_card_dataset_roles(card))
 
 
-def _datasets_from_local_model_cards(merged: dict, root: Path, by_hf_id: dict[str, dict], log, facts: Facts | None = None) -> None:
+def _datasets_from_local_model_cards(merged: dict, root: Path, by_hf_id: dict[str, dict], facts: Facts | None = None) -> None:
     """로컬 모델 폴더의 README.md YAML 헤더에서 datasets(학습)와 model-index 결과의 평가 데이터셋(dataset.type)을 읽어 허브 모델
     카드와 같게 잇는다. 읽을 README 는 cdxgen 이 모델 컴포넌트에 남긴 evidence 에서 온다. cdxgen 은 datasets: 를 데이터셋
     컴포넌트로 만들어 의존 관계는 다 잇지만 modelCard 의 datasets 에는 마지막 ref 하나만 남기고, 평가 데이터셋은 표시
@@ -404,8 +405,8 @@ def _datasets_from_local_model_cards(merged: dict, root: Path, by_hf_id: dict[st
     for model in [c for c in merged["components"] if c.get("type") == MODEL_TYPE]:
         for path in _card_files(model, root, root_resolved):
             rel = relative(path, root)
-            card = _read_card_header(path, rel, log)
-            ids = _model_card_dataset_ids(card, rel, log)
+            card = _read_card_header(path, rel)
+            ids = _model_card_dataset_ids(card, rel)
             if not ids:
                 continue
             shown = {d["name"] for d in _model_index_datasets(card)
@@ -440,16 +441,16 @@ def _card_files(model: dict, root: Path, root_resolved: Path) -> list[Path]:
     return found
 
 
-def _read_card_header(path: Path, rel: str, log=print) -> dict | None:
+def _read_card_header(path: Path, rel: str) -> dict | None:
     """모델 카드(README.md) 맨 앞의 YAML 헤더. 헤더가 없으면 None, 읽지 못하면 알리고 None."""
     try:
         if path.stat().st_size > CARD_MAX_BYTES:
-            log(f"[dataset] {rel}: model card skipped, larger than {CARD_MAX_BYTES // 1024 ** 2} MB")
+            detail(f"[dataset] {rel}: model card skipped, larger than {CARD_MAX_BYTES // 1024 ** 2} MB")
             return None
         m = _FRONT_MATTER.match(path.read_text(encoding="utf-8", errors="replace"))
         card = yaml.safe_load(m.group(1)) if m else None
     except (OSError, ValueError, RecursionError, yaml.YAMLError) as e:
-        log(f"[dataset] {rel}: model card header skipped, cannot parse ({e.__class__.__name__})")
+        detail(f"[dataset] {rel}: model card header skipped, cannot parse ({e.__class__.__name__})")
         return None
     return card if isinstance(card, dict) else None
 
@@ -487,7 +488,7 @@ def _link_model_datasets(merged: dict, model: dict, ids: list[str], by_hf_id: di
     params["datasets"] = kept + [{"ref": r} for r in refs if r not in have]
 
 
-def _model_card_dataset_ids(card, model_id: str, log=print) -> list[str]:
+def _model_card_dataset_ids(card, model_id: str) -> list[str]:
     """모델 카드 YAML 헤더(Hub API 응답의 cardData, 로컬은 README.md)의 datasets 와 model-index 결과의 dataset.type. 둘 다
     허브 데이터셋 id 를 적는 자리다. 순서는 datasets 다음 model-index, 겹치면 한 번. 허브 id 꼴이 아닌 것은 건너뛰고 알린다."""
     ids: list[str] = []
@@ -497,7 +498,7 @@ def _model_card_dataset_ids(card, model_id: str, log=print) -> list[str]:
         if _looks_like_hub_id(name):
             ids.append(name)
         else:
-            log(f"[dataset] {model_id}: model card dataset {name!r} is not a hub id, skipped")
+            detail(f"[dataset] {model_id}: model card dataset {name!r} is not a hub id, skipped")
     return ids
 
 
@@ -558,7 +559,7 @@ def _looks_like_hub_id(text: str) -> bool:
 
 # ── --data 경로 → 컴포넌트 ───────────────────────────────────────────────────
 
-def _data_components(paths: Iterable[str], log, empty: list[str]) -> list[dict]:
+def _data_components(paths: Iterable[str], empty: list[str]) -> list[dict]:
     """--data 경로마다 컴포넌트 하나. 같은 경로는 한 번만, 폴더 이름이 겹치면 bom-ref 에 -2, -3 을 붙인다.
     한 파일은 한 컴포넌트에만 들어간다 (폴더와 그 안의 파일을 둘 다 주면 먼저 준 쪽이 가진다).
     없거나 새로 넣을 데이터 파일이 하나도 없는 경로는 empty 에 적고 건너뛴다."""
@@ -580,12 +581,12 @@ def _data_components(paths: Iterable[str], log, empty: list[str]) -> list[dict]:
             files = [(base, base.name)] if _extension(base.name) in DATA_EXTENSIONS else []
         elif base.is_dir():
             name = base.name or "data"
-            files = _data_files(base, log)
+            files = _data_files(base)
         else:
             files = []
         files = [(path, rel) for path, rel in files if path.resolve() not in claimed]
         if not files:
-            log(f"[dataset] {raw}: skipped, no data files")
+            detail(f"[dataset] {raw}: skipped, no data files")
             empty.append(raw)
             continue
         ref, n = name, 2
@@ -594,18 +595,18 @@ def _data_components(paths: Iterable[str], log, empty: list[str]) -> list[dict]:
         used.add(ref)
         claimed.update(path.resolve() for path, _ in files)
         prefix = name if base.is_dir() else None
-        tables, media, metadata, annotations = _classify(files, log)
-        analyses = _table_entries(tables, prefix, log) + _media_groups(media, prefix, name)
+        tables, media, metadata, annotations = _classify(files)
+        analyses = _table_entries(tables, prefix) + _media_groups(media, prefix, name)
         analyses.sort(key=lambda a: a["path"])
-        extra_stats = _metadata_statistics(metadata, name, log)
+        extra_stats = _metadata_statistics(metadata, name)
         extra_size = sum(path.stat().st_size for path, _ in metadata + annotations)
         if annotations:
-            log(f"[dataset] {name}: {len(annotations)} annotation files not counted as data ({', '.join(sorted(ANNOTATION_DIRS))})")
+            detail(f"[dataset] {name}: {len(annotations)} annotation files not counted as data ({', '.join(sorted(ANNOTATION_DIRS))})")
         out.append(_data_component(ref, name, analyses, extra_size, extra_stats))
     return out
 
 
-def _classify(files: list[tuple[Path, str]], log) -> tuple[list, list, list, list]:
+def _classify(files: list[tuple[Path, str]]) -> tuple[list, list, list, list]:
     """(표·레코드 파일, 매체 파일, 주석 표, 주석 파일). 주석 표는 file_name 열이 있는 metadata.csv/jsonl, 주석 파일은
     labels/·annotations/ 폴더 아래의 파일이다. 둘 다 data[] 원소가 되지 않는다 — 데이터가 아니라 데이터에 대한 설명이다."""
     tables, media, metadata, annotations = [], [], [], []
@@ -630,7 +631,7 @@ def _has_file_column(path: Path) -> bool:
     return any(c.lower() in FILE_COLUMNS for c in columns)
 
 
-def _table_entries(files: list[tuple[Path, str]], prefix: str | None, log) -> list[dict]:
+def _table_entries(files: list[tuple[Path, str]], prefix: str | None) -> list[dict]:
     """표·레코드 파일은 파일마다 원소 하나. 샤드(train-00001-of-00004.parquet)는 같은 분할끼리 원소 하나로 합친다."""
     shards: dict[tuple[str, str, str], list[tuple[Path, str]]] = {}
     out: list[dict] = []
@@ -640,21 +641,21 @@ def _table_entries(files: list[tuple[Path, str]], prefix: str | None, log) -> li
         if m:
             shards.setdefault((PurePosixPath(rel).parent.as_posix(), m.group("stem") or m.group("stem2"), ext), []).append((path, rel))
             continue
-        a = _analyze_file(path, f"{prefix}/{rel}" if prefix else rel, log)
+        a = _analyze_file(path, f"{prefix}/{rel}" if prefix else rel)
         a["key"] = PurePosixPath(rel).with_suffix("").as_posix()            # 통계 이름 앞머리 (원소가 여럿일 때)
         out.append(a)
     for (folder, stem, ext), group in shards.items():
         if len(group) == 1:                                                  # 혼자면 그냥 파일이다. 통계 앞머리는 분할 이름
             path, rel = group[0]
-            a = _analyze_file(path, f"{prefix}/{rel}" if prefix else rel, log)
+            a = _analyze_file(path, f"{prefix}/{rel}" if prefix else rel)
             a["key"] = f"{folder}/{stem}" if folder != "." else stem
             out.append(a)
             continue
-        out.append(_analyze_shards(sorted(group, key=lambda f: f[1]), folder, stem, ext, prefix, log))
+        out.append(_analyze_shards(sorted(group, key=lambda f: f[1]), folder, stem, ext, prefix))
     return out
 
 
-def _analyze_shards(group: list[tuple[Path, str]], folder: str, stem: str, ext: str, prefix: str | None, log) -> dict:
+def _analyze_shards(group: list[tuple[Path, str]], folder: str, stem: str, ext: str, prefix: str | None) -> dict:
     """샤드 묶음 하나. 크기는 합치고, 통계는 조각들의 열 값을 이어 붙여 낸다 (합쳐서 64 MB 까지)."""
     rel_dir = f"{folder}/" if folder != "." else ""
     display = f"{prefix}/{rel_dir}{stem}-*.{ext}" if prefix else f"{rel_dir}{stem}-*.{ext}"
@@ -668,7 +669,7 @@ def _analyze_shards(group: list[tuple[Path, str]], folder: str, stem: str, ext: 
             for col, values in _columns_of(path, ext).items():
                 merged.setdefault(col, []).extend(values)
     except _READ_ERRORS as e:
-        log(f"[dataset] {display}: no statistics, cannot read content ({e.__class__.__name__})")
+        detail(f"[dataset] {display}: no statistics, cannot read content ({e.__class__.__name__})")
         return out
     if merged:
         out["statistics"] = [(f"{col}:{kind}", value) for col, values in merged.items() for kind, value in _values_statistics(values)]
@@ -921,7 +922,7 @@ def _mp3_duration(b: bytes, size: int) -> float | None:
     return None
 
 
-def _metadata_statistics(metadata: list[tuple[Path, str]], name: str, log) -> list[tuple[str, str]]:
+def _metadata_statistics(metadata: list[tuple[Path, str]], name: str) -> list[tuple[str, str]]:
     """주석 표(metadata.csv/jsonl)의 열 통계. 파일을 가리키는 열은 빼고, 표가 있는 폴더 이름(맨 위면 데이터셋 이름)을 앞에 붙인다."""
     out: list[tuple[str, str]] = []
     for path, rel in sorted(metadata, key=lambda f: f[1]):
@@ -930,7 +931,7 @@ def _metadata_statistics(metadata: list[tuple[Path, str]], name: str, log) -> li
         try:
             columns = _columns_of(path, _extension(path.name))
         except _READ_ERRORS as e:
-            log(f"[dataset] {rel}: no statistics, cannot read annotation table ({e.__class__.__name__})")
+            detail(f"[dataset] {rel}: no statistics, cannot read annotation table ({e.__class__.__name__})")
             continue
         for col, values in columns.items():
             if col.lower() in FILE_COLUMNS:
@@ -939,7 +940,7 @@ def _metadata_statistics(metadata: list[tuple[Path, str]], name: str, log) -> li
     return out
 
 
-def _data_files(base: Path, log) -> list[tuple[Path, str]]:
+def _data_files(base: Path) -> list[tuple[Path, str]]:
     """지목한 폴더 아래의 데이터 파일 (경로, 폴더 기준 상대 경로). 상대 경로 정렬 순이라 결정적이다."""
     found: list[tuple[Path, str]] = []
     for dirpath, dirnames, filenames in os.walk(base):
@@ -950,7 +951,7 @@ def _data_files(base: Path, log) -> list[tuple[Path, str]]:
                 continue
             path = here / filename
             if not inside(path, base):
-                log(f"[dataset] {relative(path, base)}: skipped, symlink points outside the data path")
+                detail(f"[dataset] {relative(path, base)}: skipped, symlink points outside the data path")
                 continue
             if path.is_file():
                 found.append((path, relative(path, base)))
@@ -985,7 +986,7 @@ def _local_statistics(analyses: list[dict], force_prefix: bool = False) -> list[
     return out
 
 
-def _analyze_file(path: Path, rel: str, log) -> dict:
+def _analyze_file(path: Path, rel: str) -> dict:
     """표준 라이브러리로 읽는 파일 사실: 크기·형식·모달리티와, 표 형식이면 열 통계 (64 MB 까지). 내용을 못 읽으면 크기만."""
     ext = _extension(path.name)
     out: dict = {"path": rel, "size": path.stat().st_size, "format": ext, "modality": MODALITY_BY_EXTENSION.get(ext, "other")}
@@ -994,7 +995,7 @@ def _analyze_file(path: Path, rel: str, log) -> dict:
     try:
         statistics = _file_statistics(path, ext)
     except _READ_ERRORS as e:
-        log(f"[dataset] {rel}: no statistics, cannot read content ({e.__class__.__name__})")
+        detail(f"[dataset] {rel}: no statistics, cannot read content ({e.__class__.__name__})")
         return out
     if statistics:
         out["statistics"] = statistics
@@ -1160,7 +1161,7 @@ def _number(v) -> str:
 
 # ── Hugging Face 허브 ────────────────────────────────────────────────────────
 
-def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | None = None,
+def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], facts: Facts | None = None,
                    revisions: dict[str, str] | None = None, given: Iterable[str] = (), *, hub) -> list[str]:
     """허브 응답으로 채우고, 같은 데이터셋을 다른 id 로 부른 컴포넌트는 정식 id 의 컴포넌트 하나로 모은다.
     revisions 는 id → 물을 리비전(--data 나 코드의 revision=)이다. 리비전이 있는 것은 그 리비전으로 묻고, 그 응답이 앞선 조회보다
@@ -1176,13 +1177,13 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | 
     for hf_id in sorted(by_hf_id):
         revision = revisions.get(hf_id)
         if revision:
-            info = hub.fetch_dataset_info(hf_id, log, revision=revision)
+            info = hub.fetch_dataset_info(hf_id, revision=revision)
         else:
-            info = info_by_canonical.get(hf_id) or hub.fetch_dataset_info(hf_id, log)   # 앞선 조회가 정식 id 로 알려 준 것은 다시 묻지 않는다
+            info = info_by_canonical.get(hf_id) or hub.fetch_dataset_info(hf_id)        # 앞선 조회가 정식 id 로 알려 준 것은 다시 묻지 않는다
         canonical = _canonical_id(hf_id, info)
         if info and revision:
             if pinned.get(canonical, revision) != revision:
-                log(f"[dataset] {canonical}: asked at two revisions ({pinned[canonical]}, {revision}), {revision} used")
+                detail(f"[dataset] {canonical}: asked at two revisions ({pinned[canonical]}, {revision}), {revision} used")
             info_by_canonical[canonical] = info
             pinned[canonical] = revision
         elif info:
@@ -1200,45 +1201,45 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], log, facts: Facts | 
         for other in ids:
             if other != survivor_id:
                 _absorb(merged, comp, by_hf_id[other], facts)
-                log(f"[dataset] {other}: merged into {canonical}, same dataset")
+                detail(f"[dataset] {other}: merged into {canonical}, same dataset")
         if survivor_id != canonical:
             _rename(merged, comp, survivor_id, canonical, facts)
-            log(f"[dataset] {survivor_id}: renamed to {canonical} (canonical id)")
+            detail(f"[dataset] {survivor_id}: renamed to {canonical} (canonical id)")
         elif (m := _HF_DATASET_PURL.match(comp.get("purl") or "")) is None or m["id"].strip("/") != canonical:
             _rename(merged, comp, survivor_id, canonical, facts)   # cdxgen 이 purl 없이 만든 것도 purl·bom-ref 를 정식 id 로 맞춘다
         info = info_by_canonical.get(canonical)
         if info:
             revision = pinned.get(canonical)
-            if revision and not _is_latest(canonical, info, log, hub=hub):
-                log(f"[dataset] {canonical}: revision {revision} is not the latest, datasets-server size and statistics skipped")
+            if revision and not _is_latest(canonical, info, hub=hub):
+                detail(f"[dataset] {canonical}: revision {revision} is not the latest, datasets-server size and statistics skipped")
                 size, statistics = None, []
             else:
-                size = hub.fetch_dataset_size(canonical, log)
-                statistics = _fetch_statistics(canonical, info, size, log, hub=hub)
+                size = hub.fetch_dataset_size(canonical)
+                statistics = _fetch_statistics(canonical, info, size, hub=hub)
             _apply_hub_info(comp, canonical, info, size, statistics)
             if facts is not None:
                 facts.set_time(comp["bom-ref"], "releaseTime", info.get("lastModified"))
     return unresolved
 
 
-def _is_latest(hf_id: str, info: dict, log, *, hub) -> bool:
+def _is_latest(hf_id: str, info: dict, *, hub) -> bool:
     """리비전을 지정해 받은 응답이 지금 기본 브랜치의 최신 커밋과 같은가. 최신을 받지 못하면 아니라고 본다."""
-    latest = hub.fetch_dataset_info(hf_id, log)
+    latest = hub.fetch_dataset_info(hf_id)
     return bool(latest) and isinstance(info.get("sha"), str) and latest.get("sha") == info["sha"]
 
 
-def _fetch_statistics(hf_id: str, info: dict, size: dict | None, log, *, hub) -> list[tuple[str, str, dict]]:
+def _fetch_statistics(hf_id: str, info: dict, size: dict | None, *, hub) -> list[tuple[str, str, dict]]:
     """(config, split) 마다 datasets-server 통계를 받는다. 상한을 넘으면 앞쪽만 받고 알린다."""
     pairs = _config_splits(info, size)
     if len(pairs) > STATISTICS_REQUEST_LIMIT:
-        log(f"[dataset] {hf_id}: statistics for the first {STATISTICS_REQUEST_LIMIT} of {len(pairs)} config/split pairs only")
+        detail(f"[dataset] {hf_id}: statistics for the first {STATISTICS_REQUEST_LIMIT} of {len(pairs)} config/split pairs only")
         pairs = pairs[:STATISTICS_REQUEST_LIMIT]
     out: list[tuple[str, str, dict]] = []
     for config, split in pairs:
-        resp = hub.fetch_dataset_statistics(hf_id, config, split, log)
+        resp = hub.fetch_dataset_statistics(hf_id, config, split)
         if resp and isinstance(resp.get("statistics"), list):
             if resp.get("partial"):
-                log(f"[dataset] {hf_id}: {config}/{split} statistics are partial")
+                detail(f"[dataset] {hf_id}: {config}/{split} statistics are partial")
             out.append((config, split, resp))
     return out
 

@@ -43,6 +43,7 @@ import re
 import uuid
 from urllib.parse import quote
 
+from ..log import detail
 from .dataset import is_dataset
 from .facts import Facts
 from .merge import identity
@@ -88,19 +89,18 @@ PRESENCE = {"yes": "yes", "no": "no", "unknown": "noAssertion"}
 SAFE = ":/@!$&'()*+,;="                  # IRI 조각(fragment)에 그대로 둘 수 있는 글자. 나머지(공백, %, ?, # …)는 퍼센트 인코딩
 
 
-def convert_spdx(doc: dict, spec: str = SPEC_VERSION, log=print, facts: Facts | None = None) -> dict:
+def convert_spdx(doc: dict, spec: str = SPEC_VERSION, facts: Facts | None = None) -> dict:
     """CycloneDX 문서를 SPDX 3.0.1 JSON-LD 로 바꿔 돌려준다 (입력은 그대로 둔다). facts 는 수집 단계의 메모리 부가 기록."""
     if spec not in SPECS:
         raise ValueError(f"spec 은 {SPECS} 중 하나여야 한다: {spec!r}")
-    return _Converter(doc, spec, log, facts).run()
+    return _Converter(doc, spec, facts).run()
 
 
 class _Converter:
-    def __init__(self, doc: dict, spec: str, log, facts: Facts | None = None) -> None:
+    def __init__(self, doc: dict, spec: str, facts: Facts | None = None) -> None:
         self.doc = doc
         self.facts = facts
         self.v06 = spec == "v0.6"
-        self.log = log
         self.ns = doc.get("serialNumber") or f"urn:uuid:{uuid.uuid4()}"
         self.ci = f"{self.ns}#creationinfo"
         self.elements: list[dict] = []                      # 요소 (문서 순서대로)
@@ -527,14 +527,14 @@ class _Converter:
                 continue
             frm = self.ref.get(row["ref"])
             if not frm:
-                self.log(f"[spdx] dependency of unknown element skipped: {row['ref']}")
+                detail(f"[spdx] dependency of unknown element skipped: {row['ref']}")
                 continue
             for target in row.get("dependsOn") or []:
                 to = self.ref.get(target)
                 if to:
                     rows.setdefault(frm, []).append(to)
                 else:
-                    self.log(f"[spdx] dependency on unknown element skipped: {row['ref']} -> {target}")
+                    detail(f"[spdx] dependency on unknown element skipped: {row['ref']} -> {target}")
         for frm, refs in self.extra_deps.items():
             for target in refs:
                 to = self.ref.get(target)
@@ -550,7 +550,7 @@ class _Converter:
         for (model_ref, dataset_ref), roles in (self.facts.roles if self.facts else {}).items():
             frm, to = self.ref.get(model_ref), self.ref.get(dataset_ref)
             if not frm or not to:
-                self.log(f"[spdx] dataset role of unknown element skipped: {model_ref} -> {dataset_ref}")
+                detail(f"[spdx] dataset role of unknown element skipped: {model_ref} -> {dataset_ref}")
                 continue
             if "training" in roles:
                 by_type["trainedOn"].setdefault(frm, []).append(to)

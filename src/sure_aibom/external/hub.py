@@ -19,6 +19,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlparse
 from urllib.request import Request, urlopen
 
+from ..log import detail
+
 HUB = "https://huggingface.co"
 DATASETS_SERVER = "https://datasets-server.huggingface.co"
 FETCH_TIMEOUT = 15.0
@@ -49,26 +51,26 @@ def _hub_request(url: str) -> Request:
     return req
 
 
-def _get_json(url: str, hf_id: str, what: str, log) -> dict | None:
+def _get_json(url: str, hf_id: str, what: str) -> dict | None:
     try:
         with urlopen(_hub_request(url), timeout=FETCH_TIMEOUT) as resp:
             info = json.load(resp)
     except HTTPError as e:
-        log(f"[dataset] {hf_id}: {what} returned {e.code}")
+        detail(f"[dataset] {hf_id}: {what} returned {e.code}")
         return None
     except (URLError, OSError, ValueError) as e:
-        log(f"[dataset] {hf_id}: {what} request failed ({e.__class__.__name__})")
+        detail(f"[dataset] {hf_id}: {what} request failed ({e.__class__.__name__})")
         return None
     return info if isinstance(info, dict) else None
 
 
-def fetch_dataset_info(hf_id: str, log=print, revision: str | None = None) -> dict | None:
+def fetch_dataset_info(hf_id: str, revision: str | None = None) -> dict | None:
     """GET {HF_ENDPOINT}/api/datasets/<id>, 리비전을 주면 /api/datasets/<id>/revision/<리비전> (응답의 sha 는 그 리비전의 전체 커밋 해시).
     실패하면 None 을 돌려주고 알린다. 테스트는 이 함수를 바꿔 끼운다."""
     url = f"{hf_endpoint()}/api/datasets/{quote(hf_id, safe='/')}"
     if revision:
-        return _get_json(f"{url}/revision/{quote(revision, safe='')}", hf_id, f"Hub API at revision {revision}", log)
-    return _get_json(url, hf_id, "Hub API", log)
+        return _get_json(f"{url}/revision/{quote(revision, safe='')}", hf_id, f"Hub API at revision {revision}")
+    return _get_json(url, hf_id, "Hub API")
 
 
 def fetch_revision_error(hf_id: str, revision: str) -> tuple[int, str] | None:
@@ -88,18 +90,18 @@ def fetch_revision_error(hf_id: str, revision: str) -> tuple[int, str] | None:
         return None
 
 
-def fetch_model_info(hf_id: str, log=print) -> dict | None:
+def fetch_model_info(hf_id: str) -> dict | None:
     """GET {HF_ENDPOINT}/api/models/<id>. M-BOM 보강이 빈 필드를 채우고, D-BOM 이 모델 카드(cardData)의 데이터셋을 읽는 응답이다.
     실패하면 None. 테스트는 이 함수를 바꿔 끼운다."""
-    return _get_json(f"{hf_endpoint()}/api/models/{quote(hf_id, safe='/')}", hf_id, "Hub API (model)", log)
+    return _get_json(f"{hf_endpoint()}/api/models/{quote(hf_id, safe='/')}", hf_id, "Hub API (model)")
 
 
-def fetch_dataset_size(hf_id: str, log=print) -> dict | None:
+def fetch_dataset_size(hf_id: str) -> dict | None:
     """GET datasets-server /size?dataset=<id>. 바이트 크기와 config·split 목록."""
-    return _get_json(f"{datasets_server()}/size?dataset={quote(hf_id, safe='/')}", hf_id, "datasets-server /size", log)
+    return _get_json(f"{datasets_server()}/size?dataset={quote(hf_id, safe='/')}", hf_id, "datasets-server /size")
 
 
-def fetch_dataset_statistics(hf_id: str, config: str, split: str, log=print) -> dict | None:
+def fetch_dataset_statistics(hf_id: str, config: str, split: str) -> dict | None:
     """GET datasets-server /statistics?dataset=<id>&config=&split=. 열마다 통계."""
     url = f"{datasets_server()}/statistics?dataset={quote(hf_id, safe='/')}&config={quote(config, safe='')}&split={quote(split, safe='')}"
-    return _get_json(url, hf_id, f"datasets-server /statistics {config}/{split}", log)
+    return _get_json(url, hf_id, f"datasets-server /statistics {config}/{split}")
