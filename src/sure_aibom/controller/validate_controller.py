@@ -6,7 +6,8 @@ import json
 
 from ..formats import FORMAT_NAME, SPEC_BY_FORMAT
 from ..service import validate_service
-from .output import EXIT_INVALID, EXIT_TOOL, log
+from .exit_codes import EXIT_INVALID, EXIT_TOOL
+from .log import log
 
 
 def cmd_validate(args: argparse.Namespace) -> int:

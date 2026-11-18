@@ -9,7 +9,8 @@ from pathlib import Path
 from ..formats import FORMAT_NAME, SPEC_BY_FORMAT
 from ..service import scan_service
 from ..service.scan_service import count, groups
-from .output import EXIT_TOOL, log, quiet, stage
+from .exit_codes import EXIT_TOOL
+from .log import log, quiet, stage
 
 
 def cmd_scan(args: argparse.Namespace) -> int:
