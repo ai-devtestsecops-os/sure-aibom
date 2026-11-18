@@ -1,13 +1,15 @@
-"""scan 명령 핸들러. 인자를 확인해 service/scan_service.py 에 값만 넘기고, 단계 줄과 결과를 찍고, 종료 코드를 돌려준다."""
+"""scan 명령 핸들러. 인자를 확인해 service/scan_service.py 에 값만 넘기고, 단계 줄과 결과를 찍고, BOM 을 쓰고, 종료 코드를 돌려준다."""
 from __future__ import annotations
 
 import argparse
+import json
+import sys
 from pathlib import Path
 
 from ..formats import FORMAT_NAME, SPEC_BY_FORMAT
 from ..service import scan_service
 from ..service.scan_service import count, groups
-from .output import EXIT_TOOL, log, quiet, stage, write_json
+from .output import EXIT_TOOL, log, quiet, stage
 
 
 def cmd_scan(args: argparse.Namespace) -> int:
@@ -33,7 +35,7 @@ def cmd_scan(args: argparse.Namespace) -> int:
         log("[sure-aibom] error: neither syft nor cdxgen produced a BOM")
         return EXIT_TOOL
 
-    write_json(result.doc, args.output)
+    _write_json(result.doc, args.output)
     # 단계 줄들을 더하지 않고 다 만든 BOM 을 다시 센다 (병합·별칭 합치기로 줄어든 만큼이 여기 반영된다)
     bom = result.bom
     log(f"[sure-aibom] Wrote {args.output or 'stdout'} ({count(len(bom['components']), 'component')}: "
@@ -42,3 +44,14 @@ def cmd_scan(args: argparse.Namespace) -> int:
         log(f"[sure-aibom] error: {' and '.join(result.failed)} failed, so the BOM is incomplete")
         return EXIT_TOOL
     return 0
+
+
+def _write_json(doc: dict, path: str | None) -> None:
+    """경로가 있으면 파일로, 없으면 표준출력으로."""
+    text = json.dumps(doc, ensure_ascii=False, indent=2) + "\n"
+    if path:
+        out = Path(path)
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(text, encoding="utf-8")
+    else:
+        sys.stdout.write(text)

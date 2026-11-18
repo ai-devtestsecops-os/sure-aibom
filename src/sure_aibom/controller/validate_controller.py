@@ -2,14 +2,15 @@
 from __future__ import annotations
 
 import argparse
+import json
 
 from ..formats import FORMAT_NAME, SPEC_BY_FORMAT
 from ..service import validate_service
-from .output import EXIT_INVALID, EXIT_TOOL, log, read_json
+from .output import EXIT_INVALID, EXIT_TOOL, log
 
 
 def cmd_validate(args: argparse.Namespace) -> int:
-    doc = read_json(args.bom)
+    doc = _read_json(args.bom)
     if doc is None:
         return EXIT_TOOL
     result = validate_service.validate(doc, args.spec, log=log)
@@ -26,3 +27,13 @@ def cmd_validate(args: argparse.Namespace) -> int:
         return EXIT_INVALID
     log(f"[sure-aibom] Valid against the {name}: {args.bom}")
     return 0
+
+
+def _read_json(path: str) -> dict | None:
+    """읽지 못하면 이유를 찍고 None 을 돌려준다."""
+    try:
+        with open(path, encoding="utf-8") as f:
+            return json.load(f)
+    except (OSError, json.JSONDecodeError) as e:
+        log(f"[sure-aibom] error: cannot read {path} ({e})")
+        return None
