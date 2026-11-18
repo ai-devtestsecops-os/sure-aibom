@@ -57,18 +57,18 @@ def test_sdk_imports_are_read_from_python_notebooks_and_js(tmp_path, name, text,
     assert sv._sdk_imports(tmp_path, log=lambda m: None) == {p: [f"src/{name}"] for p in expected}
 
 
-def test_skipped_folders_and_unparsable_files(tmp_path):
+def test_skipped_folders_and_unparsable_files(tmp_path, logs):
     write(tmp_path, "node_modules/x/index.js", 'import OpenAI from "openai";\n')
     write(tmp_path, "venv/lib/python3.11/site-packages/a.py", "import anthropic\n")
     write(tmp_path, ".hidden/a.py", "import groq\n")
     write(tmp_path, "src/broken.py", "import (\n")
     write(tmp_path, "src/ok.py", "import replicate\n")
-    logs: list[str] = []
+    logs.clear()
     assert sv._sdk_imports(tmp_path, logs.append) == {"replicate": ["src/ok.py"]}
     assert logs == ["[service] src/broken.py: skipped, cannot parse (SyntaxError)"]
 
 
-def test_services_are_kept_only_with_an_sdk_import(tmp_path):
+def test_services_are_kept_only_with_an_sdk_import(tmp_path, logs):
     """SDK import 가 근거다. 모델 이름으로 짐작한 서비스(vLLM 으로 로컬에서 돌리는 Mistral), 허브 모델 조직의 서비스, Modelfile 의
     서비스, 로컬 실행 라이브러리(@huggingface/transformers)에 cdxgen 이 붙인 서비스는 빼고, 그 서비스가 든 관계도 뺀다."""
     write(tmp_path, "app.py", "import anthropic\nfrom openai import OpenAI\nfrom vllm import LLM\n")
@@ -84,7 +84,7 @@ def test_services_are_kept_only_with_an_sdk_import(tmp_path):
             {"ref": "urn:service:ai:openai:OpenAI-API", "dependsOn": [API_MODEL["bom-ref"]]},
             {"ref": "urn:service:ai:mistral:mistral-service", "dependsOn": ["pkg:generic/mistral/mistral-7b-instruct"]},
             {"ref": "urn:service:ai:acme:acme-service", "dependsOn": [HUB_BERT["bom-ref"]]}]
-    logs: list[str] = []
+    logs.clear()
     out = sv.discover_services(doc_of(copy.deepcopy(services), deps, [API_MODEL, HUB_BERT]), str(tmp_path), logs.append)
     assert out["services"] == [{k: v for k, v in s.items() if k != "version"} for s in services[:2]]
     assert out["dependencies"] == [deps[0], {"ref": "urn:file:ai:notebooks/eval.ipynb", "dependsOn": ["urn:service:ai:openai:OpenAI-API"]}, deps[2]]
@@ -93,10 +93,10 @@ def test_services_are_kept_only_with_an_sdk_import(tmp_path):
                                            ("huggingface", "Hugging Face Inference API"))]
 
 
-def test_an_sdk_import_without_a_cdxgen_service_makes_one(tmp_path):
+def test_an_sdk_import_without_a_cdxgen_service_makes_one(tmp_path, logs):
     """모델 이름 없이 부르면 cdxgen 은 서비스를 만들지 않는다. 같은 제공사의 cdxgen 서비스가 있으면 새로 만들지 않는다."""
     write(tmp_path, "agent.py", "import os\nfrom langchain_groq import ChatGroq\nimport anthropic\n\nllm = ChatGroq(model=os.environ['M'])\n")
-    logs: list[str] = []
+    logs.clear()
     out = sv.discover_services(doc_of([cdxgen_service("anthropic", "Anthropic API")]), str(tmp_path), logs.append)
     assert out["services"] == [{k: v for k, v in cdxgen_service("anthropic", "Anthropic API").items() if k != "version"},
                                {"bom-ref": "urn:service:ai:groq:Groq-API", "group": "groq", "name": "Groq API",
@@ -104,12 +104,12 @@ def test_an_sdk_import_without_a_cdxgen_service_makes_one(tmp_path):
     assert logs == ["[service] Groq API: added, SDK imported in agent.py"]
 
 
-def test_kept_services_lose_their_hub_model_relations(tmp_path):
+def test_kept_services_lose_their_hub_model_relations(tmp_path, logs):
     """cdxgen 은 한 파일의 모델을 모두 그 파일의 SDK 서비스에 붙인다. 허브 모델(코드가 이름으로 부르는 것)은 내려받아 로컬에서
     돌리므로 그 관계만 뺀다. API 모델과 로컬 모델 파일에서 찾은 모델은 그대로 둔다."""
     write(tmp_path, "app.py", "from openai import OpenAI\n")
     deps = [{"ref": "urn:service:ai:openai:OpenAI-API", "dependsOn": [HUB_BERT["bom-ref"], API_MODEL["bom-ref"], LOCAL_MODEL["bom-ref"]]}]
-    logs: list[str] = []
+    logs.clear()
     out = sv.discover_services(doc_of([cdxgen_service("openai", "OpenAI API", "OpenAI-API", ("ai", "openai"))], deps, [HUB_BERT, API_MODEL, LOCAL_MODEL]),
                       str(tmp_path), logs.append)
     assert out["dependencies"] == [{"ref": "urn:service:ai:openai:OpenAI-API", "dependsOn": [API_MODEL["bom-ref"], LOCAL_MODEL["bom-ref"]]}]

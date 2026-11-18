@@ -104,9 +104,9 @@ def test_hub_models_are_the_ones_without_local_model_files(locations, expected):
     assert hub_model_id(comp) == expected
 
 
-def test_nothing_to_enrich_is_left_alone(monkeypatch):
+def test_nothing_to_enrich_is_left_alone(monkeypatch, logs):
     stub(monkeypatch, RunnerError("불려서는 안 된다"))
-    logs: list[str] = []
+    logs.clear()
     doc = doc_of({"bom-ref": "x", "type": "library", "name": "numpy"})
     before = json.dumps(doc)
     report: dict = {}
@@ -115,12 +115,12 @@ def test_nothing_to_enrich_is_left_alone(monkeypatch):
     assert report["skipped"] == report["hub_skipped"] == "no Hugging Face models"
 
 
-def test_offline_skips_without_running_anything(monkeypatch):
+def test_offline_skips_without_running_anything(monkeypatch, logs):
     """허브에 닿지 않으면 Hub API 모델 응답을 받지 않고, OWASP 도 건너뛴다."""
     monkeypatch.setattr(aibom_generator, "skip_reason", lambda: "huggingface.co unreachable")
     monkeypatch.setattr(hub_api, "fetch_model_info", lambda hf_id, log=print: pytest.fail("offline 인데 모델 응답을 받았다"))
     stub(monkeypatch, RunnerError("불려서는 안 된다"))
-    logs: list[str] = []
+    logs.clear()
     doc = doc_of(bert_component())
     before = json.dumps(doc)
     report: dict = {}
@@ -233,7 +233,7 @@ def test_running_twice_adds_nothing_new(monkeypatch, owasp, hub):
     assert json.dumps(twice) == json.dumps(once)
 
 
-def test_a_failing_run_is_logged_and_the_other_models_still_run(monkeypatch, owasp):
+def test_a_failing_run_is_logged_and_the_other_models_still_run(monkeypatch, owasp, logs):
     other = "pkg:huggingface/acme/other"
     calls: list[str] = []
 
@@ -243,7 +243,7 @@ def test_a_failing_run_is_logged_and_the_other_models_still_run(monkeypatch, owa
             raise RunnerError("exit 1")
         return copy.deepcopy(owasp)
     monkeypatch.setattr(aibom_generator, "run_aibom_generator", run)
-    logs: list[str] = []
+    logs.clear()
     doc = doc_of(bert_component(), {"bom-ref": other, "type": "machine-learning-model", "name": "other", "purl": other})
     out = enrich_hub_models(doc, WORKDIR, logs.append)
     assert sorted(calls) == ["acme/other", HF_ID]

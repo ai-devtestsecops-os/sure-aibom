@@ -1,4 +1,4 @@
-"""scan 명령 핸들러. 인자를 확인해 service/scan_service.py 에 값만 넘기고, 단계 줄과 결과를 찍고, BOM 을 쓰고, 종료 코드를 돌려준다."""
+"""scan 명령 핸들러. 인자를 확인해 service/scan_service.py 에 값만 넘기고, 결과를 찍고, BOM 을 쓰고, 종료 코드를 돌려준다."""
 from __future__ import annotations
 
 import argparse
@@ -7,10 +7,10 @@ import sys
 from pathlib import Path
 
 from ..formats import FORMAT_NAME, SPEC_BY_FORMAT
+from ..log import log, set_verbose
 from ..service import scan_service
 from ..service.scan_service import count, groups
 from .exit_codes import EXIT_TOOL
-from .log import log, quiet, stage
 
 
 def cmd_scan(args: argparse.Namespace) -> int:
@@ -30,8 +30,8 @@ def cmd_scan(args: argparse.Namespace) -> int:
 
     data = f", data from {', '.join(args.data)}" if args.data else ""
     log(f"[sure-aibom] Generating {FORMAT_NAME[(args.format, args.spec)]} for {args.target}{data}")
-    detail = log if getattr(args, "verbose", False) else quiet     # -v: 모듈의 항목별 로그(건너뛴 것, 버린 값, 빈 필드)도 찍는다
-    result = scan_service.scan(args.target, args.data, args.format, args.spec, stage=stage, log=log, detail=detail)
+    set_verbose(getattr(args, "verbose", False))                   # -v: 모듈의 항목별 로그(건너뛴 것, 버린 값, 빈 필드)도 찍는다
+    result = scan_service.scan(args.target, args.data, args.format, args.spec)
     if result is None:
         log("[sure-aibom] error: neither syft nor cdxgen produced a BOM")
         return EXIT_TOOL

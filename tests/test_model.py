@@ -178,10 +178,10 @@ def test_safetensors_total_follows_the_shard_index(tmp_path):
     assert md._safetensors_total(root / "nowhere", root.resolve(), log=lambda m: None) is None
 
 
-def test_safetensors_total_is_none_when_a_file_cannot_be_read(tmp_path):
+def test_safetensors_total_is_none_when_a_file_cannot_be_read(tmp_path, logs):
     write_safetensors(tmp_path, "good.safetensors", {"a": [10]})
     (tmp_path / "torn.safetensors").write_bytes(b"\x01\x02")
-    logs: list[str] = []
+    logs.clear()
     assert md._safetensors_total(tmp_path, tmp_path.resolve(), logs.append) is None           # 일부만 세면 틀린 값이 된다
     assert any("torn.safetensors" in m for m in logs)
 
@@ -235,10 +235,10 @@ def test_parse_gguf_without_architecture_yields_no_hyperparameters(tmp_path):
 
 
 # -- discover --------------------------------------------------------------------------
-def test_discover_fills_hyperparameters_and_parameter_count_from_a_model_directory(tmp_path):
+def test_discover_fills_hyperparameters_and_parameter_count_from_a_model_directory(tmp_path, logs):
     write_json(tmp_path, "models/config.json", BERT_CONFIG)
     write_safetensors(tmp_path, "models/model.safetensors", {"w": [30522, 768]})
-    logs: list[str] = []
+    logs.clear()
     out = md.enrich_local_models(doc_of(model_component("models/README.md", "models/config.json")), str(tmp_path), logs.append)
     comp = model_of(out)
     assert hparams_of(comp) == BERT_HPARAMS
@@ -253,11 +253,11 @@ def test_discover_reads_gguf_named_in_the_evidence(tmp_path):
     assert dict(hparams_of(comp))["block_count"] == "16" and internal(comp)["parameterCount"] == str(2048 * 100 + 2048 * 2048)
 
 
-def test_first_file_wins_when_two_files_disagree(tmp_path):
+def test_first_file_wins_when_two_files_disagree(tmp_path, logs):
     write_json(tmp_path, "config.json", {"num_hidden_layers": 12, "hidden_size": 768})
     (tmp_path / "a.gguf").write_bytes(gguf_bytes([string("general.architecture", "llama"), u32("llama.block_count", 16),
                                                   u32("llama.context_length", 99)], []))
-    logs: list[str] = []
+    logs.clear()
     comp = model_of(md.enrich_local_models(doc_of(model_component("config.json", "a.gguf")), str(tmp_path), logs.append))
     facts = dict(hparams_of(comp))
     assert facts["block_count"] == "16" and facts["context_length"] == "99"         # a.gguf 를 먼저 읽는다 (경로 정렬)
@@ -282,12 +282,12 @@ def test_documents_without_readable_model_files_are_byte_identical(tmp_path, com
     assert json.dumps(regulate(copy.deepcopy(out), form="typed", log=lambda m: None), ensure_ascii=False) == before
 
 
-def test_image_target_and_unreadable_config_change_nothing(tmp_path):
+def test_image_target_and_unreadable_config_change_nothing(tmp_path, logs):
     doc = doc_of(model_component("config.json"))
     before = json.dumps(doc, ensure_ascii=False)
     assert json.dumps(md.enrich_local_models(copy.deepcopy(doc), "alpine:3.20", log=lambda m: None), ensure_ascii=False) == before
     write(tmp_path, "config.json", "{not json")
-    logs: list[str] = []
+    logs.clear()
     assert json.dumps(md.enrich_local_models(copy.deepcopy(doc), str(tmp_path), logs.append), ensure_ascii=False) == before
     assert any("config.json: skipped, cannot read" in m for m in logs)
 
@@ -328,7 +328,7 @@ def test_properties_form_moves_local_facts_to_aibom_model_keys(discovered):
     assert (card["aibom:model:hyperparameters:0:name"], card["aibom:model:hyperparameters:0:value"]) == ("block_count", "12")
     assert card["aibom:model:parameterCount"] == str(30522 * 768)
     assert "properties" not in comp and "aibom-internal" not in json.dumps(out)      # 내부 키는 목록째 사라진다
-    assert _validate_cdx(out, "1.7", log=print) and _validate_cdx(out, "v0.6", log=print)
+    assert _validate_cdx(out, "1.7") and _validate_cdx(out, "v0.6")
 
 
 def test_typed_form_fills_model_parameters(discovered):
@@ -337,14 +337,14 @@ def test_typed_form_fills_model_parameters(discovered):
     assert params["hyperparameters"] == [{"name": n, "value": v} for n, v in BERT_HPARAMS]
     assert params["parameterCount"] == 30522 * 768 and isinstance(params["parameterCount"], int)
     assert "aibom-internal" not in json.dumps(out) and "aibom:model:" not in json.dumps(out)
-    assert _validate_cdx(out, "v0.6", log=print)
+    assert _validate_cdx(out, "v0.6")
 
 
-def test_tool_values_win_over_local_files_and_internal_keys_always_go(discovered):
+def test_tool_values_win_over_local_files_and_internal_keys_always_go(discovered, logs):
     comp = model_of(discovered)
     comp["properties"] = [{"name": "safetensors_total_parameters", "value": "999"},
                           {"name": "genai:aibom:modelcard:blockCount", "value": "99"}] + comp["properties"]
-    logs: list[str] = []
+    logs.clear()
     out = regulate(copy.deepcopy(discovered), form="typed", log=logs.append)
     params = model_of(out)["modelCard"]["modelParameters"]
     assert params["parameterCount"] == 999                                            # 허브 값이 이긴다

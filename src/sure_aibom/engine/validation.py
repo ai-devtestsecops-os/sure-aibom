@@ -15,6 +15,8 @@ import jsonschema
 from jsonschema.exceptions import best_match
 from referencing import Registry, Resource
 
+from ..log import log
+
 SCHEMA_DIR = Path(str(files("sure_aibom") / "schemas"))   # 패키지 안. 편집 설치·wheel 설치 어디서든 같은 위치
 CDX_SCHEMA = SCHEMA_DIR / "aibom-v0.6-cyclonedx.schema.json"
 CDX_OFFICIAL = SCHEMA_DIR / "bom-1.7.schema.json"
@@ -94,33 +96,33 @@ def _spdx_errors(doc: dict, schema_path: Path) -> list[str]:
     return out
 
 
-def _validate_cdx(doc: dict, spec: str, log=print) -> bool:
+def _validate_cdx(doc: dict, spec: str) -> bool:
     """CycloneDX 문서를 spec 이 고른 스키마 하나로만 검사한다. "1.7" 은 공식 CycloneDX 1.7 (properties 형),
     "v0.6" 은 aibom-v0.6 CycloneDX 스키마 (typed 형). 자동으로 다른 쪽을 시도하지 않는다."""
     if spec not in CDX_SCHEMA_BY_SPEC:
         raise ValueError(f"spec 은 {tuple(CDX_SCHEMA_BY_SPEC)} 중 하나여야 한다: {spec!r}")
     errors = _cdx_errors(doc, CDX_SCHEMA_BY_SPEC[spec])
-    _report(errors, log)
+    _report(errors)
     return not errors
 
 
-def _validate_spdx(doc: dict, spec: str, log=print) -> bool:
+def _validate_spdx(doc: dict, spec: str) -> bool:
     """SPDX 3.0.1 JSON-LD 문서를 spec 이 고른 스키마 하나로만 검사한다. "3.0.1" 은 공식 스키마, "v0.6" 은 aibom-v0.6 SPDX 스키마."""
     if spec not in SPDX_SCHEMA_BY_SPEC:
         raise ValueError(f"spec 은 {tuple(SPDX_SCHEMA_BY_SPEC)} 중 하나여야 한다: {spec!r}")
     errors = _spdx_errors(doc, SPDX_SCHEMA_BY_SPEC[spec])
-    _report(errors, log)
+    _report(errors)
     return not errors
 
 
-def validate_doc(doc: dict, fmt: str, spec: str, log=print) -> bool:
+def validate_doc(doc: dict, fmt: str, spec: str) -> bool:
     """형식에 맞는 검사기로 넘긴다. schema_for(fmt, spec) 가 None 이면 ValueError."""
     if schema_for(fmt, spec) is None:
         raise ValueError(f"{spec} 은 {fmt} 의 스키마가 아니다")
-    return (_validate_cdx if fmt == "cyclonedx" else _validate_spdx)(doc, spec, log)
+    return (_validate_cdx if fmt == "cyclonedx" else _validate_spdx)(doc, spec)
 
 
-def _report(messages: list[str], log) -> None:
+def _report(messages: list[str]) -> None:
     for m in messages[:20]:
         log(f"[sure-aibom]   {m}")
     if len(messages) > 20:

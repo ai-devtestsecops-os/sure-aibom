@@ -87,7 +87,7 @@ def test_properties_form_promotes_into_aibom_model_properties(sample):
     assert "technicalRequirements" not in bert["modelCard"]["considerations"]
     # 값은 한 곳에만 있다
     assert sum(1 for v in props.values() if v == "30522") == 1
-    assert _validate_cdx(out, "1.7", log=print)
+    assert _validate_cdx(out, "1.7")
 
 
 def test_properties_form_parameter_count(sample):
@@ -98,11 +98,11 @@ def test_properties_form_parameter_count(sample):
     bert = component(out, BERT)
     assert card_props(bert)["aibom:model:parameterCount"] == "110106428"
     assert not {"safetensors_total_parameters", "cdx:ai:parameterCount"} & all_names(bert)
-    assert _validate_cdx(out, "1.7", log=print)
+    assert _validate_cdx(out, "1.7")
 
 
 # -- (b) typed 형 -------------------------------------------------------------------
-def test_typed_form_fills_v06_fields_and_passes_v06_not_17(sample):
+def test_typed_form_fills_v06_fields_and_passes_v06_not_17(sample, logs):
     out = regulate(sample, form="typed", log=lambda m: None)
     bert = component(out, BERT)
     params, considerations = bert["modelCard"]["modelParameters"], bert["modelCard"]["considerations"]
@@ -116,11 +116,11 @@ def test_typed_form_fills_v06_fields_and_passes_v06_not_17(sample):
     assert not CONSUMED & all_names(bert)
     assert UNTOUCHED_CARD <= set(card_props(bert)) and UNTOUCHED_COMPONENT <= set(names(bert["properties"]))
 
-    assert _validate_cdx(out, "v0.6", log=print)
+    assert _validate_cdx(out, "v0.6")
     # 공식 1.7 스키마는 modelParameters·considerations·inputOutputMLParameters 가 additionalProperties:false 라
     # hyperparameters / maxSize / technicalRequirements 를 거부한다
-    logs: list[str] = []
-    assert not _validate_cdx(out, "1.7", log=logs.append)
+    logs.clear()
+    assert not _validate_cdx(out, "1.7")
     assert any("hyperparameters" in m for m in logs) and any("maxSize" in m for m in logs) and any("technicalRequirements" in m for m in logs)
 
 
@@ -131,7 +131,7 @@ def test_typed_form_parameter_count_is_integer_and_creates_inputs():
     assert params["parameterCount"] == 1234 and isinstance(params["parameterCount"], int)
     assert params["inputs"] == [{"maxSize": "2048"}]                           # format 은 v0.6 스키마상 필수가 아니다
     assert "properties" not in out["components"][0]["modelCard"]              # 모두 소비되어 비면 목록도 없다
-    assert _validate_cdx(out, "v0.6", log=print)
+    assert _validate_cdx(out, "v0.6")
 
 
 # -- (c)(d) 건드리지 않는 것 -----------------------------------------------------------
@@ -156,8 +156,7 @@ def test_library_component_is_never_touched(form):
 # -- (e) 파싱 실패 -----------------------------------------------------------------
 @pytest.mark.parametrize("form", ["properties", "typed"])
 @pytest.mark.parametrize("raw", ["110M", "-5", "1.1e8", "1,234", ""])
-def test_unparsable_parameter_count_is_not_promoted(form, raw):
-    logs: list[str] = []
+def test_unparsable_parameter_count_is_not_promoted(form, raw, logs):
     out = regulate(doc_of(model(card_properties=[("safetensors_total_parameters", raw)])), form=form, log=logs.append)
     comp = out["components"][0]
     assert card_props(comp) == {"safetensors_total_parameters": raw}
@@ -174,8 +173,7 @@ def test_unparsable_first_source_falls_through_to_second():
 
 
 # -- 우선순위·불일치 ------------------------------------------------------------------
-def test_disagreeing_sources_keep_the_loser_and_log():
-    logs: list[str] = []
+def test_disagreeing_sources_keep_the_loser_and_log(logs):
     comp = model(properties=[("cdx:ai:contextWindow", "4096"), ("cdx:ai:parameterCount", "2")],
                  card_properties=[("genai:aibom:modelcard:contextLength", "512"), ("safetensors_total_parameters", "1")])
     out = regulate(doc_of(comp), form="typed", log=logs.append)
@@ -186,8 +184,7 @@ def test_disagreeing_sources_keep_the_loser_and_log():
     assert sum("differs" in m for m in logs) == 2
 
 
-def test_hyperparameter_json_then_individual_keys_without_duplicates():
-    logs: list[str] = []
+def test_hyperparameter_json_then_individual_keys_without_duplicates(logs):
     comp = model(card_properties=[
         ("genai:aibom:modelcard:hyperparameter", json.dumps({"vocab_size": 100, "block_count": 4, "tied": True, "note": "x"})),
         ("genai:aibom:modelcard:vocabSize", "100"),            # JSON 과 같은 값 → 소비
@@ -202,8 +199,7 @@ def test_hyperparameter_json_then_individual_keys_without_duplicates():
     assert any("blockCount" in m for m in logs)
 
 
-def test_hyperparameter_json_that_is_not_an_object_is_left_alone():
-    logs: list[str] = []
+def test_hyperparameter_json_that_is_not_an_object_is_left_alone(logs):
     out = regulate(doc_of(model(card_properties=[("genai:aibom:modelcard:hyperparameter", "[1, 2]")])), form="typed", log=logs.append)
     assert card_props(out["components"][0]) == {"genai:aibom:modelcard:hyperparameter": "[1, 2]"}
     assert "modelParameters" not in out["components"][0]["modelCard"] and any("JSON object" in m for m in logs)
@@ -216,10 +212,10 @@ def test_technical_requirements_union_is_deduplicated():
     assert "properties" not in out["components"][0] and "properties" not in out["components"][0]["modelCard"]
 
 
-def test_existing_typed_value_wins_over_sources():
+def test_existing_typed_value_wins_over_sources(logs):
     comp = model(properties=[("cdx:ai:contextWindow", "4096")])
     comp["modelCard"] = {"modelParameters": {"inputs": [{"format": "text", "maxSize": "512"}]}}
-    logs: list[str] = []
+    logs.clear()
     out = regulate(doc_of(comp), form="typed", log=logs.append)
     assert out["components"][0]["modelCard"]["modelParameters"]["inputs"] == [{"format": "text", "maxSize": "512"}]
     assert names(out["components"][0]["properties"]) == ["cdx:ai:contextWindow"] and logs
@@ -237,7 +233,7 @@ def test_typed_hyperparameter_entry_without_value_does_not_crash():
     comp["modelCard"]["modelParameters"] = {"hyperparameters": [{"name": "x"}]}
     out = regulate(doc_of(comp), form="typed", log=lambda m: None)
     assert out["components"][0]["modelCard"]["modelParameters"]["hyperparameters"] == [{"name": "x"}, {"name": "lr", "value": "0.1"}]
-    assert _validate_cdx(out, "v0.6", log=print)
+    assert _validate_cdx(out, "v0.6")
 
 
 def test_typed_nameless_hyperparameter_entry_survives_promotion():
@@ -279,9 +275,8 @@ def test_originally_empty_properties_list_is_kept(form):
     assert "cdx:ai:runtime" not in all_names(out["components"][0])
 
 
-def test_properties_form_existing_unparsable_parameter_count_wins_and_is_logged():
+def test_properties_form_existing_unparsable_parameter_count_wins_and_is_logged(logs):
     """목표에 이미 값이 있으면(정수로 읽히지 않아도) 그 값이 이긴다 — 원본은 남기고 로그에 적는다."""
-    logs: list[str] = []
     comp = model(properties=[("cdx:ai:parameterCount", "7")], card_properties=[("aibom:model:parameterCount", "seven")])
     out = regulate(doc_of(comp), form="properties", log=logs.append)
     assert card_props(out["components"][0]) == {"aibom:model:parameterCount": "seven"}
@@ -299,9 +294,9 @@ def test_existing_parameter_count_property_is_not_moved_when_source_agrees():
 
 # -- (f) 결정성 ------------------------------------------------------------------
 @pytest.mark.parametrize("form", ["properties", "typed"])
-def test_apply_is_idempotent(sample, form):
+def test_apply_is_idempotent(sample, form, logs):
     once = regulate(copy.deepcopy(sample), form=form, log=lambda m: None)
-    logs: list[str] = []
+    logs.clear()
     twice = regulate(copy.deepcopy(once), form=form, log=logs.append)
     assert json.dumps(twice, ensure_ascii=False) == json.dumps(once, ensure_ascii=False)
     assert logs == []                                                              # 두 번째는 원본을 하나도 찾지 못한다
@@ -370,8 +365,7 @@ def test_report_ignores_components_that_are_not_models_or_datasets():
     assert report == {"models": {"filled": 0, "total": 0}, "datasets": {"filled": 0, "total": 0}, "filled": 0, "total": 0}
 
 
-def test_report_logs_the_missing_fields_of_each_component():
-    logs: list[str] = []
+def test_report_logs_the_missing_fields_of_each_component(logs):
     regulate(doc_of(model()), log=logs.append, report={})
     assert logs == ["[form] m: 0/4 regulation fields filled, missing hyperparameters, parameterCount, inputs maxSize, technicalRequirements"]
 

@@ -115,15 +115,15 @@ def sid(local: str) -> str:
 @pytest.mark.parametrize("spec", ["3.0.1", "v0.6"])
 def test_both_specs_validate_against_their_schema(spec):
     out = convert_spdx(doc_of(), spec, log=lambda m: None)
-    assert _validate_spdx(out, spec, log=print)
+    assert _validate_spdx(out, spec)
     has_aibom = any(k.startswith("aibom_") for e in out["@graph"] for k in e)
     assert has_aibom == (spec == "v0.6")                                      # 3.0.1 문서에는 v0.6 속성이 없다
 
 
 def test_a_v06_document_is_not_plain_spdx_and_a_plain_one_is_also_v06():
     v06 = convert_spdx(doc_of(), "v0.6", log=lambda m: None)
-    assert not _validate_spdx(v06, "3.0.1", log=lambda m: None)                  # aibom_* 는 공식 스키마에 없는 속성이다
-    assert _validate_spdx(convert_spdx(doc_of(), "3.0.1", log=lambda m: None), "v0.6", log=lambda m: None)   # 3.0.1 문서는 v0.6 의 부분집합
+    assert not _validate_spdx(v06, "3.0.1")                  # aibom_* 는 공식 스키마에 없는 속성이다
+    assert _validate_spdx(convert_spdx(doc_of(), "3.0.1", log=lambda m: None), "v0.6")   # 3.0.1 문서는 v0.6 의 부분집합
 
 
 def test_classes_follow_the_component_type():
@@ -226,8 +226,7 @@ def test_dataset_fields_split_between_standard_properties_and_the_spec():
     assert plain_ext["aibom:dataset:originalCollectionPurpose"] == "Service quality review" and "aibom_statistics" not in plain[sid(REVIEWS)]
 
 
-def test_relationships_cover_dependencies_lineage_and_licenses():
-    logs: list[str] = []
+def test_relationships_cover_dependencies_lineage_and_licenses(logs):
     out = convert_spdx(doc_of(), "3.0.1", log=logs.append)
     g = graph_of(out)
     depends = rels(out, "dependsOn")
@@ -263,7 +262,7 @@ def test_relationships_cover_dependencies_lineage_and_licenses():
     assert tools[1]["externalIdentifier"][0]["identifier"] == "pkg:npm/%40cyclonedx/cdxgen@12.8.4"
 
 
-def test_facts_add_training_and_evaluation_relationships_and_times():
+def test_facts_add_training_and_evaluation_relationships_and_times(logs):
     """수집 단계의 메모리 부가 기록(facts): 데이터셋 역할은 trainedOn·testedOn 관계가 되고 dependsOn 은 그대로 남으며, 시각은
     builtTime·releaseTime 이 된다. 문서에 없는 요소의 역할은 알리고 건너뛴다. 결과는 두 스키마를 통과한다."""
     facts = Facts()
@@ -274,7 +273,7 @@ def test_facts_add_training_and_evaluation_relationships_and_times():
     facts.set_time(ROOT, "builtTime", "2026-10-01T00:00:00Z")
     facts.set_time(BERT, "releaseTime", "2024-02-19T11:06:12.000Z")
     facts.set_time(REVIEWS, "releaseTime", "2024-01-04T21:09:45+09:00")
-    logs: list[str] = []
+    logs.clear()
     out = convert_spdx(doc_of(), "3.0.1", log=logs.append, facts=facts)
     g = graph_of(out)
     assert rels(out, "trainedOn") == {sid(BERT): [sid(REVIEWS)]} and rels(out, "testedOn") == {sid(BERT): [sid(REVIEWS), sid(LOCAL)]}
@@ -282,7 +281,7 @@ def test_facts_add_training_and_evaluation_relationships_and_times():
     assert g[sid(ROOT)]["builtTime"] == "2026-10-01T00:00:00Z" and g[sid(BERT)]["releaseTime"] == "2024-02-19T11:06:12Z"
     assert g[sid(REVIEWS)]["releaseTime"] == "2024-01-04T12:09:45Z" and not any("Time" in k for k in g[sid(LIB)])
     assert f"[spdx] dataset role of unknown element skipped: pkg:huggingface/acme/gone -> {REVIEWS}" in logs
-    assert _validate_spdx(out, "3.0.1", log=print) and _validate_spdx(convert_spdx(doc_of(), "v0.6", log=lambda m: None, facts=facts), "v0.6", log=print)
+    assert _validate_spdx(out, "3.0.1") and _validate_spdx(convert_spdx(doc_of(), "v0.6", log=lambda m: None, facts=facts), "v0.6")
     plain = convert_spdx(doc_of(), "3.0.1", log=lambda m: None)                             # facts 가 없으면 아무것도 더하지 않는다
     assert not rels(plain, "trainedOn") and not rels(plain, "testedOn") and "builtTime" not in graph_of(plain)[sid(ROOT)]
 
@@ -297,7 +296,7 @@ def test_ids_come_from_the_serial_number_and_bom_refs_and_the_output_is_determin
     assert sid("rel/dependsOn/" + ROOT) in ids and all(e.startswith(NS + "#") for e in ids)
     without_serial = convert_spdx({k: v for k, v in doc.items() if k != "serialNumber"}, "v0.6", log=lambda m: None)
     assert all(e["spdxId"].startswith("urn:uuid:") for e in without_serial["@graph"] if "spdxId" in e)
-    assert _validate_spdx(once, "v0.6", log=print)
+    assert _validate_spdx(once, "v0.6")
 
 
 def test_the_input_document_is_left_untouched():
@@ -313,17 +312,17 @@ def test_convert_rejects_an_unknown_spec():
         convert_spdx(doc_of(), "2.3")
 
 
-def test_validate_detects_the_format_and_refuses_a_spec_of_the_other_format():
+def test_validate_detects_the_format_and_refuses_a_spec_of_the_other_format(logs):
     cdx, spdx = doc_of(), convert_spdx(doc_of(), "3.0.1", log=lambda m: None)
     assert (detect_format(cdx), detect_format(spdx), detect_format({"x": 1})) == ("cyclonedx", "spdx", None)
     assert schema_for("cyclonedx", "3.0.1") is None and schema_for("spdx", "1.7") is None
     assert schema_for("cyclonedx", "v0.6") is not None and schema_for("spdx", "v0.6") is not None
-    assert validate_doc(spdx, "spdx", "3.0.1", log=print)
+    assert validate_doc(spdx, "spdx", "3.0.1")
     with pytest.raises(ValueError):
         validate_doc(spdx, "spdx", "1.7")
     broken = copy.deepcopy(spdx)
     broken["@graph"][2]["bogus"] = 1
     broken["@graph"].append({"type": "Nope", "spdxId": "x:y"})
-    messages: list[str] = []
-    assert not _validate_spdx(broken, "3.0.1", log=messages.append)
-    assert any("bogus" in m for m in messages) and any("'Nope' is not an SPDX class" in m for m in messages)
+    logs.clear()
+    assert not _validate_spdx(broken, "3.0.1")
+    assert any("bogus" in m for m in logs) and any("'Nope' is not an SPDX class" in m for m in logs)

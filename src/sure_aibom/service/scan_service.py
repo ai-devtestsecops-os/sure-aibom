@@ -1,6 +1,6 @@
-"""scan 의 단계 순서. 명령줄 인자를 받지 않고, 줄을 어디에 찍는지도 모른다. external 을 import 하는 곳은 여기뿐이다 (engine 에는 넘겨준다).
+"""scan 의 단계 순서. 명령줄 인자를 받지 않는다. external 을 import 하는 곳은 여기뿐이다 (engine 에는 넘겨준다).
 
-controller/scan_controller.py 가 인자를 확인해 값만 넘기고, 여기서는 단계마다 stage(단계 이름, 결과)와 log(줄)로 알린다.
+controller/scan_controller.py 가 인자를 확인해 값만 넘기고, 여기서는 단계마다 log.py 의 stage(단계 이름, 결과)와 log(줄)로 알린다.
 
     check_scan  도구를 돌리기 전 입력 확인 (대상 경로, --data 경로, --data 허브 리비전)
     scan        S-BOM(syft) → 이미지 받기·풀기 → M-BOM(cdxgen) → 병합 → AI 서비스 → M-BOM 보강(로컬 모델, 허브 모델)
@@ -16,7 +16,6 @@ import shutil
 import tempfile
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Callable
 
 from ..engine.ai_service import discover_services
 from ..engine.dataset import discover_datasets, is_dataset, missing_revisions, split_data_args
@@ -30,14 +29,15 @@ from ..exceptions import ImageExtractionError, RunnerError
 from ..external import aibom_generator, hub, run_cdxgen, run_syft
 from ..external.container_tools import pull_image
 from ..formats import FORM_BY_SPEC, FORMAT_NAME
+from ..log import detail, log, stage
 
 # 요약의 묶음: CycloneDX type → S/M/D 와 파일. 목록에 없는 type(library, application, operating-system …)은 packages
 GROUP_ORDER = ("packages", "models", "datasets", "files", "other")
 SINGULAR = {"packages": "package", "models": "model", "datasets": "dataset", "files": "file", "other": "other"}
 _DRIVE = re.compile(r"^[A-Za-z]:[\\/]")
 
-Stage = Callable[[str, str], None]       # (단계 이름, 결과)
-Log = Callable[[str], None]
+# 줄은 맨 위 log.py 의 함수로 찍는다. stage 는 단계 한 줄, log 는 항상 찍는 줄(실패한 단계의 상세, 경고)이고,
+# engine 모듈은 -v 일 때만 찍히는 detail 을 직접 가져다 쓴다.
 
 
 @dataclass
@@ -105,17 +105,17 @@ def _looks_like_path(target: str) -> bool:
             or target.lower().endswith((".tar", ".tar.gz", ".tgz")))
 
 
-def scan(target: str, data: list[str], fmt: str, spec: str, stage: Stage, log: Log, detail: Log) -> ScanResult | None:
+def scan(target: str, data: list[str], fmt: str, spec: str) -> ScanResult | None:
     """단계를 차례로 돌려 BOM 을 만든다. syft·cdxgen 이 둘 다 BOM 을 내지 못하면 None.
-    detail 은 모듈의 항목별 로그(건너뛴 것, 버린 값, 빈 필드)를 받는다. 이미지를 푼 임시 폴더는 커서 끝나면 지운다."""
+    단계마다 stage 로 한 줄씩 찍는다. 이미지를 푼 임시 폴더는 커서 끝나면 지운다."""
     workdir = Path(tempfile.mkdtemp(prefix="sure-aibom-"))
     try:
-        return _scan(target, data, fmt, spec, workdir, stage, log, detail)
+        return _scan(target, data, fmt, spec, workdir)
     finally:
         shutil.rmtree(workdir, ignore_errors=True)
 
 
-def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path, stage: Stage, log: Log, detail: Log) -> ScanResult | None:
+def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path) -> ScanResult | None:
     docs: list[dict] = []
     failed: list[str] = []
 

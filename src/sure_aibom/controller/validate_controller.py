@@ -5,16 +5,16 @@ import argparse
 import json
 
 from ..formats import FORMAT_NAME, SPEC_BY_FORMAT
+from ..log import log
 from ..service import validate_service
 from .exit_codes import EXIT_INVALID, EXIT_TOOL
-from .log import log
 
 
 def cmd_validate(args: argparse.Namespace) -> int:
     doc = _read_json(args.bom)
     if doc is None:
         return EXIT_TOOL
-    result = validate_service.validate(doc, args.spec, log=log)
+    result = validate_service.validate(doc, args.spec)
     if result.fmt is None:
         log(f"[sure-aibom] error: not a CycloneDX or SPDX document (no bomFormat or @context): {args.bom}")
         return EXIT_TOOL
