@@ -1,6 +1,9 @@
 """라이선스 값 → CycloneDX licenses[] 항목. SPDX id 면 license.id (스키마의 표기로), 아니면 license.name.
 
-Hugging Face 카드는 목록에 없는 라이선스를 `license: other` 와 license_name · license_link 로 적는다 (card_license).
+    license_entry   라이선스 값 하나 → 항목 하나. engine/merge.py(이미지 라벨), external/cdxgen.py(Modelfile) 가 쓴다
+    card_licenses   Hugging Face 카드의 license → 항목 목록. engine/model.py, engine/dataset.py 가 쓴다
+
+Hugging Face 카드는 목록에 없는 라이선스를 `license: other` 와 license_name · license_link 로 적는다 (card_licenses).
 """
 from __future__ import annotations
 
