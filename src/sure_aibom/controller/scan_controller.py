@@ -14,7 +14,7 @@ from .exit_codes import EXIT_TOOL
 
 
 def cmd_scan(args: argparse.Namespace) -> int:
-    """단계마다 한 줄씩 찍는다. 항목별 내용은 찍지 않고, 사용자가 할 일이 있는 것(건너뜀·실패)만 그 줄에 붙인다.
+    """인자와 입력을 확인하고, service 에 스캔을 맡긴 뒤, 받은 BOM 을 쓰고 요약 한 줄을 찍는다. 단계 줄은 service 가 찍는다.
     syft·cdxgen 중 하나라도 실패하면 만든 만큼은 쓰되 종료 코드 2 로 끝낸다 (CI 가 모자란 BOM 을 성공으로 넘기지 않게)."""
     args.spec = args.spec or SPEC_BY_FORMAT[args.format][0]
     if args.spec not in SPEC_BY_FORMAT[args.format]:            # 명령줄만 보면 아는 확인(옵션 조합)은 여기서 한다

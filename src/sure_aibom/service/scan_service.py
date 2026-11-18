@@ -106,8 +106,8 @@ def _looks_like_path(target: str) -> bool:
 
 
 def scan(target: str, data: list[str], fmt: str, spec: str) -> ScanResult | None:
-    """단계를 차례로 돌려 BOM 을 만든다. syft·cdxgen 이 둘 다 BOM 을 내지 못하면 None.
-    단계마다 stage 로 한 줄씩 찍는다. 이미지를 푼 임시 폴더는 커서 끝나면 지운다."""
+    """단계를 차례로 돌려 BOM 을 만든다. syft·cdxgen 이 둘 다 BOM 을 내지 못하면 None. 이미지를 푼 임시 폴더는 커서 끝나면 지운다.
+    단계마다 stage 로 한 줄씩 찍는다. 항목별 내용은 찍지 않고, 사용자가 할 일이 있는 것(건너뜀·실패)만 그 줄에 붙인다."""
     workdir = Path(tempfile.mkdtemp(prefix="sure-aibom-"))
     try:
         return _scan(target, data, fmt, spec, workdir)
