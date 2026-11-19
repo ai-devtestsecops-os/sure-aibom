@@ -3,14 +3,14 @@
 
     conda run -n ai-bom python docs/mapping-viewer/export_data.py      # aibom-cli/ 에서. ai-bom 은 옆 폴더(../ai-bom)
 
-복사하는 것 (ai-bom/data 그대로):
+복사하는 것 (ai-bom/aibom-v0.6/tables 그대로. 발행한 v0.6 의 표를 legacy 가 써 둔 것):
     aibom_v0.6_cyclonedx.json       CycloneDX 1.7 전체 + v0.6 추가 필드 (added, origin, reference)
     aibom_v0.6_spdx.json            SPDX 3.0.1 전체 + v0.6 추가 필드 (added, path = 대응하는 CycloneDX 경로)
-    aibom_v0.6_spdx_mapping.json    두 형식의 대응 (1.7 매핑 + v0.6 추가 필드. 엑셀의 CycloneDX v0.6↔SPDX v0.6 시트와 같은 표)
-    aibom_v0.6_requirement_field_mapping.json  규제 요구사항 → v0.6 필드 (엑셀의 요구사항 매핑 시트와 같은 표).
+    aibom_v0.6_spdx_mapping.json    두 형식의 대응 (1.7 매핑 + v0.6 추가 필드. 옛 엑셀의 CycloneDX v0.6↔SPDX v0.6 시트와 같은 표)
+    aibom_v0.6_requirement_field_mapping.json  규제 요구사항 → v0.6 필드 (옛 엑셀의 요구사항 매핑 시트와 같은 표).
                                     ISO/IEC 42001 행만 본문을 조항 제목으로 바꾼다 (public_requirements)
+    aibom_v0.6_properties.json      추가 필드를 --spec 1.7 로 낼 때의 properties 키 (tables/properties.json)
 만드는 것:
-    aibom_v0.6_properties.json      추가 필드를 --spec 1.7 로 낼 때의 properties 키 (정의서 생성 코드와 같은 규칙)
     cards/cards.json                ai-bom/cards 의 승인 카드 (호 단위, 190장. ISO/IEC 42001 은 원문·구절을 빼고 제목만). 규제 판정 화면이 조항의 원문과 사실을 보여 줄 때 쓴다
     cards/vocabulary.json, cards/profile.json   통제 어휘, 매핑 프로파일 (ai-bom/cards 그대로)
     cards/profile-spdx.json         SPDX 3.0.1 매핑 프로파일 (SPDX 문서를 판정할 때)
@@ -27,9 +27,11 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 CLI = os.path.dirname(os.path.dirname(HERE))
 AIBOM = os.path.join(os.path.dirname(CLI), "ai-bom")
 DATA = os.path.join(AIBOM, "data")
+V06 = os.path.join(AIBOM, "aibom-v0.6", "tables")     # 발행한 v0.6 의 표 (legacy/src/format/v0_6/publish.py 가 써 둔다)
 OUT = os.path.join(HERE, "data")
-COPY = ("aibom_v0.6_cyclonedx.json", "aibom_v0.6_spdx.json", "aibom_v0.6_spdx_mapping.json",
-        "aibom_v0.6_requirement_field_mapping.json")
+# 이 사이트의 파일 이름 → aibom-v0.6/tables 의 파일 이름
+COPY = {"aibom_v0.6_cyclonedx.json": "cyclonedx.json", "aibom_v0.6_spdx.json": "spdx.json",
+        "aibom_v0.6_spdx_mapping.json": "spdx_mapping.json"}
 # 여기서 만들지 않지만 뷰어가 읽는 파일 — tests/test_fields.py 가 만든다. 지우지 않는다.
 KEEP = ("aibom_cli_sources.json", "aibom_cli_spdx_sources.json")
 CARDS = os.path.join(AIBOM, "cards")
@@ -76,23 +78,6 @@ def public_requirements(rows):
                 raise SystemExit(f"export_data: {r['source']} {r['id']} 의 제목이 없다")
             r = {**r, "requirement_ko": title, "requirement_highlight": [], "requirement_gap_highlight": [], "note": ""}
         out.append(r)
-    return out
-
-
-def properties():
-    sys.path.insert(0, os.path.join(AIBOM, "src"))
-    from format.v0_6 import properties as P
-    from format.fields import property_name
-    out = []
-    for group in (P.MODEL, P.DATASET):
-        for n in P._rows(group):
-            kids = P._children(n["path"])
-            if not kids:
-                out.append({"key": P._key(n), "path": n["path"], "group": group,
-                            "description_ko": n["description_ko"], "allowed": P._enum_values(n["type"])})
-            for c in kids:
-                out.append({"key": f"{property_name(n['path'])}:<i>:{c['name']}", "path": n["path"], "child": c["name"],
-                            "group": group, "description_ko": c["description_ko"], "allowed": P._enum_values(c["type"])})
     return out
 
 
@@ -175,13 +160,15 @@ def main():
     for name in os.listdir(OUT):                         # 뷰어가 안 읽는 파일은 두지 않는다
         if name.endswith(".json") and name not in KEEP:
             os.remove(os.path.join(OUT, name))
-    for name in COPY:
-        shutil.copy(os.path.join(DATA, name), os.path.join(OUT, name))
-    with open(os.path.join(DATA, "aibom_v0.6_requirement_field_mapping.json"), encoding="utf-8") as fh:
+    for name, src in COPY.items():
+        shutil.copy(os.path.join(V06, src), os.path.join(OUT, name))
+    with open(os.path.join(V06, "requirement_field_mapping.json"), encoding="utf-8") as fh:
         save("aibom_v0.6_requirement_field_mapping.json", public_requirements(json.load(fh)))
-    pr = properties(); save("aibom_v0.6_properties.json", pr)
+    with open(os.path.join(V06, "properties.json"), encoding="utf-8") as fh:
+        pr = json.load(fh)
+    save("aibom_v0.6_properties.json", pr)
     n_cards, n_judg = cards()
-    print(f"{OUT}: 복사 {len(COPY)}개, properties 키 {len(pr)}개, 카드 {n_cards}장, 판정 기록 {n_judg}개")
+    print(f"{OUT}: 복사 {len(COPY) + 1}개, properties 키 {len(pr)}개, 카드 {n_cards}장, 판정 기록 {n_judg}개")
 
 
 if __name__ == "__main__":
