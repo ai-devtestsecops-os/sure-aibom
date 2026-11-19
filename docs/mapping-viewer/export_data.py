@@ -26,7 +26,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 CLI = os.path.dirname(os.path.dirname(HERE))
 AIBOM = os.path.join(os.path.dirname(CLI), "ai-bom")
-DATA = os.path.join(AIBOM, "data")
+TRANSLATIONS = os.path.join(AIBOM, "translations")
 V06 = os.path.join(AIBOM, "aibom-v0.6", "tables")     # 발행한 v0.6 의 표 (legacy/src/format/v0_6/publish.py 가 써 둔다)
 OUT = os.path.join(HERE, "data")
 # 이 사이트의 파일 이름 → aibom-v0.6/tables 의 파일 이름
@@ -60,16 +60,16 @@ def save(name, obj):
 
 
 # 저작권이 있는 표준. 필드 탐색기는 공개 문서 사이트에 실리므로 본문(원문 번역)을 싣지 않고 조항 제목만 싣는다.
-# 엑셀은 내부용이라 그대로 둔다. 제목은 엑셀의 ISO 시트 표(ai-bom/data/iso42001.json)에서 읽는다.
-TITLE_ONLY = {"ISO/IEC 42001": "iso42001.json"}
+# 엑셀은 내부용이라 그대로 둔다. 제목은 번역(ai-bom/translations/iso42001.ko.json)에서 읽는다.
+TITLE_ONLY = {"ISO/IEC 42001": "iso42001.ko.json"}
 
 
 def public_requirements(rows):
     """TITLE_ONLY 출처의 행은 본문을 그 조항의 한국어 제목으로, 본문에 기대는 칸(강조 문구, 비고)은 비운다."""
     titles = {}
     for source, name in TITLE_ONLY.items():
-        with open(os.path.join(DATA, name), encoding="utf-8") as fh:
-            titles[source] = {r["id"]: r.get("title_ko") or r.get("title") or "" for r in json.load(fh)}
+        with open(os.path.join(TRANSLATIONS, name), encoding="utf-8") as fh:
+            titles[source] = {k: v.get("title", "") for k, v in json.load(fh).items() if isinstance(v, dict)}
     out = []
     for r in rows:
         if r["source"] in titles:
