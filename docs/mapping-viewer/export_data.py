@@ -6,8 +6,8 @@
 복사하는 것 (ai-bom/aibom-v0.6/tables 그대로. 발행한 v0.6 의 표를 legacy 가 써 둔 것):
     aibom_v0.6_cyclonedx.json       CycloneDX 1.7 전체 + v0.6 추가 필드 (added, origin, reference)
     aibom_v0.6_spdx.json            SPDX 3.0.1 전체 + v0.6 추가 필드 (added, path = 대응하는 CycloneDX 경로)
-    aibom_v0.6_spdx_mapping.json    두 형식의 대응 (1.7 매핑 + v0.6 추가 필드. 옛 엑셀의 CycloneDX v0.6↔SPDX v0.6 시트와 같은 표)
-    aibom_v0.6_requirement_field_mapping.json  규제 요구사항 → v0.6 필드 (옛 엑셀의 요구사항 매핑 시트와 같은 표).
+    aibom_v0.6_spdx_mapping.json    두 형식의 대응 (1.7 매핑 + v0.6 추가 필드. 레거시 엑셀의 CycloneDX v0.6↔SPDX v0.6 시트와 같은 표)
+    aibom_v0.6_requirement_field_mapping.json  규제 요구사항 → v0.6 필드 (레거시 엑셀의 요구사항 매핑 시트와 같은 표).
                                     ISO/IEC 42001 행만 본문을 조항 제목으로 바꾼다 (public_requirements)
     aibom_v0.6_properties.json      추가 필드를 --spec 1.7 로 낼 때의 properties 키 (tables/properties.json)
 만드는 것:
