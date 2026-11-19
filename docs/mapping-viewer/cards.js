@@ -235,7 +235,7 @@ function updateProfileAlert(system) {                // 비운 칸의 라벨 옆
 function regCards() {                                 // 고른 규제들의 카드 판정
   return currentRecord.cards.filter((r) => regSel.has(r.card_id.split("-")[1]));
 }
-// 카드 단위는 호라서 항(parent_clause_id) 하나에 카드가 여럿일 수 있다. 항의 종합 판정 (cards/judge/judge.py 의 aggregate 와 같은 규칙):
+// 카드 단위는 호라서 항(parent_clause_id) 하나에 카드가 여럿일 수 있다. 항의 종합 판정 (ai-bom/src/judge/judge.py 의 aggregate 와 같은 규칙):
 // 판정한 카드(반영·부분 반영·미반영)가 전부 반영이면 반영, 전부 미반영이면 미반영, 섞이면 부분 반영. 판정한 카드가 없으면 검토 필요가 있을 때 검토 필요, 아니면 비적용.
 const clauseOf = (id) => cardById[id]?.source?.parent_clause_id || cardById[id]?.source?.clause_id || id.replace(/^RC-[A-Z0-9]+-/, "");
 function aggregate(verdicts) {
@@ -349,7 +349,7 @@ function targetDetail(f) {
   return out.map((x) => `<br><span class="cv-muted">${x}</span>`).join("");
 }
 
-// 브라우저 안 판정 (cards/judge/judge.py 와 같은 규칙). 검사 대상은 metadata.component 와 모델·데이터셋 구성요소.
+// 브라우저 안 판정 (ai-bom/src/judge/judge.py 와 같은 규칙). 검사 대상은 metadata.component 와 모델·데이터셋 구성요소.
 // fact 에 target 이 있으면 프로파일의 targets 로 그 종류의 구성요소를 찾아 하나씩 본다 (조건도 구성요소마다).
 // 조건 변수는 값이 있으면 참, 자리는 있는데 비면 거짓, 자리 자체가 없으면 모름(null)이고, 모름이면 그 사실은 unknown 이라 카드가 검토 필요다.
 // 카드가 이 시스템에 적용되나 (judge.py 의 applicability): "applies" / "not_applies" / "unknown". 카드의 risk_class 가 any 면 위험등급을 안 보고,

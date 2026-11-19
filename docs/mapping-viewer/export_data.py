@@ -11,10 +11,10 @@
                                     ISO/IEC 42001 행만 본문을 조항 제목으로 바꾼다 (public_requirements)
     aibom_v0.6_properties.json      추가 필드를 --spec 1.7 로 낼 때의 properties 키 (tables/properties.json)
 만드는 것:
-    cards/cards.json                ai-bom/cards 의 승인 카드 (호 단위, 190장. ISO/IEC 42001 은 원문·구절을 빼고 제목만). 규제 판정 화면이 조항의 원문과 사실을 보여 줄 때 쓴다
-    cards/vocabulary.json, cards/profile.json   통제 어휘, 매핑 프로파일 (ai-bom/cards 그대로)
+    cards/cards.json                ai-bom/src 의 승인 카드 (호 단위, 190장. ISO/IEC 42001 은 원문·구절을 빼고 제목만). 규제 판정 화면이 조항의 원문과 사실을 보여 줄 때 쓴다
+    cards/vocabulary.json, cards/profile.json   통제 어휘, 매핑 프로파일 (ai-bom/src 그대로)
     cards/profile-spdx.json         SPDX 3.0.1 매핑 프로파일 (SPDX 문서를 판정할 때)
-    cards/boms/*.cdx.json, *.spdx.json, boms/index.json   예제 BOM 과 목록 (고위험·투명성 의무·범용 AI 모델 하나씩 손으로 만든 것과 그 SPDX 판, ai-bom/cards/judge/examples). 화면이 브라우저 안에서 판정하므로 BOM 자체를 두고,
+    cards/boms/*.cdx.json, *.spdx.json, boms/index.json   예제 BOM 과 목록 (고위험·투명성 의무·범용 AI 모델 하나씩 손으로 만든 것과 그 SPDX 판, ai-bom/src/judge/examples). 화면이 브라우저 안에서 판정하므로 BOM 자체를 두고,
                                     목록에 기본 시스템 프로파일(위험등급·역할)과 파이썬 엔진의 판정 요약을 적어 둔다
 추출기 초안과 승인 카드의 비교는 내부용이라 문서 사이트에 싣지 않는다.
 """
@@ -34,8 +34,8 @@ COPY = {"aibom_v0.6_cyclonedx.json": "cyclonedx.json", "aibom_v0.6_spdx.json": "
         "aibom_v0.6_spdx_mapping.json": "spdx_mapping.json"}
 # 여기서 만들지 않지만 뷰어가 읽는 파일 — tests/test_fields.py 가 만든다. 지우지 않는다.
 KEEP = ("aibom_cli_sources.json", "aibom_cli_spdx_sources.json")
-CARDS = os.path.join(AIBOM, "cards")
-# 규제 판정 화면의 예제 BOM: 고위험 시스템, 투명성 의무만 걸리는 시스템, 범용 AI 모델 하나씩 손으로 만든 작은 BOM (ai-bom/cards/judge/examples).
+AIBOM_SRC = os.path.join(AIBOM, "src")
+# 규제 판정 화면의 예제 BOM: 고위험 시스템, 투명성 의무만 걸리는 시스템, 범용 AI 모델 하나씩 손으로 만든 작은 BOM (ai-bom/src/judge/examples).
 # (파일, 기본 시스템 프로파일, 버튼 이름, 설명). 위험등급은 시스템 축(high_risk / minimal_risk)에 얹히는 것(limited_risk·gpai·gpai_systemic)을 더한 목록
 # 공개 사이트에 올리는 복사본에서는 설명 속성(aibom:example)의 내부용 문구를 바꾼다
 EXAMPLE_BOMS = (("recruit-screening.cdx.json", {"risk_class": ["high_risk"], "role": ["provider"], "annex_iii_area": "employment", "annex_i_product": False, "common_specifications_applied": True, "provider_outside_eu": False, "assistive_editing_only": False, "exemptions": []}, "고위험 AI 시스템 · 채용 심사",
@@ -97,8 +97,8 @@ def public_card(card):
 
 
 def cards():
-    """ai-bom/cards 의 카드·어휘·프로파일을 복사하고, 예제 BOM 판정 기록을 만든다."""
-    sys.path.insert(0, CARDS); sys.path.insert(0, os.path.join(CARDS, "judge"))
+    """ai-bom/src 의 카드·어휘·프로파일을 복사하고, 예제 BOM 판정 기록을 만든다."""
+    sys.path.insert(0, AIBOM_SRC); sys.path.insert(0, os.path.join(AIBOM_SRC, "judge"))
     from common import load_cards, load_gold
     import judge as J
     out = os.path.join(OUT, "cards"); os.makedirs(out, exist_ok=True)
@@ -111,14 +111,14 @@ def cards():
         json.dump([public_card(c) for c in shown], fh, ensure_ascii=False, indent=1)
     with open(os.path.join(out, "source.json"), "w", encoding="utf-8") as fh:
         json.dump({"cards": "approved" if approved else "gold", "count": len(shown)}, fh)
-    with open(os.path.join(CARDS, "vocabulary.json"), encoding="utf-8") as fh:
+    with open(os.path.join(AIBOM_SRC, "vocabulary.json"), encoding="utf-8") as fh:
         voc = json.load(fh)
     for c in voc["concepts"]:
         c.pop("synonyms_private", None)                  # 저작권 있는 원문의 구절은 문서 사이트에 싣지 않는다
     with open(os.path.join(out, "vocabulary.json"), "w", encoding="utf-8") as fh:
         json.dump(voc, fh, ensure_ascii=False, indent=1)
-    shutil.copy(os.path.join(CARDS, "profiles", "aibom-cyclonedx.json"), os.path.join(out, "profile.json"))
-    shutil.copy(os.path.join(CARDS, "profiles", "aibom-spdx.json"), os.path.join(out, "profile-spdx.json"))     # SPDX 문서를 판정할 때 쓰는 프로파일
+    shutil.copy(os.path.join(AIBOM_SRC, "profiles", "aibom-cyclonedx.json"), os.path.join(out, "profile.json"))
+    shutil.copy(os.path.join(AIBOM_SRC, "profiles", "aibom-spdx.json"), os.path.join(out, "profile-spdx.json"))     # SPDX 문서를 판정할 때 쓰는 프로파일
     # 예제 BOM. 화면이 브라우저 안에서 판정하므로(cards.js 의 judgeBom) 판정 기록이 아니라 BOM 자체를 둔다. 시스템 프로파일은 화면의 기본값
     index = []
     boms = os.path.join(out, "boms"); os.makedirs(boms, exist_ok=True)
@@ -127,8 +127,8 @@ def cards():
     old = os.path.join(out, "judgments")                 # 예전의 미리 낸 판정 기록. 더는 안 쓴다
     if os.path.isdir(old):
         shutil.rmtree(old)
-    bom_paths = [(os.path.join(CARDS, "judge", "examples", n), system, label, note) for n, system, label, note in EXAMPLE_BOMS]
-    profiles = {fmt: J.load_profile(os.path.join(CARDS, "profiles", name)) for fmt, name in J.DEFAULT_PROFILES.items()}
+    bom_paths = [(os.path.join(AIBOM_SRC, "judge", "examples", n), system, label, note) for n, system, label, note in EXAMPLE_BOMS]
+    profiles = {fmt: J.load_profile(os.path.join(AIBOM_SRC, "profiles", name)) for fmt, name in J.DEFAULT_PROFILES.items()}
     for path, system, label, note in bom_paths:
         name = os.path.basename(path)
         if not os.path.exists(path):
@@ -146,7 +146,7 @@ def cards():
         with open(os.path.join(boms, name), "w", encoding="utf-8") as fh:
             json.dump(bom, fh, ensure_ascii=False, indent=1)
         fmt = "SPDX" if J.is_spdx(bom) else "CycloneDX"
-        J.load_profile(os.path.join(CARDS, "profiles", J.DEFAULT_PROFILES[fmt]))        # 엔진의 전역(SPDX 클래스 상속, 조건 변환식)을 이 형식으로
+        J.load_profile(os.path.join(AIBOM_SRC, "profiles", J.DEFAULT_PROFILES[fmt]))        # 엔진의 전역(SPDX 클래스 상속, 조건 변환식)을 이 형식으로
         record = J.judge(bom, shown, profiles[fmt], system)      # 파이썬 엔진의 결과를 같이 적어 둔다 (화면과 맞는지 보는 기준)
         index.append({"file": name, "format": fmt, "subject": record["bom"]["subject"], **({"label": label} if label else {}), "note": note,
                       "size": os.path.getsize(os.path.join(boms, name)), "system_profile": system, "engine_summary": record["summary"]})
