@@ -15,7 +15,7 @@ from sure_aibom.engine.common.component import _hf_id_of, hub_model_id
 from sure_aibom.engine.common.facts import Facts
 from sure_aibom.engine.form import regulate
 from sure_aibom.engine.model import OWASP_SOURCES, _apply_model_info, _performance_metrics, enrich_hub_models
-from sure_aibom.exceptions import RunnerError
+from sure_aibom.utils.exceptions import RunnerError
 
 # 허브 조회와 OWASP 실행은 시험마다 hub_api, aibom_generator 모듈의 함수를 바꿔 끼운다 (model.py 가 그 모듈을 거쳐 부른다).
 

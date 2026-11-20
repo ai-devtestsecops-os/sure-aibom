@@ -69,13 +69,13 @@ from typing import Iterable
 
 import yaml
 
-from ..log import detail
-from ..utils.files import SKIP_DIRS, find_file, is_inside, notebook_code, relative_path
-from ..utils.licenses import card_licenses
+from ..utils.log import detail
 from .common import hub
 from .common.component import (DATA_TYPE, DATASET_KIND, HF_DATASET_PURL, HF_DATASET_URL, HF_ID, INTERNAL_PREFIX, MODEL_TYPE,
                                fill_missing, hf_dataset_id_of, hub_model_id)
 from .common.facts import Facts
+from .common.files import SKIP_DIRS, find_file, is_inside, notebook_code, relative_path
+from .common.licenses import card_licenses
 
 LOCAL_REF_PREFIX = "data:local/"
 

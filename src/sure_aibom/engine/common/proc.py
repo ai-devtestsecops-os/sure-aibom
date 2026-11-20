@@ -10,7 +10,7 @@ import os
 import subprocess
 from pathlib import Path
 
-from ...exceptions import RunnerError
+from ...utils.exceptions import RunnerError
 
 
 def run(cmd: list[str], cwd: str | None = None, timeout: int = 1800, env: dict[str, str] | None = None) -> subprocess.CompletedProcess:

@@ -20,7 +20,7 @@ from __future__ import annotations
 import re
 from pathlib import Path
 
-from ..exceptions import RunnerError
+from ..utils.exceptions import RunnerError
 from .common.proc import load_json_file, run
 
 SPEC_VERSION = "1.7"

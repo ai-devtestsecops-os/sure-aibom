@@ -8,7 +8,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from ..engine.validation import detect_format, schema_for, validate_doc
-from ..formats import SPEC_BY_FORMAT
+from ..utils.formats import SPEC_BY_FORMAT
 
 
 @dataclass

@@ -20,7 +20,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote, urlparse
 from urllib.request import Request, urlopen
 
-from ...log import detail
+from ...utils.log import detail
 
 HUB = "https://huggingface.co"
 DATASETS_SERVER = "https://datasets-server.huggingface.co"

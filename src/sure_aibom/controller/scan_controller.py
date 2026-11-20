@@ -6,10 +6,10 @@ import json
 import sys
 from pathlib import Path
 
-from ..formats import FORMAT_NAME, SPEC_BY_FORMAT
-from ..log import log, set_verbose
 from ..service import scan_service
 from ..service.scan_service import count, groups
+from ..utils.formats import FORMAT_NAME, SPEC_BY_FORMAT
+from ..utils.log import log, set_verbose
 from .exit_codes import EXIT_TOOL
 
 

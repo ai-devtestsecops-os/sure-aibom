@@ -4,9 +4,9 @@ from __future__ import annotations
 import argparse
 import json
 
-from ..formats import FORMAT_NAME, SPEC_BY_FORMAT
-from ..log import log
 from ..service import validate_service
+from ..utils.formats import FORMAT_NAME, SPEC_BY_FORMAT
+from ..utils.log import log
 from .exit_codes import EXIT_INVALID, EXIT_TOOL
 
 

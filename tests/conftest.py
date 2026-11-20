@@ -1,7 +1,7 @@
-"""테스트가 같이 쓰는 준비. 로그는 sure_aibom/log.py 한 곳에서 찍으므로, 여기서 그 출구를 바꿔 끼워 받아 본다."""
+"""테스트가 같이 쓰는 준비. 로그는 sure_aibom/utils/log.py 한 곳에서 찍으므로, 여기서 그 출구를 바꿔 끼워 받아 본다."""
 import pytest
 
-from sure_aibom import log
+from sure_aibom.utils import log
 
 
 @pytest.fixture(autouse=True)

@@ -9,7 +9,7 @@ import sys
 from . import NAME, __version__
 from .controller.scan_controller import cmd_scan
 from .controller.validate_controller import cmd_validate
-from .formats import FORMATS, SPECS
+from .utils.formats import FORMATS, SPECS
 
 
 # ── parser ──────────────────────────────────────────────────────────────────

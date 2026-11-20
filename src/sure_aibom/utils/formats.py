@@ -1,4 +1,4 @@
-"""sure-aibom 이 내보내는 형식과 spec. 인자 선택지(cli.py), 기본값과 문구(controller), 규제 필드 형태(service)가 같이 써서 패키지 맨 위에 둔다."""
+"""sure-aibom 이 내보내는 형식과 spec. 인자 선택지(cli.py), 기본값과 문구(controller), 규제 필드 형태(service)가 같이 쓴다."""
 
 # scan --format 과 --spec. 형식마다 spec 둘이고 첫 값이 기본이다. v0.6 은 두 형식에 다 있다 (AI-BOM v0.6 은 CycloneDX 판과 SPDX 판이 있다)
 FORMATS = ("cyclonedx", "spdx")

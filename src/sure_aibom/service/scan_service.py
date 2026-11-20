@@ -1,6 +1,6 @@
 """scan 의 단계 순서. 명령줄 인자를 받지 않는다. 단계는 모두 engine 의 파일이고, 여기서는 순서와 단계 줄, 실패 모으기만 맡는다.
 
-controller/scan_controller.py 가 인자를 확인해 값만 넘기고, 여기서는 단계마다 log.py 의 stage(단계 이름, 결과)와 log(줄)로 알린다.
+controller/scan_controller.py 가 인자를 확인해 값만 넘기고, 여기서는 단계마다 utils/log.py 의 stage(단계 이름, 결과)와 log(줄)로 알린다.
 
     check_scan  도구를 돌리기 전 입력 확인 (대상 경로, --data 경로, --data 허브 리비전)
     scan        S-BOM(syft) → 이미지 받기·풀기 → M-BOM(cdxgen) → 병합 → AI 서비스 → M-BOM 보강(로컬 모델, 허브 모델)
@@ -29,16 +29,16 @@ from ..engine.merge import merge
 from ..engine.model import enrich_hub_models, enrich_local_models
 from ..engine.spdx import convert_spdx
 from ..engine.syft import run_syft
-from ..exceptions import ImageExtractionError, RunnerError
-from ..formats import FORM_BY_SPEC, FORMAT_NAME
-from ..log import log, stage
+from ..utils.exceptions import ImageExtractionError, RunnerError
+from ..utils.formats import FORM_BY_SPEC, FORMAT_NAME
+from ..utils.log import log, stage
 
 # 요약의 묶음: CycloneDX type → S/M/D 와 파일. 목록에 없는 type(library, application, operating-system …)은 packages
 GROUP_ORDER = ("packages", "models", "datasets", "files", "other")
 SINGULAR = {"packages": "package", "models": "model", "datasets": "dataset", "files": "file", "other": "other"}
 _DRIVE = re.compile(r"^[A-Za-z]:[\\/]")
 
-# 줄은 맨 위 log.py 의 함수로 찍는다. stage 는 단계 한 줄, log 는 항상 찍는 줄(실패한 단계의 상세, 경고)이고,
+# 줄은 utils/log.py 의 함수로 찍는다. stage 는 단계 한 줄, log 는 항상 찍는 줄(실패한 단계의 상세, 경고)이고,
 # engine 모듈은 -v 일 때만 찍히는 detail 을 직접 가져다 쓴다.
 
 

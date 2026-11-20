@@ -20,7 +20,7 @@ import pytest
 import sure_aibom.engine.common.aibom_generator as aibom_generator
 import sure_aibom.engine.common.hub as hub
 import fieldtrace
-from sure_aibom.exceptions import RunnerError
+from sure_aibom.utils.exceptions import RunnerError
 from sure_aibom.engine.spdx import convert_spdx
 from sure_aibom.engine.validation import _validate_cdx, _validate_spdx
 from test_image_tar import docker_tar

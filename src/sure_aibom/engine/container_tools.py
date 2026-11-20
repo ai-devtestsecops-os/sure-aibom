@@ -9,8 +9,8 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from ..exceptions import RunnerError
-from ..utils.host import host_arch
+from ..utils.exceptions import RunnerError
+from .common.host import host_arch
 from .common.proc import run
 
 PULL_TOOLS = ("docker", "podman", "crane")           # syft 와 같은 순서: 데몬 → 레지스트리

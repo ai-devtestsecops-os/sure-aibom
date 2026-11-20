@@ -10,7 +10,7 @@ import os
 import sys
 from pathlib import Path
 
-from ...exceptions import RunnerError
+from ...utils.exceptions import RunnerError
 from . import hub
 from .proc import load_json_file, run
 

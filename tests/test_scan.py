@@ -17,7 +17,7 @@ import pytest
 
 import sure_aibom.engine.common.hub as hub
 import sure_aibom.service.scan_service as scan_service
-from sure_aibom.exceptions import RunnerError
+from sure_aibom.utils.exceptions import RunnerError
 from sure_aibom.cli import main
 
 FIXTURE = Path(__file__).parent / "data" / "project"
@@ -347,7 +347,7 @@ def test_an_image_target_is_unpacked_and_the_unpacked_directory_is_scanned(tmp_p
 
 def test_an_image_that_cannot_be_pulled_skips_the_m_bom_and_exits_2(tmp_path, monkeypatch, capsys):
     import sure_aibom.cli as cli
-    from sure_aibom.exceptions import RunnerError
+    from sure_aibom.utils.exceptions import RunnerError
     monkeypatch.setattr(scan_service, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7",
         "components": [{"bom-ref": "a", "type": "library", "name": "a", "version": "1", "purl": "pkg:pypi/a@1"}]})
     monkeypatch.setattr(scan_service, "run_cdxgen", lambda target, workdir: pytest.fail("이미지를 못 풀었는데 cdxgen 을 돌렸다"))
@@ -419,7 +419,7 @@ def test_a_missing_path_target_is_an_error_not_an_image(tmp_path, capsys):
 def test_one_failing_tool_still_writes_the_bom_but_exits_2(tmp_path, monkeypatch, capsys):
     """syft·cdxgen 중 하나가 실패하면 만든 만큼은 쓰고, CI 가 모자란 BOM 을 성공으로 넘기지 않도록 2 로 끝낸다."""
     import sure_aibom.cli as cli
-    from sure_aibom.exceptions import RunnerError
+    from sure_aibom.utils.exceptions import RunnerError
 
     def broken(target, workdir):
         raise RunnerError("syft exited with 1\nfirst detail\nlast detail")

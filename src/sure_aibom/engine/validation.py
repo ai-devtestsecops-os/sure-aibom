@@ -15,7 +15,7 @@ import jsonschema
 from jsonschema.exceptions import best_match
 from referencing import Registry, Resource
 
-from ..log import log
+from ..utils.log import log
 
 SCHEMA_DIR = Path(str(files("sure_aibom") / "schemas"))   # 패키지 안. 편집 설치·wheel 설치 어디서든 같은 위치
 CDX_SCHEMA = SCHEMA_DIR / "aibom-v0.6-cyclonedx.schema.json"

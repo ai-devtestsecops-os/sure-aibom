@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 import sure_aibom.engine.image_tar as im
-from sure_aibom.exceptions import ImageExtractionError
+from sure_aibom.utils.exceptions import ImageExtractionError
 
 
 # ── tar 만들기 ────────────────────────────────────────────────────────────────

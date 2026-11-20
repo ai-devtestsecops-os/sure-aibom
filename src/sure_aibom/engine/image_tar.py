@@ -18,8 +18,8 @@ import shutil
 import tarfile
 from pathlib import Path
 
-from ..exceptions import ImageExtractionError
-from ..utils.host import host_arch
+from ..utils.exceptions import ImageExtractionError
+from .common.host import host_arch
 
 ARCHIVE_SUFFIXES = (".tar", ".tar.gz", ".tgz")
 WHITEOUT = ".wh."
