@@ -12,27 +12,18 @@ from pathlib import Path
 
 import pytest
 
-import sure_aibom.external.hub as hub
+import sure_aibom.engine.common.hub as hub
 import sure_aibom.engine.dataset as ds
-from sure_aibom.engine.facts import Facts
+from sure_aibom.engine.common.aibom_generator import skip_reason
+from sure_aibom.engine.common.component import INTERNAL_PREFIX, hf_dataset_id_of, is_dataset
+from sure_aibom.engine.common.facts import Facts
+from sure_aibom.engine.dataset import discover_datasets, missing_revisions
 from sure_aibom.engine.merge import merge
-from sure_aibom.engine.form import INTERNAL_PREFIX, regulate
+from sure_aibom.engine.form import regulate
 from sure_aibom.engine.validation import _validate_cdx
-from sure_aibom.external.aibom_generator import skip_reason
 from sure_aibom.utils.licenses import card_licenses, license_entry
 
-
-# engine 의 함수는 external 을 import 하지 않는다. scan 처럼 hub 모듈을 넘겨 돌린다 (허브 함수는 시험마다 hub 모듈에 바꿔 끼운다).
-def discover_datasets(*args, **kwargs):
-    return ds.discover_datasets(*args, hub=hub, **kwargs)
-
-
-def missing_revisions(*args, **kwargs):
-    return ds.missing_revisions(*args, hub=hub, **kwargs)
-
-
-def fetch_statistics(*args, **kwargs):
-    return ds._fetch_statistics(*args, hub=hub, **kwargs)
+# 허브 조회는 시험마다 hub 모듈의 함수를 바꿔 끼운다 (dataset.py 가 그 모듈을 거쳐 부른다).
 
 IMDB_FIXTURE = Path(__file__).parent / "data" / "hf_api" / "hf_dataset_stanfordnlp_imdb.json"
 IMDB = "stanfordnlp/imdb"
@@ -179,7 +170,7 @@ def data_of(root: Path) -> list[str]:
     ({"type": "library", "purl": "pkg:huggingface/datasets/x/y"}, None),
 ])
 def test_hf_dataset_id_of(comp, expected):
-    assert ds._hf_dataset_id_of(comp) == expected
+    assert hf_dataset_id_of(comp) == expected
 
 
 @pytest.mark.parametrize("comp, expected", [
@@ -193,7 +184,7 @@ def test_hf_dataset_id_of(comp, expected):
     ({"type": "library", "data": [{"type": "dataset", "name": "x"}]}, False),
 ])
 def test_is_dataset(comp, expected):
-    assert ds.is_dataset(comp) is expected
+    assert is_dataset(comp) is expected
 
 
 # -- 파이썬 소스 ---------------------------------------------------------------------
@@ -918,7 +909,7 @@ def test_statistics_requests_follow_dataset_info_then_size_and_are_capped(monkey
     monkeypatch.setattr(hub, "fetch_dataset_statistics", fetch)
     many = {"id": "a/b", "cardData": {"dataset_info": [{"config_name": f"c{i}", "splits": [{"name": "train"}, {"name": "test"}]} for i in range(8)]}}
     logs.clear()
-    got = fetch_statistics("a/b", many, None)
+    got = ds._fetch_statistics("a/b", many, None)
     assert len(calls) == ds.STATISTICS_REQUEST_LIMIT == 12 and calls[0] == ("c0", "train") and calls[-1] == ("c5", "test")
     assert [c for c, _, _ in got] == ["c0", "c0", "c1", "c1", "c2", "c2", "c3", "c3", "c4", "c4"]                    # c5 는 조회 실패
     assert any("first 12 of 16" in m for m in logs) and sum("partial" in m for m in logs) == 2
@@ -1372,7 +1363,7 @@ def test_live_hub_returns_size_and_modality_for_imdb(monkeypatch):
     assert info and info["id"] == IMDB
     size = hub.fetch_dataset_size(IMDB)
     assert size and size["size"]["dataset"]["num_bytes_original_files"] > 0
-    statistics = fetch_statistics(IMDB, info, size)
+    statistics = ds._fetch_statistics(IMDB, info, size)
     assert [(c, s) for c, s, _ in statistics] == [("plain_text", "train"), ("plain_text", "test"), ("plain_text", "unsupervised")]
     facts = ds._hub_facts(IMDB, info, size, statistics)
     assert facts["size"] and facts["size"] > 0 and facts["modality"] == ["text"] and facts["availability"] == "direct-download"

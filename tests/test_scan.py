@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-import sure_aibom.external.hub as hub
+import sure_aibom.engine.common.hub as hub
 import sure_aibom.service.scan_service as scan_service
 from sure_aibom.exceptions import RunnerError
 from sure_aibom.cli import main
@@ -63,8 +63,8 @@ def recorded_owasp(hf_id: str, workdir) -> dict:
 
 @pytest.fixture(autouse=True)
 def offline(monkeypatch):
-    monkeypatch.setattr("sure_aibom.external.aibom_generator.skip_reason", lambda: None)                         # 보강은 녹화본으로 돌린다
-    monkeypatch.setattr("sure_aibom.external.aibom_generator.run_aibom_generator", recorded_owasp)
+    monkeypatch.setattr("sure_aibom.engine.common.aibom_generator.skip_reason", lambda: None)                      # 보강은 녹화본으로 돌린다
+    monkeypatch.setattr("sure_aibom.engine.common.aibom_generator.run_aibom_generator", recorded_owasp)
     monkeypatch.setattr(hub, "hf_reachable", lambda: True)                                                 # 허브 모델 응답은 M-BOM 보강이 받는다
     monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id: recorded("model", hf_id))
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id: recorded("dataset", hf_id))

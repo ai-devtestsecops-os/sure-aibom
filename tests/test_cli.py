@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-import sure_aibom.external.hub as hub
+import sure_aibom.engine.common.hub as hub
 import sure_aibom.service.scan_service as scan_service
 from sure_aibom import NAME, __version__
 from sure_aibom.cli import HELP, build_parser, main

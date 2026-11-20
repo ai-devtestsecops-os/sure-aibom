@@ -11,7 +11,7 @@
          revision="…" 인자가 문자열이면 그 리비전으로 묻는다. 같은 id 를 리비전을 달리해(또는 없이) 부르면 정하지 않고 최신으로 묻는다.
        - 코드가 부르는 허브 모델(pkg:huggingface 모델 컴포넌트)의 모델 카드. 모델마다 GET {HF_ENDPOINT}/api/models/<id> 를
          한 번 불러 응답 cardData 의 datasets(학습)와 model-index[].results[].dataset.type(평가)을 모은다. 허브 id 꼴인 것만.
-         허브 모델인지는 model.py 의 hub_model_id 로 가른다 (로컬 모델 파일에서 찾은 모델은 뺀다).
+         허브 모델인지는 common/component.py 의 hub_model_id 로 가른다 (로컬 모델 파일에서 찾은 모델은 뺀다).
        - scan --data hf://datasets/<id>[@<리비전>] 으로 직접 준 것 (huggingface_hub 의 HfFileSystem 표기). 코드에서 찾은 것과 같은 모양으로
          만든다. 리비전은 코드의 revision= 보다 우선한다. 저장소는 있는데 그 리비전이 없다고 허브가 답하면(404) scan 이 도구를 돌리기
          전에 오류로 끝낸다 (missing_revisions). 저장소가 없는 것과 비공개인 것은 허브가 둘 다 401 로 답해 구분하지 않는다.
@@ -70,22 +70,16 @@ from typing import Iterable
 import yaml
 
 from ..log import detail
-# external 은 import 하지 않는다: 허브 조회는 service 가 넘겨준 external 모듈(hub)로 한다
 from ..utils.files import SKIP_DIRS, find_file, is_inside, notebook_code, relative_path
 from ..utils.licenses import card_licenses
-from .facts import Facts
-from .merge import fill_missing
-from .form import INTERNAL_PREFIX
-from .model import MODEL_TYPE, hub_model_id
+from .common import hub
+from .common.component import (DATA_TYPE, DATASET_KIND, HF_DATASET_PURL, HF_DATASET_URL, HF_ID, INTERNAL_PREFIX, MODEL_TYPE,
+                               fill_missing, hf_dataset_id_of, hub_model_id)
+from .common.facts import Facts
 
-DATA_TYPE = "data"
-DATASET_KIND = "dataset"       # data[].type 의 다섯 값 중 D-BOM 으로 치는 것
 LOCAL_REF_PREFIX = "data:local/"
 
 HF_DATASETS_PURL = "pkg:huggingface/datasets/"
-_HF_DATASET_PURL = re.compile(r"^pkg:huggingface/datasets/(?P<id>[^@?#]+)")
-_HF_DATASET_URL = re.compile(r"^https?://huggingface\.co/datasets/(?P<id>[^?#]+?)/?$")
-_HF_ID = re.compile(r"^[A-Za-z0-9][\w.-]*(?:/[A-Za-z0-9][\w.-]*)?$")
 HF_DATA_ARG = "hf://datasets/"                   # scan --data 로 허브 데이터셋을 주는 표기. huggingface_hub 의 HfFileSystem 경로와 같다
 _HF_REVISION = re.compile(r"^[^\s@]+$")          # 브랜치·태그·커밋 해시. 짧은 해시도 허브가 전체 해시로 풀어 준다
 
@@ -150,9 +144,9 @@ STATISTICS_FILE_LIMIT = JSON_PARSE_LIMIT                      # 로컬 파일 �
 # ── 진입점 ──────────────────────────────────────────────────────────────────
 
 def discover_datasets(merged: dict, target: str, report: dict | None = None, data_paths: Iterable[str] = (),
-             model_infos: dict | None = None, hub_reachable: bool | None = None, facts: Facts | None = None, *, hub) -> dict:
-    """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다. 허브 조회는 hub(service 가
-    넘겨주는 external/hub.py 모듈)로 한다: hf_reachable, fetch_model_info, fetch_dataset_info, fetch_dataset_size, fetch_dataset_statistics.
+             model_infos: dict | None = None, hub_reachable: bool | None = None, facts: Facts | None = None) -> dict:
+    """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다. 허브 조회는 common/hub.py 로
+    한다: hf_reachable, fetch_model_info, fetch_dataset_info, fetch_dataset_size, fetch_dataset_statistics.
     data_paths 는 scan --data 값들로, 로컬 데이터 경로이거나 hf://datasets/<id>[@<리비전>] 꼴의 허브 데이터셋이다 (split_data_args).
     model_infos 는 M-BOM 보강이 받아 둔 허브 모델 id → Hub API 응답이고, 주면 허브 모델 카드를 다시 묻지 않는다. hub_reachable 은
     M-BOM 보강이 허브에 닿는지 본 결과이고, None 이면 물을 것이 있을 때 여기서 묻는다. report 를 주면 hub_unreachable(허브에 물을
@@ -162,7 +156,7 @@ def discover_datasets(merged: dict, target: str, report: dict | None = None, dat
     components: list[dict] = merged.setdefault("components", [])
     by_hf_id: dict[str, dict] = {}
     for comp in components:
-        hf_id = _hf_dataset_id_of(comp)
+        hf_id = hf_dataset_id_of(comp)
         if hf_id and hf_id not in by_hf_id:
             by_hf_id[hf_id] = comp
 
@@ -207,7 +201,7 @@ def discover_datasets(merged: dict, target: str, report: dict | None = None, dat
             skipped += [f"{m} hub model card{'s' if m != 1 else ''} not read"] if m else []
             detail(f"[dataset] huggingface.co unreachable: {', '.join(skipped)}")
     if reachable and hub_models:
-        _datasets_from_model_cards(merged, hub_models, by_hf_id, model_infos, facts, hub=hub)
+        _datasets_from_model_cards(merged, hub_models, by_hf_id, model_infos, facts)
 
     empty: list[str] = []
     for comp in _data_components(local_paths, empty):
@@ -218,7 +212,7 @@ def discover_datasets(merged: dict, target: str, report: dict | None = None, dat
         _link_from_root(merged, new_refs)
     unresolved: list[str] = []
     if reachable and by_hf_id:
-        unresolved = _fill_from_hub(merged, by_hf_id, facts, revisions, given, hub=hub)
+        unresolved = _fill_from_hub(merged, by_hf_id, facts, revisions, given)
     elif not reachable:
         for hf_id, revision in revisions.items():                # 허브에 못 물어도 리비전은 남긴다
             if not by_hf_id[hf_id].get("version"):
@@ -242,7 +236,7 @@ def split_data_args(values: Iterable[str]) -> tuple[list[str], dict[str, str | N
             continue
         hf_id, at, revision = value.removeprefix(HF_DATA_ARG).partition("@")
         hf_id = hf_id.rstrip("/")
-        if not value.startswith(HF_DATA_ARG) or not _HF_ID.match(hf_id) or (at and not _HF_REVISION.match(revision)):
+        if not value.startswith(HF_DATA_ARG) or not HF_ID.match(hf_id) or (at and not _HF_REVISION.match(revision)):
             raise ValueError(f"--data {value}: not a Hugging Face dataset, use hf://datasets/<owner>/<name>[@<revision>]")
         if hf_id in given and given[hf_id] != (revision or None):
             raise ValueError(f"--data {hf_id}: given with two revisions ({given[hf_id] or 'latest'}, {revision or 'latest'})")
@@ -255,9 +249,9 @@ def _hub_data_arg(hf_id: str, revision: str | None = None) -> str:
     return HF_DATA_ARG + hf_id + (f"@{revision}" if revision else "")
 
 
-def missing_revisions(given: dict[str, str | None], *, hub) -> list[tuple[str, str]]:
+def missing_revisions(given: dict[str, str | None]) -> list[tuple[str, str]]:
     """--data 로 리비전을 준 허브 데이터셋 가운데, 저장소는 있는데 그 리비전이 없다고 허브가 답한(404) 것의 (--data 표기, 허브의 오류 문구).
-    scan 이 도구를 돌리기 전에 불러 입력 실수로 멈춘다. 허브에는 넘겨받은 hub 모듈로 묻는다. 저장소가 없거나 비공개라 401 이거나
+    scan 이 도구를 돌리기 전에 불러 입력 실수로 멈춘다. 허브에는 common/hub.py 로 묻는다. 저장소가 없거나 비공개라 401 이거나
     허브에 닿지 않으면 판단하지 않는다 (스캔은 이름과 리비전을 남기고 경고한다)."""
     pinned = sorted((hf_id, revision) for hf_id, revision in given.items() if revision)
     if not pinned or not hub.hf_reachable():
@@ -270,40 +264,7 @@ def missing_revisions(given: dict[str, str | None], *, hub) -> list[tuple[str, s
     return out
 
 
-# ── 데이터셋 판정 ─────────────────────────────────────────────────────────────
-
-def is_dataset(comp: dict) -> bool:
-    """D-BOM 으로 세는 컴포넌트. type=data 만으로는 모자라다: cdxgen 이 이미지의 apt 저장소 설정도 data[] 없는
-    type=data 로 낸다. data[] 에 dataset 항목이 있거나 허브 데이터셋 id 가 있으면 데이터셋이다."""
-    if comp.get("type") != DATA_TYPE:
-        return False
-    return any(d.get("type") == DATASET_KIND for d in comp.get("data") or []) or _hf_dataset_id_of(comp) is not None
-
-
-def _hf_dataset_id_of(comp: dict) -> str | None:
-    """type=data 컴포넌트의 Hugging Face 데이터셋 id. purl → data[].name "datasets/<id>" → group "datasets" 의 name →
-    data[].contents.url 이나 externalReferences 의 허브 데이터셋 주소. cdxgen 은 모델 카드의 이름만 있는 id 를 datasets/<id> 로,
-    owner/name 은 group·name 으로 나누고 purl 없이 주소에만 남긴다. 코드의 huggingface.co/datasets 링크로 만든 것은 data[] 도 없이
-    externalReferences 에만 주소가 있다."""
-    if comp.get("type") != DATA_TYPE:
-        return None
-    m = _HF_DATASET_PURL.match(comp.get("purl") or "")
-    if m:
-        return m["id"].strip("/")
-    for d in comp.get("data") or []:
-        name = d.get("name") or ""
-        if name.startswith("datasets/") and _HF_ID.match(name[len("datasets/"):]):
-            return name[len("datasets/"):]
-    if comp.get("group") == "datasets" and comp.get("name") and _HF_ID.match(comp["name"]):
-        return comp["name"]
-    urls = [(d.get("contents") or {}).get("url") for d in comp.get("data") or []]
-    urls += [r.get("url") for r in comp.get("externalReferences") or [] if isinstance(r, dict)]
-    for url in urls:
-        m = _HF_DATASET_URL.match(url) if isinstance(url, str) else None
-        if m and _HF_ID.match(hf_id := m["id"].removeprefix("datasets/")):
-            return hf_id
-    return None
-
+# ── 허브 데이터셋 컴포넌트 ──────────────────────────────────────────────────────
 
 def _new_hf_component(hf_id: str) -> dict:
     group, _, name = hf_id.rpartition("/")
@@ -381,9 +342,9 @@ def _parse_python(path: Path) -> list[tuple[str, str | None]]:
 # ── 허브 모델 카드 ────────────────────────────────────────────────────────────
 
 def _datasets_from_model_cards(merged: dict, hub_models: list[tuple[dict, str]], by_hf_id: dict[str, dict],
-                               infos: dict | None = None, facts: Facts | None = None, *, hub) -> None:
+                               infos: dict | None = None, facts: Facts | None = None) -> None:
     """허브 모델마다 모델 카드의 데이터셋을 데이터셋 컴포넌트로 만들어 잇는다 (_link_model_datasets). 모델 카드는 infos
-    (M-BOM 보강이 받아 둔 Hub API 응답)에서 읽고, infos 가 없으면 hub 로 받는다. 모델 카드를 못 읽었거나 데이터셋이 없는
+    (M-BOM 보강이 받아 둔 Hub API 응답)에서 읽고, infos 가 없으면 허브에서 받는다. 모델 카드를 못 읽었거나 데이터셋이 없는
     모델은 손대지 않는다."""
     for model, model_id in hub_models:
         info = infos.get(model_id) if infos is not None else hub.fetch_model_info(model_id)
@@ -551,7 +512,7 @@ def _string(node: ast.expr | None) -> str | None:
 def _looks_like_hub_id(text: str) -> bool:
     """"owner/name" 또는 확장자 없는 맨 이름. 경로(./, ../, \\)와 마지막 조각에 확장자가 붙은 것(script.py, x.xlsx)은 아니다.
     허브 id 에도 점은 올 수 있어(v0.1, Qwen2.5-Math) 숫자만이거나 영숫자가 아닌 글자가 섞인 꼬리는 확장자로 보지 않는다."""
-    if not _HF_ID.match(text) or text.startswith("."):
+    if not HF_ID.match(text) or text.startswith("."):
         return False
     ext = _extension(_last_segment(text))
     return not (ext.isalnum() and not ext.isdigit())
@@ -1162,7 +1123,7 @@ def _number(v) -> str:
 # ── Hugging Face 허브 ────────────────────────────────────────────────────────
 
 def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], facts: Facts | None = None,
-                   revisions: dict[str, str] | None = None, given: Iterable[str] = (), *, hub) -> list[str]:
+                   revisions: dict[str, str] | None = None, given: Iterable[str] = ()) -> list[str]:
     """허브 응답으로 채우고, 같은 데이터셋을 다른 id 로 부른 컴포넌트는 정식 id 의 컴포넌트 하나로 모은다.
     revisions 는 id → 물을 리비전(--data 나 코드의 revision=)이다. 리비전이 있는 것은 그 리비전으로 묻고, 그 응답이 앞선 조회보다
     우선해 정식 id 의 응답이 된다 (version 은 응답의 전체 커밋 해시). 조회가 안 되면 리비전을 version 으로 남긴다.
@@ -1205,30 +1166,30 @@ def _fill_from_hub(merged: dict, by_hf_id: dict[str, dict], facts: Facts | None 
         if survivor_id != canonical:
             _rename(merged, comp, survivor_id, canonical, facts)
             detail(f"[dataset] {survivor_id}: renamed to {canonical} (canonical id)")
-        elif (m := _HF_DATASET_PURL.match(comp.get("purl") or "")) is None or m["id"].strip("/") != canonical:
+        elif (m := HF_DATASET_PURL.match(comp.get("purl") or "")) is None or m["id"].strip("/") != canonical:
             _rename(merged, comp, survivor_id, canonical, facts)   # cdxgen 이 purl 없이 만든 것도 purl·bom-ref 를 정식 id 로 맞춘다
         info = info_by_canonical.get(canonical)
         if info:
             revision = pinned.get(canonical)
-            if revision and not _is_latest(canonical, info, hub=hub):
+            if revision and not _is_latest(canonical, info):
                 detail(f"[dataset] {canonical}: revision {revision} is not the latest, datasets-server size and statistics skipped")
                 size, statistics = None, []
             else:
                 size = hub.fetch_dataset_size(canonical)
-                statistics = _fetch_statistics(canonical, info, size, hub=hub)
+                statistics = _fetch_statistics(canonical, info, size)
             _apply_hub_info(comp, canonical, info, size, statistics)
             if facts is not None:
                 facts.set_time(comp["bom-ref"], "releaseTime", info.get("lastModified"))
     return unresolved
 
 
-def _is_latest(hf_id: str, info: dict, *, hub) -> bool:
+def _is_latest(hf_id: str, info: dict) -> bool:
     """리비전을 지정해 받은 응답이 지금 기본 브랜치의 최신 커밋과 같은가. 최신을 받지 못하면 아니라고 본다."""
     latest = hub.fetch_dataset_info(hf_id)
     return bool(latest) and isinstance(info.get("sha"), str) and latest.get("sha") == info["sha"]
 
 
-def _fetch_statistics(hf_id: str, info: dict, size: dict | None, *, hub) -> list[tuple[str, str, dict]]:
+def _fetch_statistics(hf_id: str, info: dict, size: dict | None) -> list[tuple[str, str, dict]]:
     """(config, split) 마다 datasets-server 통계를 받는다. 상한을 넘으면 앞쪽만 받고 알린다."""
     pairs = _config_splits(info, size)
     if len(pairs) > STATISTICS_REQUEST_LIMIT:
@@ -1266,7 +1227,7 @@ def _canonical_id(hf_id: str, info: dict | None) -> str:
     """허브 응답의 id. 허브는 옛 이름(imdb, bookcorpus)을 정식 owner/name 으로 돌려주므로 응답의 id 가 정식 id 다. 없으면 부른 id."""
     cid = (info or {}).get("id")
     cid = cid.strip("/") if isinstance(cid, str) else ""
-    return cid if cid and _HF_ID.match(cid) else hf_id
+    return cid if cid and HF_ID.match(cid) else hf_id
 
 
 def _absorb(merged: dict, survivor: dict, loser: dict, facts: Facts | None = None) -> None:
@@ -1306,7 +1267,7 @@ def _rename(merged: dict, comp: dict, old_id: str, new_id: str, facts: Facts | N
         comp.setdefault("data", []).insert(0, {"type": DATASET_KIND, "name": new_id, "contents": {"url": _hub_url(new_id)}})
     refs: list[dict] = []
     for r in comp.get("externalReferences") or []:
-        m = _HF_DATASET_URL.match(r.get("url") or "")
+        m = HF_DATASET_URL.match(r.get("url") or "")
         if m and m["id"] in old_ids:
             r = {**r, "url": _hub_url(new_id)}
         if (r.get("type"), r.get("url")) not in {(x.get("type"), x.get("url")) for x in refs}:
@@ -1439,7 +1400,7 @@ def _source_datasets(card: dict) -> list[str]:
         s = s.strip()
         if s.lower().startswith("extended|"):
             s = s.split("|", 1)[1].strip()
-        if s and s.lower() not in ("original", "extended") and _HF_ID.match(s):
+        if s and s.lower() not in ("original", "extended") and HF_ID.match(s):
             out.append(s)
     return out
 

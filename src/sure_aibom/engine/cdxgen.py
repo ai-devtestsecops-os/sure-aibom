@@ -23,10 +23,10 @@ from urllib.parse import quote, unquote
 
 from ..exceptions import RunnerError
 from ..utils.licenses import license_entry
-from ._proc import load_json_file, run
+from .common.component import MODEL_TYPE
+from .common.proc import load_json_file, run
 
 SPEC_VERSION = "1.7"
-MODEL_TYPE = "machine-learning-model"
 MODELFILE_FORMAT = "modelfile"
 MODELFILE_LIMIT = 1024 ** 2                       # 이보다 큰 Modelfile 은 읽지 않는다
 _DOUBLE_ENCODED = re.compile(r"%25(?=[0-9A-Fa-f]{2})")
@@ -48,10 +48,10 @@ def run_cdxgen(target: str, workdir: Path, install_deps: bool = False) -> dict:
     proc = run(cmd)
     if proc.returncode != 0:
         raise RunnerError(f"cdxgen exited with {proc.returncode}\n{proc.stderr[-2000:]}")
-    return tidy(load_json_file(out, "cdxgen"), root)
+    return _tidy(load_json_file(out, "cdxgen"), root)
 
 
-def tidy(doc: dict, root: Path) -> dict:
+def _tidy(doc: dict, root: Path) -> dict:
     """머리 설명의 표대로 제자리에서 고치고 돌려준다. root 는 cdxgen 에 넘긴 디렉터리 (evidence 경로의 기준)."""
     for comp in _walk(doc.get("components") or []):
         _fix_purl(comp)
@@ -101,7 +101,7 @@ def _drop_pedigree_refs(comp: dict) -> None:
 
 # ── Modelfile 모델 ─────────────────────────────────────────────────────────────
 
-def parse_modelfile(text: str) -> tuple[str | None, str | None]:
+def _parse_modelfile(text: str) -> tuple[str | None, str | None]:
     """(FROM 값, LICENSE 의 첫 줄). 둘 다 마지막 지시문을 쓴다 (cdxgen 과 같다). \"\"\" 로 감싼 LICENSE 는 그 안의 첫 비지 않은 줄."""
     source = license_line = None
     lines = text.splitlines()
@@ -137,7 +137,7 @@ def _modelfile_models(doc: dict, root: Path) -> None:
         try:
             if path.stat().st_size > MODELFILE_LIMIT:
                 continue
-            source, license_line = parse_modelfile(path.read_text(encoding="utf-8", errors="replace"))
+            source, license_line = _parse_modelfile(path.read_text(encoding="utf-8", errors="replace"))
         except OSError:
             continue
         _fix_quote_license(model, license_line)

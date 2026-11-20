@@ -10,9 +10,9 @@ import os
 import sys
 from pathlib import Path
 
-from ..exceptions import RunnerError
+from ...exceptions import RunnerError
 from . import hub
-from ._proc import load_json_file, run
+from .proc import load_json_file, run
 
 
 def skip_reason() -> str | None:

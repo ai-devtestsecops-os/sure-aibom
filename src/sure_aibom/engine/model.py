@@ -44,30 +44,25 @@
    technicalLimitations·datasets 를 만들며, 허브에 없는 저장소에도 실패하지 않고 그런 BOM 을 낸다. 가져온 원본이 없으면 실패로 센다.
    원본을 가져온 출력이 metadata.tools 에 자기를 적은 도구 항목은 문서의 도구 목록에 더한다 (한 번만).
 
-허브 모델: purl 이 pkg:huggingface/<ns>/<name> 인 모델 컴포넌트 가운데 로컬 모델 파일(README.md, config.json, adapter_config.json,
-Modelfile, *.gguf, *.safetensors)에서 찾은 것이 아닌 것. 로컬 폴더는 그 파일들이 근거다 (config 의 _name_or_path 는 베이스 모델
-이름일 수 있어 허브 값이 그 모델의 것이 아닐 수 있다).
-매칭 키: purl 의 pkg:huggingface/<ns>/<name> (리비전 제외 — 두 도구가 버전 표기를 달리 한다)
+허브 모델인지는 common/component.py 의 hub_model_id 가 정한다 (purl 이 pkg:huggingface/<ns>/<name> 이고 로컬 모델 파일에서 찾은 것이
+아닌 모델). Hub API 는 common/hub.py 로 묻고, OWASP aibom-generator 는 common/aibom_generator.py 로 돌린다.
 """
 from __future__ import annotations
 
 import copy
 import json
-import re
 import struct
 from pathlib import Path, PurePosixPath
 from typing import Iterable
 
 from ..exceptions import RunnerError
 from ..log import detail
-# external 은 import 하지 않는다: enrich_hub_models 는 service 가 넘겨준 external 모듈(hub, aibom_generator)로 부른다
 from ..utils.files import find_file, is_inside, relative_path
 from ..utils.licenses import card_licenses
-from .facts import Facts
-from .form import HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON
-
-MODEL_TYPE = "machine-learning-model"
-INTERNAL_MODEL_PREFIX = "aibom-internal:model:"      # form 이 읽어 가고 지운다
+from .common import aibom_generator, hub
+from .common.component import (HF_ID, HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON, INTERNAL_MODEL_PREFIX, MODEL_TYPE,
+                               hub_model_id)
+from .common.facts import Facts
 
 
 # ── 로컬 모델: 스캔 대상 안의 모델 파일 ────────────────────────────────────────────────
@@ -407,10 +402,6 @@ def _is_int(value) -> bool:
 
 # ── 허브 모델: Hub API 와 OWASP aibom-generator ───────────────────────────────
 
-_HF_PURL = re.compile(r"^pkg:huggingface/(?P<ns>[^/@]+)/(?P<name>[^/@]+)(?:@[^?#]+)?")
-_HF_ID = re.compile(r"^[A-Za-z0-9][\w.-]*(?:/[A-Za-z0-9][\w.-]*)?$")
-LOCAL_MODEL_FILES = frozenset({"readme.md", "config.json", "adapter_config.json", "modelfile"})
-LOCAL_MODEL_SUFFIXES = (".gguf", ".safetensors")
 # OWASP 출력에서 가져오는 규제 필드 원본 (form 이 읽는 키 가운데 OWASP 가 내는 것)
 OWASP_SOURCES = frozenset({HYPERPARAMETER_JSON, *HYPERPARAMETER_BY_PROPERTY, "genai:aibom:modelcard:contextLength",
                            "owasp:aibom:distribution:runtimeRequirement", "safetensors_total_parameters"})
@@ -425,31 +416,9 @@ TASK_IO_FORMATS = {
 }
 
 
-def _hf_id_of(component: dict) -> str | None:
-    m = _HF_PURL.match(component.get("purl") or "")
-    if not m or component.get("type") != "machine-learning-model":
-        return None
-    return f"{m['ns']}/{m['name']}"
-
-
-def hub_model_id(component: dict) -> str | None:
-    """허브 모델이면 그 id (머리 설명). 로컬 모델 파일에서 찾은 모델이면 None."""
-    hf_id = _hf_id_of(component)
-    if hf_id is None:
-        return None
-    for occurrence in (component.get("evidence") or {}).get("occurrences") or []:
-        location = occurrence.get("location") if isinstance(occurrence, dict) else None
-        if isinstance(location, str):
-            name = PurePosixPath(location.split("#", 1)[0].replace("\\", "/")).name.lower()
-            if name in LOCAL_MODEL_FILES or name.endswith(LOCAL_MODEL_SUFFIXES):
-                return None
-    return hf_id
-
-
 def enrich_hub_models(merged: dict, workdir: Path, report: dict | None = None, model_infos: dict | None = None,
-           facts: Facts | None = None, *, hub, aibom_generator) -> dict:
-    """hub 와 aibom_generator 는 service 가 넘겨주는 external 모듈이다 (external/hub.py, external/aibom_generator.py).
-    engine 은 external 을 import 하지 않고 넘겨받은 것으로만 부른다. 쓰는 함수:
+           facts: Facts | None = None) -> dict:
+    """허브에는 common/hub.py 로 묻고, OWASP 는 common/aibom_generator.py 로 돌린다. 쓰는 함수:
         hub.hf_reachable()                                  huggingface.co 에 닿는가
         hub.fetch_model_info(id)                            GET /api/models/<id> 응답 (실패면 None)
         aibom_generator.skip_reason()                       OWASP 를 건너뛸 이유 (돌려도 되면 None)
@@ -552,7 +521,7 @@ def _apply_owasp(dst: dict, src: dict) -> int:
 
 def _apply_model_info(comp: dict, hf_id: str, info: dict) -> None:
     """머리 설명 1) 의 표대로 비어 있는 필드만 채운다."""
-    cid = info.get("id") if isinstance(info.get("id"), str) and _HF_ID.match(info["id"].strip("/")) else hf_id
+    cid = info.get("id") if isinstance(info.get("id"), str) and HF_ID.match(info["id"].strip("/")) else hf_id
     hf_id = cid.strip("/")
     card = info.get("cardData") if isinstance(info.get("cardData"), dict) else {}
     if not comp.get("version") and isinstance(info.get("sha"), str) and info["sha"]:
@@ -584,7 +553,7 @@ def _pedigree(comp: dict, card: dict) -> None:
     ancestors = []
     for base in _as_list(card.get("base_model")):
         base = base.strip() if isinstance(base, str) else ""
-        if base and _HF_ID.match(base):
+        if base and HF_ID.match(base):
             group, _, name = base.rpartition("/")
             ancestors.append({"type": "machine-learning-model", **({"group": group} if group else {}), "name": name,
                               "purl": f"pkg:huggingface/{base}"})

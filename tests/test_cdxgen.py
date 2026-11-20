@@ -5,7 +5,7 @@ from pathlib import Path
 
 import pytest
 
-import sure_aibom.external.cdxgen as cdxgen
+import sure_aibom.engine.cdxgen as cdxgen
 
 
 def props(**kv) -> list[dict]:
@@ -53,7 +53,7 @@ def test_pedigree_entries_lose_their_bom_ref():
     doc = {"components": [{"type": "machine-learning-model", "name": "lora", "bom-ref": "l",
                            "pedigree": {"ancestors": [{"bom-ref": "pkg:huggingface/a/base", "name": "base", "purl": "pkg:huggingface/a/base"}],
                                         "notes": "Hugging Face relation: adapter"}}]}
-    cdxgen.tidy(doc, Path("/nonexistent"))
+    cdxgen._tidy(doc, Path("/nonexistent"))
     assert doc["components"][0]["pedigree"] == {"ancestors": [{"name": "base", "purl": "pkg:huggingface/a/base"}],
                                                 "notes": "Hugging Face relation: adapter"}
 
@@ -67,7 +67,7 @@ def test_pedigree_entries_lose_their_bom_ref():
     ("# FROM commented\nPARAMETER num_ctx 4096\n", (None, None)),
 ])
 def test_parse_modelfile(text, expected):
-    assert cdxgen.parse_modelfile(text) == expected
+    assert cdxgen._parse_modelfile(text) == expected
 
 
 def modelfile_model(location: str, name: str, group: str, licenses=None) -> dict:
@@ -89,7 +89,7 @@ def test_a_modelfile_from_a_local_gguf_merges_into_that_gguf_model(tmp_path):
     doc = {"components": [fake, gguf], "services": [],
            "dependencies": [{"ref": "urn:file:ai:Modelfile", "dependsOn": [fake["bom-ref"]]},
                             {"ref": "urn:file:ai:models/x.gguf", "dependsOn": [gguf["bom-ref"]]}]}
-    cdxgen.tidy(doc, tmp_path)
+    cdxgen._tidy(doc, tmp_path)
     assert [c["bom-ref"] for c in doc["components"]] == [gguf["bom-ref"]]
     merged = doc["components"][0]
     assert merged["evidence"]["occurrences"] == [{"location": "models/x.gguf"}, {"location": "Modelfile"}]
@@ -103,7 +103,7 @@ def test_a_modelfile_from_a_local_path_without_a_gguf_model_gets_a_generic_purl(
     write(tmp_path, "deploy/Modelfile", "FROM ../weights/big.gguf\n")
     fake = modelfile_model("deploy/Modelfile", "big.gguf", "weights")
     doc = {"components": [fake]}
-    cdxgen.tidy(doc, tmp_path)                                                     # 큰 어휘라 cdxgen 이 GGUF 를 놓친 경우 등
+    cdxgen._tidy(doc, tmp_path)                                                     # 큰 어휘라 cdxgen 이 GGUF 를 놓친 경우 등
     assert (fake["purl"], fake["name"], "group" in fake) == ("pkg:generic/big.gguf", "big.gguf", False)
 
 
@@ -112,12 +112,12 @@ def test_a_modelfile_from_a_library_model_keeps_its_purl_and_gets_its_license_li
     comp = modelfile_model("Modelfile", "llama3.2:1b", "ollama", licenses=[{"license": {"name": '"""'}}])
     comp["purl"] = comp["bom-ref"] = "pkg:generic/ollama/llama3.2:1b"
     doc = {"components": [comp]}
-    cdxgen.tidy(doc, tmp_path)
+    cdxgen._tidy(doc, tmp_path)
     assert comp["purl"] == "pkg:generic/ollama/llama3.2:1b"
     assert comp["licenses"] == [{"license": {"name": "LLAMA 3.2 COMMUNITY LICENSE AGREEMENT"}}]
     write(tmp_path, "b/Modelfile", 'FROM llama3.2:1b\nLICENSE """\n"""\n')
     empty = modelfile_model("b/Modelfile", "llama3.2:1b", "ollama", licenses=[{"license": {"name": '"""'}}])
-    cdxgen.tidy({"components": [empty]}, tmp_path)
+    cdxgen._tidy({"components": [empty]}, tmp_path)
     assert "licenses" not in empty                                                  # 본문이 비면 이름 없는 라이선스는 뺀다
 
 
@@ -129,5 +129,5 @@ def test_a_modelfile_outside_the_target_is_not_read(tmp_path):
     (root / "Modelfile").symlink_to(outside / "Modelfile")
     fake = modelfile_model("Modelfile", "x.gguf", "models")
     before = copy.deepcopy(fake)
-    cdxgen.tidy({"components": [fake]}, root)
+    cdxgen._tidy({"components": [fake]}, root)
     assert fake == before

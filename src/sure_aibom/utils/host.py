@@ -1,4 +1,4 @@
-"""이 머신의 CPU 종류를 컨테이너 이미지가 쓰는 이름(amd64, arm64)으로 돌려준다. external/container_tools.py, engine/image_tar.py 가 쓴다."""
+"""이 머신의 CPU 종류를 컨테이너 이미지가 쓰는 이름(amd64, arm64)으로 돌려준다. engine/container_tools.py, engine/image_tar.py 가 쓴다."""
 from __future__ import annotations
 
 import platform

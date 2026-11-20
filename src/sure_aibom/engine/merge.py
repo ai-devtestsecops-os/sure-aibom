@@ -1,6 +1,6 @@
 """CycloneDX 문서 여러 개를 하나로 병합한다.
 
-병합 키 (aibom_cli_plan.md §4):
+병합 키 (aibom_cli_plan.md §4, common/component.py 의 identity):
     소프트웨어  purl
     모델        pkg:huggingface/ns/name@rev → 없으면 hashes → 없으면 (type, name, version)
     데이터셋    pkg:huggingface/datasets/… (cdxgen 만 생산)
@@ -28,52 +28,17 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 from typing import Iterable
-from urllib.parse import unquote, urlsplit
 
-from .facts import Facts
 from ..utils.licenses import license_entry
+from .common.component import fill_missing, identity
+from .common.facts import Facts
 
 SPEC_VERSION = "1.7"
 ROOT_TYPE_BY_KIND = {"directory": "application", "image": "container"}
 LIFECYCLE_BY_KIND = {"directory": "pre-build", "image": "post-build"}   # CycloneDX metadata.lifecycles 의 미리 정한 단계
-
-
-FILE_TYPE = "file"
-AI_FILE_REF_PREFIX = "urn:file:ai:"       # cdxgen 이 AI 파일(gguf, Modelfile 등)에 붙이는 bom-ref
 IMAGE_LABEL_PREFIX = "syft:image:labels:"
 OCI = "org.opencontainers.image."
 _SPDX_OPERATOR = (" AND ", " OR ", " WITH ", "(")
-
-
-def identity(component: dict) -> str:
-    """컴포넌트의 병합 키."""
-    if component.get("type") == FILE_TYPE:
-        path = _file_path_of(component)
-        if path:
-            return f"file:/{path.lstrip('/')}"
-    purl = component.get("purl")
-    if purl:
-        return purl
-    hashes = component.get("hashes") or []
-    for h in hashes:
-        if h.get("alg") in ("SHA-256", "SHA-512", "SHA-1") and h.get("content"):
-            return f"hash:{h['alg']}:{h['content']}"
-    return f"{component.get('type', 'component')}:{component.get('group', '')}/{component.get('name', '')}@{component.get('version', '')}"
-
-
-def _file_path_of(component: dict) -> str | None:
-    """파일 컴포넌트의 경로. cdxgen 이미지 스캔은 purl 의 `path=` 에, cdxgen AI 파일은 bom-ref `urn:file:ai:<path>` 에,
-    syft 는 name 에 경로를 둔다 (디렉터리 스캔은 스캔 루트 기준, 이미지는 이미지 안 절대경로)."""
-    purl = component.get("purl") or ""
-    if "?" in purl:
-        for pair in urlsplit(purl).query.split("&"):
-            key, _, value = pair.partition("=")
-            if key == "path" and value:
-                return unquote(value)
-    ref = component.get("bom-ref") or ""
-    if ref.startswith(AI_FILE_REF_PREFIX) and len(ref) > len(AI_FILE_REF_PREFIX):
-        return ref[len(AI_FILE_REF_PREFIX):]
-    return component.get("name") or None
 
 
 def _resolve_dataset_ref(ref: str, model_key: str, components: dict[str, dict], deps: dict[str, set[str]]) -> str | None:
@@ -95,24 +60,6 @@ def _resolve_dataset_ref(ref: str, model_key: str, components: dict[str, dict], 
             return key
     linked = [t for t in deps.get(model_key, set()) if t in datasets]
     return linked[0] if len(linked) == 1 else None
-
-
-def fill_missing(base: dict, extra: dict) -> None:
-    """base 에 없는 키만 extra 에서 채운다. properties/externalReferences 는 합친다."""
-    for k, v in extra.items():
-        if k not in base:
-            base[k] = v
-    for list_key, dedupe_key in (("properties", lambda p: (p.get("name"), p.get("value"))),
-                                 ("externalReferences", lambda r: (r.get("type"), r.get("url")))):
-        if list_key in extra:
-            seen = {dedupe_key(x) for x in base.get(list_key, [])}
-            merged = list(base.get(list_key, []))
-            for x in extra[list_key]:
-                if dedupe_key(x) not in seen:
-                    merged.append(x)
-                    seen.add(dedupe_key(x))
-            if merged:
-                base[list_key] = merged
 
 
 def _walk_components(components: Iterable[dict]):

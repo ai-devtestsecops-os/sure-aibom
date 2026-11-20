@@ -17,8 +17,8 @@ from pathlib import Path
 
 import pytest
 
-import sure_aibom.external.aibom_generator as aibom_generator
-import sure_aibom.external.hub as hub
+import sure_aibom.engine.common.aibom_generator as aibom_generator
+import sure_aibom.engine.common.hub as hub
 import fieldtrace
 from sure_aibom.exceptions import RunnerError
 from sure_aibom.engine.spdx import convert_spdx

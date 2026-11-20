@@ -8,19 +8,16 @@ from pathlib import Path
 
 import pytest
 
-import sure_aibom.engine.model as en
-import sure_aibom.external.aibom_generator as aibom_generator
-import sure_aibom.external.hub as hub_api          # 이름 hub 는 아래의 Hub API 응답 fixture 가 쓴다
-from sure_aibom.engine.model import OWASP_SOURCES, _apply_model_info, _hf_id_of, _performance_metrics, hub_model_id
-from sure_aibom.engine.facts import Facts
+import sure_aibom.engine.common.aibom_generator as aibom_generator
+import sure_aibom.engine.common.hub as hub_api     # 이름 hub 는 아래의 Hub API 응답 fixture 가 쓴다
+from sure_aibom.engine.common.aibom_generator import skip_reason     # 바꿔 끼우기 전의 진짜 함수 (모듈 쪽은 시험마다 바꿔 끼운다)
+from sure_aibom.engine.common.component import _hf_id_of, hub_model_id
+from sure_aibom.engine.common.facts import Facts
 from sure_aibom.engine.form import regulate
+from sure_aibom.engine.model import OWASP_SOURCES, _apply_model_info, _performance_metrics, enrich_hub_models
 from sure_aibom.exceptions import RunnerError
-from sure_aibom.external.aibom_generator import skip_reason          # 바꿔 끼우기 전의 진짜 함수 (모듈 쪽은 시험마다 바꿔 끼운다)
 
-
-def enrich_hub_models(*args, **kwargs):
-    """scan 처럼 external 모듈(hub, aibom_generator)을 넘겨 돌린다. 모듈의 함수는 시험마다 바꿔 끼운다."""
-    return en.enrich_hub_models(*args, hub=hub_api, aibom_generator=aibom_generator, **kwargs)
+# 허브 조회와 OWASP 실행은 시험마다 hub_api, aibom_generator 모듈의 함수를 바꿔 끼운다 (model.py 가 그 모듈을 거쳐 부른다).
 
 OWASP = Path(__file__).parent / "data" / "owasp" / "bert-base-uncased.cdx.json"
 HUB = Path(__file__).parent / "data" / "hf_api" / "hf_model_google-bert_bert-base-uncased.json"
@@ -163,7 +160,7 @@ def test_report_carries_the_first_line_of_each_failure(monkeypatch, owasp):
 
 
 def test_a_missing_working_directory_is_not_reported_as_a_missing_program():
-    from sure_aibom.external._proc import run
+    from sure_aibom.engine.common.proc import run
     with pytest.raises(RunnerError, match="working directory not found: /nonexistent"):
         run(["python", "-c", "0"], cwd="/nonexistent")
 
@@ -372,7 +369,7 @@ def test_enriched_values_become_v06_fields(monkeypatch, owasp, hub, form):
 # -- 실제 실행 (AIBOM_GENERATOR_DIR 과 네트워크가 있을 때만) ----------------------------------
 @pytest.mark.skipif(skip_reason() is not None, reason=skip_reason() or "")
 def test_live_generator_returns_the_same_property_names():
-    from sure_aibom.external.aibom_generator import run_aibom_generator
+    from sure_aibom.engine.common.aibom_generator import run_aibom_generator
     import tempfile
     doc = run_aibom_generator(HF_ID, Path(tempfile.mkdtemp()))
     src = next(c for c in doc["components"] if c["type"] == "machine-learning-model")

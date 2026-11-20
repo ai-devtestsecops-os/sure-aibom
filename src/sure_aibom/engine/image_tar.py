@@ -4,7 +4,7 @@ cdxgen 은 대상이 이미지면 컨테이너 모드로 바뀌어 프로젝트 
 M-BOM·D-BOM 단계(cdxgen -t ai, model.py, dataset.py)는 이미지를 푼 디렉터리에 대해 돌린다. syft 는 이미지를 그대로 스캔한다.
 
     이미지 .tar (docker save, crane pull)        바로 푼다. 데몬도 네트워크도 필요 없다
-    이미지 이름 (alpine:3.20, ghcr.io/org/img)   external/container_tools.py 가 .tar 로 받은 뒤 푼다
+    이미지 이름 (alpine:3.20, ghcr.io/org/img)   container_tools.py 가 .tar 로 받은 뒤 푼다
 
 tar 의 안쪽 모양은 둘이다. docker save·crane 의 manifest.json (Config, Layers) 과 OCI 레이아웃 (index.json, blobs/).
 레이어는 순서대로 겹쳐 쓰고 화이트아웃(.wh.<이름>, .wh..wh..opq)은 아래 레이어의 것을 지운다. 항목마다 tarfile 의

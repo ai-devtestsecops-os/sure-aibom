@@ -1,7 +1,7 @@
 """sure-aibom scan 을 단계마다 가로채, 최종 BOM 의 값 하나하나가 어느 도구에서 왔는지 따라간다 (tests/test_fields.py 가 쓴다).
 
 단계와 출처:
-    run_syft · run_cdxgen    도구 출력 (external/*.py 의 정리까지 끝난 것)을 원본으로 둔다
+    run_syft · run_cdxgen    도구 출력 (engine/syft.py, engine/cdxgen.py 의 정리까지 끝난 것)을 원본으로 둔다
     merge                    값마다, 병합 키가 같은 원본 컴포넌트의 같은 자리에 같은 값이 있으면 그 도구, 없으면 sure-aibom.
                              컴포넌트 bom-ref 는 병합 키라 sure-aibom. 문서 머리·metadata.component 는 sure-aibom 이 쓰고, 그 가운데
                              이미지 OCI 라벨에서 옮긴 자리는 syft. metadata.tools · services 는 같은 자리에 같은 값을 낸 도구,
@@ -27,9 +27,9 @@ from pathlib import PurePosixPath
 import sure_aibom.cli as cli
 import sure_aibom.controller.scan_controller as scan_controller
 import sure_aibom.service.scan_service as scan_service
-from sure_aibom.engine.model import LOCAL_MODEL_FILES, LOCAL_MODEL_SUFFIXES
-from sure_aibom.engine.form import HYPERPARAMETER_BY_PROPERTY, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX
-from sure_aibom.engine.merge import _walk_components, identity
+from sure_aibom.engine.common.component import (HYPERPARAMETER_BY_PROPERTY, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX, LOCAL_MODEL_FILES,
+                                                LOCAL_MODEL_SUFFIXES, identity)
+from sure_aibom.engine.merge import _walk_components
 
 MARK = "\x00mark"
 SYFT, CDXGEN, OWASP, CLI = "syft", "cdxgen", "OWASP aibom-generator", "sure-aibom"
@@ -326,7 +326,7 @@ def spdx_site_sources(doc: dict, tracker: Tracker) -> dict[str, set[tuple[str, s
     값과 맞춰 도구를 잇는다: 같은 값, 열거값 대응(direct-download → directDownload 등), 이어 붙인 문자열은 풀어서. 못 찾으면
     변환기(sure-aibom)다. 공급자·작성자·라이선스 요소는 그것을 가리키는 컴포넌트로, 관계는 종류마다 CycloneDX 의 관계·계보·라이선스
     값으로, 루트의 builtTime 은 syft 가 읽은 이미지 라벨로 잇는다."""
-    from sure_aibom.engine.facts import _normalize_time
+    from sure_aibom.engine.common.facts import _normalize_time
     from sure_aibom.engine.spdx import AVAILABILITY, EXTERNAL_REF_TYPE, HASH_ALGORITHM, PRESENCE, PURPOSE_BY_TYPE, convert_spdx
 
     clean = copy.deepcopy(doc)

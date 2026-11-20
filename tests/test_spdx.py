@@ -5,7 +5,7 @@ import json
 
 import pytest
 
-from sure_aibom.engine.facts import Facts
+from sure_aibom.engine.common.facts import Facts
 from sure_aibom.engine.spdx import convert_spdx
 from sure_aibom.engine.validation import _validate_spdx, detect_format, schema_for, validate_doc
 

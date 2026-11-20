@@ -4,7 +4,7 @@ import copy
 
 import pytest
 
-import sure_aibom.external.syft as syft
+import sure_aibom.engine.syft as syft
 
 
 def props(**kv) -> list[dict]:
@@ -34,10 +34,10 @@ def test_syft_runs_with_missing_versions_kept_empty(tmp_path, monkeypatch):
 
 def test_package_locations_become_evidence_occurrences():
     comp = syft_package("python-package", evidence={"occurrences": [{"location": "a/METADATA"}]})
-    syft.tidy(comp)
+    syft._tidy(comp)
     assert comp["evidence"]["occurrences"] == [{"location": "a/METADATA"}, {"location": "b/RECORD"}]   # 번호 순, 앞의 / 는 뺀다, 겹치면 한 번
     plain = {"type": "operating-system", "name": "debian", "properties": props(**{"syft:distro:id": "debian"})}
-    syft.tidy(plain)
+    syft._tidy(plain)
     assert "evidence" not in plain
 
 
@@ -45,13 +45,13 @@ def test_unidentified_license_text_hash_is_not_a_license():
     """syft 는 알아보지 못한 라이선스 본문(DEP-5 가 아닌 Debian copyright)의 sha256 을 이름으로 적는다."""
     placeholder = {"license": {"name": "sha256:" + "0a" * 32}}
     comp = syft_package("dpkg-db-entry", licenses=[placeholder, {"license": {"id": "MIT"}}, {"expression": "MIT OR Apache-2.0"}])
-    syft.tidy(comp)
+    syft._tidy(comp)
     assert comp["licenses"] == [{"license": {"id": "MIT"}}, {"expression": "MIT OR Apache-2.0"}]
     only = syft_package("dpkg-db-entry", licenses=[copy.deepcopy(placeholder)])
-    syft.tidy(only)
+    syft._tidy(only)
     assert "licenses" not in only
     named = syft_package("python-package", licenses=[{"license": {"name": "sha256 is not a hash"}}])
-    syft.tidy(named)
+    syft._tidy(named)
     assert named["licenses"] == [{"license": {"name": "sha256 is not a hash"}}]
 
 
@@ -70,15 +70,15 @@ def test_unidentified_license_text_hash_is_not_a_license():
 ])
 def test_external_reference_types_are_corrected(metadata_type, refs, expected):
     comp = syft_package(metadata_type, externalReferences=copy.deepcopy(refs))
-    syft.tidy(comp)
+    syft._tidy(comp)
     assert comp["externalReferences"] == expected
 
 
 def test_jar_digest_moves_from_an_empty_build_meta_reference_to_hashes():
     comp = syft_package("java-archive", hashes=[{"alg": "SHA-1", "content": "aa"}],
                         externalReferences=[{"type": "build-meta", "url": "", "hashes": [{"alg": "SHA-1", "content": "aa"}, {"alg": "SHA-256", "content": "bb"}]}])
-    syft.tidy(comp)
+    syft._tidy(comp)
     assert comp["hashes"] == [{"alg": "SHA-1", "content": "aa"}, {"alg": "SHA-256", "content": "bb"}] and "externalReferences" not in comp
     file_only = syft_package("python-package", externalReferences=[{"type": "vcs", "url": "file:///x"}])
-    syft.tidy(file_only)
+    syft._tidy(file_only)
     assert "externalReferences" not in file_only and "hashes" not in file_only

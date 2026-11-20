@@ -1,4 +1,4 @@
-"""scan 의 단계 순서. 명령줄 인자를 받지 않는다. external 을 import 하는 곳은 여기뿐이다 (engine 에는 넘겨준다).
+"""scan 의 단계 순서. 명령줄 인자를 받지 않는다. 단계는 모두 engine 의 파일이고, 여기서는 순서와 단계 줄, 실패 모으기만 맡는다.
 
 controller/scan_controller.py 가 인자를 확인해 값만 넘기고, 여기서는 단계마다 log.py 의 stage(단계 이름, 결과)와 log(줄)로 알린다.
 
@@ -18,16 +18,18 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..engine.ai_service import discover_services
-from ..engine.dataset import discover_datasets, is_dataset, missing_revisions, split_data_args
-from ..engine.facts import Facts
+from ..engine.cdxgen import run_cdxgen
+from ..engine.common.component import is_dataset
+from ..engine.common.facts import Facts
+from ..engine.container_tools import pull_image
+from ..engine.dataset import discover_datasets, missing_revisions, split_data_args
 from ..engine.form import drop_tool_properties, regulate
 from ..engine.image_tar import extract_image, is_archive
 from ..engine.merge import merge
 from ..engine.model import enrich_hub_models, enrich_local_models
 from ..engine.spdx import convert_spdx
+from ..engine.syft import run_syft
 from ..exceptions import ImageExtractionError, RunnerError
-from ..external import aibom_generator, hub, run_cdxgen, run_syft
-from ..external.container_tools import pull_image
 from ..formats import FORM_BY_SPEC, FORMAT_NAME
 from ..log import log, stage
 
@@ -96,7 +98,7 @@ def check_scan(target: str, data: list[str]) -> list[str]:
     missing = [d for d in local_data if not Path(d).expanduser().exists()]
     if missing:
         return [f"data path not found: {', '.join(missing)}"]
-    return [f"--data {ref}: revision not found on huggingface.co ({reason})" for ref, reason in missing_revisions(hub_data, hub=hub)]
+    return [f"--data {ref}: revision not found on huggingface.co ({reason})" for ref, reason in missing_revisions(hub_data)]
 
 
 def _looks_like_path(target: str) -> bool:
@@ -174,7 +176,7 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path) -> S
     merged = enrich_local_models(merged, scan_dir)
 
     enriched: dict = {}
-    merged = enrich_hub_models(merged, workdir, report=enriched, facts=facts, hub=hub, aibom_generator=aibom_generator)
+    merged = enrich_hub_models(merged, workdir, report=enriched, facts=facts)
     if enriched["hub_skipped"]:
         result = f"skipped: {enriched['hub_skipped']}"
     elif enriched["hub_missing"]:
@@ -195,7 +197,7 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path) -> S
     # 허브 모델 카드의 데이터셋은 M-BOM 보강이 받아 둔 Hub API 응답에서 읽는다 (같은 응답을 다시 받지 않는다)
     datasets: dict = {}
     merged = discover_datasets(merged, scan_dir, report=datasets, data_paths=data,
-                               model_infos=enriched["model_infos"], hub_reachable=enriched["hub_reachable"], facts=facts, hub=hub)
+                               model_infos=enriched["model_infos"], hub_reachable=enriched["hub_reachable"], facts=facts)
     total = count(sum(1 for c in merged["components"] if is_dataset(c)), "dataset")
     stage("Generating D-BOM", total + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
     for path in datasets.get("empty_data_paths") or []:

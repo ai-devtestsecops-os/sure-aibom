@@ -44,15 +44,13 @@ import uuid
 from urllib.parse import quote
 
 from ..log import detail
-from .dataset import is_dataset
-from .facts import Facts
-from .merge import identity
+from .common.component import MODEL_TYPE, identity, is_dataset
+from .common.facts import Facts
 
 SPEC_VERSION = "3.0.1"
 CONTEXT = "https://spdx.org/rdf/3.0.1/spdx-context.jsonld"
 SPECS = ("3.0.1", "v0.6")
 PROFILES = ["core", "software", "ai", "dataset", "simpleLicensing", "extension"]
-MODEL_TYPE = "machine-learning-model"
 
 # CycloneDX component.type → software_primaryPurpose
 PURPOSE_BY_TYPE = {

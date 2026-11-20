@@ -17,7 +17,7 @@ SDK 는 아래 SDKS 다. 제공사와 서비스 이름은 cdxgen 과 같고, 파
     남김    제공사(group)의 SDK 를 대상 어디선가 import 하는 cdxgen 서비스. version "observed" 는 고정값이라 뺀다
     만듦    SDK 를 import 하는데 그 제공사의 cdxgen 서비스가 없을 때 (모델 이름 없이 부르면 cdxgen 은 서비스를 만들지 않는다)
     뺌      나머지 서비스와 그 서비스가 든 관계
-    관계    남긴 서비스가 허브 모델(model.hub_model_id)에 의존하는 관계는 뺀다. cdxgen 은 한 파일의 모델을 모두 그 파일의
+    관계    남긴 서비스가 허브 모델(common/component.py 의 hub_model_id)에 의존하는 관계는 뺀다. cdxgen 은 한 파일의 모델을 모두 그 파일의
             제공사 서비스에 붙이는데, 허브 모델은 내려받아 로컬에서 돌리므로 그 API 가 서비스하는 모델이 아니다
 """
 from __future__ import annotations
@@ -29,7 +29,7 @@ from pathlib import Path
 
 from ..log import detail
 from ..utils.files import SKIP_DIRS, is_inside, notebook_code, relative_path
-from .model import hub_model_id
+from .common.component import hub_model_id
 
 # (제공사, 서비스 이름, 파이썬 모듈, JS 패키지). 모듈은 그 이름이거나 그 아래 하위 모듈이면 맞는다 (openai.types)
 SDKS: tuple[tuple[str, str, tuple[str, ...], tuple[str, ...]], ...] = (

@@ -1,8 +1,8 @@
-"""로그 줄과 단계 줄. controller, service, engine, external 이 같이 쓴다. 전부 표준에러로 찍어 표준출력의 BOM 과 섞이지 않는다.
+"""로그 줄과 단계 줄. controller, service, engine 이 같이 쓴다. 전부 표준에러로 찍어 표준출력의 BOM 과 섞이지 않는다.
 
     stage    단계 한 줄. 항상 찍는다. service/scan_service.py 가 쓴다
     log      항상 찍는 줄 (시작과 끝, 오류, 경고, 실패한 단계의 상세). controller, service, engine/validation.py 가 쓴다
-    detail   -v 일 때만 찍는 줄 (모듈의 항목별 로그: 건너뛴 것, 버린 값, 빈 필드). engine 과 external/hub.py 가 쓴다
+    detail   -v 일 때만 찍는 줄 (모듈의 항목별 로그: 건너뛴 것, 버린 값, 빈 필드). engine 이 쓴다
 
 -v 를 줬는지는 controller/scan_controller.py 가 스캔을 시작할 때 set_verbose 로 한 번 알려 준다.
 """

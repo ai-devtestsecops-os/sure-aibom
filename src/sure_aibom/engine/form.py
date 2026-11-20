@@ -44,30 +44,18 @@ import re
 from typing import Iterable
 
 from ..log import detail
+from .common.component import (DATA_TYPE, HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX,
+                               MODEL_TYPE)
 
 FORMS = ("properties", "typed")
-MODEL_TYPE = "machine-learning-model"
-DATA_TYPE = "data"
 OUTPUT_PREFIX = "aibom:"                                          # 출력에 남는 properties (정의서의 키)
 PREFIX = "aibom:model:"
 DATASET_PREFIX = "aibom:dataset:"
-INTERNAL_PREFIX = "aibom-internal:dataset:"                       # dataset.py 가 두는 원본 키 (정의서 키에서 접두어만 다르다)
-INTERNAL_MODEL_PREFIX = "aibom-internal:model:"                   # model.py 가 두는 원본 키
 MODALITIES = frozenset({"image", "text", "audio", "video", "sensor", "timeseries", "timestamp", "structured", "categorical",
                         "graph", "syntactic", "numeric", "other"})
 AVAILABILITIES = frozenset({"clickthrough", "direct-download", "query", "registration", "scraping-script"})
 
-# 하이퍼파라미터 — JSON 객체 문자열(키마다 한 항목) 다음에, 키가 아직 없을 때만 개별 프로퍼티
-HYPERPARAMETER_JSON = "genai:aibom:modelcard:hyperparameter"
-HYPERPARAMETER_BY_PROPERTY: dict[str, str] = {
-    "genai:aibom:modelcard:vocabSize": "vocab_size",
-    "genai:aibom:modelcard:embeddingLength": "embedding_length",
-    "genai:aibom:modelcard:blockCount": "block_count",
-    "genai:aibom:modelcard:attentionHeadCount": "attention_head_count",
-    "genai:aibom:modelcard:attentionHeadCountKV": "attention_head_count_kv",
-    "genai:aibom:modelcard:feedForwardLength": "feed_forward_length",
-    "genai:aibom:modelcard:ropeDimensionCount": "rope_dimension_count",
-}
+# 하이퍼파라미터의 원본 키(HYPERPARAMETER_JSON, HYPERPARAMETER_BY_PROPERTY)와 내부 키 접두어는 model.py 도 쓰므로 common/component.py 에 있다
 # 단일 값 필드 — 우선순위 순
 PARAMETER_COUNT_SOURCES = ("safetensors_total_parameters", "cdx:ai:parameterCount")
 MAX_SIZE_SOURCES = ("genai:aibom:modelcard:contextLength", "cdx:ai:contextWindow")
@@ -104,7 +92,7 @@ def regulate(doc: dict, form: str = "properties", report: dict | None = None) ->
 def drop_tool_properties(doc: dict) -> dict:
     """문서 어디에 있든 properties 목록에서 aibom:* 가 아닌 항목을 지운다. 비어 버린 목록과, 그래서 비어 버린 객체(properties 만
     있던 environmentalConsiderations 등)는 없앤다. 원래 비어 있던 것은 그대로 둔다.
-    도구가 낸 properties 가운데 믿을 만한 것은 앞 단계에서 정규 필드나 규제 필드로 옮겼다 (external/syft.py · external/cdxgen.py
+    도구가 낸 properties 가운데 믿을 만한 것은 앞 단계에서 정규 필드나 규제 필드로 옮겼다 (syft.py · cdxgen.py
     · merge.py · form). 나머지는 값과 뜻을 sure-aibom 이 관리하지 않으므로 내보내지 않는다."""
     def walk(node) -> bool:
         """node 가 이번에 지워서 빈 객체가 되었으면 True."""

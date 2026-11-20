@@ -1,8 +1,8 @@
-"""sure-aibom 이 직접 만든 예외. external, engine, service 가 같이 쓴다. service 는 둘 다 단계 실패로 받아 단계 줄에 찍는다."""
+"""sure-aibom 이 직접 만든 예외. engine 이 던지고 service 가 받는다. service 는 둘 다 단계 실패로 받아 단계 줄에 찍는다."""
 
 
 class RunnerError(RuntimeError):
-    """외부 프로그램 실패. 프로그램이 없거나, 시간을 넘기거나, 0 이 아닌 코드로 끝나거나, 출력이 없으면 external 이 던진다."""
+    """외부 프로그램 실패. 프로그램이 없거나, 시간을 넘기거나, 0 이 아닌 코드로 끝나거나, 출력이 없으면 도구를 돌리는 engine 파일(syft.py, cdxgen.py, container_tools.py, common/aibom_generator.py)이 던진다."""
 
 
 class ImageExtractionError(RuntimeError):

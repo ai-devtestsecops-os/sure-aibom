@@ -1,10 +1,16 @@
-"""서브프로세스 공통 처리."""
+"""다른 프로그램을 돌리고 그 출력 파일을 읽는 공용 함수. syft.py, cdxgen.py, container_tools.py, aibom_generator.py 가 쓴다.
+
+    run              프로그램을 돌려 종료 코드와 출력을 돌려준다. 프로그램이 없거나 시간을 넘기면 RunnerError
+    load_json_file   프로그램이 쓴 출력 JSON 을 읽는다. 파일이 없거나 비었으면 RunnerError
+
+종료 코드가 0 이 아닌 것은 여기서 막지 않는다. 부른 쪽이 도구에 맞는 문구로 RunnerError 를 던진다.
+"""
 import json
 import os
 import subprocess
 from pathlib import Path
 
-from ..exceptions import RunnerError
+from ...exceptions import RunnerError
 
 
 def run(cmd: list[str], cwd: str | None = None, timeout: int = 1800, env: dict[str, str] | None = None) -> subprocess.CompletedProcess:

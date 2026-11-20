@@ -21,7 +21,7 @@ import re
 from pathlib import Path
 
 from ..exceptions import RunnerError
-from ._proc import load_json_file, run
+from .common.proc import load_json_file, run
 
 SPEC_VERSION = "1.7"
 ENV = {"SYFT_COMPLIANCE_MISSING_VERSION": "keep"}
@@ -50,7 +50,7 @@ def run_syft(target: str, workdir: Path) -> dict:
         raise RunnerError(f"syft exited with {proc.returncode}\n{proc.stderr[-2000:]}")
     doc = _relativize_file_components(load_json_file(out, "syft"), target)
     for comp in doc.get("components") or []:
-        tidy(comp)
+        _tidy(comp)
     return doc
 
 
@@ -68,7 +68,7 @@ def _relativize_file_components(doc: dict, target: str) -> dict:
     return doc
 
 
-def tidy(comp: dict) -> None:
+def _tidy(comp: dict) -> None:
     """패키지 컴포넌트 하나를 제자리에서 고친다 (머리 설명의 표)."""
     props = {p.get("name"): p.get("value") for p in comp.get("properties") or [] if isinstance(p, dict)}
     _evidence_from_locations(comp)

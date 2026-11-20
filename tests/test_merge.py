@@ -1,7 +1,8 @@
 import pytest
 
-from sure_aibom.engine.facts import Facts
-from sure_aibom.engine.merge import identity, merge
+from sure_aibom.engine.common.component import identity
+from sure_aibom.engine.common.facts import Facts
+from sure_aibom.engine.merge import merge
 
 
 def _doc(components, dependencies=()):
