@@ -29,8 +29,8 @@ import uuid
 from datetime import datetime, timezone
 from typing import Iterable
 
+from ..utils.facts import Facts
 from .common.component import fill_missing, identity
-from .common.facts import Facts
 from .common.licenses import license_entry
 
 SPEC_VERSION = "1.7"

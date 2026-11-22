@@ -1,7 +1,7 @@
 """facts — CycloneDX 문서에 자리가 없어 메모리로만 들고 가는 값 (데이터셋 역할, 생성·공개 시각). SPDX 변환기만 읽는다."""
 import pytest
 
-from sure_aibom.engine.common.facts import Facts, _normalize_time
+from sure_aibom.utils.facts import Facts, _normalize_time
 
 
 @pytest.mark.parametrize("value, expected", [

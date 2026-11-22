@@ -3,4 +3,5 @@
     formats.py      내보내는 형식과 spec
     exceptions.py   직접 만든 예외
     log.py          로그 줄과 단계 줄
+    facts.py        CycloneDX 에 자리가 없어 메모리로만 들고 가는 값
 """

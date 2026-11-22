@@ -56,11 +56,11 @@ from pathlib import Path, PurePosixPath
 from typing import Iterable
 
 from ..utils.exceptions import RunnerError
+from ..utils.facts import Facts
 from ..utils.log import detail
 from .common import aibom_generator, hub
 from .common.component import (HF_ID, HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON, INTERNAL_MODEL_PREFIX, MODEL_TYPE,
                                hub_model_id)
-from .common.facts import Facts
 from .common.files import find_file, is_inside, relative_path
 from .common.licenses import card_licenses
 

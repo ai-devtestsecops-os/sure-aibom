@@ -12,10 +12,10 @@ import sure_aibom.engine.common.aibom_generator as aibom_generator
 import sure_aibom.engine.common.hub as hub_api     # 이름 hub 는 아래의 Hub API 응답 fixture 가 쓴다
 from sure_aibom.engine.common.aibom_generator import skip_reason     # 바꿔 끼우기 전의 진짜 함수 (모듈 쪽은 시험마다 바꿔 끼운다)
 from sure_aibom.engine.common.component import _hf_id_of, hub_model_id
-from sure_aibom.engine.common.facts import Facts
 from sure_aibom.engine.form import regulate
 from sure_aibom.engine.model import OWASP_SOURCES, _apply_model_info, _performance_metrics, enrich_hub_models
 from sure_aibom.utils.exceptions import RunnerError
+from sure_aibom.utils.facts import Facts
 
 # 허브 조회와 OWASP 실행은 시험마다 hub_api, aibom_generator 모듈의 함수를 바꿔 끼운다 (model.py 가 그 모듈을 거쳐 부른다).
 

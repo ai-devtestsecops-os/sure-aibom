@@ -1,5 +1,6 @@
-"""CycloneDX 문서에 자리가 없어 메모리로만 들고 가는 값. 파일로 쓰지 않고 BOM 에도 넣지 않는다. 수집 단계가 채우고 SPDX
-변환기(spdx.py)만 읽는다. CycloneDX 출력은 이 값이 있어도 바뀌지 않는다.
+"""CycloneDX 문서에 자리가 없어 메모리로만 들고 가는 값. 파일로 쓰지 않고 BOM 에도 넣지 않는다. service 가 스캔마다 하나를 만들어 단계
+함수에 넘기면, 수집 단계(engine 의 merge.py, model.py, dataset.py)가 채우고 SPDX 변환기(engine/spdx.py)만 읽는다. CycloneDX 출력은
+이 값이 있어도 바뀌지 않는다.
 
     roles   (모델 bom-ref, 데이터셋 bom-ref) → {"training", "evaluation"}
             모델 카드의 datasets(학습), model-index 결과의 dataset(평가), GGUF 헤더의 general.datasets(학습).
