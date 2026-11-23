@@ -63,8 +63,8 @@ def recorded_owasp(hf_id: str, workdir) -> dict:
 
 @pytest.fixture(autouse=True)
 def offline(monkeypatch):
-    monkeypatch.setattr("sure_aibom.engine.common.aibom_generator.skip_reason", lambda: None)                      # 보강은 녹화본으로 돌린다
-    monkeypatch.setattr("sure_aibom.engine.common.aibom_generator.run_aibom_generator", recorded_owasp)
+    monkeypatch.setattr("sure_aibom.engine.aibom_generator._skip_reason", lambda: None)                            # 보강은 녹화본으로 돌린다
+    monkeypatch.setattr("sure_aibom.engine.aibom_generator._run_aibom_generator", recorded_owasp)
     monkeypatch.setattr(hub, "hf_reachable", lambda: True)                                                 # 허브 모델 응답은 M-BOM 보강이 받는다
     monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id: recorded("model", hf_id))
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id: recorded("dataset", hf_id))
@@ -440,7 +440,7 @@ def test_the_merge_runs_after_the_steps_that_fill_the_cdxgen_document(tmp_path, 
     """cdxgen 문서를 고치는 단계(AI 서비스, M-BOM 보강, D-BOM)가 다 돈 뒤에 syft 문서와 병합한다. 병합이 받는 문서에는 D-BOM 이 만든 데이터셋이 이미 있다."""
     order: list[str] = []
     seen: dict = {}
-    for name in ("discover_services", "enrich_local_models", "enrich_hub_models", "discover_datasets", "regulate"):
+    for name in ("discover_services", "enrich_local_models", "enrich_hub_models", "enrich_with_aibom_generator", "discover_datasets", "regulate"):
         monkeypatch.setattr(scan_service, name, lambda *a, _real=getattr(scan_service, name), _name=name, **k: order.append(_name) or _real(*a, **k))
     real_merge = scan_service.merge
 
@@ -452,7 +452,8 @@ def test_the_merge_runs_after_the_steps_that_fill_the_cdxgen_document(tmp_path, 
     monkeypatch.setattr(scan_service, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
     monkeypatch.setattr(scan_service, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
     doc = scan(FIXTURE, tmp_path / "b.json", "--data", str(FIXTURE / "data"))
-    assert order == ["discover_services", "enrich_local_models", "enrich_hub_models", "discover_datasets", "merge", "regulate"]
+    assert order == ["discover_services", "enrich_local_models", "enrich_hub_models", "enrich_with_aibom_generator", "discover_datasets",
+                     "merge", "regulate"]
     assert seen["datasets"] == [LOCAL_REF, IMDB_REF]                                     # --data 의 로컬 데이터와 src/train.py 의 load_dataset
     assert {c["bom-ref"] for c in doc["components"] if c["type"] == "data"} == {LOCAL_REF, IMDB_REF}
 

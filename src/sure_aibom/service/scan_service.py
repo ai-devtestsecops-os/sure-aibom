@@ -3,10 +3,11 @@
 controller/scan_controller.py 가 인자를 확인해 값만 넘기고, 여기서는 단계마다 utils/log.py 의 stage(단계 이름, 결과)와 log(줄)로 알린다.
 
     check_scan  도구를 돌리기 전 입력 확인 (대상 경로, --data 경로, --data 허브 리비전)
-    scan        S-BOM(syft) → 이미지 받기·풀기 → M-BOM(cdxgen) → AI 서비스 → M-BOM 보강(로컬 모델, 허브 모델) → D-BOM
+    scan        S-BOM(syft) → 이미지 받기·풀기 → M-BOM(cdxgen) → AI 서비스 → M-BOM 보강(로컬 모델, 허브 모델, OWASP) → D-BOM
                 → 병합 → 규제 필드 → SPDX 변환 (--format spdx 일 때만)
                 AI 서비스부터 D-BOM 까지는 cdxgen 이 낸 문서를 고치고, 병합이 그것을 syft 문서와 하나로 합친다
-                M-BOM 보강은 로컬 모델, 허브 모델 둘 다 engine/model.py 다 (enrich_local_models, enrich_hub_models)
+                M-BOM 보강은 셋이다. 로컬 모델 파일과 Hub API 는 engine/model.py (enrich_local_models, enrich_hub_models),
+                OWASP aibom-generator 는 engine/aibom_generator.py 다 (enrich_with_aibom_generator)
 
 syft·cdxgen 가운데 하나라도 실패하면 만든 만큼은 돌려주고 failed 에 적는다 (CLI 는 종료 코드 2 로 끝낸다).
 """
@@ -19,6 +20,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..engine.ai_service import discover_services
+from ..engine.aibom_generator import enrich_with_aibom_generator
 from ..engine.cdxgen import run_cdxgen
 from ..engine.container_tools import pull_image
 from ..engine.dataset import discover_datasets, missing_revisions, split_data_args
@@ -178,29 +180,32 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path) -> S
     ai_doc = discover_services(ai_doc, scan_dir)              # cdxgen 서비스 가운데 코드가 SDK 로 부르는 것만 (import 는 직접 읽는다)
     ai_doc = enrich_local_models(ai_doc, scan_dir)
 
-    enriched: dict = {}
-    ai_doc = enrich_hub_models(ai_doc, workdir, report=enriched, facts=facts)
-    if enriched["hub_skipped"]:
-        result = f"skipped: {enriched['hub_skipped']}"
-    elif enriched["hub_missing"]:
-        result = f"{enriched['hub']} of {count(enriched['models'], 'hub model')} ({len(enriched['hub_missing'])} without hub info)"
+    hub_models: dict = {}
+    ai_doc = enrich_hub_models(ai_doc, report=hub_models, facts=facts)
+    if hub_models["hub_skipped"]:
+        result = f"skipped: {hub_models['hub_skipped']}"
+    elif hub_models["hub_missing"]:
+        result = f"{hub_models['hub']} of {count(hub_models['models'], 'hub model')} ({len(hub_models['hub_missing'])} without hub info)"
     else:
-        result = count(enriched["hub"], "hub model")
+        result = count(hub_models["hub"], "hub model")
     stage("Enriching M-BOM (Hub API)", result)
-    if enriched["skipped"]:
-        result = f"skipped: {enriched['skipped']}"
-    elif enriched["failed"]:
-        result = f"{enriched['enriched']} of {count(enriched['models'], 'hub model')} ({len(enriched['failed'])} failed)"
+
+    owasp: dict = {}
+    ai_doc = enrich_with_aibom_generator(ai_doc, workdir, report=owasp)
+    if owasp["skipped"]:
+        result = f"skipped: {owasp['skipped']}"
+    elif owasp["failed"]:
+        result = f"{owasp['enriched']} of {count(owasp['models'], 'hub model')} ({len(owasp['failed'])} failed)"
     else:
-        result = count(enriched["enriched"], "hub model")
+        result = count(owasp["enriched"], "hub model")
     stage("Enriching M-BOM (aibom-generator)", result)
-    for hf_id, reason in enriched["errors"].items():             # 보강은 선택 단계라 실패해도 failed 에 넣지 않고 이유만 알린다
+    for hf_id, reason in owasp["errors"].items():                # 보강은 선택 단계라 실패해도 failed 에 넣지 않고 이유만 알린다
         log(f"[sure-aibom]   {hf_id}: {reason}")
 
     # 허브 모델 카드의 데이터셋은 M-BOM 보강이 받아 둔 Hub API 응답에서 읽는다 (같은 응답을 다시 받지 않는다)
     datasets: dict = {}
     ai_doc = discover_datasets(ai_doc, scan_dir, report=datasets, data_paths=data,
-                               model_infos=enriched["model_infos"], hub_reachable=enriched["hub_reachable"], facts=facts)
+                               model_infos=hub_models["model_infos"], hub_reachable=hub_models["hub_reachable"], facts=facts)
 
     total = count(sum(1 for c in ai_doc.get("components") or [] if is_dataset(c)), "dataset")
     stage("Generating D-BOM", total + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))

@@ -1,7 +1,9 @@
 """M-BOM 보강. cdxgen 이 담지 못한 모델 컴포넌트 값을 채운다. cdxgen 이 낸 문서에 대고, 병합 앞에서 두 함수가 차례로 돈다.
 
     enrich_local_models 로컬 모델. 스캔 대상 안의 모델 파일에서 규제 필드 값을 읽는다
-    enrich_hub_models   허브 모델. 코드가 부르는 Hugging Face 모델을 Hub API 응답과 OWASP aibom-generator 로 보강한다
+    enrich_hub_models   허브 모델. 코드가 부르는 Hugging Face 모델을 Hub API 응답으로 보강한다
+
+M-BOM 보강에는 OWASP aibom-generator 로 하는 것도 있다. 그것은 engine/aibom_generator.py 가 맡고, service 가 이 두 함수 다음에 부른다.
 
 [로컬 모델] 스캔 대상 안의 모델 파일에서 규제 필드 값을 읽는다.
 
@@ -19,48 +21,41 @@
 가중치는 절대 읽지 않는다 (헤더·메타데이터만). pickle 을 담은 것(.bin, .pt, .pth, .ckpt, .pkl)은 열지 않는다.
 값은 aibom-internal:model:* 프로퍼티로 두고 form 이 고른 형태의 자리로 옮기며 지운다 (출력에는 남지 않는다).
 
-[허브 모델] 허브 모델(코드가 부르는 Hugging Face 모델)을 보강한다. 두 단계다.
+[허브 모델] 허브 모델(코드가 부르는 Hugging Face 모델)을 Hub API 응답으로 보강한다.
 
-1) Hub API — 허브 모델마다 GET /api/models/<id> 응답을 받아 비어 있는 필드만 채운다. 받은 응답은 report["model_infos"] 로
-   남겨, 뒤의 D-BOM 이 모델 카드의 데이터셋을 읽을 때 다시 쓴다 (같은 응답을 두 번 받지 않는다). 로컬 모델 카드에서 cdxgen 이
-   읽는 것과 같은 키·같은 규칙이다.
-       version                                     sha (조회 시점의 main 커밋. 허브 데이터셋과 같은 규칙)
-       licenses                                    cardData.license (other 면 license_name · license_link)
-       description                                 cardData.model_description, 없으면 cardData.description
-       supplier.name                               author (저장소 소유 계정)
-       externalReferences                          distribution https://huggingface.co/<id>, documentation arxiv:<번호> 태그의 논문
-       pedigree.ancestors · notes                  cardData.base_model (+ base_model_relation 을 notes 앞에 "Hugging Face relation: …" 로)
-       modelCard.modelParameters.task              pipeline_tag, 없으면 model-index 의 task
-                                .architectureFamily  config.model_type, 없으면 gguf.architecture
-                                .modelArchitecture   config.architectures[0]
-                                .inputs/outputs[].format   task 를 cdxgen 과 같은 표로 바꾼 것, 표에 없으면 widget 예시로
-       modelCard.quantitativeAnalysis.performanceMetrics   model-index 결과의 metrics (cdxgen 과 같은 모양: type, value, slice)
-       (facts) releaseTime                          lastModified. CycloneDX 에 자리가 없어 메모리 부가 기록(facts.py)으로만 두고 SPDX 변환기가 적는다
-   규제 필드 원본 (aibom-internal:model:*, form 이 옮기고 지운다): parameterCount ← safetensors.total, 없으면 gguf.total;
-   inputs maxSize ← gguf.context_length.
-2) OWASP aibom-generator — 규제 필드 원본만 가져온다 (OWASP_SOURCES: modelCard.properties 의 하이퍼파라미터 묶음과 개별 키,
-   contextLength, runtimeRequirement, safetensors_total_parameters). 나머지 출력은 버린다: 값이 없을 때 고정값(description
-   "No description available", task text-generation, modelArchitecture transformer)을 채우고, README 를 정규식으로 잘라
-   technicalLimitations·datasets 를 만들며, 허브에 없는 저장소에도 실패하지 않고 그런 BOM 을 낸다. 가져온 원본이 없으면 실패로 센다.
-   원본을 가져온 출력이 metadata.tools 에 자기를 적은 도구 항목은 문서의 도구 목록에 더한다 (한 번만).
+허브 모델마다 GET /api/models/<id> 응답을 받아 비어 있는 필드만 채운다. 받은 응답은 report["model_infos"] 로
+남겨, 뒤의 D-BOM 이 모델 카드의 데이터셋을 읽을 때 다시 쓴다 (같은 응답을 두 번 받지 않는다). 로컬 모델 카드에서 cdxgen 이
+읽는 것과 같은 키·같은 규칙이다.
+    version                                     sha (조회 시점의 main 커밋. 허브 데이터셋과 같은 규칙)
+    licenses                                    cardData.license (other 면 license_name · license_link)
+    description                                 cardData.model_description, 없으면 cardData.description
+    supplier.name                               author (저장소 소유 계정)
+    externalReferences                          distribution https://huggingface.co/<id>, documentation arxiv:<번호> 태그의 논문
+    pedigree.ancestors · notes                  cardData.base_model (+ base_model_relation 을 notes 앞에 "Hugging Face relation: …" 로)
+    modelCard.modelParameters.task              pipeline_tag, 없으면 model-index 의 task
+                             .architectureFamily  config.model_type, 없으면 gguf.architecture
+                             .modelArchitecture   config.architectures[0]
+                             .inputs/outputs[].format   task 를 cdxgen 과 같은 표로 바꾼 것, 표에 없으면 widget 예시로
+    modelCard.quantitativeAnalysis.performanceMetrics   model-index 결과의 metrics (cdxgen 과 같은 모양: type, value, slice)
+    (facts) releaseTime                          lastModified. CycloneDX 에 자리가 없어 메모리 부가 기록(facts.py)으로만 두고 SPDX 변환기가 적는다
+규제 필드 원본 (aibom-internal:model:*, form 이 옮기고 지운다): parameterCount ← safetensors.total, 없으면 gguf.total;
+inputs maxSize ← gguf.context_length.
 
 허브 모델인지는 common/component.py 의 hub_model_id 가 정한다 (purl 이 pkg:huggingface/<ns>/<name> 이고 로컬 모델 파일에서 찾은 것이
-아닌 모델). Hub API 는 common/hub.py 로 묻고, OWASP aibom-generator 는 common/aibom_generator.py 로 돌린다.
+아닌 모델). Hub API 는 common/hub.py 로 묻는다.
 """
 from __future__ import annotations
 
-import copy
 import json
 import struct
 from pathlib import Path, PurePosixPath
 from typing import Iterable
 
 from ..utils.dataset_utils import HF_ID
-from ..utils.exceptions import RunnerError
 from ..utils.facts import Facts
 from ..utils.log import detail
-from .common import aibom_generator, hub
-from .common.component import HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON, INTERNAL_MODEL_PREFIX, MODEL_TYPE, hub_model_id
+from .common import hub
+from .common.component import INTERNAL_MODEL_PREFIX, MODEL_TYPE, hub_model_id
 from .common.files import find_file, is_inside, relative_path
 from .common.licenses import card_licenses
 
@@ -400,11 +395,8 @@ def _is_int(value) -> bool:
     return isinstance(value, int) and not isinstance(value, bool)
 
 
-# ── 허브 모델: Hub API 와 OWASP aibom-generator ───────────────────────────────
+# ── 허브 모델: Hub API ─────────────────────────────────────────────────────────
 
-# OWASP 출력에서 가져오는 규제 필드 원본 (form 이 읽는 키 가운데 OWASP 가 내는 것)
-OWASP_SOURCES = frozenset({HYPERPARAMETER_JSON, *HYPERPARAMETER_BY_PROPERTY, "genai:aibom:modelcard:contextLength",
-                           "owasp:aibom:distribution:runtimeRequirement", "safetensors_total_parameters"})
 # cdxgen lib/parsers/huggingfaceManifest.js 의 HUGGING_FACE_TASK_IO_FORMATS
 TASK_IO_FORMATS = {
     "automatic-speech-recognition": ("audio", "text"), "conversational": ("text", "text"),
@@ -416,26 +408,22 @@ TASK_IO_FORMATS = {
 }
 
 
-def enrich_hub_models(merged: dict, workdir: Path, report: dict | None = None, model_infos: dict | None = None,
-           facts: Facts | None = None) -> dict:
-    """허브에는 common/hub.py 로 묻고, OWASP 는 common/aibom_generator.py 로 돌린다. 쓰는 함수:
-        hub.hf_reachable()                                  huggingface.co 에 닿는가
-        hub.fetch_model_info(id)                            GET /api/models/<id> 응답 (실패면 None)
-        aibom_generator.skip_reason()                       OWASP 를 건너뛸 이유 (돌려도 되면 None)
-        aibom_generator.run_aibom_generator(id, workdir)    aibom-generator 출력 (실패면 RunnerError)
+def enrich_hub_models(merged: dict, report: dict | None = None, model_infos: dict | None = None,
+                      facts: Facts | None = None) -> dict:
+    """허브에는 common/hub.py 로 묻는다. 쓰는 함수:
+        hub.hf_reachable()            huggingface.co 에 닿는가
+        hub.fetch_model_info(id)      GET /api/models/<id> 응답 (실패면 None)
     model_infos 는 허브 모델 id → Hub API 응답 (실패면 None). 주지 않으면 허브에 닿는지 보고 허브 모델마다 받는다.
     facts 를 주면 응답의 lastModified 를 그 모델의 releaseTime 으로 적는다.
     report 를 주면 결과를 적는다: models(허브 모델 수) · hub(Hub API 로 채운 수) · hub_missing(응답이 없던 id) ·
     hub_skipped(Hub API 를 쓰지 못한 이유) · hub_reachable(허브에 닿는지 본 결과, 보지 않았으면 None) ·
-    model_infos(쓴 응답, D-BOM 이 다시 쓴다) · enriched(OWASP 에서 원본을 가져온 수) · failed(실패한 id) ·
-    errors(id → 이유 첫 줄) · skipped(OWASP 를 건너뛴 이유)."""
+    model_infos(쓴 응답, D-BOM 이 다시 쓴다)."""
     report = {} if report is None else report
     targets = {hf: c for c in merged.get("components", []) if (hf := hub_model_id(c))}
-    report.update(models=len(targets), hub=0, hub_missing=[], hub_skipped=None, hub_reachable=None, model_infos={},
-                  enriched=0, failed=[], errors={}, skipped=None)
+    report.update(models=len(targets), hub=0, hub_missing=[], hub_skipped=None, hub_reachable=None, model_infos={})
     if not targets:
         detail("[enrich] no hub model components, nothing to enrich")
-        report["skipped"] = report["hub_skipped"] = "no Hugging Face models"
+        report["hub_skipped"] = "no Hugging Face models"
         return merged
 
     if model_infos is None:
@@ -458,69 +446,13 @@ def enrich_hub_models(merged: dict, workdir: Path, report: dict | None = None, m
             else:
                 report["hub_missing"].append(hf_id)
                 detail(f"[enrich] {hf_id}: no Hub API model info, fields left as cdxgen wrote them")
-
-    reason = aibom_generator.skip_reason()
-    if reason:
-        detail(f"[enrich] aibom-generator skipped for {len(targets)} hub model{'s' if len(targets) != 1 else ''}: {reason}")
-        report["skipped"] = reason
-        return merged
-    used_tools: list[dict] = []
-    for hf_id, comp in targets.items():
-        try:
-            owasp = aibom_generator.run_aibom_generator(hf_id, workdir)
-        except RunnerError as e:
-            detail(f"[enrich] {hf_id}: {e}")
-            report["failed"].append(hf_id)
-            report["errors"][hf_id] = (str(e).splitlines() or ["failed"])[0]
-            continue
-        src = next((c for c in owasp.get("components", []) if c.get("type") == "machine-learning-model"), None)
-        taken = _apply_owasp(comp, src) if src else 0
-        if taken:
-            report["enriched"] += 1
-            used_tools += _tools_of(owasp)
-        else:
-            report["failed"].append(hf_id)
-            report["errors"][hf_id] = ("no regulation values in the aibom-generator output" if src
-                                       else "no model component in the aibom-generator output")
-    _add_tools(merged, used_tools)
     return merged
-
-
-def _tools_of(doc: dict) -> list[dict]:
-    """문서가 metadata.tools 에 적은 도구 항목 (1.5 이후의 components 꼴, 그 전의 배열 꼴 모두)."""
-    tools = (doc.get("metadata") or {}).get("tools")
-    items = tools.get("components") if isinstance(tools, dict) else tools
-    return [t for t in items or [] if isinstance(t, dict) and t.get("name")]
-
-
-def _add_tools(merged: dict, tools: list[dict]) -> None:
-    """값을 가져다 쓴 aibom-generator 의 도구 항목(그 출력이 자기를 적은 것)을 문서의 도구 목록에 더한다. 병합처럼
-    (이름, 버전)이 같은 것은 한 번만 둔다. 가져다 쓴 값이 없으면 손대지 않는다."""
-    if not tools:
-        return
-    listed = merged.setdefault("metadata", {}).setdefault("tools", {}).setdefault("components", [])
-    seen = {(t.get("name"), t.get("version")) for t in listed if isinstance(t, dict)}
-    for tool in tools:
-        if (tool.get("name"), tool.get("version")) not in seen:
-            seen.add((tool.get("name"), tool.get("version")))
-            listed.append(copy.deepcopy(tool))
-
-
-def _apply_owasp(dst: dict, src: dict) -> int:
-    """OWASP 출력의 modelCard.properties 가운데 규제 필드 원본만 dst 의 modelCard.properties 에 더한다. 더한(또는 이미 있던) 수."""
-    keep = [p for p in ((src.get("modelCard") or {}).get("properties") or [])
-            if isinstance(p, dict) and p.get("name") in OWASP_SOURCES and isinstance(p.get("value"), str)]
-    if keep:
-        card = dst.setdefault("modelCard", {})
-        seen = {(p.get("name"), p.get("value")) for p in card.get("properties") or []}
-        card["properties"] = (card.get("properties") or []) + [p for p in keep if (p["name"], p["value"]) not in seen]
-    return len(keep)
 
 
 # ── Hub API 응답 → 필드 ────────────────────────────────────────────────────────
 
 def _apply_model_info(comp: dict, hf_id: str, info: dict) -> None:
-    """머리 설명 1) 의 표대로 비어 있는 필드만 채운다."""
+    """머리 설명 [허브 모델] 의 표대로 비어 있는 필드만 채운다."""
     cid = info.get("id") if isinstance(info.get("id"), str) and HF_ID.match(info["id"].strip("/")) else hf_id
     hf_id = cid.strip("/")
     card = info.get("cardData") if isinstance(info.get("cardData"), dict) else {}

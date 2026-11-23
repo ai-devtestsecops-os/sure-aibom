@@ -14,7 +14,7 @@ import pytest
 
 import sure_aibom.engine.common.hub as hub
 import sure_aibom.engine.dataset as ds
-from sure_aibom.engine.common.aibom_generator import skip_reason
+from sure_aibom.engine.aibom_generator import _skip_reason
 from sure_aibom.engine.common.component import INTERNAL_PREFIX
 from sure_aibom.engine.common.licenses import card_licenses, license_entry
 from sure_aibom.engine.dataset import discover_datasets, missing_revisions
@@ -1356,7 +1356,7 @@ def test_specific_text_to_tasks_map_before_the_text_prefix(task, modality):
 
 
 # -- 실제 허브 (하나뿐) ------------------------------------------------------------------
-@pytest.mark.skipif(skip_reason() is not None, reason=skip_reason() or "")
+@pytest.mark.skipif(_skip_reason() is not None, reason=_skip_reason() or "")
 def test_live_hub_returns_size_and_modality_for_imdb(monkeypatch):
     monkeypatch.setattr(hub, "fetch_dataset_size", REAL_FETCH_SIZE)
     monkeypatch.setattr(hub, "fetch_dataset_statistics", REAL_FETCH_STATISTICS)
