@@ -13,7 +13,7 @@ sure-aibom 은 디렉터리와 컨테이너 이미지를 스캔해 AI-BOM(D/M/S-
 | S-BOM 생성        | syft                                  | `SYFT_COMPLIANCE_MISSING_VERSION=keep syft <target> --select-catalogers -ai -o cyclonedx-json@1.7` |
 | M-BOM 생성        | cdxgen                                | `cdxgen <target> -t ai --spec-version 1.7 --no-install-deps`                                       |
 | M-BOM 보강        | **sure-aibom**, OWASP aibom-generator | `python -m src.cli <owner/model>`                                                                  |
-| D-BOM 생성 · 보강 | **sure-aibom**                        | `sure-aibom scan --data <path> \| hf://datasets/<id>`                                              |
+| D-BOM 생성        | **sure-aibom**                        | `sure-aibom scan --data <path> \| hf://datasets/<id>`                                              |
 | BOM 병합          | **sure-aibom**                        |                                                                                                    |
 | 규제 필드 배치    | **sure-aibom**                        | `sure-aibom scan --spec 1.7 \| v0.6 \| 3.0.1`                                                      |
 | SPDX 변환 (선택)  | **sure-aibom**                        | `sure-aibom scan --format spdx`                                                                    |
