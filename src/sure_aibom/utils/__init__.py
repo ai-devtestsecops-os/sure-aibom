@@ -4,5 +4,5 @@
     exceptions.py       직접 만든 예외
     log.py              로그 줄과 단계 줄
     facts.py            CycloneDX 에 자리가 없어 메모리로만 들고 가는 값
-    data_component.py   type 이 data 인 컴포넌트 가운데 데이터셋을 알아보는 함수와 상수
+    dataset_utils.py    데이터셋 컴포넌트를 알아보는 함수와 상수
 """

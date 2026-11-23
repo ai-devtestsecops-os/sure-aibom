@@ -55,7 +55,7 @@ import struct
 from pathlib import Path, PurePosixPath
 from typing import Iterable
 
-from ..utils.data_component import HF_ID
+from ..utils.dataset_utils import HF_ID
 from ..utils.exceptions import RunnerError
 from ..utils.facts import Facts
 from ..utils.log import detail

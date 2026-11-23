@@ -69,7 +69,7 @@ from typing import Iterable
 
 import yaml
 
-from ..utils.data_component import DATA_TYPE, DATASET_KIND, HF_DATASET_PURL, HF_DATASET_URL, HF_ID, hf_dataset_id_of
+from ..utils.dataset_utils import DATA_TYPE, DATASET_KIND, HF_DATASET_PURL, HF_DATASET_URL, HF_ID, hf_dataset_id_of
 from ..utils.facts import Facts
 from ..utils.log import detail
 from .common import hub
