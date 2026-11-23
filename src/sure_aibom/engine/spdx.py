@@ -43,9 +43,10 @@ import re
 import uuid
 from urllib.parse import quote
 
+from ..utils.dataset_component import is_dataset
 from ..utils.facts import Facts
 from ..utils.log import detail
-from .common.component import MODEL_TYPE, identity, is_dataset
+from .common.component import MODEL_TYPE, identity
 
 SPEC_VERSION = "3.0.1"
 CONTEXT = "https://spdx.org/rdf/3.0.1/spdx-context.jsonld"

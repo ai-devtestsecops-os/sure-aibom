@@ -69,11 +69,11 @@ from typing import Iterable
 
 import yaml
 
+from ..utils.dataset_component import DATA_TYPE, DATASET_KIND, HF_DATASET_PURL, HF_DATASET_URL, HF_ID, hf_dataset_id_of
 from ..utils.facts import Facts
 from ..utils.log import detail
 from .common import hub
-from .common.component import (DATA_TYPE, DATASET_KIND, HF_DATASET_PURL, HF_DATASET_URL, HF_ID, INTERNAL_PREFIX, MODEL_TYPE,
-                               fill_missing, hf_dataset_id_of, hub_model_id)
+from .common.component import INTERNAL_PREFIX, MODEL_TYPE, fill_missing, hub_model_id
 from .common.files import SKIP_DIRS, find_file, is_inside, notebook_code, relative_path
 from .common.licenses import card_licenses
 

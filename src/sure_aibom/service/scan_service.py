@@ -19,7 +19,6 @@ from pathlib import Path
 
 from ..engine.ai_service import discover_services
 from ..engine.cdxgen import run_cdxgen
-from ..engine.common.component import is_dataset
 from ..engine.container_tools import pull_image
 from ..engine.dataset import discover_datasets, missing_revisions, split_data_args
 from ..engine.form import drop_tool_properties, regulate
@@ -28,6 +27,7 @@ from ..engine.merge import merge
 from ..engine.model import enrich_hub_models, enrich_local_models
 from ..engine.spdx import convert_spdx
 from ..engine.syft import run_syft
+from ..utils.dataset_component import is_dataset
 from ..utils.exceptions import ImageExtractionError, RunnerError
 from ..utils.facts import Facts
 from ..utils.formats import FORM_BY_SPEC, FORMAT_NAME

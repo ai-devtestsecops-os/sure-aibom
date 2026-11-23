@@ -4,10 +4,9 @@
     fill_missing       없는 필드만 채운다 (merge.py 가 두 도구의 같은 컴포넌트를, dataset.py 가 같은 데이터셋을 합칠 때 쓴다)
     hub_model_id       허브 모델이면 그 id (model.py 가 보강할 모델을, dataset.py 가 모델 카드를 읽을 모델을, ai_service.py 가 서비스에서
                        떼어 낼 모델을 고를 때 쓴다)
-    hf_dataset_id_of   허브 데이터셋이면 그 id (dataset.py 가 이미 있는 데이터셋 컴포넌트를 id 로 찾을 때 쓴다)
-    is_dataset         D-BOM 으로 세는 컴포넌트인가 (spdx.py 가 데이터셋 요소로 바꿀 것을, service 가 요약에서 셀 것을 고를 때 쓴다)
 
-상수는 CycloneDX 의 component.type 값, 허브 id 와 주소의 모양, 수집 단계와 form.py 가 주고받는 프로퍼티 이름이다.
+상수는 CycloneDX 의 component.type 값, 허브 모델 purl 과 로컬 모델 파일의 모양, 수집 단계와 form.py 가 주고받는 프로퍼티 이름이다.
+데이터셋 컴포넌트를 알아보는 함수와 상수는 service 도 써서 utils/dataset_component.py 에 있다.
 
 허브 모델: purl 이 pkg:huggingface/<ns>/<name> 인 모델 컴포넌트 가운데 로컬 모델 파일(README.md, config.json, adapter_config.json,
 Modelfile, *.gguf, *.safetensors)에서 찾은 것이 아닌 것. 로컬 폴더는 그 파일들이 근거다 (config 의 _name_or_path 는 베이스 모델
@@ -22,14 +21,9 @@ from urllib.parse import unquote, urlsplit
 
 # ── component.type 값 ────────────────────────────────────────────────────────
 MODEL_TYPE = "machine-learning-model"
-DATA_TYPE = "data"
 FILE_TYPE = "file"
-DATASET_KIND = "dataset"       # data[].type 의 다섯 값 중 D-BOM 으로 치는 것
 
-# ── 허브 id 와 주소의 모양 ─────────────────────────────────────────────────────
-HF_ID = re.compile(r"^[A-Za-z0-9][\w.-]*(?:/[A-Za-z0-9][\w.-]*)?$")
-HF_DATASET_PURL = re.compile(r"^pkg:huggingface/datasets/(?P<id>[^@?#]+)")
-HF_DATASET_URL = re.compile(r"^https?://huggingface\.co/datasets/(?P<id>[^?#]+?)/?$")
+# ── 허브 모델 purl 과 로컬 모델 파일의 모양 ───────────────────────────────────────
 _HF_PURL = re.compile(r"^pkg:huggingface/(?P<ns>[^/@]+)/(?P<name>[^/@]+)(?:@[^?#]+)?")
 LOCAL_MODEL_FILES = frozenset({"readme.md", "config.json", "adapter_config.json", "modelfile"})
 LOCAL_MODEL_SUFFIXES = (".gguf", ".safetensors")
@@ -123,38 +117,3 @@ def hub_model_id(component: dict) -> str | None:
             if name in LOCAL_MODEL_FILES or name.endswith(LOCAL_MODEL_SUFFIXES):
                 return None
     return hf_id
-
-
-# ── 데이터셋 판정 ─────────────────────────────────────────────────────────────
-
-def is_dataset(comp: dict) -> bool:
-    """D-BOM 으로 세는 컴포넌트. type=data 만으로는 모자라다: cdxgen 이 이미지의 apt 저장소 설정도 data[] 없는
-    type=data 로 낸다. data[] 에 dataset 항목이 있거나 허브 데이터셋 id 가 있으면 데이터셋이다."""
-    if comp.get("type") != DATA_TYPE:
-        return False
-    return any(d.get("type") == DATASET_KIND for d in comp.get("data") or []) or hf_dataset_id_of(comp) is not None
-
-
-def hf_dataset_id_of(comp: dict) -> str | None:
-    """type=data 컴포넌트의 Hugging Face 데이터셋 id. purl → data[].name "datasets/<id>" → group "datasets" 의 name →
-    data[].contents.url 이나 externalReferences 의 허브 데이터셋 주소. cdxgen 은 모델 카드의 이름만 있는 id 를 datasets/<id> 로,
-    owner/name 은 group·name 으로 나누고 purl 없이 주소에만 남긴다. 코드의 huggingface.co/datasets 링크로 만든 것은 data[] 도 없이
-    externalReferences 에만 주소가 있다."""
-    if comp.get("type") != DATA_TYPE:
-        return None
-    m = HF_DATASET_PURL.match(comp.get("purl") or "")
-    if m:
-        return m["id"].strip("/")
-    for d in comp.get("data") or []:
-        name = d.get("name") or ""
-        if name.startswith("datasets/") and HF_ID.match(name[len("datasets/"):]):
-            return name[len("datasets/"):]
-    if comp.get("group") == "datasets" and comp.get("name") and HF_ID.match(comp["name"]):
-        return comp["name"]
-    urls = [(d.get("contents") or {}).get("url") for d in comp.get("data") or []]
-    urls += [r.get("url") for r in comp.get("externalReferences") or [] if isinstance(r, dict)]
-    for url in urls:
-        m = HF_DATASET_URL.match(url) if isinstance(url, str) else None
-        if m and HF_ID.match(hf_id := m["id"].removeprefix("datasets/")):
-            return hf_id
-    return None
