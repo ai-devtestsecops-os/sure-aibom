@@ -66,10 +66,6 @@ def _walk(components):
         yield from _walk(c.get("components") or [])
 
 
-def _prop(comp: dict, name: str) -> str | None:
-    return next((p.get("value") for p in comp.get("properties") or [] if isinstance(p, dict) and p.get("name") == name), None)
-
-
 # ── purl ─────────────────────────────────────────────────────────────────────
 
 def _fix_purl(comp: dict) -> None:
@@ -101,32 +97,6 @@ def _drop_pedigree_refs(comp: dict) -> None:
 
 # ── Modelfile 모델 ─────────────────────────────────────────────────────────────
 
-def _parse_modelfile(text: str) -> tuple[str | None, str | None]:
-    """(FROM 값, LICENSE 의 첫 줄). 둘 다 마지막 지시문을 쓴다 (cdxgen 과 같다). \"\"\" 로 감싼 LICENSE 는 그 안의 첫 비지 않은 줄."""
-    source = license_line = None
-    lines = text.splitlines()
-    i = 0
-    while i < len(lines):
-        m = _DIRECTIVE.match(lines[i].strip())
-        i += 1
-        if not m:
-            continue
-        directive, value = m[1].upper(), m[2].strip()
-        if directive == "FROM":
-            source = value or source
-            continue
-        if not value.startswith('"""'):
-            license_line = value or license_line
-            continue
-        block = [value[3:]]
-        while '"""' not in block[-1] and i < len(lines):
-            block.append(lines[i])
-            i += 1
-        block[-1] = block[-1].split('"""', 1)[0]
-        license_line = next((line.strip() for line in block if line.strip()), license_line)
-    return source, license_line
-
-
 def _modelfile_models(doc: dict, root: Path) -> None:
     for model in [c for c in doc.get("components") or [] if c.get("type") == MODEL_TYPE and _prop(c, "cdx:ai:artifactFormat") == MODELFILE_FORMAT]:
         location = next((o.get("location") for o in (model.get("evidence") or {}).get("occurrences") or []
@@ -153,6 +123,32 @@ def _modelfile_models(doc: dict, root: Path) -> None:
             model["purl"] = f"pkg:generic/{quote(name, safe='')}"
         else:
             _absorb(doc, target, model)
+
+
+def _parse_modelfile(text: str) -> tuple[str | None, str | None]:
+    """(FROM 값, LICENSE 의 첫 줄). 둘 다 마지막 지시문을 쓴다 (cdxgen 과 같다). \"\"\" 로 감싼 LICENSE 는 그 안의 첫 비지 않은 줄."""
+    source = license_line = None
+    lines = text.splitlines()
+    i = 0
+    while i < len(lines):
+        m = _DIRECTIVE.match(lines[i].strip())
+        i += 1
+        if not m:
+            continue
+        directive, value = m[1].upper(), m[2].strip()
+        if directive == "FROM":
+            source = value or source
+            continue
+        if not value.startswith('"""'):
+            license_line = value or license_line
+            continue
+        block = [value[3:]]
+        while '"""' not in block[-1] and i < len(lines):
+            block.append(lines[i])
+            i += 1
+        block[-1] = block[-1].split('"""', 1)[0]
+        license_line = next((line.strip() for line in block if line.strip()), license_line)
+    return source, license_line
 
 
 def _fix_quote_license(model: dict, license_line: str | None) -> None:
@@ -213,6 +209,10 @@ def _absorb(doc: dict, target: dict, model: dict) -> None:
         target["licenses"] = model["licenses"]
     doc["components"] = [c for c in doc["components"] if c is not model]
     _repoint(doc, model.get("bom-ref"), target.get("bom-ref"))
+
+
+def _prop(comp: dict, name: str) -> str | None:
+    return next((p.get("value") for p in comp.get("properties") or [] if isinstance(p, dict) and p.get("name") == name), None)
 
 
 def _repoint(doc: dict, old: str | None, new: str | None) -> None:

@@ -120,6 +120,24 @@ def drop_tool_properties(doc: dict) -> dict:
     return doc
 
 
+def _coverage_report(doc: dict, form: str) -> dict:
+    report = {"models": {"filled": 0, "total": 0}, "datasets": {"filled": 0, "total": 0}}
+    for comp in _walk(doc.get("components") or []):
+        found = _coverage(comp, form)
+        if found is None:
+            continue
+        filled, missing = found
+        bucket = report["models" if comp.get("type") == MODEL_TYPE else "datasets"]
+        bucket["filled"] += len(filled)
+        bucket["total"] += len(filled) + len(missing)
+        if missing:
+            label = comp.get("bom-ref") or comp.get("name") or "?"
+            detail(f"[form] {label}: {len(filled)}/{len(filled) + len(missing)} regulation fields filled, missing {', '.join(missing)}")
+    report["filled"] = report["models"]["filled"] + report["datasets"]["filled"]
+    report["total"] = report["models"]["total"] + report["datasets"]["total"]
+    return report
+
+
 def _coverage(comp: dict, form: str) -> tuple[list[str], list[str]] | None:
     """컴포넌트의 규제 필드 가운데 (채운 것, 빈 것). 모델·데이터셋이 아니면 None."""
     if comp.get("type") == MODEL_TYPE:
@@ -146,24 +164,6 @@ def _is_dataset(comp: dict) -> bool:
         or str(comp.get("purl") or "").startswith(HF_DATASETS_PURL)
 
 
-def _coverage_report(doc: dict, form: str) -> dict:
-    report = {"models": {"filled": 0, "total": 0}, "datasets": {"filled": 0, "total": 0}}
-    for comp in _walk(doc.get("components") or []):
-        found = _coverage(comp, form)
-        if found is None:
-            continue
-        filled, missing = found
-        bucket = report["models" if comp.get("type") == MODEL_TYPE else "datasets"]
-        bucket["filled"] += len(filled)
-        bucket["total"] += len(filled) + len(missing)
-        if missing:
-            label = comp.get("bom-ref") or comp.get("name") or "?"
-            detail(f"[form] {label}: {len(filled)}/{len(filled) + len(missing)} regulation fields filled, missing {', '.join(missing)}")
-    report["filled"] = report["models"]["filled"] + report["datasets"]["filled"]
-    report["total"] = report["models"]["total"] + report["datasets"]["total"]
-    return report
-
-
 def _walk(components: Iterable[dict]):
     for c in components:
         yield c
@@ -182,52 +182,6 @@ def _apply_component(comp: dict, form: str) -> None:
     if consumed:                                                  # 아무것도 소비하지 않았으면 컴포넌트에 손대지 않는다
         _remove(comp, consumed)
         target.finish()
-
-
-# ── 원본 프로퍼티 찾기·지우기 ────────────────────────────────────────────────
-
-def _sources(comp: dict, name: str) -> list[dict]:
-    """component.properties 와 modelCard.properties 양쪽에서 이름이 같은 프로퍼티(원본 객체)를 찾는다."""
-    lists = (comp.get("properties") or [], (comp.get("modelCard") or {}).get("properties") or [])
-    return [p for props in lists for p in props if p.get("name") == name and isinstance(p.get("value"), str)]
-
-
-def _internal(comp: dict) -> list[dict]:
-    """model.py 가 둔 aibom-internal:model:* 프로퍼티 (원본 객체)."""
-    return [p for p in comp.get("properties") or []
-            if isinstance(p.get("name"), str) and p["name"].startswith(INTERNAL_MODEL_PREFIX)
-            and isinstance(p.get("value"), str)]
-
-
-def _remove(comp: dict, consumed: list[dict]) -> None:
-    ids = {id(p) for p in consumed}
-    _remove_from(comp, ids)
-    card = comp.get("modelCard")
-    if card:
-        _remove_from(card, ids)
-
-
-def _remove_from(owner: dict, ids: set[int]) -> None:
-    """owner.properties 에서 소비한 항목을 지운다. 그래서 비어 버린 목록만 없앤다 — 원래 비어 있던 목록은 그대로 둔다."""
-    props = owner.get("properties")
-    if not props:
-        return
-    owner["properties"] = [p for p in props if id(p) not in ids]
-    if not owner["properties"]:
-        del owner["properties"]
-
-
-def _resolve(existing, candidates: list[tuple[object, dict]], field: str, label: str) -> tuple[object, list[dict]]:
-    """단일 값: 목표에 있는 값, 없으면 우선순위 첫 후보가 이긴다. 이긴 값과 같은 후보만 소비하고 다른 후보는 남기며 로그에 적는다."""
-    winner = existing if existing is not None else (candidates[0][0] if candidates else None)
-    consumed: list[dict] = []
-    for value, prop in candidates:
-        if value == winner:
-            consumed.append(prop)
-        else:
-            verb = "dropped" if prop["name"].startswith(INTERNAL_MODEL_PREFIX) else "left as is"
-            detail(f"[form] {label}: {field}: {prop['name']}={prop['value']!r} differs from {winner!r}, {verb}")
-    return winner, consumed
 
 
 # ── 필드별 ───────────────────────────────────────────────────────────────────
@@ -313,6 +267,52 @@ def _technical_requirements(comp: dict, target: "_Target", label: str) -> list[d
     if added:
         target.add_technical_requirements(added)
     return consumed
+
+
+# ── 원본 프로퍼티 찾기·지우기 ────────────────────────────────────────────────
+
+def _sources(comp: dict, name: str) -> list[dict]:
+    """component.properties 와 modelCard.properties 양쪽에서 이름이 같은 프로퍼티(원본 객체)를 찾는다."""
+    lists = (comp.get("properties") or [], (comp.get("modelCard") or {}).get("properties") or [])
+    return [p for props in lists for p in props if p.get("name") == name and isinstance(p.get("value"), str)]
+
+
+def _internal(comp: dict) -> list[dict]:
+    """model.py 가 둔 aibom-internal:model:* 프로퍼티 (원본 객체)."""
+    return [p for p in comp.get("properties") or []
+            if isinstance(p.get("name"), str) and p["name"].startswith(INTERNAL_MODEL_PREFIX)
+            and isinstance(p.get("value"), str)]
+
+
+def _remove(comp: dict, consumed: list[dict]) -> None:
+    ids = {id(p) for p in consumed}
+    _remove_from(comp, ids)
+    card = comp.get("modelCard")
+    if card:
+        _remove_from(card, ids)
+
+
+def _remove_from(owner: dict, ids: set[int]) -> None:
+    """owner.properties 에서 소비한 항목을 지운다. 그래서 비어 버린 목록만 없앤다 — 원래 비어 있던 목록은 그대로 둔다."""
+    props = owner.get("properties")
+    if not props:
+        return
+    owner["properties"] = [p for p in props if id(p) not in ids]
+    if not owner["properties"]:
+        del owner["properties"]
+
+
+def _resolve(existing, candidates: list[tuple[object, dict]], field: str, label: str) -> tuple[object, list[dict]]:
+    """단일 값: 목표에 있는 값, 없으면 우선순위 첫 후보가 이긴다. 이긴 값과 같은 후보만 소비하고 다른 후보는 남기며 로그에 적는다."""
+    winner = existing if existing is not None else (candidates[0][0] if candidates else None)
+    consumed: list[dict] = []
+    for value, prop in candidates:
+        if value == winner:
+            consumed.append(prop)
+        else:
+            verb = "dropped" if prop["name"].startswith(INTERNAL_MODEL_PREFIX) else "left as is"
+            detail(f"[form] {label}: {field}: {prop['name']}={prop['value']!r} differs from {winner!r}, {verb}")
+    return winner, consumed
 
 
 # ── 데이터셋 ─────────────────────────────────────────────────────────────────
@@ -455,14 +455,6 @@ class _Target:
 class _TypedTarget(_Target):
     """CycloneDX v0.6 스키마의 타입 있는 필드."""
 
-    def _params(self, create: bool) -> dict:
-        card = self.comp.setdefault("modelCard", {}) if create else (self.comp.get("modelCard") or {})
-        return card.setdefault("modelParameters", {}) if create else (card.get("modelParameters") or {})
-
-    def _considerations(self, create: bool) -> dict:
-        card = self.comp.setdefault("modelCard", {}) if create else (self.comp.get("modelCard") or {})
-        return card.setdefault("considerations", {}) if create else (card.get("considerations") or {})
-
     def get_hyperparameters(self) -> list[dict]:
         return [{"name": h["name"], "value": h.get("value", "")}                    # 스키마상 name·value 모두 선택이다
                 for h in self._params(False).get("hyperparameters") or [] if isinstance(h, dict) and isinstance(h.get("name"), str)]
@@ -492,15 +484,20 @@ class _TypedTarget(_Target):
     def add_technical_requirements(self, values: list[str]) -> None:
         self._considerations(True).setdefault("technicalRequirements", []).extend(values)
 
+    def _params(self, create: bool) -> dict:
+        card = self.comp.setdefault("modelCard", {}) if create else (self.comp.get("modelCard") or {})
+        return card.setdefault("modelParameters", {}) if create else (card.get("modelParameters") or {})
+
+    def _considerations(self, create: bool) -> dict:
+        card = self.comp.setdefault("modelCard", {}) if create else (self.comp.get("modelCard") or {})
+        return card.setdefault("considerations", {}) if create else (card.get("considerations") or {})
+
 
 class _PropertyBag:
     """properties 목록을 정의서 키로 읽고 쓰는 공통 코드. 목록의 자리(_props / _append)는 하위 클래스가 정한다."""
 
     def __init__(self, comp: dict) -> None:
         self.comp = comp
-
-    def _props(self) -> list[dict]: ...
-    def _append(self, new: list[dict]) -> None: ...
 
     def _value(self, name: str) -> object | None:
         return next((p.get("value") for p in self._props() if p.get("name") == name), None)
@@ -518,15 +515,12 @@ class _PropertyBag:
         used = [int(m[1]) for p in self._props() if (m := pattern.match(p.get("name") or ""))]
         return max(used) + 1 if used else 0
 
+    def _props(self) -> list[dict]: ...
+    def _append(self, new: list[dict]) -> None: ...
+
 
 class _PropertiesTarget(_PropertyBag, _Target):
     """정의서(aibom-v0.6-properties.md)의 aibom:model:* 키 — modelCard.properties 에 싣는다."""
-
-    def _props(self) -> list[dict]:
-        return (self.comp.get("modelCard") or {}).get("properties") or []
-
-    def _append(self, new: list[dict]) -> None:
-        self.comp.setdefault("modelCard", {}).setdefault("properties", []).extend(new)
 
     def get_hyperparameters(self) -> list[dict]:
         names = dict(self._indexed(PREFIX + "hyperparameters", "name"))
@@ -564,6 +558,12 @@ class _PropertiesTarget(_PropertyBag, _Target):
         start = self._next_index(PREFIX + "technicalRequirements")
         self._append([{"name": f"{PREFIX}technicalRequirements:{i}", "value": v} for i, v in enumerate(values, start)])
 
+    def _props(self) -> list[dict]:
+        return (self.comp.get("modelCard") or {}).get("properties") or []
+
+    def _append(self, new: list[dict]) -> None:
+        self.comp.setdefault("modelCard", {}).setdefault("properties", []).extend(new)
+
 
 # ── 데이터셋 목표 — 두 형태를 같은 인터페이스로 ───────────────────────────────
 
@@ -583,14 +583,6 @@ class _DatasetTypedTarget(_DatasetTarget):
 
     def __init__(self, comp: dict) -> None:
         self.comp = comp
-
-    def _entry(self, create: bool) -> dict:
-        data = self.comp.get("data") or []
-        if not data:
-            if not create:
-                return {}
-            data = self.comp["data"] = [{"type": "dataset", "name": self.comp.get("name", "")}]
-        return data[0]
 
     def get_scalar(self, field: str) -> object | None:
         entry = self._entry(False)
@@ -616,15 +608,17 @@ class _DatasetTypedTarget(_DatasetTarget):
     def add_statistics(self, entries: list[tuple[str, str]]) -> None:
         self._entry(True).setdefault("statistics", []).extend({"type": t, "value": v} for t, v in entries)
 
+    def _entry(self, create: bool) -> dict:
+        data = self.comp.get("data") or []
+        if not data:
+            if not create:
+                return {}
+            data = self.comp["data"] = [{"type": "dataset", "name": self.comp.get("name", "")}]
+        return data[0]
+
 
 class _DatasetPropertiesTarget(_PropertyBag, _DatasetTarget):
     """정의서의 aibom:dataset:* 키 — component.properties 에 싣는다 (componentData 에는 properties 슬롯이 없다)."""
-
-    def _props(self) -> list[dict]:
-        return self.comp.get("properties") or []
-
-    def _append(self, new: list[dict]) -> None:
-        self.comp.setdefault("properties", []).extend(new)
 
     def get_scalar(self, field: str) -> object | None:
         v = self._value(DATASET_PREFIX + field)
@@ -654,3 +648,9 @@ class _DatasetPropertiesTarget(_PropertyBag, _DatasetTarget):
         for i, (t, v) in enumerate(entries, start):
             new += [{"name": f"{DATASET_PREFIX}statistics:{i}:type", "value": t}, {"name": f"{DATASET_PREFIX}statistics:{i}:value", "value": v}]
         self._append(new)
+
+    def _props(self) -> list[dict]:
+        return self.comp.get("properties") or []
+
+    def _append(self, new: list[dict]) -> None:
+        self.comp.setdefault("properties", []).extend(new)

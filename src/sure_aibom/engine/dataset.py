@@ -492,10 +492,6 @@ def _model_index_datasets(card: dict) -> list[dict]:
     return out
 
 
-def _last_segment(text: str) -> str:
-    return text.replace("\\", "/").rsplit("/", 1)[-1]
-
-
 def _callee(func: ast.expr) -> str | None:
     """호출 대상 이름. load_dataset(…) 과 datasets.load_dataset(…) 모두 "load_dataset"."""
     if isinstance(func, ast.Name):
@@ -516,6 +512,10 @@ def _looks_like_hub_id(text: str) -> bool:
         return False
     ext = _extension(_last_segment(text))
     return not (ext.isalnum() and not ext.isdigit())
+
+
+def _last_segment(text: str) -> str:
+    return text.replace("\\", "/").rsplit("/", 1)[-1]
 
 
 # ── --data 경로 → 컴포넌트 ───────────────────────────────────────────────────

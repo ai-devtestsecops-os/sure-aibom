@@ -37,34 +37,6 @@ def hf_reachable(timeout: float = 3.0) -> bool:
         return False
 
 
-def _hf_endpoint() -> str:
-    return (os.environ.get("HF_ENDPOINT") or HUB).rstrip("/")
-
-
-def _datasets_server() -> str:
-    return (os.environ.get("HF_DATASETS_SERVER") or DATASETS_SERVER).rstrip("/")
-
-
-def _hub_request(url: str) -> Request:
-    req = Request(url, headers={"User-Agent": "sure-aibom", "Accept": "application/json"})
-    if os.environ.get("HF_TOKEN"):
-        req.add_header("Authorization", f"Bearer {os.environ['HF_TOKEN']}")
-    return req
-
-
-def _get_json(url: str, hf_id: str, what: str) -> dict | None:
-    try:
-        with urlopen(_hub_request(url), timeout=FETCH_TIMEOUT) as resp:
-            info = json.load(resp)
-    except HTTPError as e:
-        detail(f"[dataset] {hf_id}: {what} returned {e.code}")
-        return None
-    except (URLError, OSError, ValueError) as e:
-        detail(f"[dataset] {hf_id}: {what} request failed ({e.__class__.__name__})")
-        return None
-    return info if isinstance(info, dict) else None
-
-
 def fetch_dataset_info(hf_id: str, revision: str | None = None) -> dict | None:
     """GET {HF_ENDPOINT}/api/datasets/<id>, 리비전을 주면 /api/datasets/<id>/revision/<리비전> (응답의 sha 는 그 리비전의 전체 커밋 해시).
     실패하면 None 을 돌려주고 알린다. 테스트는 이 함수를 바꿔 끼운다."""
@@ -106,3 +78,31 @@ def fetch_dataset_statistics(hf_id: str, config: str, split: str) -> dict | None
     """GET datasets-server /statistics?dataset=<id>&config=&split=. 열마다 통계."""
     url = f"{_datasets_server()}/statistics?dataset={quote(hf_id, safe='/')}&config={quote(config, safe='')}&split={quote(split, safe='')}"
     return _get_json(url, hf_id, f"datasets-server /statistics {config}/{split}")
+
+
+def _hf_endpoint() -> str:
+    return (os.environ.get("HF_ENDPOINT") or HUB).rstrip("/")
+
+
+def _datasets_server() -> str:
+    return (os.environ.get("HF_DATASETS_SERVER") or DATASETS_SERVER).rstrip("/")
+
+
+def _get_json(url: str, hf_id: str, what: str) -> dict | None:
+    try:
+        with urlopen(_hub_request(url), timeout=FETCH_TIMEOUT) as resp:
+            info = json.load(resp)
+    except HTTPError as e:
+        detail(f"[dataset] {hf_id}: {what} returned {e.code}")
+        return None
+    except (URLError, OSError, ValueError) as e:
+        detail(f"[dataset] {hf_id}: {what} request failed ({e.__class__.__name__})")
+        return None
+    return info if isinstance(info, dict) else None
+
+
+def _hub_request(url: str) -> Request:
+    req = Request(url, headers={"User-Agent": "sure-aibom", "Accept": "application/json"})
+    if os.environ.get("HF_TOKEN"):
+        req.add_header("Authorization", f"Bearer {os.environ['HF_TOKEN']}")
+    return req

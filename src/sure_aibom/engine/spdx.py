@@ -164,31 +164,6 @@ class _Converter:
             el["externalIdentifier"] = [{"type": "ExternalIdentifier", "externalIdentifierType": "packageUrl", "identifier": tool["purl"]}]
         return self._element(el)
 
-    def _agent(self, name: str, kind: str = "Organization") -> str:
-        prefix = "org" if kind == "Organization" else "agent"
-        return self._element({"type": kind, "spdxId": self._id(f"{prefix}/{name}"), "creationInfo": self.ci, "name": name})
-
-    def _license(self, entry: dict) -> str | None:
-        """licenses[] 항목 하나 → simplelicensing_LicenseExpression 요소 id."""
-        if entry.get("expression"):
-            expression, name, url = entry["expression"], None, None
-        else:
-            lic = entry.get("license") or {}
-            name, url = lic.get("name"), lic.get("url")
-            if lic.get("id"):
-                expression = lic["id"]
-            elif name:
-                expression = "LicenseRef-" + re.sub(r"[^A-Za-z0-9.-]+", "-", name).strip("-")
-            else:
-                return None
-        el = {"type": "simplelicensing_LicenseExpression", "spdxId": self._id(f"license/{expression}"), "creationInfo": self.ci,
-              "simplelicensing_licenseExpression": expression}
-        if name and expression.startswith("LicenseRef-"):
-            el["name"] = name
-            if url:
-                el["simplelicensing_customIdToUri"] = [_entry(expression, url)]
-        return self._element(el)
-
     def _component(self, comp: dict) -> str:
         """컴포넌트(루트, 조상 포함) → 요소. 다룬 키는 지우고 남은 값은 확장에 담는다."""
         work = copy.deepcopy(comp)
@@ -332,6 +307,10 @@ class _Converter:
         if isinstance(manufacturer, dict) and manufacturer.get("name"):
             work["manufacturer"] = manufacturer                                  # SPDX 에 제조사 자리가 없다 → 확장으로
 
+    def _agent(self, name: str, kind: str = "Organization") -> str:
+        prefix = "org" if kind == "Organization" else "agent"
+        return self._element({"type": kind, "spdxId": self._id(f"{prefix}/{name}"), "creationInfo": self.ci, "name": name})
+
     def _pedigree(self, spdx_id: str, pedigree: dict, ext: list) -> None:
         notes = pedigree.get("notes")
         made = []
@@ -361,6 +340,27 @@ class _Converter:
             self._rel("hasDeclaredLicense", spdx_id, declared)
         if concluded:
             self._rel("hasConcludedLicense", spdx_id, concluded)
+
+    def _license(self, entry: dict) -> str | None:
+        """licenses[] 항목 하나 → simplelicensing_LicenseExpression 요소 id."""
+        if entry.get("expression"):
+            expression, name, url = entry["expression"], None, None
+        else:
+            lic = entry.get("license") or {}
+            name, url = lic.get("name"), lic.get("url")
+            if lic.get("id"):
+                expression = lic["id"]
+            elif name:
+                expression = "LicenseRef-" + re.sub(r"[^A-Za-z0-9.-]+", "-", name).strip("-")
+            else:
+                return None
+        el = {"type": "simplelicensing_LicenseExpression", "spdxId": self._id(f"license/{expression}"), "creationInfo": self.ci,
+              "simplelicensing_licenseExpression": expression}
+        if name and expression.startswith("LicenseRef-"):
+            el["name"] = name
+            if url:
+                el["simplelicensing_customIdToUri"] = [_entry(expression, url)]
+        return self._element(el)
 
     def _model_card(self, el: dict, spdx_id: str, card: dict, ext: list) -> None:
         params = card.pop("modelParameters", None) or {}

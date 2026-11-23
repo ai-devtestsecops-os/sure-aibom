@@ -41,90 +41,6 @@ OCI = "org.opencontainers.image."
 _SPDX_OPERATOR = (" AND ", " OR ", " WITH ", "(")
 
 
-def _resolve_dataset_ref(ref: str, model_key: str, components: dict[str, dict], deps: dict[str, set[str]]) -> str | None:
-    """끊긴 modelCard datasets[].ref 를 데이터셋 컴포넌트에 잇는다.
-
-    1) ref 의 경로 끝(`datasets/bookcorpus`, `bookcorpus`)이 type=data 컴포넌트의 group/name, data[].name,
-       contents.url 과 맞으면 그것. 2) 없으면 그 모델이 dependsOn 하는 data 컴포넌트가 하나뿐일 때 그것.
-    """
-    path = ref.split("?", 1)[0].split("pkg:huggingface/", 1)[-1].strip("/")
-    tails = {path, path.rsplit("/", 1)[-1]}
-    datasets = {k: c for k, c in components.items() if c.get("type") == "data"}
-    for key, c in datasets.items():
-        names = {f"{c.get('group', '')}/{c.get('name', '')}".strip("/"), c.get("name", "")}
-        for d in c.get("data") or []:
-            names.add(d.get("name", ""))
-            url = (d.get("contents") or {}).get("url") or ""
-            names.add(url.rstrip("/").rsplit("/datasets/", 1)[-1] if "/datasets/" in url else url)
-        if tails & names:
-            return key
-    linked = [t for t in deps.get(model_key, set()) if t in datasets]
-    return linked[0] if len(linked) == 1 else None
-
-
-def _walk_components(components: Iterable[dict]):
-    for c in components:
-        yield c
-        yield from _walk_components(c.get("components") or [])
-
-
-def _root_component(name: str, kind: str, labels: dict[str, str] | None = None, facts: Facts | None = None) -> dict:
-    """스캔 대상 → metadata.component. bom-ref 는 identity 규칙으로 정해 결정적이다 (라벨의 version 은 넣지 않는다).
-    labels 는 이미지의 OCI 라벨 (키 → 값). facts 를 주면 created 라벨을 루트의 builtTime 으로 적는다."""
-    comp = {"type": ROOT_TYPE_BY_KIND.get(kind, "application"), "name": name}
-    comp["bom-ref"] = identity(comp)
-    if labels:
-        _apply_image_labels(comp, labels)
-        if facts is not None:
-            facts.set_time(comp["bom-ref"], "builtTime", labels.get(OCI + "created"))
-    return comp
-
-
-def _apply_image_labels(comp: dict, labels: dict[str, str]) -> None:
-    def label(key: str) -> str | None:
-        value = labels.get(OCI + key)
-        return value.strip() if isinstance(value, str) and value.strip() else None
-
-    if label("version"):
-        comp["version"] = label("version")
-    if label("description"):
-        comp["description"] = label("description")
-    if label("vendor"):
-        comp["supplier"] = {"name": label("vendor")}
-    if label("authors"):
-        comp["authors"] = [{"name": label("authors")}]
-    expression = label("licenses")
-    if expression:
-        comp["licenses"] = ([{"expression": expression}] if any(op in expression for op in _SPDX_OPERATOR)
-                            else [license_entry(expression)])
-    refs = []
-    if label("source"):
-        refs.append({"type": "vcs", "url": label("source"), **({"comment": f"revision: {label('revision')}"} if label("revision") else {})})
-    for key, kind in (("url", "website"), ("documentation", "documentation")):
-        if label(key):
-            refs.append({"type": kind, "url": label(key)})
-    if refs:
-        comp["externalReferences"] = refs
-    base = label("base.name")
-    if base:
-        ancestor = {"type": "container", "name": base}
-        digest = label("base.digest") or ""
-        if digest.startswith("sha256:") and len(digest) == 71:
-            ancestor["hashes"] = [{"alg": "SHA-256", "content": digest[len("sha256:"):]}]
-        comp["pedigree"] = {"ancestors": [ancestor]}
-
-
-def _image_labels(docs: list[dict]) -> dict[str, str]:
-    """도구 문서들의 metadata.properties 에서 syft 가 적은 이미지 라벨 (키 → 값). 먼저 나온 값이 이긴다."""
-    labels: dict[str, str] = {}
-    for doc in docs:
-        for p in (doc.get("metadata") or {}).get("properties") or []:
-            name, value = p.get("name"), p.get("value")
-            if isinstance(name, str) and name.startswith(IMAGE_LABEL_PREFIX) and isinstance(value, str):
-                labels.setdefault(name[len(IMAGE_LABEL_PREFIX):], value)
-    return labels
-
-
 def merge(docs: list[dict], root: tuple[str, str] | None = None, facts: Facts | None = None) -> dict:
     components: dict[str, dict] = {}
     ref_map: dict[str, str] = {}          # 원래 bom-ref → 병합 키
@@ -224,6 +140,90 @@ def merge(docs: list[dict], root: tuple[str, str] | None = None, facts: Facts | 
         "dependencies": dependencies_out,
         "formulation": formulation,
     }
+
+
+def _resolve_dataset_ref(ref: str, model_key: str, components: dict[str, dict], deps: dict[str, set[str]]) -> str | None:
+    """끊긴 modelCard datasets[].ref 를 데이터셋 컴포넌트에 잇는다.
+
+    1) ref 의 경로 끝(`datasets/bookcorpus`, `bookcorpus`)이 type=data 컴포넌트의 group/name, data[].name,
+       contents.url 과 맞으면 그것. 2) 없으면 그 모델이 dependsOn 하는 data 컴포넌트가 하나뿐일 때 그것.
+    """
+    path = ref.split("?", 1)[0].split("pkg:huggingface/", 1)[-1].strip("/")
+    tails = {path, path.rsplit("/", 1)[-1]}
+    datasets = {k: c for k, c in components.items() if c.get("type") == "data"}
+    for key, c in datasets.items():
+        names = {f"{c.get('group', '')}/{c.get('name', '')}".strip("/"), c.get("name", "")}
+        for d in c.get("data") or []:
+            names.add(d.get("name", ""))
+            url = (d.get("contents") or {}).get("url") or ""
+            names.add(url.rstrip("/").rsplit("/datasets/", 1)[-1] if "/datasets/" in url else url)
+        if tails & names:
+            return key
+    linked = [t for t in deps.get(model_key, set()) if t in datasets]
+    return linked[0] if len(linked) == 1 else None
+
+
+def _walk_components(components: Iterable[dict]):
+    for c in components:
+        yield c
+        yield from _walk_components(c.get("components") or [])
+
+
+def _root_component(name: str, kind: str, labels: dict[str, str] | None = None, facts: Facts | None = None) -> dict:
+    """스캔 대상 → metadata.component. bom-ref 는 identity 규칙으로 정해 결정적이다 (라벨의 version 은 넣지 않는다).
+    labels 는 이미지의 OCI 라벨 (키 → 값). facts 를 주면 created 라벨을 루트의 builtTime 으로 적는다."""
+    comp = {"type": ROOT_TYPE_BY_KIND.get(kind, "application"), "name": name}
+    comp["bom-ref"] = identity(comp)
+    if labels:
+        _apply_image_labels(comp, labels)
+        if facts is not None:
+            facts.set_time(comp["bom-ref"], "builtTime", labels.get(OCI + "created"))
+    return comp
+
+
+def _apply_image_labels(comp: dict, labels: dict[str, str]) -> None:
+    def label(key: str) -> str | None:
+        value = labels.get(OCI + key)
+        return value.strip() if isinstance(value, str) and value.strip() else None
+
+    if label("version"):
+        comp["version"] = label("version")
+    if label("description"):
+        comp["description"] = label("description")
+    if label("vendor"):
+        comp["supplier"] = {"name": label("vendor")}
+    if label("authors"):
+        comp["authors"] = [{"name": label("authors")}]
+    expression = label("licenses")
+    if expression:
+        comp["licenses"] = ([{"expression": expression}] if any(op in expression for op in _SPDX_OPERATOR)
+                            else [license_entry(expression)])
+    refs = []
+    if label("source"):
+        refs.append({"type": "vcs", "url": label("source"), **({"comment": f"revision: {label('revision')}"} if label("revision") else {})})
+    for key, kind in (("url", "website"), ("documentation", "documentation")):
+        if label(key):
+            refs.append({"type": kind, "url": label(key)})
+    if refs:
+        comp["externalReferences"] = refs
+    base = label("base.name")
+    if base:
+        ancestor = {"type": "container", "name": base}
+        digest = label("base.digest") or ""
+        if digest.startswith("sha256:") and len(digest) == 71:
+            ancestor["hashes"] = [{"alg": "SHA-256", "content": digest[len("sha256:"):]}]
+        comp["pedigree"] = {"ancestors": [ancestor]}
+
+
+def _image_labels(docs: list[dict]) -> dict[str, str]:
+    """도구 문서들의 metadata.properties 에서 syft 가 적은 이미지 라벨 (키 → 값). 먼저 나온 값이 이긴다."""
+    labels: dict[str, str] = {}
+    for doc in docs:
+        for p in (doc.get("metadata") or {}).get("properties") or []:
+            name, value = p.get("name"), p.get("value")
+            if isinstance(name, str) and name.startswith(IMAGE_LABEL_PREFIX) and isinstance(value, str):
+                labels.setdefault(name[len(IMAGE_LABEL_PREFIX):], value)
+    return labels
 
 
 def _version() -> str:
