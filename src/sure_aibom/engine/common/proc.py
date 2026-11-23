@@ -1,4 +1,4 @@
-"""다른 프로그램을 돌리고 그 출력 파일을 읽는 공용 함수. syft.py, cdxgen.py, container_tools.py, aibom_generator.py 가 쓴다.
+"""다른 프로그램을 돌리고 그 출력 파일을 읽는 공용 함수. syft.py, cdxgen.py, container_tools.py, owasp_aibom_generator.py 가 쓴다.
 
     run              프로그램을 돌려 종료 코드와 출력을 돌려준다. 프로그램이 없거나 시간을 넘기면 RunnerError
     load_json_file   프로그램이 쓴 출력 JSON 을 읽는다. 파일이 없거나 비었으면 RunnerError

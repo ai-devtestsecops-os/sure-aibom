@@ -8,7 +8,7 @@
     fetch_dataset_statistics  GET datasets-server /statistics
 
 주소는 HF_ENDPOINT, HF_DATASETS_SERVER 로 바꿀 수 있고, HF_TOKEN 이 있으면 Authorization 헤더로 보낸다.
-부르는 쪽(model.py, dataset.py, aibom_generator.py)은 `hub.fetch_dataset_info(...)` 처럼 모듈을 거쳐 부른다. 그래서 테스트는 이 모듈의
+부르는 쪽(model.py, dataset.py, owasp_aibom_generator.py)은 `hub.fetch_dataset_info(...)` 처럼 모듈을 거쳐 부른다. 그래서 테스트는 이 모듈의
 함수만 바꿔 끼우면 된다.
 """
 from __future__ import annotations

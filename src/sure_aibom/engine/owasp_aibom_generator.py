@@ -2,7 +2,7 @@
 
 service 가 engine/model.py 의 허브 모델 보강(Hub API) 다음에 부른다. cdxgen 이 낸 문서에 대고, 병합 앞에서 돈다.
 
-    enrich_with_aibom_generator   허브 모델마다 도구를 돌리고, 그 출력의 규제 필드 원본을 모델 컴포넌트에 더한다
+    enrich_with_owasp_aibom_generator   허브 모델마다 도구를 돌리고, 그 출력의 규제 필드 원본을 모델 컴포넌트에 더한다
 
 가져오는 것은 규제 필드 원본뿐이다 (OWASP_SOURCES: modelCard.properties 의 하이퍼파라미터 묶음과 개별 키, contextLength,
 runtimeRequirement, safetensors_total_parameters). 나머지 출력은 버린다: 값이 없을 때 고정값(description
@@ -35,7 +35,7 @@ OWASP_SOURCES = frozenset({HYPERPARAMETER_JSON, *HYPERPARAMETER_BY_PROPERTY, "ge
                            "owasp:aibom:distribution:runtimeRequirement", "safetensors_total_parameters"})
 
 
-def enrich_with_aibom_generator(merged: dict, workdir: Path, report: dict | None = None) -> dict:
+def enrich_with_owasp_aibom_generator(merged: dict, workdir: Path, report: dict | None = None) -> dict:
     """허브 모델마다 aibom-generator 를 돌려, 그 출력의 규제 필드 원본을 모델 컴포넌트의 modelCard.properties 에 더한다.
     돌릴 수 없으면(클론이 없거나 허브에 닿지 않으면) 문서를 그대로 돌려준다. 한 모델에서 실패해도 나머지 모델은 돌린다.
     report 를 주면 결과를 적는다: models(허브 모델 수) · enriched(원본을 가져온 수) · failed(실패한 id) ·
@@ -54,7 +54,7 @@ def enrich_with_aibom_generator(merged: dict, workdir: Path, report: dict | None
     used_tools: list[dict] = []
     for hf_id, comp in targets.items():
         try:
-            owasp = _run_aibom_generator(hf_id, workdir)
+            owasp = _run_owasp_aibom_generator(hf_id, workdir)
         except RunnerError as e:
             detail(f"[enrich] {hf_id}: {e}")
             report["failed"].append(hf_id)
@@ -88,7 +88,7 @@ def _skip_reason() -> str | None:
     return None
 
 
-def _run_aibom_generator(hf_id: str, workdir: Path) -> dict:
+def _run_owasp_aibom_generator(hf_id: str, workdir: Path) -> dict:
     """허브 모델 하나에 도구를 돌려 그 출력 BOM 을 돌려준다. 도구가 실패하거나 출력이 없으면 RunnerError."""
     repo = os.environ.get("AIBOM_GENERATOR_DIR")
     if not repo:

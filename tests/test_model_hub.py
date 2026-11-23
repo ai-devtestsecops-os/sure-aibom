@@ -1,6 +1,6 @@
 """enrich_hub_models: 허브 모델을 Hub API 응답으로 채운다.
 Hub API 는 tests/data/hf_api/hf_model_google-bert_bert-base-uncased.json (실제 GET /api/models/google-bert/bert-base-uncased 응답)
-으로 바꿔 끼운다. OWASP aibom-generator 로 하는 보강은 test_aibom_generator.py 가 본다."""
+으로 바꿔 끼운다. OWASP aibom-generator 로 하는 보강은 test_owasp_aibom_generator.py 가 본다."""
 import copy
 import json
 from pathlib import Path

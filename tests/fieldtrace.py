@@ -4,7 +4,7 @@
     run_syft · run_cdxgen    도구 출력 (engine/syft.py, engine/cdxgen.py 의 정리까지 끝난 것)을 원본으로 둔다. cdxgen 문서는 병합 앞의
                              단계들이 제자리에서 고치므로, 받은 때부터 값마다 출처(cdxgen)를 달아 따라간다
     discover_services · discover_datasets · enrich_local_models · enrich_hub_models    새 값은 sure-aibom
-    enrich_with_aibom_generator    새 값(modelCard.properties 의 규제 필드 원본, 도구 목록에 더한 자기 항목)은 OWASP aibom-generator
+    enrich_with_owasp_aibom_generator    새 값(modelCard.properties 의 규제 필드 원본, 도구 목록에 더한 자기 항목)은 OWASP aibom-generator
     merge                    값마다, 병합 키가 같은 syft 원본 컴포넌트의 같은 자리에 같은 값이 있으면 syft, 병합 키가 같은 cdxgen 문서
                              컴포넌트에 있던 값이면 거기서 따라온 출처, 둘 다 아니면 sure-aibom.
                              컴포넌트 bom-ref 는 병합 키라 sure-aibom. 문서 머리·metadata.component 는 sure-aibom 이 쓰고, 그 가운데
@@ -225,7 +225,7 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
     tracker = Tracker()
     home = lambda name: scan_controller if name == "_write_json" else scan_service   # 단계는 service/scan_service.py 가 부르고, 파일 쓰기는 controller/scan_controller.py 가 한다
     real = {n: getattr(home(n), n) for n in ("run_syft", "run_cdxgen", "merge", "discover_services", "discover_datasets", "enrich_local_models",
-                                             "enrich_hub_models", "enrich_with_aibom_generator", "regulate", "_write_json")}
+                                             "enrich_hub_models", "enrich_with_owasp_aibom_generator", "regulate", "_write_json")}
     final: dict = {}
 
     def raw_of(name, tool):
@@ -247,10 +247,10 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
     def staged(name, tool_of):
         return lambda doc, *a, **k: tracker.stage(doc, lambda: real[name](doc, *a, **k), tool_of)
 
-    def enrich_with_aibom_generator(doc, *a, **k):
+    def enrich_with_owasp_aibom_generator(doc, *a, **k):
         """이 단계가 더하는 것은 규제 필드 원본과, 원본을 가져다 쓴 aibom-generator 가 자기를 적은 도구 항목뿐이라 새 값은 모두 OWASP 의 값이다."""
         before = tool_entries(doc)
-        out = tracker.stage(doc, lambda: real["enrich_with_aibom_generator"](doc, *a, **k), lambda *_: {OWASP})
+        out = tracker.stage(doc, lambda: real["enrich_with_owasp_aibom_generator"](doc, *a, **k), lambda *_: {OWASP})
         # 도구 목록은 항목 단위로 본다 (merge 와 같다): 새로 더해진 항목의 칸은 값이 다른 항목과 같아도(type) 그 항목을 낸 도구의 것이다
         for entry in tool_entries(out):
             if entry not in before:
@@ -269,7 +269,7 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
     patched = dict(run_syft=raw_of("run_syft", SYFT), run_cdxgen=raw_of("run_cdxgen", CDXGEN), merge=merge,
                    discover_services=staged("discover_services", lambda *_: {CLI}),
                    discover_datasets=staged("discover_datasets", lambda *_: {CLI}), enrich_local_models=staged("enrich_local_models", lambda *_: {CLI}),
-                   enrich_hub_models=staged("enrich_hub_models", lambda *_: {CLI}), enrich_with_aibom_generator=enrich_with_aibom_generator,
+                   enrich_hub_models=staged("enrich_hub_models", lambda *_: {CLI}), enrich_with_owasp_aibom_generator=enrich_with_owasp_aibom_generator,
                    regulate=staged("regulate", form_tool), _write_json=write_json)
     try:
         for name, fn in patched.items():

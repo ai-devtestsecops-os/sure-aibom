@@ -7,7 +7,7 @@ controller/scan_controller.py 가 인자를 확인해 값만 넘기고, 여기�
                 → 병합 → 규제 필드 → SPDX 변환 (--format spdx 일 때만)
                 AI 서비스부터 D-BOM 까지는 cdxgen 이 낸 문서를 고치고, 병합이 그것을 syft 문서와 하나로 합친다
                 M-BOM 보강은 셋이다. 로컬 모델 파일과 Hub API 는 engine/model.py (enrich_local_models, enrich_hub_models),
-                OWASP aibom-generator 는 engine/aibom_generator.py 다 (enrich_with_aibom_generator)
+                OWASP aibom-generator 는 engine/owasp_aibom_generator.py 다 (enrich_with_owasp_aibom_generator)
 
 syft·cdxgen 가운데 하나라도 실패하면 만든 만큼은 돌려주고 failed 에 적는다 (CLI 는 종료 코드 2 로 끝낸다).
 """
@@ -20,7 +20,6 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from ..engine.ai_service import discover_services
-from ..engine.aibom_generator import enrich_with_aibom_generator
 from ..engine.cdxgen import run_cdxgen
 from ..engine.container_tools import pull_image
 from ..engine.dataset import discover_datasets, missing_revisions, split_data_args
@@ -28,6 +27,7 @@ from ..engine.form import drop_tool_properties, regulate
 from ..engine.image_tar import extract_image, is_archive
 from ..engine.merge import merge
 from ..engine.model import enrich_hub_models, enrich_local_models
+from ..engine.owasp_aibom_generator import enrich_with_owasp_aibom_generator
 from ..engine.spdx import convert_spdx
 from ..engine.syft import run_syft
 from ..utils.dataset_utils import is_dataset
@@ -191,14 +191,14 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path) -> S
     stage("Enriching M-BOM (Hub API)", result)
 
     owasp: dict = {}
-    ai_doc = enrich_with_aibom_generator(ai_doc, workdir, report=owasp)
+    ai_doc = enrich_with_owasp_aibom_generator(ai_doc, workdir, report=owasp)
     if owasp["skipped"]:
         result = f"skipped: {owasp['skipped']}"
     elif owasp["failed"]:
         result = f"{owasp['enriched']} of {count(owasp['models'], 'hub model')} ({len(owasp['failed'])} failed)"
     else:
         result = count(owasp["enriched"], "hub model")
-    stage("Enriching M-BOM (aibom-generator)", result)
+    stage("Enriching M-BOM (OWASP aibom-generator)", result)
     for hf_id, reason in owasp["errors"].items():                # 보강은 선택 단계라 실패해도 failed 에 넣지 않고 이유만 알린다
         log(f"[sure-aibom]   {hf_id}: {reason}")
 

@@ -14,7 +14,7 @@ import pytest
 
 import sure_aibom.engine.common.hub as hub
 import sure_aibom.engine.dataset as ds
-from sure_aibom.engine.aibom_generator import _skip_reason
+from sure_aibom.engine.owasp_aibom_generator import _skip_reason
 from sure_aibom.engine.common.component import INTERNAL_PREFIX
 from sure_aibom.engine.common.licenses import card_licenses, license_entry
 from sure_aibom.engine.dataset import discover_datasets, missing_revisions

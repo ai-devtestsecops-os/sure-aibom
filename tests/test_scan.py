@@ -63,8 +63,8 @@ def recorded_owasp(hf_id: str, workdir) -> dict:
 
 @pytest.fixture(autouse=True)
 def offline(monkeypatch):
-    monkeypatch.setattr("sure_aibom.engine.aibom_generator._skip_reason", lambda: None)                            # 보강은 녹화본으로 돌린다
-    monkeypatch.setattr("sure_aibom.engine.aibom_generator._run_aibom_generator", recorded_owasp)
+    monkeypatch.setattr("sure_aibom.engine.owasp_aibom_generator._skip_reason", lambda: None)                            # 보강은 녹화본으로 돌린다
+    monkeypatch.setattr("sure_aibom.engine.owasp_aibom_generator._run_owasp_aibom_generator", recorded_owasp)
     monkeypatch.setattr(hub, "hf_reachable", lambda: True)                                                 # 허브 모델 응답은 M-BOM 보강이 받는다
     monkeypatch.setattr(hub, "fetch_model_info", lambda hf_id: recorded("model", hf_id))
     monkeypatch.setattr(hub, "fetch_dataset_info", lambda hf_id: recorded("dataset", hf_id))
@@ -203,7 +203,7 @@ def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
     assert lines[0] == f"[sure-aibom] Generating AI-BOM v0.6 (CycloneDX) for {FIXTURE}, data from {FIXTURE / 'data'}"
     assert [line.split(" .")[0] for line in lines[1:-1]] == [
         "[sure-aibom] Generating S-BOM (syft)", "[sure-aibom] Generating M-BOM (cdxgen)", "[sure-aibom] Enriching M-BOM (Hub API)",
-        "[sure-aibom] Enriching M-BOM (aibom-generator)", "[sure-aibom] Generating D-BOM", "[sure-aibom] Merging BOMs",
+        "[sure-aibom] Enriching M-BOM (OWASP aibom-generator)", "[sure-aibom] Generating D-BOM", "[sure-aibom] Merging BOMs",
         "[sure-aibom] Placing regulation fields"]
     assert lines[1].endswith(" 4 packages, 1 file") and lines[2].endswith(" 5 models, 2 files")   # cdxgen 의 데이터셋 참조는 D-BOM 에서 센다
     assert lines[3].endswith(" 1 hub model") and lines[4].endswith(" 1 hub model") and lines[5].endswith(" 4 datasets")
@@ -440,7 +440,7 @@ def test_the_merge_runs_after_the_steps_that_fill_the_cdxgen_document(tmp_path, 
     """cdxgen 문서를 고치는 단계(AI 서비스, M-BOM 보강, D-BOM)가 다 돈 뒤에 syft 문서와 병합한다. 병합이 받는 문서에는 D-BOM 이 만든 데이터셋이 이미 있다."""
     order: list[str] = []
     seen: dict = {}
-    for name in ("discover_services", "enrich_local_models", "enrich_hub_models", "enrich_with_aibom_generator", "discover_datasets", "regulate"):
+    for name in ("discover_services", "enrich_local_models", "enrich_hub_models", "enrich_with_owasp_aibom_generator", "discover_datasets", "regulate"):
         monkeypatch.setattr(scan_service, name, lambda *a, _real=getattr(scan_service, name), _name=name, **k: order.append(_name) or _real(*a, **k))
     real_merge = scan_service.merge
 
@@ -452,7 +452,7 @@ def test_the_merge_runs_after_the_steps_that_fill_the_cdxgen_document(tmp_path, 
     monkeypatch.setattr(scan_service, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
     monkeypatch.setattr(scan_service, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
     doc = scan(FIXTURE, tmp_path / "b.json", "--data", str(FIXTURE / "data"))
-    assert order == ["discover_services", "enrich_local_models", "enrich_hub_models", "enrich_with_aibom_generator", "discover_datasets",
+    assert order == ["discover_services", "enrich_local_models", "enrich_hub_models", "enrich_with_owasp_aibom_generator", "discover_datasets",
                      "merge", "regulate"]
     assert seen["datasets"] == [LOCAL_REF, IMDB_REF]                                     # --data 의 로컬 데이터와 src/train.py 의 load_dataset
     assert {c["bom-ref"] for c in doc["components"] if c["type"] == "data"} == {LOCAL_REF, IMDB_REF}

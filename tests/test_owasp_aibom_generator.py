@@ -1,4 +1,4 @@
-"""enrich_with_aibom_generator: 허브 모델마다 OWASP aibom-generator 를 돌려 규제 필드 원본만 가져온다.
+"""enrich_with_owasp_aibom_generator: 허브 모델마다 OWASP aibom-generator 를 돌려 규제 필드 원본만 가져온다.
 도구 출력은 tests/data/owasp/bert-base-uncased.cdx.json (python -m src.cli google-bert/bert-base-uncased) 로 바꿔 끼운다."""
 import copy
 import json
@@ -8,15 +8,15 @@ from pathlib import Path
 
 import pytest
 
-import sure_aibom.engine.aibom_generator as aibom_generator
+import sure_aibom.engine.owasp_aibom_generator as owasp_aibom_generator
 import sure_aibom.engine.common.hub as hub_api
-from sure_aibom.engine.aibom_generator import OWASP_SOURCES, _run_aibom_generator, _skip_reason, enrich_with_aibom_generator   # 바꿔 끼우기 전의 진짜 함수
+from sure_aibom.engine.owasp_aibom_generator import OWASP_SOURCES, _run_owasp_aibom_generator, _skip_reason, enrich_with_owasp_aibom_generator   # 바꿔 끼우기 전의 진짜 함수
 from sure_aibom.engine.form import regulate
 from sure_aibom.engine.model import enrich_hub_models
 from sure_aibom.utils.exceptions import RunnerError
 from test_model_hub import BERT, HF_ID, HUB, bert_component, card_props, doc_of
 
-# 실행 가능 여부와 도구 실행은 시험마다 aibom_generator 모듈의 함수를 바꿔 끼운다 (enrich_with_aibom_generator 가 그 이름으로 부른다).
+# 실행 가능 여부와 도구 실행은 시험마다 owasp_aibom_generator 모듈의 함수를 바꿔 끼운다 (enrich_with_owasp_aibom_generator 가 그 이름으로 부른다).
 
 OWASP = Path(__file__).parent / "data" / "owasp" / "bert-base-uncased.cdx.json"
 WORKDIR = Path("/nonexistent")                                   # 도구 실행을 바꿔 끼우므로 쓰이지 않는다
@@ -32,7 +32,7 @@ def owasp() -> dict:
 
 @pytest.fixture(autouse=True)
 def runnable(monkeypatch):
-    monkeypatch.setattr(aibom_generator, "_skip_reason", lambda: None)      # 도구를 돌릴 수 있는 것으로 친다
+    monkeypatch.setattr(owasp_aibom_generator, "_skip_reason", lambda: None)      # 도구를 돌릴 수 있는 것으로 친다
 
 
 def stub(monkeypatch, result, calls: list | None = None):
@@ -42,7 +42,7 @@ def stub(monkeypatch, result, calls: list | None = None):
         if isinstance(result, Exception):
             raise result
         return copy.deepcopy(result)
-    monkeypatch.setattr(aibom_generator, "_run_aibom_generator", run)
+    monkeypatch.setattr(owasp_aibom_generator, "_run_owasp_aibom_generator", run)
 
 
 # -- 돌리지 않는 경우 ------------------------------------------------------------------
@@ -51,19 +51,19 @@ def test_nothing_to_enrich_is_left_alone(monkeypatch):
     doc = doc_of({"bom-ref": "x", "type": "library", "name": "numpy"})
     before = json.dumps(doc)
     report: dict = {}
-    assert json.dumps(enrich_with_aibom_generator(doc, WORKDIR, report=report)) == before
+    assert json.dumps(enrich_with_owasp_aibom_generator(doc, WORKDIR, report=report)) == before
     assert report["skipped"] == "no Hugging Face models"
 
 
 def test_offline_skips_without_running_anything(monkeypatch, logs):
     """허브에 닿지 않으면 도구를 돌리지 않는다."""
-    monkeypatch.setattr(aibom_generator, "_skip_reason", lambda: "huggingface.co unreachable")
+    monkeypatch.setattr(owasp_aibom_generator, "_skip_reason", lambda: "huggingface.co unreachable")
     stub(monkeypatch, RunnerError("불려서는 안 된다"))
     logs.clear()
     doc = doc_of(bert_component())
     before = json.dumps(doc)
     report: dict = {}
-    assert json.dumps(enrich_with_aibom_generator(doc, WORKDIR, report=report)) == before
+    assert json.dumps(enrich_with_owasp_aibom_generator(doc, WORKDIR, report=report)) == before
     assert [m for m in logs if "skipped" in m] == ["[enrich] aibom-generator skipped for 1 hub model: huggingface.co unreachable"]
     assert report["skipped"] == "huggingface.co unreachable"
 
@@ -92,10 +92,10 @@ def test_report_carries_the_first_line_of_each_failure(monkeypatch):
         if hf_id == "acme/other":
             raise RunnerError("aibom-generator exited with 1 for acme/other\nTraceback …")
         return {"bomFormat": "CycloneDX", "components": []}                     # 모델 컴포넌트가 없는 결과
-    monkeypatch.setattr(aibom_generator, "_run_aibom_generator", run)
+    monkeypatch.setattr(owasp_aibom_generator, "_run_owasp_aibom_generator", run)
     report: dict = {}
-    enrich_with_aibom_generator(doc_of(bert_component(), {"bom-ref": other, "type": "machine-learning-model", "name": "other", "purl": other}),
-                                WORKDIR, report=report)
+    enrich_with_owasp_aibom_generator(doc_of(bert_component(), {"bom-ref": other, "type": "machine-learning-model", "name": "other", "purl": other}),
+                                      WORKDIR, report=report)
     assert (report["models"], report["enriched"], sorted(report["failed"])) == (2, 0, ["acme/other", HF_ID])
     assert report["errors"] == {HF_ID: "no model component in the aibom-generator output",
                                 "acme/other": "aibom-generator exited with 1 for acme/other"}
@@ -116,10 +116,10 @@ def test_a_failing_run_is_logged_and_the_other_models_still_run(monkeypatch, owa
         if hf_id == "acme/other":
             raise RunnerError("exit 1")
         return copy.deepcopy(owasp)
-    monkeypatch.setattr(aibom_generator, "_run_aibom_generator", run)
+    monkeypatch.setattr(owasp_aibom_generator, "_run_owasp_aibom_generator", run)
     logs.clear()
     doc = doc_of(bert_component(), {"bom-ref": other, "type": "machine-learning-model", "name": "other", "purl": other})
-    out = enrich_with_aibom_generator(doc, WORKDIR)
+    out = enrich_with_owasp_aibom_generator(doc, WORKDIR)
     assert sorted(calls) == ["acme/other", HF_ID]
     assert card_props(out["components"][0]) and "modelCard" not in out["components"][1]
     assert any("acme/other: exit 1" in m for m in logs)
@@ -129,7 +129,7 @@ def test_a_result_without_a_model_component_changes_nothing(monkeypatch):
     stub(monkeypatch, {"bomFormat": "CycloneDX", "components": [{"type": "library", "name": "x"}]})
     doc = doc_of(bert_component())
     before = json.dumps(doc)
-    assert json.dumps(enrich_with_aibom_generator(doc, WORKDIR)) == before
+    assert json.dumps(enrich_with_owasp_aibom_generator(doc, WORKDIR)) == before
 
 
 # -- 규제 필드 원본만 --------------------------------------------------------------------
@@ -137,7 +137,7 @@ def test_only_regulation_sources_are_taken_from_owasp(monkeypatch, owasp):
     calls: list[str] = []
     stub(monkeypatch, owasp, calls)
     report: dict = {}
-    out = enrich_with_aibom_generator(doc_of(bert_component()), WORKDIR, report=report)
+    out = enrich_with_owasp_aibom_generator(doc_of(bert_component()), WORKDIR, report=report)
     comp = out["components"][0]
     assert calls == [HF_ID] and report["enriched"] == 1
     props = card_props(comp)
@@ -152,9 +152,9 @@ def test_owasp_fields_other_than_regulation_sources_are_not_taken(monkeypatch, o
     supplier·authors·version 은 하나도 들어오지 않는다. 비어 있는 자리여도 그렇다."""
     stub(monkeypatch, owasp)
     comp = {"bom-ref": BERT, "type": "machine-learning-model", "name": "bert-base-uncased", "purl": BERT}
-    out = enrich_with_aibom_generator(doc_of(comp), WORKDIR)["components"][0]
+    out = enrich_with_owasp_aibom_generator(doc_of(comp), WORKDIR)["components"][0]
     assert set(out) == {"bom-ref", "type", "name", "purl", "modelCard"} and set(out["modelCard"]) == {"properties"}
-    kept = enrich_with_aibom_generator(doc_of(bert_component(description="cdxgen 설명")), WORKDIR)["components"][0]
+    kept = enrich_with_owasp_aibom_generator(doc_of(bert_component(description="cdxgen 설명")), WORKDIR)["components"][0]
     assert kept["modelCard"]["modelParameters"] == {"task": "fill-mask", "modelArchitecture": "BertForMaskedLM"}
     assert kept["description"] == "cdxgen 설명" and "considerations" not in kept["modelCard"]
 
@@ -170,7 +170,7 @@ def test_an_owasp_result_without_regulation_values_counts_as_failed(monkeypatch,
     doc = doc_of(bert_component())
     before = json.dumps(doc)
     report: dict = {}
-    assert json.dumps(enrich_with_aibom_generator(doc, WORKDIR, report=report)) == before
+    assert json.dumps(enrich_with_owasp_aibom_generator(doc, WORKDIR, report=report)) == before
     assert report["failed"] == [HF_ID] and report["errors"] == {HF_ID: "no regulation values in the aibom-generator output"}
 
 
@@ -179,21 +179,21 @@ def test_the_generator_is_listed_as_a_tool_only_when_its_values_are_used(monkeyp
     모델이 여럿이어도, 두 번 돌려도 한 번만 둔다. 원본을 하나도 못 가져온 결과(비공개·없는 저장소)면 더하지 않는다."""
     stub(monkeypatch, owasp)
     other = bert_component(**{"bom-ref": "pkg:huggingface/acme/other", "purl": "pkg:huggingface/acme/other", "group": "acme", "name": "other"})
-    out = enrich_with_aibom_generator(doc_of(bert_component(), other), WORKDIR)
+    out = enrich_with_owasp_aibom_generator(doc_of(bert_component(), other), WORKDIR)
     assert out["metadata"]["tools"]["components"] == owasp["metadata"]["tools"]["components"]
-    assert enrich_with_aibom_generator(copy.deepcopy(out), WORKDIR)["metadata"] == out["metadata"]
+    assert enrich_with_owasp_aibom_generator(copy.deepcopy(out), WORKDIR)["metadata"] == out["metadata"]
     empty = copy.deepcopy(owasp)
     for comp in empty["components"]:
         card = comp.get("modelCard") or {}
         card["properties"] = [p for p in card.get("properties") or [] if p.get("name") not in OWASP_SOURCES]
     stub(monkeypatch, empty)
-    assert "metadata" not in enrich_with_aibom_generator(doc_of(bert_component()), WORKDIR)
+    assert "metadata" not in enrich_with_owasp_aibom_generator(doc_of(bert_component()), WORKDIR)
 
 
 def test_running_twice_adds_nothing_new(monkeypatch, owasp):
     stub(monkeypatch, owasp)
-    once = enrich_with_aibom_generator(doc_of(bert_component()), WORKDIR)
-    twice = enrich_with_aibom_generator(copy.deepcopy(once), WORKDIR)
+    once = enrich_with_owasp_aibom_generator(doc_of(bert_component()), WORKDIR)
+    twice = enrich_with_owasp_aibom_generator(copy.deepcopy(once), WORKDIR)
     assert json.dumps(twice) == json.dumps(once)
 
 
@@ -204,7 +204,7 @@ def test_enriched_values_become_v06_fields(monkeypatch, owasp, form):
     stub(monkeypatch, owasp)
     hub = json.loads(HUB.read_text(encoding="utf-8"))
     doc = enrich_hub_models(doc_of(bert_component()), model_infos={HF_ID: hub})
-    out = regulate(enrich_with_aibom_generator(doc, WORKDIR), form=form)
+    out = regulate(enrich_with_owasp_aibom_generator(doc, WORKDIR), form=form)
     card = out["components"][0]["modelCard"]
     if form == "properties":
         props = card_props(out["components"][0])
@@ -220,7 +220,7 @@ def test_enriched_values_become_v06_fields(monkeypatch, owasp, form):
 # -- 실제 실행 (AIBOM_GENERATOR_DIR 과 네트워크가 있을 때만) ----------------------------------
 @pytest.mark.skipif(_skip_reason() is not None, reason=_skip_reason() or "")
 def test_live_generator_returns_the_same_property_names():
-    doc = _run_aibom_generator(HF_ID, Path(tempfile.mkdtemp()))
+    doc = _run_owasp_aibom_generator(HF_ID, Path(tempfile.mkdtemp()))
     src = next(c for c in doc["components"] if c["type"] == "machine-learning-model")
     names = {p["name"] for p in (src.get("modelCard") or {}).get("properties") or []}
     assert KEPT <= names, f"기록해 둔 응답에 있던 키가 사라졌다: {sorted(KEPT - names)}"

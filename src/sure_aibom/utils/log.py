@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import sys
 
-STAGE_WIDTH = 36                                   # 단계 이름 뒤 점선까지의 너비
+STAGE_WIDTH = 42                                   # 단계 이름 뒤 점선까지의 너비. 가장 긴 이름(Enriching M-BOM (OWASP aibom-generator)) 뒤에 점 셋이 남는다
 _verbose = False                                   # -v 를 줬는가. set_verbose 만 바꾼다
 
 

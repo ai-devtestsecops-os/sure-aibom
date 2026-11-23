@@ -2,7 +2,7 @@
 
 
 class RunnerError(RuntimeError):
-    """외부 프로그램 실패. 프로그램이 없거나, 시간을 넘기거나, 0 이 아닌 코드로 끝나거나, 출력이 없으면 도구를 돌리는 engine 파일(syft.py, cdxgen.py, container_tools.py, aibom_generator.py)이 던진다."""
+    """외부 프로그램 실패. 프로그램이 없거나, 시간을 넘기거나, 0 이 아닌 코드로 끝나거나, 출력이 없으면 도구를 돌리는 engine 파일(syft.py, cdxgen.py, container_tools.py, owasp_aibom_generator.py)이 던진다."""
 
 
 class ImageExtractionError(RuntimeError):

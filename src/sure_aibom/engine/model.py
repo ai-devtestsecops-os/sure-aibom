@@ -3,7 +3,7 @@
     enrich_local_models 로컬 모델. 스캔 대상 안의 모델 파일에서 규제 필드 값을 읽는다
     enrich_hub_models   허브 모델. 코드가 부르는 Hugging Face 모델을 Hub API 응답으로 보강한다
 
-M-BOM 보강에는 OWASP aibom-generator 로 하는 것도 있다. 그것은 engine/aibom_generator.py 가 맡고, service 가 이 두 함수 다음에 부른다.
+M-BOM 보강에는 OWASP aibom-generator 로 하는 것도 있다. 그것은 engine/owasp_aibom_generator.py 가 맡고, service 가 이 두 함수 다음에 부른다.
 
 [로컬 모델] 스캔 대상 안의 모델 파일에서 규제 필드 값을 읽는다.
 
