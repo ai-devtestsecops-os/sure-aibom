@@ -20,7 +20,7 @@ sure-aibom = "sure_aibom.cli:main"
 where = ["src"]
 
 [tool.setuptools.package-data]
-sure_aibom = ["schemas/*.json"]
+sure_aibom = ["engine/common/schemas/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

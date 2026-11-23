@@ -29,7 +29,7 @@ sure-aibom scan ./project -o bom.spdx.json --format spdx --spec v0.6   # AI-BOM 
 ```
 
 `1.7` 과 `3.0.1` 은 그 표준을 지원하는 SBOM 도구와 호환되고, `v0.6` 은 규제 필드의 타입과 허용값까지 스키마로 검증한다.
-검증 스키마는 패키지 안 `schemas/` 폴더에 들어 있다.
+검증 스키마는 패키지 안 `engine/common/schemas/` 폴더에 들어 있다.
 
 파라미터 수를 예로 들면, 같은 모델의 값이 스펙마다 이렇게 달라진다.
 

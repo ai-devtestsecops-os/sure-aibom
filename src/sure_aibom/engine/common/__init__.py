@@ -7,4 +7,5 @@
     files.py             스캔 대상의 파일을 훑거나 찾는 함수
     host.py              이 머신의 CPU 종류
     licenses.py          라이선스 값을 CycloneDX licenses[] 항목으로
+    schemas/             JSON 스키마 파일. engine/validation.py 가 BOM 을 검증할 때, licenses.py 가 SPDX 라이선스 id 목록을 볼 때 읽는다
 """

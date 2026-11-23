@@ -3,7 +3,7 @@
     CycloneDX   "1.7" 공식 CycloneDX 1.7 (properties 형) · "v0.6" aibom-v0.6 CycloneDX (typed 형)      draft-07
     SPDX        "3.0.1" 공식 SPDX 3.0.1 · "v0.6" aibom-v0.6 SPDX (aibom_* 속성)                        2020-12
 
-스키마는 패키지 안 schemas/ 에 있다. 자동으로 다른 스키마를 시도하지 않는다 — spec 이 형식에 맞지 않으면 schema_for 가 None 이다."""
+스키마는 engine/common/schemas/ 에 있다. 자동으로 다른 스키마를 시도하지 않는다 — spec 이 형식에 맞지 않으면 schema_for 가 None 이다."""
 from __future__ import annotations
 
 import json
@@ -17,7 +17,7 @@ from referencing import Registry, Resource
 
 from ..utils.log import log
 
-SCHEMA_DIR = Path(str(files("sure_aibom") / "schemas"))   # 패키지 안. 편집 설치·wheel 설치 어디서든 같은 위치
+SCHEMA_DIR = Path(str(files("sure_aibom.engine.common") / "schemas"))   # 패키지 안. 편집 설치·wheel 설치 어디서든 같은 위치
 CDX_SCHEMA = SCHEMA_DIR / "aibom-v0.6-cyclonedx.schema.json"
 CDX_OFFICIAL = SCHEMA_DIR / "bom-1.7.schema.json"
 SPDX_SCHEMA = SCHEMA_DIR / "aibom-v0.6-spdx.schema.json"

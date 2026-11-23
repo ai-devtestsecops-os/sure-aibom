@@ -12,8 +12,8 @@ from importlib.resources import files
 
 
 def _load_spdx_ids() -> dict[str, str]:
-    """소문자 id → 스키마의 표기 (apache-2.0 → Apache-2.0). 패키지 안 schemas/spdx.schema.json 의 enum 이다."""
-    with (files("sure_aibom") / "schemas" / "spdx.schema.json").open(encoding="utf-8") as fh:
+    """소문자 id → 스키마의 표기 (apache-2.0 → Apache-2.0). 이 폴더의 schemas/spdx.schema.json 의 enum 이다."""
+    with (files("sure_aibom.engine.common") / "schemas" / "spdx.schema.json").open(encoding="utf-8") as fh:
         return {i.lower(): i for i in json.load(fh).get("enum") or []}
 
 
