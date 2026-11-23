@@ -1,4 +1,4 @@
-"""engine 의 단계 파일들이 가져다 쓰는 것을 모은다. 단계 파일(syft.py, model.py 등)은 서로 가져다 쓰지 않고, 같이 쓰는 것은 여기에 둔다.
+"""engine 바로 아래 파일들(syft.py, model.py 등)이 가져다 쓰는 것을 모은다. 그 파일들은 서로 가져다 쓰지 않고, 같이 쓰는 것은 여기에 둔다.
 
     proc.py              다른 프로그램 실행
     hub.py               Hugging Face 허브 요청
