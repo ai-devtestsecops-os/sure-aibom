@@ -203,10 +203,12 @@ def test_spec_v06_scan_validates_against_v06_only(tmp_path, capsys):
     assert lines[0] == f"[sure-aibom] Generating AI-BOM v0.6 (CycloneDX) for {FIXTURE}, data from {FIXTURE / 'data'}"
     assert [line.split(" .")[0] for line in lines[1:-1]] == [
         "[sure-aibom] Generating S-BOM (syft)", "[sure-aibom] Generating M-BOM (cdxgen)", "[sure-aibom] Enriching M-BOM (Hub API)",
-        "[sure-aibom] Enriching M-BOM (aibom-generator)", "[sure-aibom] Generating D-BOM", "[sure-aibom] Adding regulation fields"]
+        "[sure-aibom] Enriching M-BOM (aibom-generator)", "[sure-aibom] Generating D-BOM", "[sure-aibom] Merging BOMs",
+        "[sure-aibom] Placing regulation fields"]
     assert lines[1].endswith(" 4 packages, 1 file") and lines[2].endswith(" 5 models, 2 files")   # cdxgen 의 데이터셋 참조는 D-BOM 에서 센다
     assert lines[3].endswith(" 1 hub model") and lines[4].endswith(" 1 hub model") and lines[5].endswith(" 4 datasets")
-    assert lines[6].endswith(" 34 of 44 filled (models 12/20, datasets 22/24)")      # 모델 5개 × 4, 허브 데이터셋 3개 × 7 + 로컬 1개 × 3
+    assert lines[6].endswith(" 16 components")                                       # 병합 줄은 합친 뒤의 컴포넌트 수 (마지막 줄의 전체 수와 같다)
+    assert lines[7].endswith(" 34 of 44 filled (models 12/20, datasets 22/24)")      # 모델 5개 × 4, 허브 데이터셋 3개 × 7 + 로컬 1개 × 3
     # 마지막 줄은 다 만든 BOM 을 다시 센 것 — 묶음을 더하면 전체와 같다
     total, groups, deps = re.fullmatch(rf"\[sure-aibom\] Wrote {re.escape(str(cdx))} \((\d+) components: (.+); (\d+) dependencies\)", lines[-1]).groups()
     assert groups == "4 packages, 5 models, 4 datasets, 3 files"

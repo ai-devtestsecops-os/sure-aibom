@@ -202,18 +202,20 @@ def _scan(target: str, data: list[str], fmt: str, spec: str, workdir: Path) -> S
     ai_doc = discover_datasets(ai_doc, scan_dir, report=datasets, data_paths=data,
                                model_infos=enriched["model_infos"], hub_reachable=enriched["hub_reachable"], facts=facts)
 
-    # 다 채운 뒤에 syft 문서와 하나로 합친다. 병합이 bom-ref 를 다시 매기면서 facts 의 기록도 새 bom-ref 로 옮긴다
-    merged = merge([*docs, ai_doc], root=scan_root(target, image_name), facts=facts)
-    total = count(sum(1 for c in merged["components"] if is_dataset(c)), "dataset")
+    total = count(sum(1 for c in ai_doc.get("components") or [] if is_dataset(c)), "dataset")
     stage("Generating D-BOM", total + (" (huggingface.co unreachable, hub details skipped)" if datasets.get("hub_unreachable") else ""))
     for path in datasets.get("empty_data_paths") or []:
         log(f"[sure-aibom] warning: no data files in {path}")
     for ref in datasets.get("unresolved_hub_data") or []:
         log(f"[sure-aibom] warning: huggingface.co lookup failed for {ref}, kept as given")
 
+    # 다 채운 뒤에 syft 문서와 하나로 합친다. 병합이 bom-ref 를 다시 매기면서 facts 의 기록도 새 bom-ref 로 옮긴다
+    merged = merge([*docs, ai_doc], root=scan_root(target, image_name), facts=facts)
+    stage("Merging BOMs", count(len(merged["components"]), "component"))      # 합친 뒤의 수. 끝의 Wrote 줄이 세는 수와 같다
+
     regulation: dict = {}
     merged = regulate(merged, form=FORM_BY_SPEC[spec], report=regulation)
-    stage("Adding regulation fields", coverage_text(regulation))
+    stage("Placing regulation fields", coverage_text(regulation))
     merged = drop_tool_properties(merged)                         # 출력의 properties 는 aibom:* 뿐이다
 
     out_doc = merged
