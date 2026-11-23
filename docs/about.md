@@ -36,4 +36,4 @@ sure-aibom 의 명령은 둘이다. `scan` 은 검증된 오픈소스 도구가 
 
 ### sure-aibom validate
 
-- **스키마 검증 (sure-aibom)**: BOM JSON 파일을 `--spec` 이 고른 스키마(CycloneDX 1.7, SPDX 3.0.1, AI-BOM v0.6)로 검증하고, 결과를 Valid 또는 Invalid 로 알린다.
+- **스키마 검증 (sure-aibom)**: AI-BOM JSON 파일을 `--spec` 이 고른 스키마(CycloneDX 1.7, SPDX 3.0.1, AI-BOM v0.6)로 검증하고, 결과를 Valid 또는 Invalid 로 알린다.
