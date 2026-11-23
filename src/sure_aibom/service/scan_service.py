@@ -27,7 +27,7 @@ from ..engine.merge import merge
 from ..engine.model import enrich_hub_models, enrich_local_models
 from ..engine.spdx import convert_spdx
 from ..engine.syft import run_syft
-from ..utils.dataset_component import is_dataset
+from ..utils.data_component import is_dataset
 from ..utils.exceptions import ImageExtractionError, RunnerError
 from ..utils.facts import Facts
 from ..utils.formats import FORM_BY_SPEC, FORMAT_NAME

@@ -21,7 +21,7 @@ from sure_aibom.engine.dataset import discover_datasets, missing_revisions
 from sure_aibom.engine.merge import merge
 from sure_aibom.engine.form import regulate
 from sure_aibom.engine.validation import _validate_cdx
-from sure_aibom.utils.dataset_component import hf_dataset_id_of, is_dataset
+from sure_aibom.utils.data_component import hf_dataset_id_of, is_dataset
 from sure_aibom.utils.facts import Facts
 
 # 허브 조회는 시험마다 hub 모듈의 함수를 바꿔 끼운다 (dataset.py 가 그 모듈을 거쳐 부른다).

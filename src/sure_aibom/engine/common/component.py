@@ -6,7 +6,7 @@
                        떼어 낼 모델을 고를 때 쓴다)
 
 상수는 CycloneDX 의 component.type 값, 허브 모델 purl 과 로컬 모델 파일의 모양, 수집 단계와 form.py 가 주고받는 프로퍼티 이름이다.
-데이터셋 컴포넌트를 알아보는 함수와 상수는 service 도 써서 utils/dataset_component.py 에 있다.
+type 이 data 인 컴포넌트 가운데 데이터셋을 알아보는 함수와 상수는 service 도 써서 utils/data_component.py 에 있다.
 
 허브 모델: purl 이 pkg:huggingface/<ns>/<name> 인 모델 컴포넌트 가운데 로컬 모델 파일(README.md, config.json, adapter_config.json,
 Modelfile, *.gguf, *.safetensors)에서 찾은 것이 아닌 것. 로컬 폴더는 그 파일들이 근거다 (config 의 _name_or_path 는 베이스 모델

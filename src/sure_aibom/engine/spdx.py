@@ -43,7 +43,7 @@ import re
 import uuid
 from urllib.parse import quote
 
-from ..utils.dataset_component import is_dataset
+from ..utils.data_component import is_dataset
 from ..utils.facts import Facts
 from ..utils.log import detail
 from .common.component import MODEL_TYPE, identity

@@ -1,4 +1,4 @@
-"""데이터셋 컴포넌트를 알아보는 함수와 상수. service 와 engine 이 같이 쓴다.
+"""type 이 data 인 컴포넌트 가운데 데이터셋을 알아보는 함수와 상수. service 와 engine 이 같이 쓴다.
 
     is_dataset         D-BOM 으로 세는 컴포넌트인가 (service 가 단계 줄과 요약 줄에서 셀 것을, engine/spdx.py 가 데이터셋 요소로 바꿀
                        것을 고를 때 쓴다)

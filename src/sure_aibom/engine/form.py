@@ -43,7 +43,7 @@ import json
 import re
 from typing import Iterable
 
-from ..utils.dataset_component import DATA_TYPE
+from ..utils.data_component import DATA_TYPE
 from ..utils.log import detail
 from .common.component import HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX, MODEL_TYPE
 
