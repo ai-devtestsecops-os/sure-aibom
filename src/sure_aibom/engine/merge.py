@@ -1,14 +1,15 @@
-"""CycloneDX 문서 여러 개를 하나로 병합한다.
+"""CycloneDX 문서 여러 개를 하나로 병합한다. syft 문서와, cdxgen 이 내고 M-BOM 보강과 D-BOM 이 채운 문서를 받는다.
 
 병합 키 (aibom_cli_plan.md §4, common/component.py 의 identity):
     소프트웨어  purl
     모델        pkg:huggingface/ns/name@rev → 없으면 hashes → 없으면 (type, name, version)
-    데이터셋    pkg:huggingface/datasets/… (cdxgen 만 생산)
+    데이터셋    pkg:huggingface/datasets/… . --data 로컬 경로로 만든 것은 dataset.py 가 붙인 bom-ref 그대로 (data:local/<이름>@)
     파일        경로 `file:/<path>` — syft 는 해시, cdxgen 은 purl(`?path=`)·`urn:file:ai:<path>` 로 내므로
                 다른 키로는 같은 파일이 두 번 남는다.
 
 같은 키의 컴포넌트가 여러 문서에 있으면 먼저 온 것을 기준으로 두고, 없는 필드만 뒤 것에서 채운다.
-bom-ref 는 병합 키로 다시 부여하고 dependencies[] 의 참조를 따라 바꾼다.
+bom-ref 는 병합 키로 다시 부여하고 dependencies[] 의 참조를 따라 바꾼다. facts 를 주면 앞 단계가 옛 bom-ref 로 적어 둔 기록(역할, 시각)도
+새 bom-ref 로 옮긴다. 모델 카드의 datasets[].ref 는 맞는 데이터셋 컴포넌트로 잇고, 그 결과 같은 참조가 겹치면 하나만 남긴다.
 
 root=(이름, 종류) 를 주면 metadata.component 를 만든다 (디렉터리 → application, 이미지 → container).
 생성 맥락(metadata.lifecycles)도 이 종류로 정한다: 디렉터리는 빌드 전 소스라 pre-build, 이미지는 빌드된 결과물이라 post-build.
@@ -87,19 +88,32 @@ def merge(docs: list[dict], root: tuple[str, str] | None = None, facts: Facts | 
     def remap(ref: str) -> str:
         return ref_map.get(ref, ref)
 
+    if facts is not None:                 # 앞 단계(M-BOM 보강, D-BOM)가 옛 bom-ref 로 적어 둔 기록을 새 bom-ref 로 옮긴다
+        facts.repoint_all(ref_map)
+
     # bom-ref 를 병합 키로 다시 매겼으니, 컴포넌트 안에서 다른 컴포넌트를 가리키는 참조도 따라 바꾼다.
     # 지금은 modelCard.modelParameters.datasets[].ref (모델 → 데이터셋) 하나다.
     # cdxgen 은 이 ref 를 데이터셋 컴포넌트의 bom-ref 가 아닌 purl 문자열로 써서 원본부터 끊겨 있으므로,
-    # 재매핑으로 안 풀리면 이름·URL·의존성 엣지로 데이터셋 컴포넌트를 찾아 잇는다.
+    # 재매핑으로 안 풀리면 이름·URL·의존성 엣지로 데이터셋 컴포넌트를 찾아 잇는다. D-BOM 이 같은 데이터셋을 이미 ref 로 적어 두었으면
+    # 이은 것과 겹치므로 하나만 남긴다.
     merged_deps_preview = {remap(r): {remap(t) for t in ts} for r, ts in dependencies.items()}
     for comp in components.values():
-        for entry in ((comp.get("modelCard") or {}).get("modelParameters") or {}).get("datasets") or []:
-            if not (isinstance(entry, dict) and entry.get("ref")):
-                continue
-            ref = remap(entry["ref"])
-            if ref not in components:
-                ref = _resolve_dataset_ref(entry["ref"], comp["bom-ref"], components, merged_deps_preview) or ref
-            entry["ref"] = ref
+        params = (comp.get("modelCard") or {}).get("modelParameters") or {}
+        entries = params.get("datasets") or []
+        kept: list = []
+        refs: set[str] = set()
+        for entry in entries:
+            if isinstance(entry, dict) and entry.get("ref"):
+                ref = remap(entry["ref"])
+                if ref not in components:
+                    ref = _resolve_dataset_ref(entry["ref"], comp["bom-ref"], components, merged_deps_preview) or ref
+                if ref in refs:
+                    continue
+                refs.add(ref)
+                entry["ref"] = ref
+            kept.append(entry)
+        if len(kept) != len(entries):
+            params["datasets"] = kept
 
     merged_deps: dict[str, set[str]] = {}
     for ref, targets in dependencies.items():

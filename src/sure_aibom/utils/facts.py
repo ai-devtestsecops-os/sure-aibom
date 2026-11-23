@@ -9,7 +9,7 @@
             이미지의 org.opencontainers.image.created 라벨(builtTime), 허브 모델·데이터셋 응답의 lastModified(releaseTime).
             CycloneDX 에는 컴포넌트 단위 시각 필드가 없다.
 
-bom-ref 가 바뀌면(데이터셋의 정식 id 이름 바꾸기, 같은 데이터셋 합치기) repoint 로 따라간다."""
+bom-ref 가 바뀌면 따라간다: 데이터셋의 정식 id 이름 바꾸기와 같은 데이터셋 합치기는 repoint 로, 병합이 bom-ref 를 다시 매길 때는 repoint_all 로."""
 from __future__ import annotations
 
 import re
@@ -53,6 +53,19 @@ class Facts:
             target = self.times.setdefault(new, {})
             for k, v in moved.items():
                 target.setdefault(k, v)
+
+    def repoint_all(self, renamed: dict[str, str]) -> None:
+        """bom-ref 여럿을 한 번에 옮긴다 (옛 bom-ref → 새 bom-ref). 병합이 bom-ref 를 다시 매길 때 쓴다. 기록의 순서는 그대로 두고,
+        같은 bom-ref 로 모이는 것은 역할은 합치고 시각은 먼저 적힌 값을 남긴다."""
+        roles: dict[tuple[str, str], set[str]] = {}
+        for (model, dataset), names in self.roles.items():
+            roles.setdefault((renamed.get(model, model), renamed.get(dataset, dataset)), set()).update(names)
+        times: dict[str, dict[str, str]] = {}
+        for ref, stamps in self.times.items():
+            target = times.setdefault(renamed.get(ref, ref), {})
+            for key, value in stamps.items():
+                target.setdefault(key, value)
+        self.roles, self.times = roles, times
 
 
 def _normalize_time(value) -> str | None:

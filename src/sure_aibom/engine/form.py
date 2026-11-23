@@ -45,7 +45,8 @@ from typing import Iterable
 
 from ..utils.dataset_utils import DATA_TYPE
 from ..utils.log import detail
-from .common.component import HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX, MODEL_TYPE
+from .common.component import (HYPERPARAMETER_BY_PROPERTY, HYPERPARAMETER_JSON, INTERNAL_MODEL_PREFIX, INTERNAL_PREFIX,
+                               LOCAL_DATASET_REF_PREFIX, MODEL_TYPE)
 
 FORMS = ("properties", "typed")
 OUTPUT_PREFIX = "aibom:"                                          # 출력에 남는 properties (정의서의 키)
@@ -68,7 +69,6 @@ _NON_NEGATIVE_INT = re.compile(r"^\+?\d+$")
 MODEL_FIELDS = ("hyperparameters", "parameterCount", "inputs maxSize", "technicalRequirements")
 DATASET_FIELDS = ("size", "modality", "availability", "provenance", "intendedUse", "collectionProcess", "statistics")
 LOCAL_DATASET_FIELDS = ("size", "modality", "statistics")        # 나머지는 파일만 보고 알 수 없다
-LOCAL_DATASET_REF = "data:local/"
 HF_DATASETS_PURL = "pkg:huggingface/datasets/"
 
 
@@ -149,7 +149,7 @@ def _coverage(comp: dict, form: str) -> tuple[list[str], list[str]] | None:
                   "technicalRequirements": bool(target.get_technical_requirements())}
     elif comp.get("type") == DATA_TYPE and _is_dataset(comp):
         target = (_DatasetTypedTarget if form == "typed" else _DatasetPropertiesTarget)(comp)
-        fields = LOCAL_DATASET_FIELDS if str(comp.get("bom-ref") or "").startswith(LOCAL_DATASET_REF) else DATASET_FIELDS
+        fields = LOCAL_DATASET_FIELDS if str(comp.get("bom-ref") or "").startswith(LOCAL_DATASET_REF_PREFIX) else DATASET_FIELDS
         filled = {f: (bool(target.get_statistics()) if f == "statistics"
                       else bool(target.get_list(f)) if f in ("modality", "provenance")
                       else target.get_scalar(f) is not None) for f in fields}

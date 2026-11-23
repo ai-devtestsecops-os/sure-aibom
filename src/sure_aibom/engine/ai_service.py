@@ -1,4 +1,4 @@
-"""코드가 부르는 AI 서비스(services[])를 정한다. 병합 뒤, 로컬 모델 읽기 앞에서 돈다.
+"""코드가 부르는 AI 서비스(services[])를 정한다. cdxgen 이 낸 문서에 대고, 로컬 모델 읽기 앞에서 돈다 (병합 앞).
 
 cdxgen 은 서비스를 네 가지에서 만든다 (aiCollector.js): 제공사 SDK import, 모델 이름에서 짐작한 제공사(gpt → openai,
 llama → meta …), 코드가 부르는 허브 모델의 조직(<조직>-service), Modelfile(ollama-service). 서비스는 코드가 네트워크로 부르는

@@ -1,4 +1,4 @@
-"""스캔 대상 안의 데이터셋을 찾아 type=data 컴포넌트로 만든다 (D-BOM). 병합과 M-BOM 보강 뒤, 규제 정규화 앞에서 돈다.
+"""스캔 대상 안의 데이터셋을 찾아 type=data 컴포넌트로 만든다 (D-BOM). M-BOM 보강 뒤, 병합 앞에서 돈다.
 
 출처 두 가지:
     1) Hugging Face 데이터셋 참조
@@ -46,7 +46,9 @@
 데이터셋 사실(size, modality, availability, provenance, statistics)은 aibom-internal:dataset:* 프로퍼티로 컴포넌트에 두고,
 form 이 고른 형태의 자리로 옮기며 지운다 — 출력에는 남지 않는다.
 
-관계: 로컬 데이터셋, 코드에서 찾은 HF 데이터셋, --data 로 준 HF 데이터셋은 metadata.component(루트)가 dependsOn 한다. 허브·로컬 모델 카드의
+관계: 로컬 데이터셋, 코드에서 찾은 HF 데이터셋, --data 로 준 HF 데이터셋은 metadata.component(루트)가 dependsOn 한다. 병합 앞이라 여기서의 루트는
+cdxgen 이 적은 것이고, 병합이 그 행을 문서의 루트로 옮긴다. cdxgen 문서가 없어 루트가 없으면 여기서는 잇지 않고, 병합이 아무도 의존하지 않는
+컴포넌트를 루트에 이을 때 같이 이어진다. 허브·로컬 모델 카드의
 datasets 와 model-index, GGUF 헤더의 general.datasets 에서 온 것은 그 모델이 dependsOn 하고 모델카드
 modelParameters.datasets 에 ref 로 적는다 (루트는 잇지 않는다). 모델 카드 조회가 실패한 허브 모델은 그대로 둔다.
 학습(datasets, general.datasets)·평가(model-index) 역할과 허브 응답의 lastModified 는 CycloneDX 에 자리가 없어 facts(메모리 부가
@@ -73,11 +75,10 @@ from ..utils.dataset_utils import DATA_TYPE, DATASET_KIND, HF_DATASET_PURL, HF_D
 from ..utils.facts import Facts
 from ..utils.log import detail
 from .common import hub
-from .common.component import INTERNAL_PREFIX, MODEL_TYPE, fill_missing, hub_model_id
+from .common.component import INTERNAL_PREFIX, LOCAL_DATASET_REF_PREFIX, MODEL_TYPE, fill_missing, hub_model_id
 from .common.files import SKIP_DIRS, find_file, is_inside, notebook_code, relative_path
 from .common.licenses import card_licenses
 
-LOCAL_REF_PREFIX = "data:local/"
 
 HF_DATASETS_PURL = "pkg:huggingface/datasets/"
 HF_DATA_ARG = "hf://datasets/"                   # scan --data 로 허브 데이터셋을 주는 표기. huggingface_hub 의 HfFileSystem 경로와 같다
@@ -145,7 +146,7 @@ STATISTICS_FILE_LIMIT = JSON_PARSE_LIMIT                      # 로컬 파일 �
 
 def discover_datasets(merged: dict, target: str, report: dict | None = None, data_paths: Iterable[str] = (),
              model_infos: dict | None = None, hub_reachable: bool | None = None, facts: Facts | None = None) -> dict:
-    """병합 문서에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다. 허브 조회는 common/hub.py 로
+    """문서(cdxgen 이 내고 M-BOM 보강이 채운 것)에 데이터셋 컴포넌트를 더한다. 찾은 것이 없으면 문서는 바이트 단위로 그대로다. 허브 조회는 common/hub.py 로
     한다: hf_reachable, fetch_model_info, fetch_dataset_info, fetch_dataset_size, fetch_dataset_statistics.
     data_paths 는 scan --data 값들로, 로컬 데이터 경로이거나 hf://datasets/<id>[@<리비전>] 꼴의 허브 데이터셋이다 (split_data_args).
     model_infos 는 M-BOM 보강이 받아 둔 허브 모델 id → Hub API 응답이고, 주면 허브 모델 카드를 다시 묻지 않는다. hub_reachable 은
@@ -920,7 +921,7 @@ def _data_files(base: Path) -> list[tuple[Path, str]]:
 
 
 def _data_component(ref: str, name: str, analyses: list[dict], extra_size: int = 0, extra_stats: list[tuple[str, str]] = ()) -> dict:
-    comp: dict = {"type": DATA_TYPE, "name": name, "bom-ref": f"{LOCAL_REF_PREFIX}{ref}@"}
+    comp: dict = {"type": DATA_TYPE, "name": name, "bom-ref": f"{LOCAL_DATASET_REF_PREFIX}{ref}@"}
     comp["data"] = [_component_data(a) for a in analyses]
     facts = {                                                     # provenance·availability 는 비운다: 파일이 어디서 왔는지,
         "size": sum(a["size"] for a in analyses) + extra_size,    # 공개 데이터셋을 어떻게 받는지는 로컬 파일만 보고 알 수 없다

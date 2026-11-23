@@ -116,6 +116,44 @@ def test_cdxgen_purl_style_dataset_ref_is_linked_to_the_data_component():
     assert m2["modelCard"]["modelParameters"]["datasets"][0]["ref"] == d2["bom-ref"]
 
 
+def test_a_dataset_ref_that_resolves_to_one_already_listed_is_kept_once():
+    """D-BOM 은 병합 앞에서 돌며 데이터셋을 ref 로 적어 둔다. cdxgen 의 끊긴 참조를 이은 결과가 그것과 같으면 하나만 남긴다."""
+    book = "pkg:huggingface/datasets/bookcorpus/bookcorpus"
+    ai = _doc([
+        {"bom-ref": book, "type": "data", "name": "bookcorpus", "purl": book,
+         "data": [{"type": "dataset", "name": "bookcorpus/bookcorpus", "contents": {"url": "https://huggingface.co/datasets/bookcorpus/bookcorpus"}}]},
+        {"bom-ref": "cdxgen:ai:model:huggingface:tiny", "type": "machine-learning-model", "name": "tiny", "purl": "pkg:generic/huggingface/tiny",
+         "modelCard": {"modelParameters": {"datasets": [
+             {"ref": "pkg:huggingface/datasets/bookcorpus?repository_url=https%3A%2F%2Fhuggingface.co%2Fdatasets"},     # cdxgen 이 적은 것 (끊김)
+             {"ref": book},                                                                                            # D-BOM 이 적은 것
+             {"name": "이름만 적은 항목"}]}}},
+    ], [{"ref": "cdxgen:ai:model:huggingface:tiny", "dependsOn": [book]}])
+    model = next(c for c in merge([ai])["components"] if c["type"] == "machine-learning-model")
+    assert model["modelCard"]["modelParameters"]["datasets"] == [{"ref": book}, {"name": "이름만 적은 항목"}]
+
+
+def test_records_follow_a_component_whose_ref_the_merge_changes():
+    """병합 앞의 단계가 옛 bom-ref 로 적어 둔 역할과 시각은, 병합이 bom-ref 를 다시 매긴 뒤에도 그 컴포넌트의 것이다."""
+    facts = Facts()
+    facts.add_role("cdxgen:ai:model:huggingface:tiny", "cdxgen:ai:dataset:x", "training")
+    facts.set_time("cdxgen:ai:model:huggingface:tiny", "releaseTime", "2024-02-19T11:06:12.000Z")
+    ai = _doc([{"bom-ref": "cdxgen:ai:model:huggingface:tiny", "type": "machine-learning-model", "name": "tiny", "purl": "pkg:generic/huggingface/tiny"},
+               {"bom-ref": "cdxgen:ai:dataset:x", "type": "data", "name": "x", "purl": "pkg:huggingface/datasets/acme/x"}])
+    merge([ai], root=("proj", "directory"), facts=facts)
+    assert facts.roles == {("pkg:generic/huggingface/tiny", "pkg:huggingface/datasets/acme/x"): {"training"}}
+    assert facts.times == {"pkg:generic/huggingface/tiny": {"releaseTime": "2024-02-19T11:06:12Z"}}
+
+
+def test_local_dataset_refs_are_kept_so_folders_with_one_name_stay_apart():
+    """--data 로컬 경로로 만든 데이터셋은 dataset.py 가 붙인 bom-ref 가 병합 키다. 이름으로 키를 만들면 이름이 같은 폴더 둘이 하나로 합쳐진다."""
+    first = {"bom-ref": "data:local/data@", "type": "data", "name": "data", "data": [{"type": "dataset", "name": "data/train.csv"}]}
+    second = {"bom-ref": "data:local/data-2@", "type": "data", "name": "data", "data": [{"type": "dataset", "name": "data/test.csv"}]}
+    assert (identity(first), identity(second)) == ("data:local/data@", "data:local/data-2@")
+    out = merge([_doc([first, second])], root=("proj", "directory"))
+    assert [(c["bom-ref"], c["data"][0]["name"]) for c in out["components"]] == [("data:local/data@", "data/train.csv"), ("data:local/data-2@", "data/test.csv")]
+    assert out["dependencies"] == [{"ref": "application:/proj@", "dependsOn": ["data:local/data-2@", "data:local/data@"]}]
+
+
 # -- 이미지의 OCI 라벨 → 루트 ---------------------------------------------------------
 OCI = "syft:image:labels:org.opencontainers.image."
 

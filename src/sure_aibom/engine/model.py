@@ -1,4 +1,4 @@
-"""M-BOM 보강. cdxgen 이 담지 못한 모델 컴포넌트 값을 채운다. 병합 뒤, 규제 정규화 앞에서 두 함수가 차례로 돈다.
+"""M-BOM 보강. cdxgen 이 담지 못한 모델 컴포넌트 값을 채운다. cdxgen 이 낸 문서에 대고, 병합 앞에서 두 함수가 차례로 돈다.
 
     enrich_local_models 로컬 모델. 스캔 대상 안의 모델 파일에서 규제 필드 값을 읽는다
     enrich_hub_models   허브 모델. 코드가 부르는 Hugging Face 모델을 Hub API 응답과 OWASP aibom-generator 로 보강한다

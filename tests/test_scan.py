@@ -434,6 +434,27 @@ def test_one_failing_tool_still_writes_the_bom_but_exits_2(tmp_path, monkeypatch
     assert any(c["name"] == "m" for c in json.loads(out.read_text())["components"])             # 부분 BOM 은 남는다
 
 
+def test_the_merge_runs_after_the_steps_that_fill_the_cdxgen_document(tmp_path, monkeypatch):
+    """cdxgen 문서를 고치는 단계(AI 서비스, M-BOM 보강, D-BOM)가 다 돈 뒤에 syft 문서와 병합한다. 병합이 받는 문서에는 D-BOM 이 만든 데이터셋이 이미 있다."""
+    order: list[str] = []
+    seen: dict = {}
+    for name in ("discover_services", "enrich_local_models", "enrich_hub_models", "discover_datasets", "regulate"):
+        monkeypatch.setattr(scan_service, name, lambda *a, _real=getattr(scan_service, name), _name=name, **k: order.append(_name) or _real(*a, **k))
+    real_merge = scan_service.merge
+
+    def merge(docs, **k):
+        order.append("merge")
+        seen["datasets"] = sorted(c["bom-ref"] for d in docs for c in d.get("components") or [] if c.get("type") == "data")
+        return real_merge(docs, **k)
+    monkeypatch.setattr(scan_service, "merge", merge)
+    monkeypatch.setattr(scan_service, "run_syft", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
+    monkeypatch.setattr(scan_service, "run_cdxgen", lambda target, workdir: {"bomFormat": "CycloneDX", "specVersion": "1.7", "components": []})
+    doc = scan(FIXTURE, tmp_path / "b.json", "--data", str(FIXTURE / "data"))
+    assert order == ["discover_services", "enrich_local_models", "enrich_hub_models", "discover_datasets", "merge", "regulate"]
+    assert seen["datasets"] == [LOCAL_REF, IMDB_REF]                                     # --data 의 로컬 데이터와 src/train.py 의 load_dataset
+    assert {c["bom-ref"] for c in doc["components"] if c["type"] == "data"} == {LOCAL_REF, IMDB_REF}
+
+
 def test_without_data_paths_the_project_has_no_local_dataset(tmp_path):
     """로컬 데이터는 --data 로만 들어온다. 같은 프로젝트를 --data 없이 스캔하면 data/ 는 BOM 에 없다."""
     doc = scan(FIXTURE, tmp_path / "bom.json")

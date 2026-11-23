@@ -5,13 +5,16 @@
     hub_model_id       허브 모델이면 그 id (model.py 가 보강할 모델을, dataset.py 가 모델 카드를 읽을 모델을, ai_service.py 가 서비스에서
                        떼어 낼 모델을 고를 때 쓴다)
 
-상수는 CycloneDX 의 component.type 값, 허브 모델 purl 과 로컬 모델 파일의 모양, 수집 단계와 form.py 가 주고받는 프로퍼티 이름이다.
+상수는 CycloneDX 의 component.type 값, 허브 모델 purl 과 로컬 모델 파일의 모양, 로컬 데이터셋 bom-ref 의 앞머리, 수집 단계와 form.py 가
+주고받는 프로퍼티 이름이다.
 데이터셋 컴포넌트를 알아보는 함수와 상수는 service 도 써서 utils/dataset_utils.py 에 있다.
 
 허브 모델: purl 이 pkg:huggingface/<ns>/<name> 인 모델 컴포넌트 가운데 로컬 모델 파일(README.md, config.json, adapter_config.json,
 Modelfile, *.gguf, *.safetensors)에서 찾은 것이 아닌 것. 로컬 폴더는 그 파일들이 근거다 (config 의 _name_or_path 는 베이스 모델
 이름일 수 있어 허브 값이 그 모델의 것이 아닐 수 있다).
 매칭 키: purl 의 pkg:huggingface/<ns>/<name> (리비전 제외. 두 도구가 버전 표기를 달리 한다)
+로컬 데이터셋(dataset.py 가 --data 경로로 만든 것)의 병합 키는 dataset.py 가 붙인 bom-ref 그대로다. 이름이 같은 폴더 둘은 bom-ref 로만
+구분되어 있어, 다른 컴포넌트처럼 이름으로 키를 만들면 둘이 하나로 합쳐진다.
 """
 from __future__ import annotations
 
@@ -28,6 +31,7 @@ _HF_PURL = re.compile(r"^pkg:huggingface/(?P<ns>[^/@]+)/(?P<name>[^/@]+)(?:@[^?#
 LOCAL_MODEL_FILES = frozenset({"readme.md", "config.json", "adapter_config.json", "modelfile"})
 LOCAL_MODEL_SUFFIXES = (".gguf", ".safetensors")
 AI_FILE_REF_PREFIX = "urn:file:ai:"       # cdxgen 이 AI 파일(gguf, Modelfile 등)에 붙이는 bom-ref
+LOCAL_DATASET_REF_PREFIX = "data:local/"  # dataset.py 가 --data 로컬 경로로 만든 데이터셋에 붙이는 bom-ref 의 앞머리
 
 # ── 수집 단계가 두고 form.py 가 옮기는 프로퍼티 이름 ─────────────────────────────
 INTERNAL_PREFIX = "aibom-internal:dataset:"                       # dataset.py 가 두는 원본 키 (정의서 키에서 접두어만 다르다)
@@ -49,6 +53,9 @@ HYPERPARAMETER_BY_PROPERTY: dict[str, str] = {
 
 def identity(component: dict) -> str:
     """컴포넌트의 병합 키."""
+    ref = component.get("bom-ref") or ""
+    if ref.startswith(LOCAL_DATASET_REF_PREFIX):
+        return ref
     if component.get("type") == FILE_TYPE:
         path = _file_path_of(component)
         if path:

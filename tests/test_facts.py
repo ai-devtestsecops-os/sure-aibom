@@ -42,3 +42,20 @@ def test_repoint_follows_a_changed_bom_ref_and_merges_into_the_survivor():
     facts.repoint("same", "same")
     assert facts.roles == {("m", "new"): {"training", "evaluation"}, ("m2", "x"): {"training"}}
     assert facts.times == {"new": {"builtTime": "2023-01-01T00:00:00Z", "releaseTime": "2025-01-01T00:00:00Z"}}
+
+
+def test_repoint_all_moves_many_refs_at_once_and_keeps_the_order():
+    """병합이 bom-ref 를 다시 매길 때 쓴다. 옛 이름과 새 이름이 엇갈려도 한 번에 옮기고, 기록의 순서는 그대로다."""
+    facts = Facts()
+    facts.add_role("a", "d1", "training")
+    facts.add_role("b", "d2", "evaluation")
+    facts.add_role("c", "d1", "training")
+    facts.set_time("a", "releaseTime", "2024-01-01T00:00:00Z")
+    facts.set_time("b", "releaseTime", "2025-01-01T00:00:00Z")
+    facts.set_time("b", "builtTime", "2023-01-01T00:00:00Z")
+    facts.repoint_all({"a": "b", "b": "c", "d1": "d1"})                    # a → b, b → c. 하나씩 차례로 옮기면 a 의 기록까지 c 로 간다
+    assert list(facts.roles.items()) == [(("b", "d1"), {"training"}), (("c", "d2"), {"evaluation"}), (("c", "d1"), {"training"})]
+    assert facts.times == {"b": {"releaseTime": "2024-01-01T00:00:00Z"}, "c": {"releaseTime": "2025-01-01T00:00:00Z", "builtTime": "2023-01-01T00:00:00Z"}}
+    facts.repoint_all({"b": "c"})                                          # 같은 bom-ref 로 모이면 역할은 합치고 시각은 먼저 적힌 값이 남는다
+    assert list(facts.roles.items()) == [(("c", "d1"), {"training"}), (("c", "d2"), {"evaluation"})]
+    assert facts.times == {"c": {"releaseTime": "2024-01-01T00:00:00Z", "builtTime": "2023-01-01T00:00:00Z"}}

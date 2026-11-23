@@ -1,13 +1,15 @@
 """sure-aibom scan 을 단계마다 가로채, 최종 BOM 의 값 하나하나가 어느 도구에서 왔는지 따라간다 (tests/test_fields.py 가 쓴다).
 
-단계와 출처:
-    run_syft · run_cdxgen    도구 출력 (engine/syft.py, engine/cdxgen.py 의 정리까지 끝난 것)을 원본으로 둔다
-    merge                    값마다, 병합 키가 같은 원본 컴포넌트의 같은 자리에 같은 값이 있으면 그 도구, 없으면 sure-aibom.
+단계와 출처 (service 가 부르는 순서):
+    run_syft · run_cdxgen    도구 출력 (engine/syft.py, engine/cdxgen.py 의 정리까지 끝난 것)을 원본으로 둔다. cdxgen 문서는 병합 앞의
+                             단계들이 제자리에서 고치므로, 받은 때부터 값마다 출처(cdxgen)를 달아 따라간다
+    discover_services · discover_datasets · enrich_local_models    새 값은 sure-aibom
+    enrich_hub_models        modelCard.properties 에 새로 든 값은 OWASP aibom-generator, 나머지(Hub API 로 채운 필드) 는 sure-aibom
+    merge                    값마다, 병합 키가 같은 syft 원본 컴포넌트의 같은 자리에 같은 값이 있으면 syft, 병합 키가 같은 cdxgen 문서
+                             컴포넌트에 있던 값이면 거기서 따라온 출처, 둘 다 아니면 sure-aibom.
                              컴포넌트 bom-ref 는 병합 키라 sure-aibom. 문서 머리·metadata.component 는 sure-aibom 이 쓰고, 그 가운데
                              이미지 OCI 라벨에서 옮긴 자리는 syft. metadata.tools · services 는 같은 자리에 같은 값을 낸 도구,
                              dependencies 는 그 관계를 낸 도구 (병합 키로 바꿔 비교)
-    discover_services · discover_datasets · enrich_local_models    새 값은 sure-aibom
-    enrich_hub_models        modelCard.properties 에 새로 든 값은 OWASP aibom-generator, 나머지(Hub API 로 채운 필드) 는 sure-aibom
     regulate (form)          새 값은 그 자리를 채우는 원본 키 가운데 같은 값을 가진, 소비된 프로퍼티의 도구 (같으면 OWASP > cdxgen > sure-aibom)
 값 단위 규칙: 단계 뒤의 값이 단계 앞에도 있던 값이면 앞의 출처를 잇고, 새 값이면 그 단계의 도구가 출처다.
 컴포넌트는 단계 사이에서 같은 dict 가 제자리에서 바뀌므로 숨은 표지(MARK)로 단계 전후를 맞춘다. 표지는 출력 직전에 뗀다.
@@ -82,6 +84,8 @@ class Tracker:
         self.facts = None            # 스캔이 메모리로 들고 가는 부가 기록 (facts.py). merge 가 받은 것을 둔다
         self.attr: dict = {}         # 표지 → {자리: {값: {도구}}}, "doc" → 문서 자리
         self.raw: dict[str, dict] = {}
+        self.followed: set[str] = set()                 # 받은 때부터 값마다 출처를 따라가는 문서의 도구 (병합 앞에서 고쳐지는 cdxgen 문서)
+        self.tool_owner: dict[str, set[str]] = {}       # 병합 앞에서 도구 목록에 더해진 항목(JSON) → 그 항목을 낸 도구
 
     def mark_all(self, doc: dict) -> None:
         for comp in doc.get("components") or []:
@@ -95,21 +99,48 @@ class Tracker:
             snap[comp[MARK]] = grouped(leaves(comp))
         return snap
 
-    def after_merge(self, merged: dict) -> None:
+    def follow(self, doc: dict, tool: str) -> None:
+        """도구가 낸 문서의 값마다 그 도구를 출처로 단다. 이 문서는 병합 앞의 단계들이 고치고, stage 가 그 출처를 이어 간다."""
+        self.followed.add(tool)
+        self.mark_all(doc)
+        self.attr = {mark: {path: {v: {tool} for v in values} for path, values in paths.items()} for mark, paths in self.snapshot(doc).items()}
+
+    def before_merge(self, docs: list[dict]) -> dict:
+        """병합 키 → 그 키로 병합될, 따라가던 컴포넌트들의 출처 ({자리: {값: {도구}}}). 병합이 쓰는 것과 같은 키다."""
+        by_key = defaultdict(list)
+        for doc in docs:
+            for c in _walk_components(doc.get("components") or []):
+                if MARK in c:
+                    by_key[identity(c)].append(self.attr.get(c[MARK], {}))
+        return by_key
+
+    def after_merge(self, merged: dict, followed: dict) -> None:
         by_key = defaultdict(list)
         for tool, raw in self.raw.items():
+            if tool in self.followed:                   # 이 문서의 값은 followed 로 따라온 출처를 쓴다
+                continue
             for c in _walk_components(raw.get("components") or []):
                 by_key[identity(c)].append((tool, grouped(leaves(c))))
         self.mark_all(merged)
+        attr: dict = {}
         for comp in merged["components"]:
             sources = by_key.get(comp["bom-ref"], [])
-            self.attr[comp[MARK]] = {
-                path: {v: ({CLI} if path == "bom-ref" else ({t for t, g in sources if v in g.get(path, ())} or {CLI})) for v in values}
-                for path, values in grouped(leaves(comp)).items()}
+            earlier = followed.get(comp["bom-ref"], [])
+
+            def tools_of(path: str, v: str) -> set[str]:
+                if path == "bom-ref":
+                    return {CLI}
+                found = {t for t, g in sources if v in g.get(path, ())}
+                for known in earlier:
+                    found |= known.get(path, {}).get(v, set())
+                return found or {CLI}
+            attr[comp[MARK]] = {path: {v: tools_of(path, v) for v in values} for path, values in grouped(leaves(comp)).items()}
+        self.attr = attr
         raw_docs = {t: grouped(leaves(doc_part(r))) for t, r in self.raw.items()}
         tool_entries: dict[tuple[str, str], set[str]] = defaultdict(set)      # 도구 목록은 항목 단위로 (sure-aibom 항목의 type 이 도구 항목과 값이 같다)
         for entry in ((merged.get("metadata") or {}).get("tools") or {}).get("components") or []:
-            owners = {t for t, r in self.raw.items() if entry in (((r.get("metadata") or {}).get("tools") or {}).get("components") or [])} or {CLI}
+            owners = ({t for t, r in self.raw.items() if entry in (((r.get("metadata") or {}).get("tools") or {}).get("components") or [])}
+                      or self.tool_owner.get(json.dumps(entry, sort_keys=True, ensure_ascii=False)) or {CLI})
             for pair in leaves(entry, "metadata.tools.components"):
                 tool_entries[pair] |= owners
         doc_attr = {}
@@ -206,13 +237,16 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
         def run(target, workdir):
             doc = real[name](target, workdir)
             tracker.raw[tool] = copy.deepcopy(doc)
+            if tool == CDXGEN:                          # 병합 앞의 단계들이 이 문서를 고친다
+                tracker.follow(doc, tool)
             return doc
         return run
 
     def merge(docs, root=None, **k):
         tracker.facts = k.get("facts")
+        followed = tracker.before_merge(docs)
         out = real["merge"](docs, root=root, **k)
-        tracker.after_merge(out)
+        tracker.after_merge(out, followed)
         return out
 
     def staged(name, tool_of):
@@ -224,6 +258,7 @@ def traced_scan(argv: list[str]) -> tuple[dict, Tracker]:
         # 도구 목록은 항목 단위로 본다 (merge 와 같다): 새로 더해진 항목의 칸은 값이 다른 항목과 같아도(type) 그 항목을 낸 도구의 것이다
         for entry in tool_entries(out):
             if entry not in before:
+                tracker.tool_owner[json.dumps(entry, sort_keys=True, ensure_ascii=False)] = enrich_tool("metadata.tools", "", [])
                 for path, v in leaves(entry, "metadata.tools.components"):
                     tracker.attr["doc"].setdefault(path, {}).setdefault(v, set()).update(enrich_tool(path, v, []))
         return out
