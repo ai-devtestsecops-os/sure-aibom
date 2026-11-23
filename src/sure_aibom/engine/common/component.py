@@ -98,13 +98,6 @@ def fill_missing(base: dict, extra: dict) -> None:
 
 # ── 허브 모델 ─────────────────────────────────────────────────────────────────
 
-def _hf_id_of(component: dict) -> str | None:
-    m = _HF_PURL.match(component.get("purl") or "")
-    if not m or component.get("type") != "machine-learning-model":
-        return None
-    return f"{m['ns']}/{m['name']}"
-
-
 def hub_model_id(component: dict) -> str | None:
     """허브 모델이면 그 id (머리 설명). 로컬 모델 파일에서 찾은 모델이면 None."""
     hf_id = _hf_id_of(component)
@@ -117,3 +110,10 @@ def hub_model_id(component: dict) -> str | None:
             if name in LOCAL_MODEL_FILES or name.endswith(LOCAL_MODEL_SUFFIXES):
                 return None
     return hf_id
+
+
+def _hf_id_of(component: dict) -> str | None:
+    m = _HF_PURL.match(component.get("purl") or "")
+    if not m or component.get("type") != "machine-learning-model":
+        return None
+    return f"{m['ns']}/{m['name']}"
