@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """ai-bom 의 데이터에서 필드 레퍼런스 뷰어가 읽는 파일을 만든다 → docs/mapping-viewer/data/.
 
-    conda run -n ai-bom python docs/mapping-viewer/export_data.py      # aibom-cli/ 에서. ai-bom 은 옆 폴더(../ai-bom)
+    AI_BOM_DIR=<ai-bom 폴더> conda run -n ai-bom python docs/mapping-viewer/export_data.py
 
 복사하는 것 (ai-bom/legacy/data 의 v0.6 표를 이름 그대로. 다음 형식(v0.7)을 ai-bom/src 가 만들기 전까지는 레거시의 표를 바로 읽는다):
     aibom_v0.6_cyclonedx.json       CycloneDX 1.7 전체 + v0.6 추가 필드 (added, origin, reference)
@@ -24,8 +24,8 @@ import shutil
 import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
-CLI = os.path.dirname(os.path.dirname(HERE))
-AIBOM = os.path.join(os.path.dirname(CLI), "ai-bom")
+# ai-bom 은 이 저장소 밖의 비공개 폴더라 위치를 환경 변수 AI_BOM_DIR 로 받는다
+AIBOM = os.path.abspath(os.environ["AI_BOM_DIR"]) if os.environ.get("AI_BOM_DIR") else ""
 TRANSLATIONS = os.path.join(AIBOM, "translations")
 LEGACY_DATA = os.path.join(AIBOM, "legacy", "data")   # v0.6 의 표 (legacy/run.py 가 쓴다)
 LEGACY_SRC = os.path.join(AIBOM, "legacy", "src")     # properties 키의 규칙 (format/v0_6/properties.py)
@@ -175,6 +175,9 @@ def cards():
 
 
 def main():
+    # 아래에서 기존 데이터를 먼저 지우므로, 읽어 올 ai-bom 폴더부터 확인한다
+    if not AIBOM or not os.path.isdir(LEGACY_DATA) or not os.path.isdir(AIBOM_SRC):
+        sys.exit("ai-bom 폴더를 찾지 못했다. 환경 변수 AI_BOM_DIR 에 ai-bom 폴더 위치를 준다")
     os.makedirs(OUT, exist_ok=True)
     for name in os.listdir(OUT):                         # 뷰어가 안 읽는 파일은 두지 않는다
         if name.endswith(".json") and name not in KEEP:
