@@ -1,5 +1,5 @@
 // 규제 판정 화면 (compliance/regulation-cards.md). BOM 을 규제 조항마다 대 본 결과와, 조항을 누르면 원문과 요구 사실.
-// 데이터는 export_data.py 가 data/cards/ 에 둔 JSON. 카드 보기·추출기 비교·승인은 내부 화면의 몫이라 여기 두지 않는다.
+// 데이터는 ai-bom 에서 data/cards/ 로 내보내 커밋해 둔 JSON. 카드 보기·추출기 비교·승인은 내부 화면의 몫이라 여기 두지 않는다.
 if (document.querySelector(".card-viewer")) (() => {
 const root = document.querySelector(".card-viewer");
 const BASE = root.dataset.base || "data/cards/";

@@ -1,7 +1,7 @@
 // 필드 매핑 뷰어. docs/field-mapping.md 에 직접 넣은 HTML 을 채운다. 다른 페이지에서는 (뷰어 요소가 없으니) 아무것도 하지 않는다.
 if (document.querySelector(".mapping-viewer")) (() => {
 // CycloneDX <-> SPDX 필드 레퍼런스 뷰어.
-// 데이터는 build 스텝 없이 data/*.json 을 그대로 fetch 해서 쓴다 (export_data.py 가 ai-bom 에서 만든 것).
+// 데이터는 build 스텝 없이 data/*.json 을 그대로 fetch 해서 쓴다 (ai-bom 에서 내보내 커밋해 둔 것).
 //
 // 데이터 소스 역할 분담:
 //   aibom_v0.6_cyclonedx.json : CycloneDX 1.7 전체(공용 타입 포함) + v0.6 추가 필드(added, origin·reference 는 근거 조항)
