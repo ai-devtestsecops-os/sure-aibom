@@ -3,6 +3,7 @@
 AI 규제·표준 요구사항을 반영한 AI-BOM 자동 생성 프로그램 (Compliance-Aware AI-BOM Generation Tool)
 
 sure-aibom 은 디렉터리와 컨테이너 이미지를 스캔해 AI-BOM(D/M/S-BOM) 을 CycloneDX 또는 SPDX 문서 하나로 내는 CLI 도구다.
+사용법과 동작 설명은 [문서 사이트](https://ai-devtestsecops-os.github.io/sure-aibom/)에 있다.
 
 ## 파이프라인
 
