@@ -1,0 +1,123 @@
+/* 본문을 넓게 (기본 61rem), 왼쪽 메뉴는 좁게. 오른쪽 목차는 그대로 둔다 */
+.md-grid { max-width: 90rem; }
+.md-sidebar--primary { width: 9rem; }
+.md-sidebar--secondary { width: 10rem; }
+
+/* 상단 바는 스크롤해도 사이트 이름을 그대로 둔다 (기본은 페이지 제목으로 바뀜) */
+.md-header__title--active .md-header__topic:first-child {
+  opacity: 1 !important;
+  transform: none !important;
+  pointer-events: initial !important;
+  z-index: 0 !important;
+}
+.md-header__topic + .md-header__topic { display: none; }
+
+/* 넓은 화면의 왼쪽 메뉴 맨 위 사이트 이름은 뺀다 (상단 바에 있으니). 좁은 화면의 서랍에는 남긴다 */
+@media screen and (min-width: 76.25em) {
+  .md-nav--primary > .md-nav__title { display: none; }
+}
+
+/* 상단 바의 저장소 링크는 GitHub 아이콘만 둔다. 저장소 이름과, 테마가 GitHub 에서 읽어 와 붙이는 버전 · 별 수는 뺀다 */
+.md-header__source { width: auto; max-width: none; }
+[dir=ltr] .md-header__source, .md-header__source { margin-left: .4rem; }    /* Material 의 [dir=ltr] 규칙보다 우선 */
+.md-source__repository { display: none; }
+
+/* 기본 로고 아이콘은 뺀다. 이름만 둔다 */
+.md-header__button.md-logo { display: none; }
+.md-nav__title .md-nav__button.md-logo { display: none; }
+
+/* 색 모드: 토글 대신 메뉴 (라이트 · 다크 · 시스템). 현재 모드는 radio 입력의 :checked 로 고른다 */
+.palette-menu { position: relative; margin-right: .2rem; }                         /* 검색창 왼쪽 */
+.md-header__button.palette-menu__button:not([hidden]) { display: inline-flex; align-items: center; padding: .4rem .2rem; margin: 0 .2rem 0 0; }  /* Material 의 inline-block 보다 우선 */
+.palette-menu__button .palette-menu__current svg { width: .95rem; height: .95rem; }   /* 아이콘은 작게 */
+.palette-menu__caret svg { width: .8rem; height: .8rem; margin-left: -.1rem; }        /* 열린다는 표시 */
+.palette-menu__legacy { display: none !important; }
+.palette-menu__current { display: none; }
+.palette-menu__current[data-md-color-media="(prefers-color-scheme)"] { display: inline; }   /* 아무것도 안 골랐을 때의 기본 */
+input[data-md-color-media="(prefers-color-scheme: light)"]:checked ~ .palette-menu__button .palette-menu__current,
+input[data-md-color-media="(prefers-color-scheme: dark)"]:checked ~ .palette-menu__button .palette-menu__current { display: none; }
+input[data-md-color-media="(prefers-color-scheme: light)"]:checked ~ .palette-menu__button .palette-menu__current[data-md-color-media="(prefers-color-scheme: light)"],
+input[data-md-color-media="(prefers-color-scheme: dark)"]:checked ~ .palette-menu__button .palette-menu__current[data-md-color-media="(prefers-color-scheme: dark)"] { display: inline; }
+.palette-menu__list {
+  display: none; position: absolute; right: 0; top: 100%; min-width: 8rem; padding: .3rem 0;
+  background: var(--md-default-bg-color); color: var(--md-default-fg-color);
+  border-radius: .2rem; box-shadow: var(--md-shadow-z2); z-index: 10;
+}
+.palette-menu--open .palette-menu__list { display: block; }
+.palette-menu__item {
+  display: flex; align-items: center; gap: .5rem; padding: .35rem .8rem; font-size: .7rem; cursor: pointer; white-space: nowrap;
+}
+.palette-menu__item:hover { background: var(--md-default-fg-color--lightest); }
+.palette-menu__item .md-icon svg { width: .9rem; height: .9rem; fill: currentColor; }
+.palette-menu__item[data-md-color-media="(prefers-color-scheme)"],                         /* 아무것도 안 골랐을 때는 System 이 현재 */
+input[data-md-color-media="(prefers-color-scheme: light)"]:checked ~ .palette-menu__list .palette-menu__item[data-md-color-media="(prefers-color-scheme: light)"],
+input[data-md-color-media="(prefers-color-scheme: dark)"]:checked ~ .palette-menu__list .palette-menu__item[data-md-color-media="(prefers-color-scheme: dark)"] {
+  color: var(--md-primary-fg-color); font-weight: 600;
+}
+input[data-md-color-media="(prefers-color-scheme: light)"]:checked ~ .palette-menu__list .palette-menu__item[data-md-color-media="(prefers-color-scheme)"],
+input[data-md-color-media="(prefers-color-scheme: dark)"]:checked ~ .palette-menu__list .palette-menu__item[data-md-color-media="(prefers-color-scheme)"] {
+  color: inherit; font-weight: normal;
+}
+
+/* 표는 내용 폭이 아니라 본문 폭을 꽉 채운다 (페이지마다 폭이 달라 보이지 않게). Material 은 표를 inline-block 래퍼로 감싼다 */
+.md-typeset__table { display: block; }
+.md-typeset__table table:not([class]) { display: table; width: 100%; }
+
+/* 스크롤바 자리를 항상 비워 둔다. 짧은 페이지(Home)는 스크롤바가 없어 폭이 15px 넓어지고 제목·메뉴가 옆으로 움직이던 것 */
+html { scrollbar-gutter: stable; }
+
+/* 제목: Anchore 문서처럼 h1 은 크고 굵게(700), h2 는 중간 굵기(500)에 짧은 밑줄, h3 는 중간 굵기. Material 기본은 전부 가늘고 회색 */
+.md-typeset h1 { font-size: 2.2em; font-weight: 700; color: var(--md-default-fg-color); margin-bottom: .8em; }
+.md-typeset h2 { font-size: 1.6em; font-weight: 500; color: var(--md-default-fg-color); padding-bottom: .3em; }
+.md-typeset h2::after { content: ""; display: block; width: 3rem; height: 3px; margin-top: .35em; border-radius: 2px; background: var(--md-primary-fg-color); }
+.md-typeset h3 { font-size: 1.25em; font-weight: 500; color: var(--md-default-fg-color); }
+
+/* 오른쪽 목차: "목차" 제목은 빼고, 항목은 회색, 지금 보고 있는 절만 파랗게 */
+.md-nav--secondary > .md-nav__title { display: none; }
+.md-nav--secondary .md-nav__link { color: var(--md-default-fg-color--light); }
+.md-nav--secondary .md-nav__link:hover { color: var(--md-default-fg-color); }
+.md-nav--secondary .md-nav__link--active { color: var(--md-primary-fg-color); }
+
+/* 상단 바 정렬: 제목은 왼쪽 메뉴 글자와 같은 x 에서 시작하고, 검색창은 오른쪽 목차 글자의 시작부터 GitHub 아이콘 앞까지 */
+[dir=ltr] .md-header__title, .md-header__title { margin-left: .6rem; }    /* Material 의 [dir=ltr] 규칙보다 우선 */
+@media screen and (min-width: 60em) {
+  .md-search__inner { width: 6.6rem; }
+}
+
+/* 왼쪽 메뉴: 첫 단계(홈, 소개, 가이드, 규제 준수)는 검정 굵게, 그 안의 페이지는 회색, 현재 페이지만 파랗게.
+   섹션은 화살표로 펼치고(현재 페이지가 든 섹션은 열려 있다) 하위 항목은 들여쓴다 */
+.md-nav--primary .md-nav__link { color: var(--md-default-fg-color--light); }
+.md-nav--primary .md-nav__link:hover { color: var(--md-default-fg-color); }
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__link,
+.md-nav--primary > .md-nav__list > .md-nav__item > .md-nav__container > .md-nav__link { color: var(--md-default-fg-color); font-weight: 700; }
+.md-nav--primary .md-nav__link--active, .md-nav--primary .md-nav__link--active:hover { color: var(--md-primary-fg-color) !important; }
+.md-nav--primary .md-nav__item--nested .md-nav { padding-left: .6rem; }
+
+/* 경로 표시: 현재 페이지 조각은 링크가 아니라 글자 색으로 */
+.md-path__item--current .md-path__link { color: var(--md-default-fg-color); font-weight: 700; cursor: default; }
+
+/* 바닥글(이전·다음): 폭은 Material 기본대로 화면 전체, 높이만 낮춘다 (기본은 링크 위 1rem, 제목 밑 .7rem 여백) */
+.md-footer__link { margin-top: .3rem; margin-bottom: .2rem; }
+.md-footer__title { margin-bottom: .3rem; font-size: .8rem; }
+.md-footer__direction { font-size: .6rem; }
+.md-copyright { padding: .2rem 0; }     /* 아래 메타 띠(저작권·생성기 자리, 지금은 비어 있다)도 얇게 */
+
+/* 수집 항목의 표(도구 | 대상 | 읽는 곳)는 앞 두 열 폭을 고정한다. 안 그러면 표마다 그 열의 가장 긴 글자(syft, OWASP aibom-generator)에
+   맞춰 폭이 달라진다. S-BOM 제목 뒤에 오는 형제 요소 안의 표를 고른다. Material 이 스크립트로 표를 .md-typeset__scrollwrap >
+   .md-typeset__table 로 감싸므로 형제는 그 래퍼이고, 스크립트 전에는 표 자신이다 */
+#s-bom ~ table th:first-child, #s-bom ~ .md-typeset__scrollwrap th:first-child { width: 10rem; white-space: nowrap; }
+#s-bom ~ table th:nth-child(2), #s-bom ~ .md-typeset__scrollwrap th:nth-child(2) { width: 9rem; }
+/* 칸 안의 글은 세로 가운데에 둔다. 합친 칸(syft, cdxgen, sure-aibom)이 위에 붙어 보이지 않게. Material 기본은 위 정렬 */
+#s-bom ~ table td, #s-bom ~ .md-typeset__scrollwrap td { vertical-align: middle; }
+/* 칸 안의 예외 설명(※ …)은 옅은 색으로 */
+.md-typeset .note { color: var(--md-default-fg-color--light); }
+
+/* 표: 마우스를 올려도 행을 회색으로 칠하지 않는다 (Material 기본은 hover 에 옅은 회색) */
+.md-typeset table:not([class]) tbody tr:hover { background-color: transparent; box-shadow: none; }
+
+/* 한글은 띄어쓰기(어절)에서만 줄을 바꾼다. 띄어쓰기 없는 긴 문자열(파일 이름, URL)만 넘칠 때 중간에서 끊는다 */
+.md-typeset { word-break: keep-all; overflow-wrap: break-word; }
+/* Material 은 링크와 인라인 코드에 word-break: break-word 를 줘서 위 설정을 덮는다. 한글은 어절에서만 끊고,
+   코드는 지금처럼 띄어쓰기 없는 긴 이름이 넘칠 때 아무 데서나 끊을 수 있게 둔다 */
+.md-typeset a { word-break: keep-all; }
+.md-typeset code { word-break: keep-all; overflow-wrap: anywhere; }
