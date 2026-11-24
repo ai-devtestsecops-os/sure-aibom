@@ -43,12 +43,8 @@ extra:
   generator: false
 extra_css:
   - stylesheets/extra.css
-  - mapping-viewer/viewer.css
-  - mapping-viewer/cards.css
 extra_javascript:
   - javascripts/palette-menu.js
-  - mapping-viewer/app.js
-  - mapping-viewer/cards.js
 markdown_extensions:
   - tables
   - md_in_html          # 셀을 합친 표(rowspan)를 HTML 로 쓰고 칸 안은 Markdown 으로
@@ -67,5 +63,3 @@ nav:
       - compliance/index.md
       - AI-BOM v0.6 필드: compliance/aibom-v0.6.md
       - 확장 필드: compliance/regulation-fields.md
-      - 필드 탐색기: compliance/field-mapping.md
-      - 규제 판정: compliance/regulation-cards.md

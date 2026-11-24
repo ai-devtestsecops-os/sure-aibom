@@ -7,5 +7,3 @@ EU AI Act, ISO/IEC 42001, NIST AI RMF 가 요구하지만 CycloneDX 1.7 과 SPDX
 - **[AI-BOM v0.6 필드](aibom-v0.6.md)**: `--spec v0.6` 방식. 규제 요구 필드를 CycloneDX 1.7 과 SPDX 3.0.1 에 더한 스키마와 그 구조,
   sure-aibom 이 채우는 필드를 설명한다.
 - **[확장 필드](regulation-fields.md)**: `--spec 1.7`(CycloneDX)과 `--spec 3.0.1`(SPDX) 방식. 같은 값을 CycloneDX 의 `properties` 배열이나 SPDX 의 `CdxPropertiesExtension` 에 적을 때 쓰는 키와 설명, 허용값을 정리한다.
-- **[필드 탐색기](field-mapping.md)**: 필드가 BOM 의 어디에 들어가는지, CycloneDX 와 SPDX 의 대응, 규제 조항과 필드의 연결을 한 화면에서 보여 준다.
-- **[규제 판정](regulation-cards.md)**: BOM 을 올리면 규제 조항마다 반영 여부와 채울 자리를 보여 준다. 조항을 누르면 원문과 그 조항이 요구하는 사실이 나온다.

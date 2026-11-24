@@ -15,7 +15,7 @@
 컴포넌트는 단계 사이에서 같은 dict 가 제자리에서 바뀌므로 숨은 표지(MARK)로 단계 전후를 맞춘다. 표지는 출력 직전에 뗀다.
 
 자리 경로는 인스턴스 JSON 경로에서 배열 번호를 뺀 것이다 (components.modelCard.modelParameters.task). 필드 탐색기의
-CycloneDX 트리 경로(docs/mapping-viewer/app.js 의 sitePath)와 같은 모양이다.
+CycloneDX 트리 경로(sitePath)와 같은 모양이다.
 SPDX 쪽(spdx_site_sources)은 최종 문서를 --format spdx --spec v0.6 과 같게 바꾼 뒤, 요소의 값마다 그 요소가 된 컴포넌트의 CycloneDX 값
 (같은 값, 열거값 대응, 이어 붙인 문자열은 풀어서)을 찾아 그 도구를 잇고, 못 찾으면 변환기(sure-aibom)다. 자리는 "클래스.속성" 이다.
 """

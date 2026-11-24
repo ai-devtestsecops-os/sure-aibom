@@ -4,7 +4,7 @@ sure-aibom 은 `--format` 으로 문서 형식(CycloneDX, SPDX)을, `--spec` 으
 
 ## 문서 형식 (`--format`)
 
-CycloneDX 가 기본이고, `--format spdx` 면 CycloneDX 문서를 SPDX 3.0.1 JSON-LD 로 변환해 낸다. 두 형식 간 필드 대응은 [필드 탐색기](../compliance/field-mapping.md)에서 확인한다.
+CycloneDX 가 기본이고, `--format spdx` 면 CycloneDX 문서를 SPDX 3.0.1 JSON-LD 로 변환해 낸다.
 
 ## 스펙 (`--spec`)
 

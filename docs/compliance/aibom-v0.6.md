@@ -28,5 +28,3 @@ v0.6 이 정의한 필드 가운데 sure-aibom 이 스캔 결과로 값을 채�
 |---|---|---|
 | 모델 | hyperparameters, parameterCount, inputs maxSize, technicalRequirements | hyperparameters, parameterCount, inputs maxSize, technicalRequirements |
 | 데이터셋 | size, modality, statistics, availability, provenance, intendedUse, collectionProcess | size, modality, statistics |
-
-각 필드가 어느 규제 조항에 근거하는지는 [필드 탐색기](field-mapping.md)에서 볼 수 있다.

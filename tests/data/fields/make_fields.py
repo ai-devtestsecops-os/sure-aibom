@@ -5,7 +5,7 @@
 값은 지어낸 것이다 (acme 조직, example 주소). 모양만 실제 형식(Hugging Face 모델 카드, GGUF, safetensors, Modelfile,
 dist-info, package-lock.json, pom.xml, jar, dpkg status …)을 따르고, 공개 패키지 몇 개(requests, rack …)는 실제 이름을 쓴다.
 tests/test_fields.py 가 이 픽스처를 실제 syft·cdxgen 으로 스캔해 값마다 출처를 따라가고, 그 결과가
-docs/mapping-viewer/data/aibom_cli_sources.json (필드 탐색기의 도구 배지)이다.
+tests/data/fields/aibom_cli_sources.json (필드마다 값을 채우는 도구 목록)이다.
 
     project/   디렉터리 스캔 대상. 이미지에서는 /app
                models/ · Modelfile · deploy/Modelfile · src/ · notebooks/   cdxgen 이 찾는 모델·데이터셋 참조와 SDK import
