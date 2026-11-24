@@ -15,6 +15,12 @@ dependencies = ["jsonschema>=4.20", "referencing>=0.30", "pyyaml>=6"]
 [project.optional-dependencies]
 dev = ["pytest>=7"]
 
+[project.urls]
+Homepage = "https://github.com/ai-devtestsecops-os/sure-aibom"
+Documentation = "https://ai-devtestsecops-os.github.io/sure-aibom/"
+Repository = "https://github.com/ai-devtestsecops-os/sure-aibom"
+Issues = "https://github.com/ai-devtestsecops-os/sure-aibom/issues"
+
 [project.scripts]
 sure-aibom = "sure_aibom.cli:main"
 

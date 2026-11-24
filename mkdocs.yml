@@ -1,5 +1,8 @@
 site_name: SURE AI-BOM Generator
 site_description: AI-BOM 생성 CLI 문서
+site_url: https://ai-devtestsecops-os.github.io/sure-aibom/
+repo_url: https://github.com/ai-devtestsecops-os/sure-aibom
+repo_name: ai-devtestsecops-os/sure-aibom
 docs_dir: docs
 theme:
   name: material
