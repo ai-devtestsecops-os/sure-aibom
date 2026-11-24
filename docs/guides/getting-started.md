@@ -6,16 +6,17 @@ AI-BOM 은 AI 시스템을 이루는 소프트웨어 패키지(S-BOM), 모델(M-
 
 ## 설치
 
-실행에 필요한 도구는 conda 환경으로 받고, 그 위에 sure-aibom 을 설치한다.
+sure-aibom 저장소를 받은 뒤, 실행에 필요한 도구는 conda 환경으로 받고 그 위에 sure-aibom 을 설치한다.
 OWASP aibom-generator 는 패키지로 배포되지 않아 저장소를 받아 두고, 그 위치를 환경 변수로 알려 준다.
 
 ```bash
-# 1. 도구 환경 세팅
-conda env create -f environment.yml
+# 1. 저장소 받기와 도구 환경 세팅
+git clone https://github.com/ai-devtestsecops-os/sure-aibom
+conda env create -f sure-aibom/environment.yml
 conda activate sure-aibom
 
 # 2. sure-aibom 설치
-pip install sure_aibom-0.2.0-py3-none-any.whl
+pip install ./sure-aibom
 
 # 3. OWASP aibom-generator 설치 (커밋 9b8056a 고정)
 git clone https://github.com/GenAI-Security-Project/aibom-generator

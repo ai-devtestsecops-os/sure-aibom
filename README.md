@@ -34,10 +34,11 @@ sure-aibom 은 디렉터리와 컨테이너 이미지를 스캔해 AI-BOM(D/M/S-
 ## 설치
 
 ```bash
-# 환경 세팅 및 sure-aibom 설치 (conda 예시)
-conda env create -f environment.yml
+# 저장소를 받아 환경 세팅 및 sure-aibom 설치 (conda 예시)
+git clone https://github.com/ai-devtestsecops-os/sure-aibom
+conda env create -f sure-aibom/environment.yml
 conda activate sure-aibom
-pip install sure_aibom-0.2.0-py3-none-any.whl
+pip install ./sure-aibom
 
 # OWASP aibom-generator (커밋 9b8056a)
 git clone https://github.com/GenAI-Security-Project/aibom-generator

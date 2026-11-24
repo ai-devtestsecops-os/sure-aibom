@@ -1,5 +1,5 @@
 # sure-aibom 이 부르는 도구들. conda env create -f environment.yml 로 한 번에 설치한다.
-# sure-aibom 자체(wheel)와 OWASP aibom-generator 는 README 설치 절의 명령으로 이어서 넣는다.
+# sure-aibom 자체와 OWASP aibom-generator 는 README 설치 절의 명령으로 이어서 넣는다.
 name: sure-aibom
 channels:
   - conda-forge
