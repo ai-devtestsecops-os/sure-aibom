@@ -110,3 +110,7 @@ Exit codes:
 - [syft](https://github.com/anchore/syft)
 - [cdxgen](https://github.com/CycloneDX/cdxgen)
 - [OWASP aibom-generator](https://github.com/GenAI-Security-Project/aibom-generator)
+
+## 라이선스
+
+[Apache License 2.0](LICENSE)
