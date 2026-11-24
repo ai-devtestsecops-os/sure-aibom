@@ -9,6 +9,8 @@ theme:
   custom_dir: overrides
   language: ko
   favicon: "data:,"          # 브라우저 탭 아이콘 없음 (기본 로고 대신 브라우저 기본 아이콘)
+  icon:
+    repo: fontawesome/brands/github   # 상단 바 저장소 링크의 아이콘 (기본은 git 로고)
   palette:                        # 상단 바 메뉴: 라이트 · 다크 · 시스템 (overrides/partials/palette.html). 시스템이 첫 항목이라 기본값
     - media: "(prefers-color-scheme)"
       toggle:
